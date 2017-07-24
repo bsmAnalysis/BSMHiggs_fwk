@@ -1,7 +1,7 @@
 import os
 import sys
 import optparse
-from UserCode.llvv_fwk.storeTools_cff import getLslist
+from UserCode.bsmhiggs_fwk.storeTools_cff import getLslist
 
 """
 steer the script

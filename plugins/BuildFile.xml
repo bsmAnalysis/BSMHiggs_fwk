@@ -1,7 +1,7 @@
 <export>
 </export>
 <flags EDM_PLUGIN="1"/>
-<library   name="UserCodellvv_fwk_plugins" file="*.cc">
+<library   name="UserCodebsmhiggs_fwk_plugins" file="*.cc">
 <use name="FWCore/FWLite"/>
 <use name="DataFormats/FWLite"/>
 <use name="FWCore/Framework"/>
@@ -18,9 +18,10 @@
 <use name="TrackingTools/IPTools"/>
 <use name="FWCore/ServiceRegistry"/>
 <use name="PhysicsTools/UtilAlgos"/>
-<use name="UserCode/llvv_fwk"/>
+<use name="UserCode/bsmhiggs_fwk"/>
 <use name="DataFormats/Luminosity"/>
 <use name="FWCore/Services"/>
+<use name="FWCore/ServiceRegistry"/>
 <use name="DQMServices/Core"/>
 <use name="SimDataFormats/GeneratorProducts"/>
 <use name="SimDataFormats/TrackingAnalysis"/>

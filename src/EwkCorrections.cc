@@ -1,4 +1,4 @@
-#include "UserCode/llvv_fwk/interface/EwkCorrections.h"
+#include "UserCode/bsmhiggs_fwk/interface/EwkCorrections.h"
 
 namespace EwkCorrections
 {
@@ -10,7 +10,7 @@ namespace EwkCorrections
 		TString name;
 		TString cmssw_path;
 		cmssw_path = getenv("CMSSW_BASE");
-		TString path = cmssw_path+"/src/UserCode/llvv_fwk/src/";
+		TString path = cmssw_path+"/src/UserCode/bsmhiggs_fwk/src/";
 		
 		if(dtag.Contains("ZZ")) name = path+"Corrections/ZZ_EwkCorrections.dat";
 		if(dtag.Contains("WZ")) name = path+"Corrections/WZ_EwkCorrections.dat";

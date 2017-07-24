@@ -1,0 +1,21 @@
+{
+  "proc": [
+    {
+      "isdata": false, 
+      "color": "856", 
+      "lcolor": "1", 
+      "tag": "h#rightarrow aa#rightarrow 4b",
+      "marker": 856, 
+      "data": [
+        {
+	  "dtag": "MC13TeV_Wh_amass20", 
+          "xsec": 1.0, 
+          "br": [ 1.0 ]
+        }
+      ],
+      "keys": [
+      	  "haa_signal"
+	  ]
+     }
+  ]
+} 

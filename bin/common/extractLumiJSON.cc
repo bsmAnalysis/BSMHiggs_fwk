@@ -14,7 +14,7 @@
 #include "DataFormats/FWLite/interface/Run.h"
 #include "DataFormats/Luminosity/interface/LumiSummary.h"
 
-#include "UserCode/llvv_fwk/interface/LumiUtils.h"
+#include "UserCode/bsmhiggs_fwk/interface/LumiUtils.h"
 
 #include "TSystem.h"
 #include "TFile.h"

@@ -4,7 +4,7 @@ import os,sys
 import json
 import optparse
 import commands
-from UserCode.llvv_fwk.storeTools_cff import fillFromStore, addPrefixSuffixToFileList, removeDuplicates
+from UserCode.bsmhiggs_fwk.storeTools_cff import fillFromStore, addPrefixSuffixToFileList, removeDuplicates
 import LaunchOnCondor
 
 """
@@ -99,7 +99,7 @@ for proc in procList :
                 elif(mergedFilePath.find('/store/')==0):
                    LaunchOnCondor.Jobs_FinalCmds = ['pwd', 'ls -lth', 'cmsStageOut '+mergedFileName+' ' + mergedFilePath]
                 elif(mergedFilePath.find('srm://')==0):
-                   LaunchOnCondor.Jobs_FinalCmds = ['pwd', 'ls -lth', 'source /nfs/soft/grid/ui/setup/grid-env.sh', 'export X509_USER_PROXY=/nfs/home/fynu/quertenmont/x509_user_proxy/proxy','ls /$PWD/'+mergedFileName, 'for i in 5m 10m 15m 20m 25m 30m 45m 60m; do lcg-cp -v -D srmv2 -b file:/$PWD/'+mergedFileName+' '+mergedFilePath + ' && break || echo "Pause for $i" && sleep $i; done', 'mv ' + mergedFileName + ' /home/fynu/quertenmont/scratch/13_06_26_HTauTau/LoicFramework/CMSSW_5_3_11/src/UserCode/llvv_fwk/FARM_Merge/outputs/.', 'rm -rf ' + mergedFileName]
+                   LaunchOnCondor.Jobs_FinalCmds = ['pwd', 'ls -lth', 'source /nfs/soft/grid/ui/setup/grid-env.sh', 'export X509_USER_PROXY=/nfs/home/fynu/quertenmont/x509_user_proxy/proxy','ls /$PWD/'+mergedFileName, 'for i in 5m 10m 15m 20m 25m 30m 45m 60m; do lcg-cp -v -D srmv2 -b file:/$PWD/'+mergedFileName+' '+mergedFilePath + ' && break || echo "Pause for $i" && sleep $i; done', 'mv ' + mergedFileName + ' /home/fynu/quertenmont/scratch/13_06_26_HTauTau/LoicFramework/CMSSW_5_3_11/src/UserCode/bsmhiggs_fwk/FARM_Merge/outputs/.', 'rm -rf ' + mergedFileName]
                 else:
                    LaunchOnCondor.Jobs_FinalCmds = ['pwd', 'ls -lth', 'mv '+mergedFileName+' ' + os.getcwd()+"/FARM_Merge/outputs/"+mergedFileName, 'ls -lth '+opt.outDir]                
 #                   LaunchOnCondor.Jobs_FinalCmds = ['pwd', 'ls -lth', 'mv '+mergedFileName+' ' + mergedFilePath, 'ls -lth '+opt.outDir]                

@@ -4,7 +4,7 @@ import json
 import optparse
 import commands
 import LaunchOnCondor
-import UserCode.llvv_fwk.storeTools_cff as storeTools
+import UserCode.bsmhiggs_fwk.storeTools_cff as storeTools
 import sqlite3
 import pwd
 
@@ -12,7 +12,7 @@ PROXYDIR = "~/x509_user_proxy"
 DatasetFileDB = "DAS"  #DEFAULT: will use das_client.py command line interface
 #DatasetFileDB = "DBS" #OPTION:  will use curl to parse https GET request on DBSserver
 
-cachedQueryDB = sqlite3.connect(os.path.expandvars('${CMSSW_BASE}/src/UserCode/llvv_fwk/data/das_query_cache.db') )
+cachedQueryDB = sqlite3.connect(os.path.expandvars('${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/das_query_cache.db') )
 cachedQueryDBcursor = cachedQueryDB.cursor()
 cachedQueryDBcursor.execute("""CREATE TABLE IF NOT EXISTS queries(id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, date TEXT, query TEXT, result TEXT)""")
 cachedQueryDB.commit()
@@ -46,7 +46,7 @@ def getByLabelFromKeyword(proc,keyword,key,defaultVal=None) :
            return defaultVal
 
 def DASQuery(query):
-   cachedQueryDB = sqlite3.connect(os.path.expandvars('${CMSSW_BASE}/src/UserCode/llvv_fwk/data/das_query_cache.db') )
+   cachedQueryDB = sqlite3.connect(os.path.expandvars('${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/das_query_cache.db') )
    cachedQueryDBcursor = cachedQueryDB.cursor()
 
    cachedQueryDBcursor.execute("""SELECT result FROM queries WHERE query=?""", (query,) )
@@ -212,7 +212,7 @@ parser.add_option('-f', "--localnfiles",    dest='localnfiles'        , help='nu
 parser.add_option('-l', "--lfn"        ,    dest='crablfn'            , help='user defined directory for CRAB runs'      , default='')
 
 (opt, args) = parser.parse_args()
-scriptFile=os.path.expandvars('${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh')
+scriptFile=os.path.expandvars('${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapAnalysisRun.sh')
 DatasetFileDB                      = opt.db
 
 #define local site

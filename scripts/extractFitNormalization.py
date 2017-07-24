@@ -34,8 +34,8 @@ for i in range(nfb.getSize()):
       list.append( "%-30s & %-30s & $%7.3f$ & $%7.3f$ \\\\" % (proc, channel, valb.getVal(), vals.getVal() ) )
    else:
       h = file2.Get(channel+"/"+proc)
-      hstat = file2.Get(channel+"/"+proc+"_CMS_hzz2l2v_stat_"+channel+"_"+proc+"_7TeVUp");
-      if(hstat==None):hstat = file2.Get(channel+"/"+proc+"_CMS_hzz2l2v_stat_"+channel+"_"+proc+"_8TeVUp");
+      hstat = file2.Get(channel+"/"+proc+"_CMS_haa4b_stat_"+channel+"_"+proc+"_7TeVUp");
+      if(hstat==None):hstat = file2.Get(channel+"/"+proc+"_CMS_haa4b_stat_"+channel+"_"+proc+"_8TeVUp");
       statErr = hstat.Integral();
       statErr = statErr -h.Integral();
       systErr = 0.0;

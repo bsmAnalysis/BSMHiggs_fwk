@@ -4,12 +4,12 @@
 #include <boost/shared_ptr.hpp>
 #include "Math/GenVector/Boost.h"
 
-#include "UserCode/llvv_fwk/interface/tdrstyle.h"
-#include "UserCode/llvv_fwk/interface/JSONWrapper.h"
-#include "UserCode/llvv_fwk/interface/RootUtils.h"
-#include "UserCode/llvv_fwk/interface/MacroUtils.h"
-#include "UserCode/llvv_fwk/interface/HxswgUtils.h"
-#include "HiggsAnalysis/CombinedLimit/interface/th1fmorph.h"
+#include "UserCode/bsmhiggs_fwk/interface/tdrstyle.h"
+#include "UserCode/bsmhiggs_fwk/interface/JSONWrapper.h"
+#include "UserCode/bsmhiggs_fwk/interface/RootUtils.h"
+#include "UserCode/bsmhiggs_fwk/interface/MacroUtils.h"
+#include "UserCode/bsmhiggs_fwk/interface/HxswgUtils.h"
+#include "UserCode/bsmhiggs_fwk/interface/th1fmorph.h"
 
 #include "TSystem.h"
 #include "TFile.h"
@@ -183,7 +183,7 @@ class ShapeData_t
         int BIN=0;
 	std::vector<unsigned int > v_lowStatBin;
 	v_lowStatBin.clear();
-	TString InstrMET_gammaStats_Url(string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/InstrMET_systematics/InstrMET_systematics_GAMMASTATS.root");
+	TString InstrMET_gammaStats_Url(string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/InstrMET_systematics/InstrMET_systematics_GAMMASTATS.root");
 	TFile* f_InstrMET_gammaStats = TFile::Open(InstrMET_gammaStats_Url);
 	TH1* h_InstrMET_Up_gammaStats = (TH1*)utils::root::GetObjectFromPath(f_InstrMET_gammaStats, (channel_and_bin+"_mt_InstrMET_absolute_shape_up").c_str() );
 	TH1* h_InstrMET_Down_gammaStats = (TH1*)utils::root::GetObjectFromPath(f_InstrMET_gammaStats, (channel_and_bin+"_mt_InstrMET_absolute_shape_down").c_str() );   			
@@ -749,7 +749,7 @@ int main(int argc, char* argv[])
   allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst
 
   //prepare the output
-  string limitFile=("hzz2l2v_"+massStr+systpostfix+".root").Data();
+  string limitFile=("haa4b_"+massStr+systpostfix+".root").Data();
   TFile *fout=TFile::Open(limitFile.c_str(),"recreate");
 
   allInfo.saveHistoForLimit(histo.Data(), fout);
@@ -1539,12 +1539,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if(ch->second.shapes.find(histoName.Data())==(ch->second.shapes).end())continue;
 
         //add the stat uncertainty is there;
-        //ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_hzz2l2v_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );//add stat uncertainty to the uncertainty map;
+        //ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );//add stat uncertainty to the uncertainty map;
 
         //Li Fix
-        if((it->second.shortName).find("ggH")!=std::string::npos)ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_hzz2l2v_", (TString("_")+ch->first+TString("_ggH")).Data(),systpostfix.Data(), false );// attention
-	else if((it->second.shortName).find("qqH")!=std::string::npos)ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_hzz2l2v_", (TString("_")+ch->first+TString("_qqH")).Data(),systpostfix.Data(), false );
-        else ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_hzz2l2v_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );
+        if((it->second.shortName).find("ggH")!=std::string::npos)ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_ggH")).Data(),systpostfix.Data(), false );// attention
+	else if((it->second.shortName).find("qqH")!=std::string::npos)ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_qqH")).Data(),systpostfix.Data(), false );
+        else ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );
         TVirtualPad* pad = t1->cd(I); 
         pad->SetTopMargin(0.06); pad->SetRightMargin(0.03); pad->SetBottomMargin(0.07);  pad->SetLeftMargin(0.06);
 				//                 pad->SetLogy(true); 
@@ -1592,7 +1592,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           TString systName = var->first.c_str();
           systName.ToLower();
           systName.ReplaceAll("cms","");
-          systName.ReplaceAll("hzz2l2v","");
+          systName.ReplaceAll("haa4b","");
           systName.ReplaceAll("sys","");
           systName.ReplaceAll("13tev","");
           systName.ReplaceAll("_","");
@@ -1642,7 +1642,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           TString systName = var->first.c_str();
           systName.ToLower();
           systName.ReplaceAll("cms","");
-          systName.ReplaceAll("hzz2l2v","");
+          systName.ReplaceAll("haa4b","");
           systName.ReplaceAll("sys","");
           systName.ReplaceAll("13tev","");
           systName.ReplaceAll("_","");
@@ -1789,13 +1789,13 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
         ShapeData_t& shapeInfo = ch->second.shapes[histoName];      
         TH1* h = shapeInfo.histo();
-				//                 shapeInfo.makeStatUnc("_CMS_hzz2l2v_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), it->second.isSign );//add stat uncertainty to the uncertainty map;
-        //shapeInfo.makeStatUnc("_CMS_hzz2l2v_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );//add stat uncertainty to the uncertainty map;
+				//                 shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), it->second.isSign );//add stat uncertainty to the uncertainty map;
+        //shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );//add stat uncertainty to the uncertainty map;
 
         //Li Fix
-        if((it->second.shortName).find("ggH")!=std::string::npos)shapeInfo.makeStatUnc("_CMS_hzz2l2v_", (TString("_")+ch->first+TString("_ggH")).Data(),systpostfix.Data(), false );// attention
-	else if((it->second.shortName).find("qqH")!=std::string::npos)shapeInfo.makeStatUnc("_CMS_hzz2l2v_", (TString("_")+ch->first+TString("_qqH")).Data(),systpostfix.Data(), false );
-        else shapeInfo.makeStatUnc("_CMS_hzz2l2v_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );
+        if((it->second.shortName).find("ggH")!=std::string::npos)shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_ggH")).Data(),systpostfix.Data(), false );// attention
+	else if((it->second.shortName).find("qqH")!=std::string::npos)shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_qqH")).Data(),systpostfix.Data(), false );
+        else shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );
 				fout->cd(chbin);
 
         TString proc = it->second.shortName.c_str();
@@ -2006,7 +2006,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       fprintf(pFile, "-------------------------------\n");
 
       for(std::map<string, bool>::iterator U=allSysts.begin(); U!=allSysts.end();U++){
-        if(mass==125 && U->first=="CMS_hzz2l2v_lshape")continue;//skip lineshape uncertainty for 125GeV Higgs
+        if(mass==125 && U->first=="CMS_haa4b_lshape")continue;//skip lineshape uncertainty for 125GeV Higgs
 
         char line[2048];
         sprintf(line,"%-45s %-10s ", U->first.c_str(), U->second?"shapeN2":"lnN");
@@ -2235,11 +2235,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             if(ch.Contains("ee"  ))varName.ReplaceAll("_les","_CMS_scale_e");
             if(ch.Contains("mumu"))varName.ReplaceAll("_les","_CMS_scale_m");
           }else if(varName.BeginsWith("_btag"  )){varName.ReplaceAll("_btag","_CMS_eff_b"); 
-          }else if(varName.BeginsWith("_pu"    )){varName.ReplaceAll("_pu", "_CMS_hzz2l2v_pu");
+          }else if(varName.BeginsWith("_pu"    )){varName.ReplaceAll("_pu", "_CMS_haa4b_pu");
           }else if(varName.BeginsWith("_ren"   )){continue;   //already accounted for in QCD scales
           }else if(varName.BeginsWith("_fact"  )){continue; //skip this one
-            //}else if(varName.BeginsWith("_interf")){varName="_CMS_hzz2l2v"+varName;  //commented out for the HighMass paper
-        }else{                               varName="_CMS_hzz2l2v"+varName;
+            //}else if(varName.BeginsWith("_interf")){varName="_CMS_haa4b"+varName;  //commented out for the HighMass paper
+        }else{                               varName="_CMS_haa4b"+varName;
         }
 
         hshape->SetTitle(proc+varName);
@@ -2379,7 +2379,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       //remove all syst uncertainty
       chNRB->second.shapes[mainHisto.Data()].clearSyst();
       //add syst uncertainty                 
-      chNRB->second.shapes[mainHisto.Data()].uncScale[string("CMS_hzz2l2v_sys_topwww") + systpostfix.Data()] =valDD>=1E-4?valDD*NonResonnantSyst:1.8*valDD;
+      chNRB->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_topwww") + systpostfix.Data()] =valDD>=1E-4?valDD*NonResonnantSyst:1.8*valDD;
 
       //printout
       sprintf(Lcol    , "%s%s"  ,Lcol,    "|c");
@@ -2432,7 +2432,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         //remove all syst uncertainty
         chMC->second.shapes[mainHisto.Data()].clearSyst();
         //add syst uncertainty                 
-        chMC->second.shapes[mainHisto.Data()].uncScale[string("_CMS_hzz2l2v_sys_zll") + systpostfix.Data()] = val*GammaJetSyst;
+        chMC->second.shapes[mainHisto.Data()].uncScale[string("_CMS_haa4b_sys_zll") + systpostfix.Data()] = val*GammaJetSyst;
       }
     }
   }
@@ -2452,7 +2452,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       it->second.isSign = false;
       it->second.isBckg = true;
 
-			TString InstrMET_allExceptGammaStats_Url(string(std::getenv("CMSSW_BASE"))+"/src/UserCode/llvv_fwk/data/InstrMET_systematics/InstrMET_systematics_ALL_EXCEPT_GAMMASTATS.root");
+			TString InstrMET_allExceptGammaStats_Url(string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/InstrMET_systematics/InstrMET_systematics_ALL_EXCEPT_GAMMASTATS.root");
 			TFile* f_InstrMET_allExceptGammaStats = TFile::Open(InstrMET_allExceptGammaStats_Url);
 			if(!f_InstrMET_allExceptGammaStats ){
 			  std::cout<< "Missing InstrMET syst files! No syst for InstrMET!'" << std::endl;
@@ -2472,8 +2472,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         //remove all syst uncertainty
         chMC->second.shapes[mainHisto.Data()].clearSyst();
         //add syst uncertainty                 
-        chMC->second.shapes[mainHisto.Data()].uncShape[string("_CMS_hzz2l2v_sys_"+chMC->second.bin+"_zll") + it->second.shortName+systpostfix.Data()+"Up"] = h_InstrMET_Up_allExceptGammaStats;
-        chMC->second.shapes[mainHisto.Data()].uncShape[string("_CMS_hzz2l2v_sys_"+chMC->second.bin+"_zll") + it->second.shortName+systpostfix.Data()+"Down"] =h_InstrMET_Down_allExceptGammaStats; 
+        chMC->second.shapes[mainHisto.Data()].uncShape[string("_CMS_haa4b_sys_"+chMC->second.bin+"_zll") + it->second.shortName+systpostfix.Data()+"Up"] = h_InstrMET_Up_allExceptGammaStats;
+        chMC->second.shapes[mainHisto.Data()].uncShape[string("_CMS_haa4b_sys_"+chMC->second.bin+"_zll") + it->second.shortName+systpostfix.Data()+"Down"] =h_InstrMET_Down_allExceptGammaStats; 
      }
     }
     //Recompute the total background with correct uncertainties
@@ -2584,7 +2584,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       lineprintouts.push_back(printout);
 
       //add syst uncertainty
-      //chData->second.shapes[mainHisto.Data()].uncScale[string("CMS_hzz2l2v_sys_zll") + systpostfix.Data()] = valDD*GammaJetSyst;
+      //chData->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_zll") + systpostfix.Data()] = valDD*GammaJetSyst;
  			//Hugo: We don't use this way anymore
 
       //clean
@@ -2753,7 +2753,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       //add syst uncertainty
       chDD->second.shapes[mainHisto.Data()].clearSyst();
-      chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_hzz2l2v_sys_DD") + systpostfix.Data()] = valDD!=0?valDD*FakeLeptonDDSyst:FakeLeptonDDSyst;
+      chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_DD") + systpostfix.Data()] = valDD!=0?valDD*FakeLeptonDDSyst:FakeLeptonDDSyst;
 
       //clean
       delete hDD;
@@ -3011,8 +3011,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if(!histo){printf("Histo does not exit... skip it \n"); fflush(stdout); continue;}
         if(sF<=0){printf("sF has weird values : %f, set it back to one\n", sF); sF=1.0; fflush(stdout);}
         TH1* tmp;
-        tmp = (TH1*)histo->Clone(TString("interf_ggH_") + histo->GetName() + "Down"); tmp->Scale(sFDn/sF); shapeInfo.uncShape[string("_CMS_hzz2l2v_interf_") + it->second.shortName+"Down"] = tmp;
-        tmp = (TH1*)histo->Clone(TString("interf_ggH_") + histo->GetName() + "Up"  ); tmp->Scale(sFUp/sF); shapeInfo.uncShape[string("_CMS_hzz2l2v_interf_") + it->second.shortName+"Up"  ] = tmp;
+        tmp = (TH1*)histo->Clone(TString("interf_ggH_") + histo->GetName() + "Down"); tmp->Scale(sFDn/sF); shapeInfo.uncShape[string("_CMS_haa4b_interf_") + it->second.shortName+"Down"] = tmp;
+        tmp = (TH1*)histo->Clone(TString("interf_ggH_") + histo->GetName() + "Up"  ); tmp->Scale(sFUp/sF); shapeInfo.uncShape[string("_CMS_haa4b_interf_") + it->second.shortName+"Up"  ] = tmp;
       }
       }
     }

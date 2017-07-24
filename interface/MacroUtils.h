@@ -41,7 +41,7 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
-#include "UserCode/llvv_fwk/interface/PatUtils.h"
+#include "UserCode/bsmhiggs_fwk/interface/PatUtils.h"
 
 //------------------ needed headers for slew rate corrections -------------------//
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"

@@ -1,4 +1,4 @@
-#include "UserCode/llvv_fwk/interface/PatUtils.h"
+#include "UserCode/bsmhiggs_fwk/interface/PatUtils.h"
 
 #include "DataFormats/METReco/interface/HcalNoiseSummary.h"
 
@@ -1333,7 +1333,7 @@ void MetFilter::FillBadEvents(std::string path){
   }
 
 
-  int MetFilter::passMetFilterInt(const fwlite::Event& ev, bool is2016){
+  int MetFilter::passMetFilterInt(const fwlite::Event& ev){
 
     if(map.find( RuLuEv(ev.eventAuxiliary().run(), ev.eventAuxiliary().luminosityBlock(), ev.eventAuxiliary().event()))!=map.end())return 1;
 
@@ -1343,7 +1343,7 @@ void MetFilter::FillBadEvents(std::string path){
       printf("TriggerResultsByName for MET filters is not found in the process, as a consequence the MET filter is disabled for this event\n");
     }
 
-    if(!utils::passTriggerPatterns(metFilters, "Flag_globalTightHalo2016Filter")) return 2;
+    //    if(!utils::passTriggerPatterns(metFilters, "Flag_globalTightHalo2016Filter")) return 2;
     if(!utils::passTriggerPatterns(metFilters, "Flag_goodVertices"              )) return 3;
     if(!utils::passTriggerPatterns(metFilters, "Flag_eeBadScFilter"         )) return 4;
     if(!utils::passTriggerPatterns(metFilters, "Flag_EcalDeadCellTriggerPrimitiveFilter")) return 5;
@@ -1353,75 +1353,6 @@ void MetFilter::FillBadEvents(std::string path){
     return 0;
   }
 
-  int MetFilter::passMetFilterInt(const fwlite::Event& ev){
-     if(map.find( RuLuEv(ev.eventAuxiliary().run(), ev.eventAuxiliary().luminosityBlock(), ev.eventAuxiliary().event()))!=map.end())return 1;
-
-    // Legacy: the different collection name was necessary with the early 2015B prompt reco
-//    edm::TriggerResultsByName metFilters = isPromptReco ? ev.triggerResultsByName("RECO") : ev.triggerResultsByName("PAT");
-    edm::TriggerResultsByName metFilters = ev.triggerResultsByName("PAT");   //is present only if PAT (and miniAOD) is not run simultaniously with RECO
-    if(!metFilters.isValid()){metFilters = ev.triggerResultsByName("RECO");} //if not present, then it's part of RECO
-    if(!metFilters.isValid()){
-      printf("TriggerResultsByName for MET filters is not found in the process, as a consequence the MET filter is disabled for this event\n");
-    }
-
-
-    // Documentation:
-    // -------- Full MET filters list (see bin/chhiggs/runAnalysis.cc for details on how to print it out ------------------
-    // Flag_trackingFailureFilter
-    // Flag_goodVertices                        -------> Recommended by PAG
-    // Flag_CSCTightHaloFilter                  -------> Recommended by PAG
-    // Flag_trkPOGFilters
-    // Flag_trkPOG_logErrorTooManyClusters
-    // Flag_EcalDeadCellTriggerPrimitiveFilter  -------> Recommended by PAG
-    // Flag_ecalLaserCorrFilter
-    // Flag_trkPOG_manystripclus53X
-    // Flag_eeBadScFilter                       -------> Recommended by PAG
-    // Flag_METFilters
-    // Flag_HBHENoiseFilter                     -------> Recommended by PAG
-    // Flag_trkPOG_toomanystripclus53X
-    // Flag_hcalLaserEventFilter
-
-
-    // Notes (from https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2015#ETmiss_filters ):
-    // - For the RunIISpring15DR74 MC campaing, the process name in PAT.
-    // - For Run2015B PromptReco Data, the process name is RECO.
-    // - For Run2015B re-MiniAOD Data 17Jul2015, the process name is PAT.
-    // - MET filters are available in PromptReco since run 251585; for the earlier run range (251162-251562) use the re-MiniAOD 17Jul2015
-    // - Recommendations on how to use MET filers are given in https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2 . Note in particular that the HBHO noise filter must be re-run from MiniAOD instead of using the flag stored in the TriggerResults; this applies to all datasets (MC, PromptReco, 17Jul2015 re-MiniAOD)
-    // -------------------------------------------------
-
-    if(!utils::passTriggerPatterns(metFilters, "Flag_CSCTightHaloFilter"                     )) return 2;
-    if(!utils::passTriggerPatterns(metFilters, "Flag_goodVertices"                           )) return 3;
-    if(!utils::passTriggerPatterns(metFilters, "Flag_eeBadScFilter"                          )) return 4;
-    if(!utils::passTriggerPatterns(metFilters, "Flag_EcalDeadCellTriggerPrimitiveFilter"     )) return 5;
-    if(!utils::passTriggerPatterns(metFilters, "Flag_HBHENoiseFilter"                        )) return 6;
-
-/*
-    // HBHE filter needs to be complemented with , because it is messed up in data (see documentation below)
-    //if(!utils::passTriggerPatterns(metFilters, "Flag_HBHENoiseFilter"   )) return false; // Needs to be rerun for both data (prompt+reReco) and MC, for now.
-    // C++ conversion of the python FWLITE example: https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFiltersRun2
-
-    HcalNoiseSummary summary;
-    fwlite::Handle <HcalNoiseSummary> summaryHandle;
-    summaryHandle.getByLabel(ev, "hcalnoise");
-    if(summaryHandle.isValid()) summary=*summaryHandle;
-
-    //HBHE NOISE
-    if(summary.maxHPDHits() >= 17)return 6;
-    if(summary.maxHPDNoOtherHits() >= 10)return 7;
-    if( summary.maxZeros() >= 9e9) return 8;
-    if(summary.HasBadRBXRechitR45Loose())return 9;  //for 25ns only!  CHeck the recipe for 50ns.
-//    bool failCommon(summary.maxHPDHits() >= 17  || summary.maxHPDNoOtherHits() >= 10 || summary.maxZeros() >= 9e9 );
-    // IgnoreTS4TS5ifJetInLowBVRegion is always false, skipping.
-//    if((failCommon || summary.HasBadRBXRechitR45Loose() )) return 5;  //for 25ns only
-
-     //HBHE ISO NOISE
-     if(summary.numIsolatedNoiseChannels() >=10)return 10;
-     if(summary.isolatedNoiseSumE() >=50) return 11;
-     if(summary.isolatedNoiseSumEt() >=25) return 12;
-*/
-     return 0;
-}
 
   bool MetFilter::passMetFilter(const fwlite::Event& ev){
     return passMetFilterInt(ev)==0;

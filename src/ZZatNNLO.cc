@@ -1,4 +1,4 @@
-#include "UserCode/llvv_fwk/interface/ZZatNNLO.h"
+#include "UserCode/bsmhiggs_fwk/interface/ZZatNNLO.h"
 
 namespace ZZatNNLO
 {
@@ -10,7 +10,7 @@ namespace ZZatNNLO
 		TString name;
 		TString cmssw_path;
 		cmssw_path = getenv("CMSSW_BASE");
-		TString path = cmssw_path+"/src/UserCode/llvv_fwk/src/";
+		TString path = cmssw_path+"/src/UserCode/bsmhiggs_fwk/src/";
 		
 		if(dtag.Contains("ZZ")) name = path+"Corrections/ZZ_NNLOQCD.dat";
 		myReadFile.open(name);

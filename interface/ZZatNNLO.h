@@ -29,9 +29,9 @@
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 
-#include "UserCode/llvv_fwk/interface/MacroUtils.h"
-#include "UserCode/llvv_fwk/interface/LumiUtils.h"
-#include "UserCode/llvv_fwk/interface/SmartSelectionMonitor.h"
+#include "UserCode/bsmhiggs_fwk/interface/MacroUtils.h"
+#include "UserCode/bsmhiggs_fwk/interface/LumiUtils.h"
+#include "UserCode/bsmhiggs_fwk/interface/SmartSelectionMonitor.h"
 
 // Electron ID
 #include "RecoEgamma/ElectronIdentification/interface/VersionedPatElectronSelector.h"

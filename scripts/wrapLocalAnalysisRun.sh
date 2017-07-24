@@ -10,7 +10,8 @@ CMSSW=${SCRIPTPATH}/../../src
 cd $CMSSW
 export SCRAM_ARCH=$ARCH
 eval `scram r -sh`
-cd $CMSSW_BASE/src/UserCode/llvv_fwk
+cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/
 
 #run with the arguments passed
-localRun.sh $*
+echo $1 + $2
+$1 $2

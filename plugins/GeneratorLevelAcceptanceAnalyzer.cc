@@ -20,7 +20,7 @@
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 
-#include "UserCode/llvv_fwk/interface/MacroUtils.h"
+#include "UserCode/bsmhiggs_fwk/interface/MacroUtils.h"
 
 #include <TLorentzVector.h>
 #include <TH1.h>

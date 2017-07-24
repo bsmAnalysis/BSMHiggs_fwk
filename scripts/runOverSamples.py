@@ -4,7 +4,7 @@ import os,sys
 import json
 import optparse
 import commands
-from UserCode.llvv_fwk.storeTools_cff import fillFromStore
+from UserCode.bsmhiggs_fwk.storeTools_cff import fillFromStore
 import LaunchOnCondor
 
 usage = 'usage: %prog [options]'

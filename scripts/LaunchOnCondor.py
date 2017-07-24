@@ -10,8 +10,6 @@ import re
 
 CopyRights  = '####################################\n'
 CopyRights += '#        LaunchOnFarm Script       #\n'
-CopyRights += '#     Loic.quertenmont@cern.ch     #\n'
-CopyRights += '#            April 2010            #\n'
 CopyRights += '####################################\n'
 
 subTool = '' #will be automatically determined, if empty
