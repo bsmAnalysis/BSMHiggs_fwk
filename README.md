@@ -13,6 +13,13 @@ git clone -b Moriond17_gainSwitch_unc https://github.com/ECALELFS/ScalesSmearing
 cd $CMSSW_BASE/src
 scram b -j 8
 
+# Check out packages for Hbb tagging (https://twiki.cern.ch/twiki/bin/viewauth/CMS/Hbbtagging#8_0_X)
+setenv CMSSW_GIT_REFERENCE /cvmfs/cms.cern.ch/cmssw.git.daily
+git cms-init
+git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
+git fetch --tags btv-cmssw
+git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_8_0_21
+scram b -j8
 
 git clone -b svFit_2015Apr03 https://github.com/veelken/SVfit_standalone.git TauAnalysis/SVfitStandalone
 
