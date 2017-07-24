@@ -16,6 +16,14 @@ enum PhysicsObjects   { MET=0,JET=1,TOP=6,ELECTRON=11, MUON=13, TAU=15, GLUON=21
 enum LeptonChannels { UNKNOWN=0,MUMU=1,MU=2,EE=3,E=4,EMU=5,ETAU=6,MUTAU=7, GAMMA=22};
 
 
+struct ptsort: public std::binary_function<LorentzVector, LorentzVector, bool> 
+{
+  bool operator () (const LorentzVector & x, const LorentzVector & y) 
+  { 
+    return  (x.pt() > y.pt() ) ; 
+  }
+}; 
+
 
 class PhysicsObject : public LorentzVector {
 public :
@@ -153,15 +161,16 @@ typedef std::vector<PhysicsObject_Jet>    PhysicsObjectJetCollection;
 
 //
 struct PhysicsEvent_t {
-    int run,event,lumi;
-    int nvtx;
-
-    PhysicsObjectLeptonCollection leptons;
-    PhysicsObjectJetCollection jets;
-    LorentzVector met, metNoHF;
-
+  int run,event,lumi;
+  int nvtx;
+  
+  PhysicsObjectLeptonCollection leptons;
+  PhysicsObjectJetCollection jets;
+  LorentzVector met, metNoHF;
+  
+  PhysicsObjectCollection genparticles;
   PhysicsObjectCollection genneutrinos,genleptons,genWIMPs,genHiggs,genpartons;
-    PhysicsObjectCollection genjets;
+  PhysicsObjectCollection genjets;
 };
 
 

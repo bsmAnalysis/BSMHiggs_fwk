@@ -248,6 +248,25 @@ int main(int argc, char* argv[])
 
     SmartSelectionMonitor mon;
 
+    // GEN level kinematics
+    mon.addHistogram( new TH1F( "higgsMass",";m_{h} [GeV];Events",1000,0.,200.) );
+    mon.addHistogram( new TH1F( "higgsPt",";p_{T}^{h} [GeV];Events",150,0,1500));
+    mon.addHistogram( new TH1F( "a1mass",";m_{a1} [GeV];Events",800,0.,200.) );
+    mon.addHistogram( new TH1F( "a2mass",";m_{a2} [GeV];Events",800,0.,200.) );  
+    mon.addHistogram( new TH1F( "a1pt",";p_{T}^{a1};Events",150,0,1500));
+    mon.addHistogram( new TH1F( "a2pt",";p_{T}^{a2};Events",150,0,1500));
+    mon.addHistogram( new TH1F( "aabalance",";p_{T}^{a1}/p_{T}^{a2};Events",25,0,2.5));
+    mon.addHistogram( new TH1F( "a1DR",";#Delta R1(b,#bar{b});Events",100,0.,5.));
+    mon.addHistogram( new TH1F( "a2DR",";#Delta R2(b,#bar{b});Events",100,0.,5.)); 
+    mon.addHistogram( new TH1F( "dphiaa",";#Delta #phi(a1,a2);Events",40, 0, 4) ); 
+    mon.addHistogram( new TH1F( "aaDR",";#Delta R(a_{1},a_{2});Events",100,0.,5.)); 
+
+    mon.addHistogram( new TH1F( "b1pt",";p_{T}^{b1};Events",150,0,1500));   
+    mon.addHistogram( new TH1F( "b2pt",";p_{T}^{b2};Events",150,0,1500)); 
+    mon.addHistogram( new TH1F( "b3pt",";p_{T}^{b3};Events",150,0,1500)); 
+    mon.addHistogram( new TH1F( "b4pt",";p_{T}^{b4};Events",150,0,1500)); 
+
+    // RECO level
 
     TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";;Events", 10,0,10) );
     h->GetXaxis()->SetBinLabel(1,"Trigger && 2 leptons");
@@ -526,9 +545,115 @@ int main(int argc, char* argv[])
         //####################  Generator Level Reweighting  ######################
         //#########################################################################
 
-	
+	if (isSignal) {
+
+	  LorentzVector higgs(0,0,0,0); 
+	  LorentzVector a1(0,0,0,0);
+	  LorentzVector a2(0,0,0,0);
+
+	  // h->aa->4b (all)
+	  PhysicsObjectCollection genbs;
+	  PhysicsObjectCollection genbFromA1;
+	  PhysicsObjectCollection genbFromA2;
+	  
+	  /*
+	  // h->aa->4b (acceptance)
+	  LorentzVector acchiggs(0,0,0,0);
+
+	  PhysicsObjectCollection accbFromA1;
+	  PhysicsObjectCollection accbFromA2;
+	  */
+	  int as=0; // number of a-pseudoscalar
+	  for (size_t i=0; i<phys.genHiggs.size(); i++) {
+	    // raw level distributions for the Higgses
+	    if (phys.genHiggs[i].id==35) { 
+	      mon.fillHisto("higgsMass","raw",phys.genHiggs[i].mass(),weight);
+	      mon.fillHisto("higgsMass","raw",phys.genHiggs[i].pt(),weight);
+	    }
+
+	    if (phys.genHiggs[i].id==36){
+	      if (as==0) { a1 += phys.genHiggs[i]; as++; }
+	      else { a2 += phys.genHiggs[i]; }
+	    }
+	  }
+  
+	  int ibp=0; int ibm=0; //all
+	  //	  int jbp=0; int jbm=0; //acceptance
+
+	  for (size_t i=0; i<phys.genpartons.size(); i++) {
+	    if ( abs(phys.genpartons[i].id)==5 ) { 
+	      genbs.push_back(phys.genpartons[i]);
+	      higgs += phys.genpartons[i]; 
+	    } 
+	    if (phys.genpartons[i].id==5) {
+	      if (ibp==0) { genbFromA1.push_back(phys.genpartons[i]); ibp++; }
+	      else { genbFromA2.push_back(phys.genpartons[i]); ibp++; }
+	    }
+	    if (phys.genpartons[i].id==-5 && ibp>0) {
+	      if (phys.genpartons[i].momidx==genbFromA1[0].momidx) {genbFromA1.push_back(phys.genpartons[i]); ibm++; } 
+	      else if (phys.genpartons[i].momidx==genbFromA2[0].momidx) {genbFromA2.push_back(phys.genpartons[i]); ibm++; } 
+	    }
+	    /*
+	    // Apply acceptance cuts and repeat
+	    if (phys.genpartons[i].pt()<15 || fabs(phys.genpartons[i].eta())>2.5) continue;
+	    if ( abs(phys.genpartons[i].id)==5 ) {
+	      acchiggs += phys.genpartons[i]; 
+	    }
+	    if (phys.genpartons[i].id==5) {
+	      if (jbp==0) { accbFromA1.push_back(phys.genpartons[i]); jbp++; } 
+	      else { accbFromA2.push_back(phys.genpartons[i]); jbp++; }
+	    }
+	    if (phys.genpartons[i].id==-5 && jbp>0) { 
+	      if (phys.genpartons[i].momidx==accbFromA1[0].momidx) {accbFromA1.push_back(phys.genpartons[i]); jbm++; } 
+	      else if (phys.genpartons[i].momidx==accbFromA2[0].momidx) {accbFromA2.push_back(phys.genpartons[i]); jbm++; } 
+	    }
+	    */
+	  }
+	  // sort partons in pt                                                                                                                                                                                   
+	  sort(genbs.begin(), genbs.end(), ptsort());
+
+	  // all
+	  if (ibp>=2 && ibm>=2) {
+
+	    // Higgs pT
+	    mon.fillHisto("higgsMass","all",higgs.mass(),weight);
+	    mon.fillHisto("higgsPt","all",higgs.pt(),weight);
+
+	    mon.fillHisto("a1mass","raw",a1.mass(),weight); mon.fillHisto("a2mass","raw",a2.mass(),weight);
+
+	    double aaDR=deltaR(a1,a2);
+	    mon.fillHisto("aaDR","all",aaDR,weight);  
+
+	    double mass1=(genbFromA1[0]+genbFromA1[1]).mass();
+	    double mass2=(genbFromA2[0]+genbFromA2[1]).mass();
+
+	    mon.fillHisto("a1mass","all",max(mass1,mass2),weight);mon.fillHisto("a2mass","all",min(mass1,mass2),weight);
+	    
+	    double pt1,pt2; double dR1,dR2;
+  
+	    if(mass1>mass2) {  
+	      pt1=(genbFromA1[0]+genbFromA1[1]).pt();pt2=(genbFromA2[0]+genbFromA2[1]).pt();
+	      dR1=deltaR(genbFromA1[0],genbFromA1[1]);dR2=deltaR(genbFromA2[0],genbFromA2[1]);
+	    } else {
+	      pt1=(genbFromA2[0]+genbFromA2[1]).pt();pt2=(genbFromA1[0]+genbFromA1[1]).pt();
+	      dR2=deltaR(genbFromA1[0],genbFromA1[1]);dR1=deltaR(genbFromA2[0],genbFromA2[1]);
+	    }
+	    mon.fillHisto("a1pt","all",pt1,weight);mon.fillHisto("a2pt","all",pt2,weight);
+	    mon.fillHisto("a1DR","all",dR1,weight);mon.fillHisto("a2DR","all",dR2,weight);
+
+	    // pT of the 4bs
+	    if (genbs.size()>=4) {
+	      mon.fillHisto("b1pt","all",genbs[0].pt(),weight);
+	      mon.fillHisto("b2pt","all",genbs[1].pt(),weight);
+	      mon.fillHisto("b3pt","all",genbs[2].pt(),weight);
+	      mon.fillHisto("b4pt","all",genbs[3].pt(),weight);
+	    }
 
 
+	  }
+	  else {std::cout << "I did not find 4bs from aa decays!" << std::endl;}
+
+	}
 
         //#########################################################################
         //#####################      Objects Selection       ######################
@@ -582,7 +707,7 @@ int main(int argc, char* argv[])
 	// sort goodLeptons in pT
 	
 
-	if(nGoodLeptons<1) continue; // at least 1 tight leptons
+	//	if(nGoodLeptons<1) continue; // at least 1 tight leptons
 	/*
         float _MASSDIF_(999.);
         int id1(0),id2(0);

@@ -106,8 +106,9 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
     //generator level particles
     for(Int_t ipart=0; ipart<ev.nmcparticles; ipart++) {
         LorentzVector p4(ev.mc_px[ipart],ev.mc_py[ipart],ev.mc_pz[ipart],ev.mc_en[ipart]);
+	phys.genparticles.push_back(PhysicsObject(p4,ev.mc_id[ipart],ev.mc_mom[ipart],ev.mc_momidx[ipart]) );  
         if(ev.mc_status[ipart]==2 && abs(ev.mc_id[ipart])==15) phys.genleptons.push_back( PhysicsObject(p4,ev.mc_id[ipart],ev.mc_mom[ipart],ev.mc_momidx[ipart]) );
-        if(ev.mc_status[ipart]!=1) continue;
+	//        if(ev.mc_status[ipart]!=1) continue;
         switch( ev.mc_id[ipart] ) {
         case 12:
         case -12:
