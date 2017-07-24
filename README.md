@@ -23,7 +23,8 @@ scram b -j8
 
 git clone -b svFit_2015Apr03 https://github.com/veelken/SVfit_standalone.git TauAnalysis/SVfitStandalone
 
-git clone https://github.com/bsmAnalysis/bsmhiggs_fwk.git UserCode/bsmhiggs_fwk
+git clone https://github.com/georgia14/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
+#git clone https://github.com/bsmAnalysis/bsmhiggs_fwk.git UserCode/bsmhiggs_fwk
 cd UserCode/bsmhiggs_fwk
 git checkout -b modified #copy the branch to a new one to host future modifications (ease pull request and code merging)
 cd ../..
@@ -64,9 +65,9 @@ We have decided to use pull-request mode for the master development.
 - Make a clean git clone in the UserCode directory
 ```
 cd $CMSSW_BASE/src/UserCode 
-git clone git@github.com:yourgithubid/bsmhiggs_fwk.git bsmhiggs_fwk
+git clone git@github.com:yourgithubid/BSMHiggs_fwk.git bsmhiggs_fwk
 cd bsmhiggs_fwk
-git remote add upstream git@github.com:bsmAnalysis/bsmhiggs_fwk.git
+git remote add upstream git@github.com:bsmAnalysis/BSMHiggs_fwk.git
 git remote update
 git merge upstream/master
 ```
