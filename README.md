@@ -1,13 +1,4 @@
-# Installation for 76X (2015)
-```bash 
-export SCRAM_ARCH=slc6_amd64_gcc493
-scramv1 project CMSSW CMSSW_7_6_3_patch2
-cd CMSSW_7_6_3_patch2/src/
-cmsenv
-wget -O - --no-check-certificate https://raw.githubusercontent.com/cms2l2v/2l2v_fwk/master/TAGS.txt | sh
-```
-
-# Installation for 80X (2017) => was 8_0_14 (2016)
+# Installation for 80X (2017) 
 
 ```bash
 export SCRAM_ARCH=slc6_amd64_gcc530
@@ -25,21 +16,15 @@ scram b -j 8
 
 git clone -b svFit_2015Apr03 https://github.com/veelken/SVfit_standalone.git TauAnalysis/SVfitStandalone
 
-git clone https://github.com/cms2l2v/2l2v_fwk.git UserCode/llvv_fwk
-cd UserCode/llvv_fwk
+git clone https://github.com/bsmAnalysis/bsmhiggs_fwk.git UserCode/bsmhiggs_fwk
+cd UserCode/bsmhiggs_fwk
 git checkout -b modified #copy the branch to a new one to host future modifications (ease pull request and code merging)
 cd ../..
 
 #since HiggsAnalysis is broken in 80X, copy one of the missing file to allow compilation and change some paths
-wget https://raw.githubusercontent.com/cms-analysis/HiggsAnalysis-CombinedLimit/74x-root6/src/th1fmorph.cc -P UserCode/llvv_fwk/src/
-wget https://raw.githubusercontent.com/cms-analysis/HiggsAnalysis-CombinedLimit/74x-root6/interface/th1fmorph.h -P UserCode/llvv_fwk/interface/
-find UserCode/llvv_fwk/ -type f -name '*.cc' -exec sed -i -e 's/HiggsAnalysis\/CombinedLimit\/interface\/th1fmorph.h/UserCode\/llvv_fwk\/interface\/th1fmorph.h/g' {} \;
-
-#Step to use MELA
-git clone https://github.com/cms-analysis/HiggsAnalysis-ZZMatrixElement.git ZZMatrixElement
-cd ZZMatrixElement
-sh setup.sh -j 12
-cd ..
+wget https://raw.githubusercontent.com/cms-analysis/HiggsAnalysis-CombinedLimit/74x-root6/src/th1fmorph.cc -P UserCode/bsmhiggs_fwk/src/
+wget https://raw.githubusercontent.com/cms-analysis/HiggsAnalysis-CombinedLimit/74x-root6/interface/th1fmorph.h -P UserCode/bsmhiggs_fwk/interface/
+find UserCode/bsmhiggs_fwk/ -type f -name '*.cc' -exec sed -i -e 's/HiggsAnalysis\/CombinedLimit\/interface\/th1fmorph.h/UserCode\/bsmhiggs_fwk\/interface\/th1fmorph.h/g' {} \;
 
 #And compile
 scramv1 b -j 16 
@@ -53,14 +38,14 @@ Please before doing your PR, be sure to:
 ```bash 
 #TO DO before a PR
 cd $CMSSW_BASE/src
-find UserCode/llvv_fwk/ -type f -name '*.cc' -exec sed -i -e 's/UserCode\/llvv_fwk\/interface\/th1fmorph.h/HiggsAnalysis\/CombinedLimit\/interface\/th1fmorph.h/g' {} \;
+find UserCode/bsmhiggs_fwk/ -type f -name '*.cc' -exec sed -i -e 's/UserCode\/bsmhiggs_fwk\/interface\/th1fmorph.h/HiggsAnalysis\/CombinedLimit\/interface\/th1fmorph.h/g' {} \;
 ```
  - then you can make your PR
  - if you want to continue developing, don't forget to reverse this once again:
 ```bash 
 #TO DO after a PR to be able to continue to work
 cd $CMSSW_BASE/src
-find UserCode/llvv_fwk/ -type f -name '*.cc' -exec sed -i -e 's/HiggsAnalysis\/CombinedLimit\/interface\/th1fmorph.h/UserCode\/llvv_fwk\/interface\/th1fmorph.h/g' {} \;
+find UserCode/bsmhiggs_fwk/ -type f -name '*.cc' -exec sed -i -e 's/HiggsAnalysis\/CombinedLimit\/interface\/th1fmorph.h/UserCode\/bsmhiggs_fwk\/interface\/th1fmorph.h/g' {} \;
 ```
 
 
@@ -72,9 +57,9 @@ We have decided to use pull-request mode for the master development.
 - Make a clean git clone in the UserCode directory
 ```
 cd $CMSSW_BASE/src/UserCode 
-git clone git@github.com:yourgithubid/2l2v_fwk.git llvv_fwk
-cd llvv_fwk
-git remote add upstream git@github.com:cms2l2v/2l2v_fwk.git
+git clone git@github.com:yourgithubid/bsmhiggs_fwk.git bsmhiggs_fwk
+cd bsmhiggs_fwk
+git remote add upstream git@github.com:bsmAnalysis/bsmhiggs_fwk.git
 git remote update
 git merge upstream/master
 ```
@@ -87,11 +72,10 @@ git push
 
 
 # For creating private samples
-Just use official recipe and produce MINIAOD samples in 76X
 
 
 # Analysing
-See example files in UserCode/llvv_fwk/test/hzz2l2nu/ Executing the
+See example files in UserCode/bsmhiggs_fwk/test/haa4b/ Executing the
 file 'submit.sh' will run the analysis on all samples defined in
 'samples.json'.
 
@@ -109,6 +93,6 @@ runLocalAnalysisOverSamples.py -e my_exe -j data/my_samples.json -d my_input_dir
 
  The easiest is however to create a submit.sh script in the directory
  of your analysis.  The executable can also be added in the
- UserCode/llvv_fwk/test/hzz2l2nu/bin directory (also add it to the
+ UserCode/bsmhiggs_fwk/test/haa4b/bin directory (also add it to the
  Buildfile there)
 
