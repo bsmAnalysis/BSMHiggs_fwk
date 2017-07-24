@@ -194,7 +194,7 @@ class ShapeData_t
 	    TH1* statU=(TH1 *)h->Clone(TString(h->GetName())+"StatU"+ibintxt);//  statU->Reset();
 	    TH1* statD=(TH1 *)h->Clone(TString(h->GetName())+"StatD"+ibintxt);//  statD->Reset();           
 
-	    statU->SetBinContent(ibin, std::max(0.0, h_InstrMET_Up_gammaStats->GetBinContent(ibin)));   
+	    statU->SetBinContent(ibin, std::max(0.0, h_InstrMET_Up_gammaStats->GetBinContent(ibin))>0 ? h_InstrMET_Up_gammaStats->GetBinContent(ibin) : 0.115);
 	    statD->SetBinContent(ibin, std::max(0.0, h_InstrMET_Down_gammaStats->GetBinContent(ibin))); 
 	    uncShape[prefix+"stat"+suffix+ibintxt+suffix2+"Up"  ] = statU;
 	    uncShape[prefix+"stat"+suffix+ibintxt+suffix2+"Down"] = statD;
@@ -674,8 +674,6 @@ int main(int argc, char* argv[])
   }
 
 
-  //allInfo.addInstrMetSyst(NULL, selCh,"gamma",histo);
-  allInfo.addInstrMetSyst_2017(selCh,histo);
 
 
 
@@ -707,6 +705,9 @@ int main(int argc, char* argv[])
 
   //extrapolate backgrounds toward higher mt/met region to make sure that there is no empty bins
   if(shape && BackExtrapol)allInfo.rebinMainHisto(histo.Data());
+
+  // add the syst. on the Instr MET 
+  allInfo.addInstrMetSyst_2017(selCh,histo);
 
   //drop backgrounds with rate<1%
   allInfo.dropSmallBckgProc(selCh, histo.Data(), dropBckgBelow);
@@ -1910,8 +1911,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
         //Id+Trigger efficiencies combined
         if(!it->second.isData){
-          if(chbin.Contains("ee"  ))  shapeInfo.uncScale["CMS_eff_e"] = integral*0.035437;
-          if(chbin.Contains("mumu"))  shapeInfo.uncScale["CMS_eff_m"] = integral*0.030431;
+          if(chbin.Contains("ee"  ))  shapeInfo.uncScale["CMS_eff_e"] = integral*0.072124;
+          if(chbin.Contains("mumu"))  shapeInfo.uncScale["CMS_eff_m"] = integral*0.061788;
         }
 
         //uncertainties to be applied only in higgs analyses
@@ -2471,10 +2472,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         //remove all syst uncertainty
         chMC->second.shapes[mainHisto.Data()].clearSyst();
         //add syst uncertainty                 
-				chMC->second.shapes[mainHisto.Data()].uncShape[string("_CMS_hzz2l2v_sys_zll") + it->second.shortName+systpostfix.Data()+"Up"] = h_InstrMET_Up_allExceptGammaStats;
-
-        chMC->second.shapes[mainHisto.Data()].uncShape[string("_CMS_hzz2l2v_sys_zll") + it->second.shortName+systpostfix.Data()+"Down"] = h_InstrMET_Down_allExceptGammaStats;
-     
+        chMC->second.shapes[mainHisto.Data()].uncShape[string("_CMS_hzz2l2v_sys_"+chMC->second.bin+"_zll") + it->second.shortName+systpostfix.Data()+"Up"] = h_InstrMET_Up_allExceptGammaStats;
+        chMC->second.shapes[mainHisto.Data()].uncShape[string("_CMS_hzz2l2v_sys_"+chMC->second.bin+"_zll") + it->second.shortName+systpostfix.Data()+"Down"] =h_InstrMET_Down_allExceptGammaStats; 
      }
     }
     //Recompute the total background with correct uncertainties
@@ -2801,7 +2800,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    TString jetBin = ch->second.bin.c_str();
 
           if(jetBin.Contains("vbf")){
-            double xbins[] = {150, 225, 300, 375, 450, 525, 600, 725,  1100, 3000};
+            double xbins[] = {150, 225, 300, 375, 450, 600, 750, 1100, 3000};
             int nbins=sizeof(xbins)/sizeof(double);
             unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);
             utils::root::fixExtremities(unc->second, false, true);
