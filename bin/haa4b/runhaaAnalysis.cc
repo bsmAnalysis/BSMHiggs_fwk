@@ -148,9 +148,11 @@ int main(int argc, char* argv[])
     bool isMC_ttbar = isMC && (string(url.Data()).find("TeV_TT")  != string::npos);
     bool isMC_stop  = isMC && (string(url.Data()).find("TeV_SingleT")  != string::npos);
 
-    bool isMC_haa4b = isMC && (string(url.Data()).find("Wh_amass")  != string::npos); 
+    bool isMC_Wh_haa4b = isMC && (string(url.Data()).find("Wh_amass")  != string::npos); 
+    bool isMC_Zh_haa4b = isMC && (string(url.Data()).find("Zh_amass")  != string::npos); 
+    bool isMC_VBF_haa4b = isMC && (string(url.Data()).find("VBF_amass")  != string::npos); 
 
-    bool isSignal = (isMC_haa4b );
+    bool isSignal = (isMC_Wh_haa4b || isMC_Zh_haa4b || isMC_VBF_haa4b );
 
 
     //b-tagging: beff and leff must be derived from the MC sample using the discriminator vs flavor
@@ -267,7 +269,7 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "b4pt",";p_{T}^{b4};Events",150,0,1500)); 
 
     // RECO level
-
+    /*
     TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";;Events", 10,0,10) );
     h->GetXaxis()->SetBinLabel(1,"Trigger && 2 leptons");
     h->GetXaxis()->SetBinLabel(2,"|#it{m}_{ll}-#it{m}_{Z}|<15");
@@ -302,7 +304,7 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "leadlep_eta_raw",";Leading lepton #eta^{l};Events", 52,-2.6,2.6) );
     mon.addHistogram( new TH1F( "trailep_pt_raw", ";Trailing lepton #it{p}_{T}^{l};Events", 50,0,500) );
     mon.addHistogram( new TH1F( "trailep_eta_raw",";Trailing lepton #eta^{l};Events", 52,-2.6,2.6) );
-
+    */
 
     mon.addHistogram( new TH1F( "jet_pt_raw", ";all jet #it{p}_{T}^{j};Events", 50,0,500) );
     mon.addHistogram( new TH1F( "jet_eta_raw",";all jet #eta^{j};Events", 52,-2.6,2.6) );
@@ -334,7 +336,7 @@ int main(int argc, char* argv[])
         h3->GetXaxis()->SetBinLabel(ibin,label);
     }
 
-
+    /*
     // preselection plots
     double METBins[]= {0,10,20,30,40,50,60,70,80,90,100,120,140,160,180,200,250,300,350,400,500};
     const int nBinsMET = sizeof(METBins)/sizeof(double) - 1;
@@ -378,7 +380,7 @@ int main(int argc, char* argv[])
     h=(TH1F *)mon.addHistogram( new TH1F ("acceptance", ";;Events", 2,0,2) );
     h->GetXaxis()->SetBinLabel(1,"Gen");
     h->GetXaxis()->SetBinLabel(2,"Gen Acc");
-
+    */
     // btaging efficiency
 
     //#################################################
@@ -547,6 +549,8 @@ int main(int argc, char* argv[])
 
 	if (isSignal) {
 
+	  weight=1.0;
+
 	  LorentzVector higgs(0,0,0,0); 
 	  LorentzVector a1(0,0,0,0);
 	  LorentzVector a2(0,0,0,0);
@@ -555,14 +559,7 @@ int main(int argc, char* argv[])
 	  PhysicsObjectCollection genbs;
 	  PhysicsObjectCollection genbFromA1;
 	  PhysicsObjectCollection genbFromA2;
-	  
-	  /*
-	  // h->aa->4b (acceptance)
-	  LorentzVector acchiggs(0,0,0,0);
 
-	  PhysicsObjectCollection accbFromA1;
-	  PhysicsObjectCollection accbFromA2;
-	  */
 	  int as=0; // number of a-pseudoscalar
 	  for (size_t i=0; i<phys.genHiggs.size(); i++) {
 	    // raw level distributions for the Higgses
@@ -571,45 +568,58 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("higgsMass","raw",phys.genHiggs[i].pt(),weight);
 	    }
 
-	    if (phys.genHiggs[i].id==36){
-	      if (as==0) { a1 += phys.genHiggs[i]; as++; }
-	      else { a2 += phys.genHiggs[i]; }
+	    if (abs(phys.genHiggs[i].id)==36){
+	      if (as==0) { 
+		a1 += phys.genHiggs[i]; as++; 
+	      }
+	      else { 
+		a2 += phys.genHiggs[i]; 
+	      }
 	    }
 	  }
   
 	  int ibp=0; int ibm=0; //all
-	  //	  int jbp=0; int jbm=0; //acceptance
+
+	  //#### Find a1 and a2 positions in mcparticle list
+	  //#### for Wh, Zh : 4 and 5 ####################### 
+	  //#### for VBF: 5 and 6 ###########################
+
+	  int pos1=4; int pos2=5;
+	  if (isMC_Wh_haa4b || isMC_Zh_haa4b ) {
+	    pos1=4; pos2=5;
+	  } else if (isMC_VBF_haa4b) {
+	    pos1=5; pos2=6;
+	  }
 
 	  for (size_t i=0; i<phys.genpartons.size(); i++) {
+	    if (phys.genpartons[i].momid!=36) continue;
+
+	    // Apply acceptance cuts
+	    //	    if (phys.genpartons[i].pt()<15 || fabs(phys.genpartons[i].eta())>2.5) continue; 
+	    
 	    if ( abs(phys.genpartons[i].id)==5 ) { 
 	      genbs.push_back(phys.genpartons[i]);
 	      higgs += phys.genpartons[i]; 
 	    } 
+
 	    if (phys.genpartons[i].id==5) {
-	      if (ibp==0) { genbFromA1.push_back(phys.genpartons[i]); ibp++; }
-	      else { genbFromA2.push_back(phys.genpartons[i]); ibp++; }
+	      if (phys.genpartons[i].momidx==pos1) { 
+		genbFromA1.push_back(phys.genpartons[i]); ibp++; 
+	      } else if (phys.genpartons[i].momidx==pos2) { 
+		genbFromA2.push_back(phys.genpartons[i]); ibp++; 
+	      }
 	    }
-	    if (phys.genpartons[i].id==-5 && ibp>0) {
-	      if (phys.genpartons[i].momidx==genbFromA1[0].momidx) {genbFromA1.push_back(phys.genpartons[i]); ibm++; } 
-	      else if (phys.genpartons[i].momidx==genbFromA2[0].momidx) {genbFromA2.push_back(phys.genpartons[i]); ibm++; } 
+	    if (phys.genpartons[i].id==-5) {
+	      if (phys.genpartons[i].momidx==pos1) {  
+		genbFromA1.push_back(phys.genpartons[i]); ibm++; 
+	      } else if (phys.genpartons[i].momidx==pos2) { 
+		genbFromA2.push_back(phys.genpartons[i]); ibm++; 
+	      } 
 	    }
-	    /*
-	    // Apply acceptance cuts and repeat
-	    if (phys.genpartons[i].pt()<15 || fabs(phys.genpartons[i].eta())>2.5) continue;
-	    if ( abs(phys.genpartons[i].id)==5 ) {
-	      acchiggs += phys.genpartons[i]; 
-	    }
-	    if (phys.genpartons[i].id==5) {
-	      if (jbp==0) { accbFromA1.push_back(phys.genpartons[i]); jbp++; } 
-	      else { accbFromA2.push_back(phys.genpartons[i]); jbp++; }
-	    }
-	    if (phys.genpartons[i].id==-5 && jbp>0) { 
-	      if (phys.genpartons[i].momidx==accbFromA1[0].momidx) {accbFromA1.push_back(phys.genpartons[i]); jbm++; } 
-	      else if (phys.genpartons[i].momidx==accbFromA2[0].momidx) {accbFromA2.push_back(phys.genpartons[i]); jbm++; } 
-	    }
-	    */
+
+	    if (ibp==2 && ibm==2) break;
 	  }
-	  // sort partons in pt                                                                                                                                                                                   
+	  //sort gen b's in pt
 	  sort(genbs.begin(), genbs.end(), ptsort());
 
 	  // all
@@ -621,8 +631,10 @@ int main(int argc, char* argv[])
 
 	    mon.fillHisto("a1mass","raw",a1.mass(),weight); mon.fillHisto("a2mass","raw",a2.mass(),weight);
 
-	    double aaDR=deltaR(a1,a2);
-	    mon.fillHisto("aaDR","all",aaDR,weight);  
+	    double raw_aaDR=deltaR(a1,a2);
+	    mon.fillHisto("aaDR","raw",raw_aaDR,weight);  
+	    double aaDR=deltaR( (genbFromA1[0]+genbFromA1[1]),(genbFromA2[0]+genbFromA2[1]) );
+	    mon.fillHisto("aaDR","all",aaDR,weight);
 
 	    double mass1=(genbFromA1[0]+genbFromA1[1]).mass();
 	    double mass2=(genbFromA2[0]+genbFromA2[1]).mass();
@@ -651,7 +663,7 @@ int main(int argc, char* argv[])
 
 
 	  }
-	  else {std::cout << "I did not find 4bs from aa decays!" << std::endl;}
+	  else {std::cout << "Not all 4-bs found in aa decays" << std::endl;}
 
 	}
 
