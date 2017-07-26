@@ -23,8 +23,7 @@ scram b -j8
 
 git clone -b svFit_2015Apr03 https://github.com/veelken/SVfit_standalone.git TauAnalysis/SVfitStandalone
 
-git clone https://github.com/georgia14/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
-#git clone https://github.com/bsmAnalysis/bsmhiggs_fwk.git UserCode/bsmhiggs_fwk
+git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
 cd UserCode/bsmhiggs_fwk
 git checkout -b modified #copy the branch to a new one to host future modifications (ease pull request and code merging)
 cd ../..
