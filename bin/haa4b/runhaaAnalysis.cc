@@ -263,6 +263,9 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "dphiaa",";#Delta #phi(a1,a2);Events",40, 0, 4) ); 
     mon.addHistogram( new TH1F( "aaDR",";#Delta R(a_{1},a_{2});Events",100,0.,5.)); 
 
+    mon.addHistogram( new TH2F( "a1DRvspT",";p_{T}^{a1};#Delta R(bb_{1})",100,0,800,100,0.,5.) );
+    mon.addHistogram( new TH2F( "a2DRvspT",";p_{T}^{a2};#Delta R(bb_{2})",100,0,800,100,0.,5.) );
+
     mon.addHistogram( new TH1F( "b1pt",";p_{T}^{b1};Events",150,0,1500));   
     mon.addHistogram( new TH1F( "b2pt",";p_{T}^{b2};Events",150,0,1500)); 
     mon.addHistogram( new TH1F( "b3pt",";p_{T}^{b3};Events",150,0,1500)); 
@@ -642,7 +645,9 @@ int main(int argc, char* argv[])
 	    mon.fillHisto("a1mass","all",max(mass1,mass2),weight);mon.fillHisto("a2mass","all",min(mass1,mass2),weight);
 	    
 	    double pt1,pt2; double dR1,dR2;
-  
+	    double ptmin1=min(genbFromA1[0].pt(),genbFromA1[1].pt());
+	    double ptmin2=min(genbFromA2[0].pt(),genbFromA2[1].pt()); 
+
 	    if(mass1>mass2) {  
 	      pt1=(genbFromA1[0]+genbFromA1[1]).pt();pt2=(genbFromA2[0]+genbFromA2[1]).pt();
 	      dR1=deltaR(genbFromA1[0],genbFromA1[1]);dR2=deltaR(genbFromA2[0],genbFromA2[1]);
@@ -652,6 +657,9 @@ int main(int argc, char* argv[])
 	    }
 	    mon.fillHisto("a1pt","all",pt1,weight);mon.fillHisto("a2pt","all",pt2,weight);
 	    mon.fillHisto("a1DR","all",dR1,weight);mon.fillHisto("a2DR","all",dR2,weight);
+
+	    mon.fillHisto("a1DRvspT","all",ptmin1,deltaR(genbFromA1[0],genbFromA1[1]),weight);
+	    mon.fillHisto("a2DRvspT","all",ptmin2,deltaR(genbFromA2[0],genbFromA2[1]),weight);
 
 	    // pT of the 4bs
 	    if (genbs.size()>=4) {
