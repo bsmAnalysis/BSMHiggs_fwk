@@ -84,14 +84,10 @@ int SavePart(int thePar, TLorentzVector &MyLVector) {
   if (thePar == 7) {
     b1Vector_rest = MyLVector;
   }
-
   
   return 1;
 };
 
-//struct ptsort: public std::binary_function<TLorentzVector, TLorentzVector, bool> 
-//{
-//bool operator () (const TLorentzVector & x, const TLorentzVector & y) 
 bool ptsort(const TLorentzVector & x, const TLorentzVector & y) 
 { 
   return  (x.Pt() > y.Pt() ) ; 
@@ -126,10 +122,7 @@ void Rotatez(TLorentzVector &pvect, TLorentzVector &pvect1){
 
   double mass = pvect.M();
   double mass1 = pvect1.M();
-/*
-  cout << "  before, pvect: " << pvect1.Px() << " " << pvect1.Py() 
-                  << " " << pvect1.Pz()<< " " << pvect1.E() << '\n';
-*/
+
   pxy = pvect.Px()*pvect.Px() + pvect.Py()*pvect.Py();
   if (pxy > 0.) {
    pmod = pxy + pvect.Pz()*pvect.Pz();
@@ -156,12 +149,6 @@ void Rotatez(TLorentzVector &pvect, TLorentzVector &pvect1){
                  + pvect1.Pz()*pvect1.Pz() + mass1*mass1) );
   }
 }
-/*
-  cout << "  rest frame after,  pvect: " << pvect1.Px() << " " << pvect1.Py() 
-                  << " " << pvect1.Pz() << " " << pvect1.E() << '\n';
-*/
-  //return;
-
 
 
 void DecayTwoBody(Double_t &SMMass, Double_t &SusyMass, TLorentzVector &ParentLabLVector, TLorentzVector &ParentParLVector, int RunNumber)
@@ -190,7 +177,6 @@ void DecayTwoBody(Double_t &SMMass, Double_t &SusyMass, TLorentzVector &ParentLa
 	costh = 2.*(Number1_th.Uniform(0,1) - 0.5);
 	sinth = sqrt(1 - costh*costh);
 
-	//phi = TMath::Pi()*Number1_phi.Uniform(0,1);
 	phi = 2.*TMath::Pi()*Number1_phi.Uniform(0,1);
 	cosphi = TMath::Cos(phi);
 	sinphi = sqrt(1-cosphi*cosphi);
@@ -198,7 +184,6 @@ void DecayTwoBody(Double_t &SMMass, Double_t &SusyMass, TLorentzVector &ParentLa
 	costh = 2.*(Number2_th.Uniform(0,1) - 0.5);
 	sinth = sqrt(1 - costh*costh);
 
-	//phi = TMath::Pi()*Number2_phi.Uniform(0,1);
 	phi = 2.*TMath::Pi()*Number2_phi.Uniform(0,1);
 	cosphi = TMath::Cos(phi);
 	sinphi = sqrt(1-cosphi*cosphi);
@@ -206,7 +191,6 @@ void DecayTwoBody(Double_t &SMMass, Double_t &SusyMass, TLorentzVector &ParentLa
 	costh = 2.*(Number3_th.Uniform(0,1) - 0.5);
 	sinth = sqrt(1 - costh*costh);
 
-	//phi = TMath::Pi()*Number3_phi.Uniform(0,1);
 	phi = 2.*TMath::Pi()*Number3_phi.Uniform(0,1);
 	cosphi = TMath::Cos(phi);
 	sinphi = sqrt(1-cosphi*cosphi);
@@ -231,10 +215,6 @@ void DecayTwoBody(Double_t &SMMass, Double_t &SusyMass, TLorentzVector &ParentLa
 
     SMLVector.SetPxPyPzE(SMArray[0], SMArray[1], SMArray[2], SMArray[3]);
     SusyLVector.SetPxPyPzE(SusyArray[0], SusyArray[1], SusyArray[2], SusyArray[3]);
-/*
-    SMLVector.SetPxPyPzE( -Prest*sinth*cosphi, -Prest*sinth*sinphi, -Prest*costh, sqrt(Prest*Prest + SMMass*SMMass));
-    SusyLVector.SetPxPyPzE(Prest*sinth*cosphi, Prest*sinth*sinphi, Prest*costh, sqrt(Prest*Prest + SusyMass*SusyMass));
-*/
 
 // Lorentz transform to the lab frame:
 //  first rotate to the same coordinate frame as the parent
@@ -277,8 +257,8 @@ void DecayTwoBody(Double_t &SMMass, Double_t &SusyMass, TLorentzVector &ParentLa
 
       /*
 SusyLVector = slepton vector (in Alpha2 frame)
-ParentLabVector = Alpha2 vector (in Q~ rest frame)
-BoostLVector = Alpha2 vector (in Q~ rest frame)
+ParentLabVector = Alpha2 vector (in Higgs rest frame)
+BoostLVector = Alpha2 vector (in Higgs rest frame)
 */
 
 // Boost fermion1 to Higgs frame
@@ -314,8 +294,8 @@ BoostLVector = Alpha2 vector (in Q~ rest frame)
 
       /*
 SusyLVector = slepton vector (in Alpha2 frame)
-ParentLabVector = Alpha2 vector (in Q~ rest frame)
-BoostLVector = Alpha2 vector (in Q~ rest frame)
+ParentLabVector = Alpha2 vector (in Higgs rest frame)
+BoostLVector = Alpha2 vector (in Higgs rest frame)
 */
 
 // Boost fermion1 to Higgs frame
