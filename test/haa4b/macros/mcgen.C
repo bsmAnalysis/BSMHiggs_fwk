@@ -2,17 +2,20 @@
 #include "TVector3.h"
 #include "TRandom.h"
 #include "TMath.h"
+#include "TFile.h"
+#include "TTree.h"
 #include "TH1.h"
 #include "TH2.h"
 
+#include <vector>
 #include <algorithm>
 
 using namespace std;
 
 Double_t HiggsMass = 125.;
 
-Double_t Alpha1Mass = 15.;
-Double_t Alpha2Mass = 15.; // a2 -> b1b2
+Double_t Alpha1Mass = 50.;
+Double_t Alpha2Mass = 50.; // a2 -> b1b2
 
 Double_t b2Mass = 5;
 Double_t b1Mass = 5.;
@@ -38,7 +41,7 @@ namespace partInfo {
 
   TLorentzVector Alpha1LVector;
   TLorentzVector b1LVector;
-
+  //TLorentzVector Lepton2LVector;
   // a2->b1b2
   TLorentzVector Alpha2Vector;
   TLorentzVector b2Vector;
@@ -54,7 +57,8 @@ namespace partInfo {
 int SavePart(int thePar, TLorentzVector &MyLVector) {
  
     using namespace partInfo;
-  
+
+    // particles in lab frame   
   if (thePar == 0) {
     Alpha1LVector = MyLVector;
   }
@@ -73,16 +77,20 @@ int SavePart(int thePar, TLorentzVector &MyLVector) {
   if (thePar == 5) {
     b4Vector = MyLVector;
   }
-
+  // particles in rest frame of parent
   if (thePar == 6) {
     Alpha2Vector_rest = MyLVector;
   }
   if (thePar == 7) {
     b1Vector_rest = MyLVector;
   }
-
   
   return 1;
+};
+
+bool ptsort(const TLorentzVector & x, const TLorentzVector & y) 
+{ 
+  return  (x.Pt() > y.Pt() ) ; 
 };
 
 double deltaPhi(double phi1, double phi2) {
@@ -146,6 +154,8 @@ void Rotatez(TLorentzVector &pvect, TLorentzVector &pvect1){
 void DecayTwoBody(Double_t &SMMass, Double_t &SusyMass, TLorentzVector &ParentLabLVector, TLorentzVector &ParentParLVector, int RunNumber)
 {
     using namespace RandomNumberGenerator;
+   
+//    TRandom Number;
     
     TLorentzVector SusyLVector;
     TLorentzVector SMLVector;
@@ -167,7 +177,6 @@ void DecayTwoBody(Double_t &SMMass, Double_t &SusyMass, TLorentzVector &ParentLa
 	costh = 2.*(Number1_th.Uniform(0,1) - 0.5);
 	sinth = sqrt(1 - costh*costh);
 
-	//phi = TMath::Pi()*Number1_phi.Uniform(0,1);
 	phi = 2.*TMath::Pi()*Number1_phi.Uniform(0,1);
 	cosphi = TMath::Cos(phi);
 	sinphi = sqrt(1-cosphi*cosphi);
@@ -175,7 +184,6 @@ void DecayTwoBody(Double_t &SMMass, Double_t &SusyMass, TLorentzVector &ParentLa
 	costh = 2.*(Number2_th.Uniform(0,1) - 0.5);
 	sinth = sqrt(1 - costh*costh);
 
-	//phi = TMath::Pi()*Number2_phi.Uniform(0,1);
 	phi = 2.*TMath::Pi()*Number2_phi.Uniform(0,1);
 	cosphi = TMath::Cos(phi);
 	sinphi = sqrt(1-cosphi*cosphi);
@@ -183,7 +191,6 @@ void DecayTwoBody(Double_t &SMMass, Double_t &SusyMass, TLorentzVector &ParentLa
 	costh = 2.*(Number3_th.Uniform(0,1) - 0.5);
 	sinth = sqrt(1 - costh*costh);
 
-	//phi = TMath::Pi()*Number3_phi.Uniform(0,1);
 	phi = 2.*TMath::Pi()*Number3_phi.Uniform(0,1);
 	cosphi = TMath::Cos(phi);
 	sinphi = sqrt(1-cosphi*cosphi);
@@ -220,6 +227,7 @@ void DecayTwoBody(Double_t &SMMass, Double_t &SusyMass, TLorentzVector &ParentLa
       
       Rotatez(ParentParLVector, SusyLVector);
       Rotatez(ParentParLVector, SMLVector);
+
 
       // Save costheta* opening angle in the parent rest frame
       SavePart(6,SusyLVector);
@@ -286,8 +294,8 @@ BoostLVector = Alpha2 vector (in Higgs rest frame)
 
       /*
 SusyLVector = slepton vector (in Alpha2 frame)
-ParentLabVector = Alpha2 vector (in Q~ rest frame)
-BoostLVector = Alpha2 vector (in Q~ rest frame)
+ParentLabVector = Alpha2 vector (in Higgs rest frame)
+BoostLVector = Alpha2 vector (in Higgs rest frame)
 */
 
 // Boost fermion1 to Higgs frame
@@ -304,7 +312,7 @@ BoostLVector = Alpha2 vector (in Q~ rest frame)
       SMLVector.Boost(b3);
       SusyLVector.Boost(b3);
 	
-      // Boost alpha1 to its rest frame
+      // Boost alpha2 to its rest frame
       
       TLorentzVector Alpha1Vector(0.,0.,0.,Alpha1Mass);
       Alpha1Vector.Boost(b3);	
@@ -316,12 +324,13 @@ BoostLVector = Alpha2 vector (in Q~ rest frame)
       // DecayTwoBody(plots, Lepton2Mass, LSPMass, SusyLVector, oldSusyLVector, 3);
     }
 }
+
     
 void mcgen() {
 
     using namespace partInfo;
 
-// Open ntuple_data.root to get the 4-vector of the Higgs in the lab frame...
+// Open ntuple_data.root to get the 4-vector of the Higgs, for a given production mode, in the lab frame...
 
     TFile *f = new TFile("MC13TeV_Wh_amass50_0.root");
 
@@ -331,10 +340,8 @@ void mcgen() {
 // Generate events
     const Int_t NEVT = 500000;
 
+    vector<TLorentzVector> b_partons;
     TLorentzVector HiggsLabVector, HiggsLVector;
-    TLorentzVector b1RVector, Alpha1RVector;
-
-    Bool_t cuts = false;
 
     // Create a ROOT tree to fill variables for Unbinned DATA ...
     
@@ -352,7 +359,11 @@ void mcgen() {
     Double_t b3M, b3Pt, b3Eta, b3Phi;
     Double_t b4M, b4Pt, b4Eta, b4Phi;
 
+    Double_t j1Pt, j2Pt, j3Pt, j4Pt;
+    Double_t j1Eta, j2Eta, j3Eta, j4Eta;
+    
     Double_t minbPt, maxbPt;
+    Double_t mindRbb, maxdRbb;
     
     Double_t mbb1, mbb2, m4b;
     Double_t mbbmax, mbbmin;
@@ -397,8 +408,21 @@ void mcgen() {
     t->Branch("b4Eta",&b4Eta,"b4Eta/D");
     t->Branch("b4Phi",&b4Phi,"b4Phi/D");
 
+    // Here start analysis level variables
+    t->Branch("j1Pt",&j1Pt,"j1Pt/D");
+    t->Branch("j2Pt",&j2Pt,"j2Pt/D");
+    t->Branch("j3Pt",&j3Pt,"j3Pt/D");
+    t->Branch("j4Pt",&j4Pt,"j4Pt/D");
+
+    t->Branch("j1Eta",&j1Eta,"j1Eta/D");
+    t->Branch("j2Eta",&j2Eta,"j2Eta/D");
+    t->Branch("j3Eta",&j3Eta,"j3Eta/D");
+    t->Branch("j4Eta",&j4Eta,"j4Eta/D");
+    
     t->Branch("minbPt",&minbPt,"minbPt/D");
     t->Branch("maxbPt",&maxbPt,"maxbPt/D");
+    t->Branch("mindRbb",&mindRbb,"mindRbb/D");
+    t->Branch("maxdRbb",&maxdRbb,"maxdRbb/D");
     
     t->Branch("mbb1",&mbb1,"mbb1/D");
     t->Branch("mbb2",&mbb2,"mbb2/D");
@@ -467,6 +491,22 @@ void mcgen() {
 
       minbPt = std::min(b1Pt, std::min(b2Pt, std::min(b3Pt,b4Pt)));
       maxbPt = std::max(b1Pt, std::max(b2Pt, std::max(b3Pt,b4Pt)));
+
+      // Sorting a vector of TLorentzVector
+      b_partons.clear();
+      b_partons.push_back(b1LVector);
+      b_partons.push_back(b2Vector);
+      b_partons.push_back(b3Vector);
+      b_partons.push_back(b4Vector);
+
+       //sort gen b's in pt
+      std::sort(b_partons.begin(), b_partons.end(), ptsort);
+
+      //      std::sort(b_partons.begin(), b_partons.end(), reorder);
+      j1Pt=b_partons[0].Pt(); j1Eta=b_partons[0].Eta();
+      j2Pt=b_partons[1].Pt(); j2Eta=b_partons[1].Eta();
+      j3Pt=b_partons[2].Pt(); j3Eta=b_partons[2].Eta();
+      j4Pt=b_partons[3].Pt(); j4Eta=b_partons[3].Eta();
       
       mbb1 = (b1LVector+b2Vector).M();
       mbb2 = (b3Vector+b4Vector).M();
