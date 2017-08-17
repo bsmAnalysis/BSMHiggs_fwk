@@ -148,12 +148,12 @@ int main(int argc, char* argv[])
     bool isMC_ttbar = isMC && (string(url.Data()).find("TeV_TT")  != string::npos);
     bool isMC_stop  = isMC && (string(url.Data()).find("TeV_SingleT")  != string::npos);
 
-    bool isMC_Wh_haa4b = isMC && (string(url.Data()).find("Wh_amass")  != string::npos); 
-    bool isMC_Zh_haa4b = isMC && (string(url.Data()).find("Zh_amass")  != string::npos); 
-    bool isMC_VBF_haa4b = isMC && (string(url.Data()).find("VBF_amass")  != string::npos); 
+    bool isMC_Wh = isMC && (string(url.Data()).find("Wh")  != string::npos); 
+    bool isMC_Zh = isMC && (string(url.Data()).find("Zh")  != string::npos); 
+    bool isMC_VBF = isMC && (string(url.Data()).find("VBF")  != string::npos); 
 
-    bool isSignal = (isMC_Wh_haa4b || isMC_Zh_haa4b || isMC_VBF_haa4b );
-
+    bool isSignal = (isMC_Wh || isMC_Zh || isMC_VBF );
+    if (isSignal) printf("Signal url = %s\n",url.Data());
 
     //b-tagging: beff and leff must be derived from the MC sample using the discriminator vs flavor
     //the scale factors are taken as average numbers from the pT dependent curves see:
@@ -253,10 +253,11 @@ int main(int argc, char* argv[])
     // GEN level kinematics
     mon.addHistogram( new TH1F( "higgsMass",";m_{h} [GeV];Events",1000,0.,200.) );
     mon.addHistogram( new TH1F( "higgsPt",";p_{T}^{h} [GeV];Events",150,0,1500));
+    mon.addHistogram( new TH1F( "higgsEta",";#eta (h);Evenets",100,-5,5) );
     mon.addHistogram( new TH1F( "a1mass",";m_{a1} [GeV];Events",800,0.,200.) );
     mon.addHistogram( new TH1F( "a2mass",";m_{a2} [GeV];Events",800,0.,200.) );  
-    mon.addHistogram( new TH1F( "a1pt",";p_{T}^{a1};Events",150,0,1500));
-    mon.addHistogram( new TH1F( "a2pt",";p_{T}^{a2};Events",150,0,1500));
+    mon.addHistogram( new TH1F( "a1pt",";p_{T}^{a1};Events",1000,0,1000));
+    mon.addHistogram( new TH1F( "a2pt",";p_{T}^{a2};Events",1000,0,1000));
     mon.addHistogram( new TH1F( "aabalance",";p_{T}^{a1}/p_{T}^{a2};Events",25,0,2.5));
     mon.addHistogram( new TH1F( "a1DR",";#Delta R1(b,#bar{b});Events",100,0.,5.));
     mon.addHistogram( new TH1F( "a2DR",";#Delta R2(b,#bar{b});Events",100,0.,5.)); 
@@ -266,10 +267,10 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH2F( "a1DRvspT",";p_{T}^{a1};#Delta R(bb_{1})",100,0,800,100,0.,5.) );
     mon.addHistogram( new TH2F( "a2DRvspT",";p_{T}^{a2};#Delta R(bb_{2})",100,0,800,100,0.,5.) );
 
-    mon.addHistogram( new TH1F( "b1pt",";p_{T}^{b1};Events",150,0,1500));   
-    mon.addHistogram( new TH1F( "b2pt",";p_{T}^{b2};Events",150,0,1500)); 
-    mon.addHistogram( new TH1F( "b3pt",";p_{T}^{b3};Events",150,0,1500)); 
-    mon.addHistogram( new TH1F( "b4pt",";p_{T}^{b4};Events",150,0,1500)); 
+    mon.addHistogram( new TH1F( "b1pt",";p_{T}^{b1};Events",1000,0,1000));   
+    mon.addHistogram( new TH1F( "b2pt",";p_{T}^{b2};Events",1000,0,1000)); 
+    mon.addHistogram( new TH1F( "b3pt",";p_{T}^{b3};Events",1000,0,1000)); 
+    mon.addHistogram( new TH1F( "b4pt",";p_{T}^{b4};Events",1000,0,1000)); 
 
     // RECO level
     /*
@@ -545,136 +546,6 @@ int main(int argc, char* argv[])
         bool hasEMtrigger = (ev.triggerType >> 5 ) & 0x1;
 
 
-
-        //#########################################################################
-        //####################  Generator Level Reweighting  ######################
-        //#########################################################################
-
-	if (isSignal) {
-
-	  weight=1.0;
-
-	  LorentzVector higgs(0,0,0,0); 
-	  LorentzVector a1(0,0,0,0);
-	  LorentzVector a2(0,0,0,0);
-
-	  // h->aa->4b (all)
-	  PhysicsObjectCollection genbs;
-	  PhysicsObjectCollection genbFromA1;
-	  PhysicsObjectCollection genbFromA2;
-
-	  int as=0; // number of a-pseudoscalar
-	  for (size_t i=0; i<phys.genHiggs.size(); i++) {
-	    // raw level distributions for the Higgses
-	    if (phys.genHiggs[i].id==35) { 
-	      mon.fillHisto("higgsMass","raw",phys.genHiggs[i].mass(),weight);
-	      mon.fillHisto("higgsMass","raw",phys.genHiggs[i].pt(),weight);
-	    }
-
-	    if (abs(phys.genHiggs[i].id)==36){
-	      if (as==0) { 
-		a1 += phys.genHiggs[i]; as++; 
-	      }
-	      else { 
-		a2 += phys.genHiggs[i]; 
-	      }
-	    }
-	  }
-  
-	  int ibp=0; int ibm=0; //all
-
-	  //#### Find a1 and a2 positions in mcparticle list
-	  //#### for Wh, Zh : 4 and 5 ####################### 
-	  //#### for VBF: 5 and 6 ###########################
-
-	  int pos1=4; int pos2=5;
-	  if (isMC_Wh_haa4b || isMC_Zh_haa4b ) {
-	    pos1=4; pos2=5;
-	  } else if (isMC_VBF_haa4b) {
-	    pos1=5; pos2=6;
-	  }
-
-	  for (size_t i=0; i<phys.genpartons.size(); i++) {
-	    if (phys.genpartons[i].momid!=36) continue;
-
-	    // Apply acceptance cuts
-	    //	    if (phys.genpartons[i].pt()<15 || fabs(phys.genpartons[i].eta())>2.5) continue; 
-	    
-	    if ( abs(phys.genpartons[i].id)==5 ) { 
-	      genbs.push_back(phys.genpartons[i]);
-	      higgs += phys.genpartons[i]; 
-	    } 
-
-	    if (phys.genpartons[i].id==5) {
-	      if (phys.genpartons[i].momidx==pos1) { 
-		genbFromA1.push_back(phys.genpartons[i]); ibp++; 
-	      } else if (phys.genpartons[i].momidx==pos2) { 
-		genbFromA2.push_back(phys.genpartons[i]); ibp++; 
-	      }
-	    }
-	    if (phys.genpartons[i].id==-5) {
-	      if (phys.genpartons[i].momidx==pos1) {  
-		genbFromA1.push_back(phys.genpartons[i]); ibm++; 
-	      } else if (phys.genpartons[i].momidx==pos2) { 
-		genbFromA2.push_back(phys.genpartons[i]); ibm++; 
-	      } 
-	    }
-
-	    if (ibp==2 && ibm==2) break;
-	  }
-	  //sort gen b's in pt
-	  sort(genbs.begin(), genbs.end(), ptsort());
-
-	  // all
-	  if (ibp>=2 && ibm>=2) {
-
-	    // Higgs pT
-	    mon.fillHisto("higgsMass","all",higgs.mass(),weight);
-	    mon.fillHisto("higgsPt","all",higgs.pt(),weight);
-
-	    mon.fillHisto("a1mass","raw",a1.mass(),weight); mon.fillHisto("a2mass","raw",a2.mass(),weight);
-
-	    double raw_aaDR=deltaR(a1,a2);
-	    mon.fillHisto("aaDR","raw",raw_aaDR,weight);  
-	    double aaDR=deltaR( (genbFromA1[0]+genbFromA1[1]),(genbFromA2[0]+genbFromA2[1]) );
-	    mon.fillHisto("aaDR","all",aaDR,weight);
-
-	    double mass1=(genbFromA1[0]+genbFromA1[1]).mass();
-	    double mass2=(genbFromA2[0]+genbFromA2[1]).mass();
-
-	    mon.fillHisto("a1mass","all",max(mass1,mass2),weight);mon.fillHisto("a2mass","all",min(mass1,mass2),weight);
-	    
-	    double pt1,pt2; double dR1,dR2;
-	    double ptmin1=min(genbFromA1[0].pt(),genbFromA1[1].pt());
-	    double ptmin2=min(genbFromA2[0].pt(),genbFromA2[1].pt()); 
-
-	    if(mass1>mass2) {  
-	      pt1=(genbFromA1[0]+genbFromA1[1]).pt();pt2=(genbFromA2[0]+genbFromA2[1]).pt();
-	      dR1=deltaR(genbFromA1[0],genbFromA1[1]);dR2=deltaR(genbFromA2[0],genbFromA2[1]);
-	    } else {
-	      pt1=(genbFromA2[0]+genbFromA2[1]).pt();pt2=(genbFromA1[0]+genbFromA1[1]).pt();
-	      dR2=deltaR(genbFromA1[0],genbFromA1[1]);dR1=deltaR(genbFromA2[0],genbFromA2[1]);
-	    }
-	    mon.fillHisto("a1pt","all",pt1,weight);mon.fillHisto("a2pt","all",pt2,weight);
-	    mon.fillHisto("a1DR","all",dR1,weight);mon.fillHisto("a2DR","all",dR2,weight);
-
-	    mon.fillHisto("a1DRvspT","all",ptmin1,deltaR(genbFromA1[0],genbFromA1[1]),weight);
-	    mon.fillHisto("a2DRvspT","all",ptmin2,deltaR(genbFromA2[0],genbFromA2[1]),weight);
-
-	    // pT of the 4bs
-	    if (genbs.size()>=4) {
-	      mon.fillHisto("b1pt","all",genbs[0].pt(),weight);
-	      mon.fillHisto("b2pt","all",genbs[1].pt(),weight);
-	      mon.fillHisto("b3pt","all",genbs[2].pt(),weight);
-	      mon.fillHisto("b4pt","all",genbs[3].pt(),weight);
-	    }
-
-
-	  }
-	  else {std::cout << "Not all 4-bs found in aa decays" << std::endl;}
-
-	}
-
         //#########################################################################
         //#####################      Objects Selection       ######################
         //#########################################################################
@@ -801,8 +672,8 @@ int main(int argc, char* argv[])
         case EMU  :
             tag_cat = "emu";
             break;
-        default   :
-            continue;
+	    //    default   :
+	    // continue;
         }
 	/*
         //split inclusive DY sample into DYToLL and DYToTauTau
@@ -861,16 +732,15 @@ int main(int argc, char* argv[])
         //if(isMC) weight *= myWIMPweights.get1DWeights(phys.nvtx,"pileup_weights");
         mon.fillHisto("nvtxwgt_raw",tags, phys.nvtx,      weight);
 
-
-
         //
         //apply muon trigger efficiency scale factors
         //
 
         //
-        //JET AND BTAGING ANALYSIS
+        //JET AND BTAGGING ANALYSIS
         //
         PhysicsObjectJetCollection GoodIdJets;
+	PhysicsObjectJetCollection bJets;
 
         int nJetsGood30(0);
         int nCSVLtags(0),nCSVMtags(0),nCSVTtags(0);
@@ -899,42 +769,238 @@ int main(int argc, char* argv[])
 
 
             //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X
-            if(corrJets[ijet].pt()>30 && fabs(corrJets[ijet].eta())<2.4)  {
+            if(corrJets[ijet].pt()>15 && fabs(corrJets[ijet].eta())<2.4)  {
 
                 nCSVLtags += (corrJets[ijet].btag0>CSVLooseWP);
                 nCSVMtags += (corrJets[ijet].btag0>CSVMediumWP);
                 nCSVTtags += (corrJets[ijet].btag0>CSVTightWP);
 
-
-                if(!isMC) continue;
+		//                if(!isMC) continue;
                 bool hasCSVtag(corrJets[ijet].btag0>CSVLooseWP);
-		btsfutil.SetSeed(ev.event*10 + ijet*10000);
+		if (isMC) {
+		  btsfutil.SetSeed(ev.event*10 + ijet*10000);
 
-                if(abs(corrJets[ijet].flavid)==5) {
-		  //  80X recommendation
-		  btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_B , corrJets[ijet].eta(), corrJets[ijet].pt()), beff);
-                } else if(abs(corrJets[ijet].flavid)==4) {
-		  //  80X recommendation
-		  btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_C , corrJets[ijet].eta(), corrJets[ijet].pt()), beff);
-                } else {
-		  //  80X recommendation
-		  btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_UDSG , corrJets[ijet].eta(), corrJets[ijet].pt()), leff);
-                }
+		  if(abs(corrJets[ijet].flavid)==5) {
+		    //  80X recommendation
+		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_B , corrJets[ijet].eta(), corrJets[ijet].pt()), beff);
+		  } else if(abs(corrJets[ijet].flavid)==4) {
+		    //  80X recommendation
+		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_C , corrJets[ijet].eta(), corrJets[ijet].pt()), beff);
+		  } else {
+		    //  80X recommendation
+		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_UDSG , corrJets[ijet].eta(), corrJets[ijet].pt()), leff);
+		  }
+		} // isMC
+		
+		// Fill b-jet vector:
+		if (hasCSVtag) { bJets.push_back(corrJets[ijet]); }
 
-
-            }
-
-
-        }
+            } // b-jet loop
+        } // jet loop
 
         //using CSV Medium WP
 	//        passBveto=(nCSVMtags==0);
+	mon.fillHisto("njets_raw",tags, GoodIdJets.size(),weight);
+	mon.fillHisto("nbjets_raw",tags, bJets.size(),weight);
 
         for(size_t ij=0; ij<GoodIdJets.size(); ij++) {
             mon.fillHisto("jet_pt_raw",   tags, GoodIdJets[ij].pt(),weight);
             mon.fillHisto("jet_eta_raw",  tags, GoodIdJets[ij].eta(),weight);
         }
 
+	
+        //#########################################################################
+        //####################  Generator Level Reweighting  ######################
+        //#########################################################################
+
+	if (isSignal) {
+
+	  weight=1;
+
+	  LorentzVector higgs(0,0,0,0); 
+	  LorentzVector a1(0,0,0,0);
+	  LorentzVector a2(0,0,0,0);
+
+	  // h->aa->4b (all)
+	  PhysicsObjectCollection genbs;
+	  PhysicsObjectCollection genbFromA1;
+	  PhysicsObjectCollection genbFromA2;
+
+	  int as=0; // number of a-pseudoscalar
+	  for (size_t i=0; i<phys.genHiggs.size(); i++) {
+	    // raw level distributions for the Higgses
+	    if (phys.genHiggs[i].id==35) { 
+	      mon.fillHisto("higgsMass","raw",phys.genHiggs[i].mass(),weight);
+	      mon.fillHisto("higgsPt","raw",phys.genHiggs[i].pt(),weight);
+	      mon.fillHisto("higgsEta","raw",phys.genHiggs[i].eta(), weight);
+	    }
+
+	    if (abs(phys.genHiggs[i].id)==36){
+	      if (as==0) { 
+		a1 += phys.genHiggs[i]; as++; 
+	      }
+	      else { 
+		a2 += phys.genHiggs[i]; 
+	      }
+	    }
+	  }
+  
+	  int ibp=0; int ibm=0; //all
+
+	  //#### Find a1 and a2 positions in mcparticle list
+	  //#### for Wh, Zh : 4 and 5 ####################### 
+	  //#### for VBF: 5 and 6 ###########################
+
+	  int pos1=4; int pos2=5;
+	  //	  if (isMC_Wh || isMC_Zh ) { pos1=4; pos2=5; }
+	  if (isMC_VBF) { pos1=5; pos2=6; }
+
+	  for (size_t i=0; i<phys.genpartons.size(); i++) {
+	    if (phys.genpartons[i].momid!=36) continue;
+
+	    // Apply acceptance cuts
+	    //	    if (phys.genpartons[i].pt()<15 || fabs(phys.genpartons[i].eta())>2.5) continue; 
+	    
+	    if ( abs(phys.genpartons[i].id)==5 ) { 
+	      genbs.push_back(phys.genpartons[i]);
+	      higgs += phys.genpartons[i]; 
+	    } 
+
+	    if (phys.genpartons[i].id==5) {
+	      if (phys.genpartons[i].momidx==pos1) { 
+		genbFromA1.push_back(phys.genpartons[i]); ibp++; 
+	      } else if (phys.genpartons[i].momidx==pos2) { 
+		genbFromA2.push_back(phys.genpartons[i]); ibp++; 
+	      }
+	    }
+	    if (phys.genpartons[i].id==-5) {
+	      if (phys.genpartons[i].momidx==pos1) {  
+		genbFromA1.push_back(phys.genpartons[i]); ibm++; 
+	      } else if (phys.genpartons[i].momidx==pos2) { 
+		genbFromA2.push_back(phys.genpartons[i]); ibm++; 
+	      } 
+	    }
+
+	    if (ibp==2 && ibm==2) break;
+	  }
+	  //sort gen b's in pt
+	  sort(genbs.begin(), genbs.end(), ptsort());
+	  
+	  // all
+	  if (ibp>=2 && ibm>=2) {
+
+	    // Higgs pT
+	    mon.fillHisto("higgsMass","gen",higgs.mass(),weight);
+	    mon.fillHisto("higgsPt","gen",higgs.pt(),weight);
+
+	    mon.fillHisto("a1mass","raw",a1.mass(),weight); mon.fillHisto("a2mass","raw",a2.mass(),weight);
+
+	    double raw_aaDR=deltaR(a1,a2);
+	    mon.fillHisto("aaDR","raw",raw_aaDR,weight);  
+	    double aaDR=deltaR( (genbFromA1[0]+genbFromA1[1]),(genbFromA2[0]+genbFromA2[1]) );
+	    mon.fillHisto("aaDR","gen",aaDR,weight);
+
+	    double mass1=(genbFromA1[0]+genbFromA1[1]).mass();
+	    double mass2=(genbFromA2[0]+genbFromA2[1]).mass();
+
+	    mon.fillHisto("a1mass","gen",mass1,weight);
+	    mon.fillHisto("a2mass","gen",mass2,weight);
+	    
+	    double pt1,pt2; double dR1,dR2;
+
+	    pt1=(genbFromA1[0]+genbFromA1[1]).pt();pt2=(genbFromA2[0]+genbFromA2[1]).pt();
+	    dR1=deltaR(genbFromA1[0],genbFromA1[1]);dR2=deltaR(genbFromA2[0],genbFromA2[1]);
+
+	    mon.fillHisto("a1pt","gen",pt1,weight);mon.fillHisto("a2pt","gen",pt2,weight);
+	    mon.fillHisto("a1DR","gen",dR1,weight);mon.fillHisto("a2DR","gen",dR2,weight);
+
+	    mon.fillHisto("a1DRvspT","gen",pt1,deltaR(genbFromA1[0],genbFromA1[1]),weight);
+	    mon.fillHisto("a2DRvspT","gen",pt2,deltaR(genbFromA2[0],genbFromA2[1]),weight);
+
+	    // pT of the 4bs
+	    if (genbs.size()>=4) {
+	      mon.fillHisto("b1pt","gen",genbs[0].pt(),weight);
+	      mon.fillHisto("b2pt","gen",genbs[1].pt(),weight);
+	      mon.fillHisto("b3pt","gen",genbs[2].pt(),weight);
+	      mon.fillHisto("b4pt","gen",genbs[3].pt(),weight);
+	    }
+
+	  } else {std::cout << "Not all 4-bs found in aa decays" << std::endl;}
+
+	// RECO level a(bb) and H(4b) masses
+	  PhysicsObjectJetCollection recojFromA1;
+	  PhysicsObjectJetCollection recojFromA2;
+
+	  // Loop over AK4JEts
+	  for(size_t ijet=0; ijet<corrJets.size(); ijet++) {
+	    if (corrJets[ijet].motheridx==pos1) {
+	      recojFromA1.push_back(corrJets[ijet]);
+	      //	      if (corrJets[ijet].flavid==5) recobFromA1.push_back(corrJets[ijet]);
+	    }
+	    if (corrJets[ijet].motheridx==pos2) {
+	      recojFromA2.push_back(corrJets[ijet]);
+	      //	      if (corrJets[ijet].flavid==5) recobFromA2.push_back(corrJets[ijet]);
+	    }
+	  }
+
+	  // Plot masses
+	  if (recojFromA1.size()>1) {
+	    mon.fillHisto("a1mass","reco",(recojFromA1[0]+recojFromA1[1]).mass(),weight);
+	    if ((hasEEtrigger||hasEtrigger)  || (hasMMtrigger||hasMtrigger)) mon.fillHisto("a1mass","trg",(recojFromA1[0]+recojFromA1[1]).mass(),weight);
+	  }
+	  if (recojFromA2.size()>1) {
+	    mon.fillHisto("a2mass","reco",(recojFromA2[0]+recojFromA2[1]).mass(),weight);
+	    if ((hasEEtrigger||hasEtrigger)  || (hasMMtrigger||hasMtrigger)) mon.fillHisto("a2mass","trg",(recojFromA2[0]+recojFromA2[1]).mass(),weight);
+	  }
+	  if (recojFromA1.size()>1 && recojFromA2.size()>1) {
+	    mon.fillHisto("higgsMass","reco",(recojFromA1[0]+recojFromA1[1]+recojFromA2[0]+recojFromA2[1]).mass(),weight);
+	    mon.fillHisto("higgsPt","reco",(recojFromA1[0]+recojFromA1[1]+recojFromA2[0]+recojFromA2[1]).pt(),weight);
+	    
+	    //Trigger
+	    if ((hasEEtrigger||hasEtrigger)  || (hasMMtrigger||hasMtrigger)) {
+	      mon.fillHisto("higgsMass","trg",(recojFromA1[0]+recojFromA1[1]+recojFromA2[0]+recojFromA2[1]).mass(),weight);
+	      mon.fillHisto("higgsPt","trg",(recojFromA1[0]+recojFromA1[1]+recojFromA2[0]+recojFromA2[1]).pt(),weight);
+	    }
+
+	  }
+
+	  //b-reco
+	  PhysicsObjectJetCollection recobFromA1;  
+	  PhysicsObjectJetCollection recobFromA2;
+
+	  for(size_t ijet=0; ijet<bJets.size(); ijet++) {  
+	    if (bJets[ijet].motheridx==pos1) {
+	      recobFromA1.push_back(bJets[ijet]);
+	    }
+	    if (bJets[ijet].motheridx==pos2) {
+	      recobFromA2.push_back(bJets[ijet]);
+	    }
+	  }
+	  // Plot b-masses
+	  if (recobFromA1.size()>1) {
+	    mon.fillHisto("a1mass","breco",(recobFromA1[0]+recobFromA1[1]).mass(),weight);
+	    if ((hasEEtrigger||hasEtrigger)  || (hasMMtrigger||hasMtrigger)) mon.fillHisto("a1mass","btrg",(recobFromA1[0]+recobFromA1[1]).mass(),weight);
+	  }
+	  if (recobFromA2.size()>1) { 
+	    mon.fillHisto("a2mass","breco",(recobFromA2[0]+recobFromA2[1]).mass(),weight);
+	    if ((hasEEtrigger||hasEtrigger)  || (hasMMtrigger||hasMtrigger)) mon.fillHisto("a2mass","btrg",(recobFromA2[0]+recobFromA2[1]).mass(),weight);
+	  }
+	  if (recobFromA1.size()>1 && recobFromA2.size()>1) { 
+	    mon.fillHisto("higgsMass","breco",(recobFromA1[0]+recobFromA1[1]+recobFromA2[0]+recobFromA2[1]).mass(),weight); 
+	    mon.fillHisto("higgsPt","breco",(recobFromA1[0]+recobFromA1[1]+recobFromA2[0]+recobFromA2[1]).pt(),weight);
+	    
+	    //Trigger
+	    if ((hasEEtrigger||hasEtrigger)  || (hasMMtrigger||hasMtrigger)) {  
+	      mon.fillHisto("higgsMass","btrg",(recobFromA1[0]+recobFromA1[1]+recobFromA2[0]+recobFromA2[1]).mass(),weight); 
+	      mon.fillHisto("higgsPt","btrg",(recobFromA1[0]+recobFromA1[1]+recobFromA2[0]+recobFromA2[1]).pt(),weight);
+	    }
+	  }
+
+
+	} // isSignal
+
+
+	
         //#########################################################
         //####  RUN PRESELECTION AND CONTROL REGION PLOTS  ########
         //#########################################################
