@@ -96,7 +96,7 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
         if(P4.pt()>0) {
             phys.jets.push_back( PhysicsObject_Jet( P4,ev.jet_puId[i],ev.jet_PFLoose[i],ev.jet_PFTight[i] ) );
             phys.jets[i].setBtagInfo(ev.jet_btag0[i],ev.jet_btag1[i],ev.jet_btag2[i],ev.jet_btag3[i],ev.jet_btag4[i],ev.jet_btag5[i],ev.jet_btag6[i],ev.jet_btag7[i]);
-            phys.jets[i].setGenInfo(ev.jet_partonFlavour[i], ev.jet_genpt[i]);
+            phys.jets[i].setGenInfo(ev.jet_partonFlavour[i], ev.jet_partonMother[i], ev.jet_partonMotherIdx[i], ev.jet_genpt[i]);
 
             njet++;
         }

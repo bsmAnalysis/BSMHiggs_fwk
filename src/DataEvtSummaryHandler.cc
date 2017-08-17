@@ -218,6 +218,8 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("jet_PFLoose",           evSummary_.jet_PFLoose,             "jet_PFLoose[jet]/O");
     t_->Branch("jet_PFTight",           evSummary_.jet_PFTight,             "jet_PFTight[jet]/O");
     t_->Branch("jet_partonFlavour",     evSummary_.jet_partonFlavour,       "jet_partonFlavour[jet]/I");
+    t_->Branch("jet_partonMother",      evSummary_.jet_partonMother,        "jet_partonMother[jet]/I");
+    t_->Branch("jet_partonMotherIdx",   evSummary_.jet_partonMotherIdx,     "jet_partonMotherIdx[jet]/I"); 
     t_->Branch("jet_hadronFlavour",     evSummary_.jet_hadronFlavour,       "jet_hadronFlavour[jet]/I");
     t_->Branch("jet_genpt",             evSummary_.jet_genpt,               "jet_genpt[jet]/F");
 
@@ -490,6 +492,8 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("jet_PFLoose",             evSummary_.jet_PFLoose);
     t_->SetBranchAddress("jet_PFTight",             evSummary_.jet_PFTight);
     t_->SetBranchAddress("jet_partonFlavour",       evSummary_.jet_partonFlavour);
+    t_->SetBranchAddress("jet_partonMother",        evSummary_.jet_partonMother);
+    t_->SetBranchAddress("jet_partonMotherIdx",     evSummary_.jet_partonMotherIdx); 
     t_->SetBranchAddress("jet_hadronFlavour",       evSummary_.jet_hadronFlavour);
     t_->SetBranchAddress("jet_genpt",               evSummary_.jet_genpt);
 

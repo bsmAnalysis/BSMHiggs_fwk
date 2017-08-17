@@ -110,7 +110,7 @@ struct DataEvtSummary_t {
     Float_t jet_btag8[MAXPARTICLES],jet_btag9[MAXPARTICLES],jet_btag10[MAXPARTICLES];
     Float_t jet_mass[MAXPARTICLES],jet_area[MAXPARTICLES],jet_pu[MAXPARTICLES],jet_puId[MAXPARTICLES],jet_genpt[MAXPARTICLES];
     Bool_t jet_PFLoose[MAXPARTICLES], jet_PFTight[MAXPARTICLES];
-    Int_t jet_partonFlavour[MAXPARTICLES], jet_hadronFlavour[MAXPARTICLES];
+  Int_t jet_partonFlavour[MAXPARTICLES], jet_partonMother[MAXPARTICLES], jet_partonMotherIdx[MAXPARTICLES], jet_hadronFlavour[MAXPARTICLES];
 
 /*
     //jet (slimmedJetsPuppi)

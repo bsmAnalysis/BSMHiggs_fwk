@@ -629,7 +629,7 @@ int main(int argc, char* argv[])
 
        //for (std::vector<pat::Jet >::const_iterator j = jets.begin(); j!=jets.end(); j++) {
        for (pat::Jet &j : jets) {
-	 if(j.pt() < 20) continue;
+	 if(j.pt() < 15) continue;
 
 	 //jet id
 	 //	 hasLooseId.set(false);
@@ -661,6 +661,42 @@ int main(int argc, char* argv[])
 	 ev.jet_pu[ev.jet] = j.pileup();
 	 ev.jet_puId[ev.jet] = j.userFloat("pileupJetId:fullDiscriminant");
 	 ev.jet_partonFlavour[ev.jet] = j.partonFlavour();
+
+	 if (isMC) {
+
+	   reco::GenParticleCollection gen;
+	   fwlite::Handle< reco::GenParticleCollection > genHandle;
+	   genHandle.getByLabel(event, "prunedGenParticles");
+	   if(genHandle.isValid()){ gen = *genHandle;}
+
+	   const reco::GenParticle *pJet = j.genParton();
+	   if (pJet) {
+	     const reco::Candidate* mom = findFirstMotherWithDifferentID(&(*pJet));
+	     if (mom) { 
+	       
+	       // loop over genParticles to find the mom index
+	       int idx=0; int idxx=0;
+	       for(unsigned int ig=0; ig<gen.size(); ig++){ 
+		 if(!gen[ig].isHardProcess()) continue; 
+		 
+		 const reco::Candidate* imom = findFirstMotherWithDifferentID(&gen[ig]);
+		 if (imom) {
+		   if ( mom->p4() == gen[ig].p4() && idxx==0) { idxx=idx; } 
+		   idx++;      
+		 }
+	       }
+	       ev.jet_partonMotherIdx[ev.jet] = idxx;
+	       ev.jet_partonMother[ev.jet] = mom->pdgId(); 
+	     }
+	   } else {
+	     ev.jet_partonMotherIdx[ev.jet] = -1;
+	     ev.jet_partonMother[ev.jet] = -999;
+	   }
+	 } else {
+	   ev.jet_partonMotherIdx[ev.jet] = -1;                                                                                                                                                        
+	   ev.jet_partonMother[ev.jet] = -999; 
+	 }
+
 	 ev.jet_hadronFlavour[ev.jet] = j.hadronFlavour();
 	 const reco::GenJet *gJet=j.genJet();
 	 if(gJet) ev.jet_genpt[ev.jet] = gJet->pt();
