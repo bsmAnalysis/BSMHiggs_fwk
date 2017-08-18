@@ -466,7 +466,7 @@ int main(int argc, char* argv[])
        filterbadMuonHIP = metFilter.BadGlobalMuonTaggerFilter(event,outbadMuon,false); if (!filterbadMuonHIP) { metFilterValue=10; }
        filterduplicateMuonHIP = metFilter.BadGlobalMuonTaggerFilter(event,outduplicateMuon,true); if (!filterduplicateMuonHIP) { metFilterValue=11; }
        
-       mon_.fillHisto("metFilter", "all", metFilterValue, 0);
+       mon_.fillHisto("metFilter", "all", metFilterValue, 1.0);
        
        ev.hasTrigger  = ( mumuTrigger||muTrigger||eeTrigger||highPTeeTrigger||eTrigger||emuTrigger );
        

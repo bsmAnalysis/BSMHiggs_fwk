@@ -33,7 +33,7 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 # Global Variables
 #--------------------------------------------------
 
-SUFFIX=_2017_07_23
+SUFFIX=_2017_08_13_b
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
@@ -88,7 +88,9 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "JOB SUBMISSION for BSM h->aa Analysis"
        echo "Input: " $NTPL_JSON
        echo "Output: " $NTPL_OUTDIR
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@data_pileup=datapileup_latest @runSystematics=False @usemetNoHF=False" -s $queue 
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@data_pileup=datapileup_latest @runSystematics=False @usemetNoHF=False" -s $queue -t MC13TeV_Wh_amass50
+       #-t MC13TeV_Wh_amass50
+       #tag to match sample: "-t MC13TeV_Wh_amass20"
    fi
 fi
 
@@ -148,8 +150,8 @@ if [[ $step > 2.999 && $step < 4 ]]; then
         runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $RESULTSDIR/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased $arguments        
 #        runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $RESULTSDIR/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption UPDATE   --key haa_mcbased --doInterpollation  $arguments       
 #        cp  ${PLOTTER}.root  ${PLOTTER}_MCOnly.root
-        runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $RESULTSDIR/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption UPDATE   --key haa_datadriven                  $arguments 
-	ln -s -f ${PLOTTER}.root plotter.root 
+#        runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $RESULTSDIR/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption UPDATE   --key haa_datadriven                  $arguments 
+#	ln -s -f ${PLOTTER}.root plotter.root 
     fi        
 
     if [[ $step == 3 || $step == 3.1 ]]; then  # make plots and combine root files for mcbased study    
