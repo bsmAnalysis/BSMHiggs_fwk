@@ -30,6 +30,7 @@
 <!-- Analysis specific code (please keep that in subdirectories and refer to test/<subdir> for instructions) -->
   <bin name="runNtuplizer"                file="common/runNtuplizer.cc"></bin>
   <bin name="runhaaAnalysis"              file="haa4b/runhaaAnalysis.cc"></bin>  
+  <bin name="genParticleDump"                file="common/genParticleDump.cc"></bin>
 </environment>
 
 <flags CXXFLAGS="-g -Wno-sign-compare -Wno-unused-variable -Wno-unused-but-set-variable  -Os"/>
