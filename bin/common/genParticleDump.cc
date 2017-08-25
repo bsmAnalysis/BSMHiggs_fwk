@@ -10,6 +10,7 @@
 #include "PhysicsTools/FWLite/interface/CommandLineParser.h"
 #include "TSystem.h"
 #include "TFile.h"
+#include "TVector3.h"
 
 char pname[100] ;
 
@@ -53,6 +54,17 @@ double drMatch( double eta, double phi, pat::PackedGenParticleCollection& packed
             for(event.toBegin(); !event.atEnd(); ++event){
 
                printf("\n\n ==== Run = %u , lumi %u , event %llu\n", event.eventAuxiliary().run(), event.eventAuxiliary().luminosityBlock(), event.eventAuxiliary().event() ) ;
+
+               reco::VertexCollection vtx;
+               fwlite::Handle< reco::VertexCollection > vtxHandle;
+               vtxHandle.getByLabel(event, "offlineSlimmedPrimaryVertices");
+               if(vtxHandle.isValid()){ vtx = *vtxHandle;}
+               if ( vtx.empty() ) { printf("\n\n *** No reco Primary Vertex.\n\n") ; continue ; }
+
+               const reco::Vertex &PV = vtx.front();
+               printf("\n  Primary Vertex : x,y,z = %9.5f, %9.5f, %9.5f\n\n", PV.x(), PV.y(), PV.z() ) ;
+       
+
 
                reco::GenParticleCollection gen;
                fwlite::Handle< reco::GenParticleCollection > genHandle;
@@ -263,8 +275,17 @@ double drMatch( double eta, double phi, pat::PackedGenParticleCollection& packed
                      sec_vert[isv].vertexChi2(),
                      sec_vert[isv].vertexNdof()
                      ) ;
+                  printf("      dx,dy,dz = %9.5f, %9.5f, %9.5f :  dxy = %9.5f\n",
+                       sec_vert[isv].position().x() - PV.x(),
+                       sec_vert[isv].position().y() - PV.y(),
+                       sec_vert[isv].position().z() - PV.z(),
+                       sqrt( pow((sec_vert[isv].position().x() - PV.x()),2) + pow((sec_vert[isv].position().y() - PV.y()),2) )
+                     ) ;
+                  TVector3 sv_p3 ;
                   for ( unsigned int id=0; id<sec_vert[isv].numberOfDaughters(); id++ ) {
                      reco::CandidatePtr dau = sec_vert[isv].daughterPtr(id) ;
+                     TVector3 svd_p3( dau->px(), dau->py(), dau->pz() ) ;
+                     sv_p3 += svd_p3 ;
                      printf("      trk %2d :  pt=%6.1f, eta=%7.3f, phi = %7.3f",
                            id,
                            dau->pt(),
@@ -293,6 +314,12 @@ double drMatch( double eta, double phi, pat::PackedGenParticleCollection& packed
                      }
                      printf("\n") ;
                   } // id
+                  TVector3 dxyz( sec_vert[isv].position().x() - PV.x(), sec_vert[isv].position().y() - PV.y(), sec_vert[isv].position().z() - PV.z() ) ;
+                  double cos_pv_sv = -2. ;
+                  if ( sv_p3.Mag() * dxyz.Mag() > 0 ) {
+                     cos_pv_sv = sv_p3.Dot( dxyz ) / ( sv_p3.Mag() * dxyz.Mag() ) ;
+                  }
+                  printf("  cos(pv,sv) = %6.3f\n", cos_pv_sv ) ;
                   printf("\n") ;
                } // isv
 
