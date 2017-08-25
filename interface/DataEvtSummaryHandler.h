@@ -27,7 +27,8 @@ typedef std::vector<LorentzVector> LorentzVectorCollection;
 
 struct DataEvtSummary_t {
 
-    Int_t run,lumi,event;
+    Int_t run,lumi;
+    Long64_t event;
     Float_t curAvgInstLumi,curIntegLumi;
     Bool_t hasTrigger;
     Int_t triggerType;
@@ -111,6 +112,19 @@ struct DataEvtSummary_t {
     Float_t jet_mass[MAXPARTICLES],jet_area[MAXPARTICLES],jet_pu[MAXPARTICLES],jet_puId[MAXPARTICLES],jet_genpt[MAXPARTICLES];
     Bool_t jet_PFLoose[MAXPARTICLES], jet_PFTight[MAXPARTICLES];
   Int_t jet_partonFlavour[MAXPARTICLES], jet_partonMother[MAXPARTICLES], jet_partonMotherIdx[MAXPARTICLES], jet_hadronFlavour[MAXPARTICLES];
+
+
+
+
+    //sv : Inclusive Secondary Vertices from slimmedSecondaryVertices
+    Int_t sv ;
+    Float_t sv_px[MAXPARTICLES], sv_py[MAXPARTICLES], sv_pz[MAXPARTICLES], sv_en[MAXPARTICLES] ;
+    Int_t   sv_ntrk[MAXPARTICLES] ;
+    Float_t sv_dxy[MAXPARTICLES], sv_dxyz[MAXPARTICLES], sv_dxyz_signif[MAXPARTICLES] ;
+    Float_t sv_cos_dxyz_p[MAXPARTICLES] ;
+    Float_t sv_chi2[MAXPARTICLES], sv_ndof[MAXPARTICLES] ;
+
+
 
 /*
     //jet (slimmedJetsPuppi)

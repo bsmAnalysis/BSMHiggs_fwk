@@ -41,6 +41,8 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
+#include "RecoBTag/SecondaryVertex/interface/SecondaryVertex.h"
+
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 //#include "TauAnalysis/SVfitStandalone/interface/SVfitStandaloneAlgorithm.h" //for svfit
 
@@ -144,6 +146,21 @@ int main(int argc, char* argv[])
   std::vector<std::string> urls=runProcess.getUntrackedParameter<std::vector<std::string> >("input");
   TString outUrl = runProcess.getParameter<std::string>("outfile");
 
+  bool verbose = runProcess.getParameter<bool>("verbose") ;
+  if ( verbose ) {
+     printf("  Verbose set to true.  Will print info for each event.\n") ;
+  } else {
+     printf("  Verbose set to false.  Will be quiet.\n") ;
+  }
+
+  int maxevents = runProcess.getParameter<int>("maxevents") ;
+  if ( maxevents < 0 ) {
+     printf("  Will run over all events.\n") ;
+  } else {
+     printf("  Will run over %d events.\n", maxevents ) ;
+  }
+
+
   //##############################################
   //########    INITIATING TREE      #############
   //##############################################
@@ -208,11 +225,16 @@ int main(int argc, char* argv[])
   //##############################################
   //loop on all the events
 
+  printf("\n\n") ;
+  printf("  Number of input files: %lu\n", urls.size() ) ;
+  printf("  First input file: %s\n", urls[0].c_str() ) ;
   printf("Progressing Bar           :0%%       20%%       40%%       60%%       80%%       100%%\n");
 
   for(unsigned int f=0;f<urls.size();f++){
+     if (verbose) printf("File: %s\n", urls[f].c_str() ) ;
      TFile* file = TFile::Open(urls[f].c_str() );
      fwlite::Event event(file);
+     if (verbose) printf("Number of events: %llu\n", event.size() ) ;
      printf("Scanning the ntuple %2i/%2i :", (int)f+1, (int)urls.size());
      int iev=0;
      int treeStep(event.size()/50);
@@ -232,6 +254,12 @@ int main(int argc, char* argv[])
        //##############################################   EVENT LOOP STARTS   ##############################################
        //if(!isMC && duplicatesChecker.isDuplicate( ev.run, ev.lumi, ev.event) ) { nDuplicates++; continue; }
        
+       ev.run = event.eventAuxiliary().run() ;
+       ev.lumi = event.eventAuxiliary().luminosityBlock() ;
+       ev.event = event.eventAuxiliary().event() ;
+
+       if ( verbose ) { printf("\n\n ================= Run %u , lumi %u , event %lld\n\n", ev.run, ev.lumi, ev.event ) ; }
+
        //Skip bad lumi
        if(!isMC && !goodLumiFilter.isGoodLumi(event.eventAuxiliary().run(),event.eventAuxiliary().luminosityBlock()))continue;
 
@@ -260,6 +288,8 @@ int main(int argc, char* argv[])
 	 ev.ngenTruepu=truePU;
 	 mon_.fillHisto("pileup","all",ev.ngenITpu,0);
 	 mon_.fillHisto("pileuptrue","all",truePU,0);
+
+         if ( verbose ) { printf("  MC : Npu= %3d, truePU = %5.1f\n", npuIT, truePU ) ; }
 
 	 //retrieve pdf info
 	 GenEventInfoProduct eventInfo;
@@ -290,7 +320,7 @@ int main(int argc, char* argv[])
 	 EvtHandle.getByLabel( event, "externalLHEProducer");
 	 ev.npdfs=0;
 	 ev.nalphaS=0;
-	 //if(EvtHandles.size()>0) {
+	 //if(EvtHandles.size()>0) 
 	 if(EvtHandle.isValid() && EvtHandle->weights().size()>0) {
 
 	     //fill pdf+alpha_s variation weights
@@ -326,6 +356,9 @@ int main(int argc, char* argv[])
 	 if(genHandle.isValid()){ gen = *genHandle;}
 	 
 	 std::vector<TLorentzVector> chLeptons;       
+
+         if ( verbose ) { printf("\n\n Gen particles:\n" ) ; }
+
 	 //Look for mother particle and Fill gen variables
 	 for(unsigned int igen=0; igen<gen.size(); igen++){ 
 	   if(!gen[igen].isHardProcess()) continue; 
@@ -365,9 +398,22 @@ int main(int argc, char* argv[])
 	       chLeptons.push_back(p4);
 	     }
 	     ev.nmcparticles++;
-	   }
+
+             if ( verbose ) {
+                printf("  %3d : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, eta=%7.3f, phi=%7.3f\n",
+                  igen,
+                  gen[igen].pdgId(),
+                  gen[igen].mass(),
+                  mom->pdgId(),
+                  gen[igen].pt(),
+                  gen[igen].eta(),
+                  gen[igen].phi()
+                ) ;
+             }
+
+	   } // has mom?
 	   
-	 }
+	 } // igen
 	 
 	 //
 	 // gen jets
@@ -521,7 +567,7 @@ int main(int argc, char* argv[])
        if(muonsHandle.isValid()){ muons = *muonsHandle;}
        
        ev.mn=0;
-       //       for (std::vector<pat::Muon >::const_iterator mu = muons.begin(); mu!=muons.end(); mu++) {
+       //       for (std::vector<pat::Muon >::const_iterator mu = muons.begin(); mu!=muons.end(); mu++) 
        for(pat::Muon &mu : muons) {
 	 if(mu.pt() < 3) continue;
 	 ev.mn_px[ev.mn] = mu.px();
@@ -572,7 +618,7 @@ int main(int argc, char* argv[])
 	   | (mu.isPFMuon() << 5)
 	   | (mu.isRPCMuon()<< 6);
 	 ev.mn++;
-       }
+       } // mu
 
 
        pat::ElectronCollection electrons;
@@ -583,7 +629,7 @@ int main(int argc, char* argv[])
        ev.en=0;
  
        for (pat::Electron &el : electrons) {
-       //       for( View<pat::ElectronCollection>::const_iterator el = electrons.begin(); el != electrons.end(); el++ ) {
+       //       for( View<pat::ElectronCollection>::const_iterator el = electrons.begin(); el != electrons.end(); el++ ) 
 	 float pt_ = el.pt();
 	 if (pt_ < 5) continue;
 
@@ -609,7 +655,7 @@ int main(int argc, char* argv[])
 
 
 	 ev.en++;
-       }
+       } // el
 
        
        //
@@ -627,7 +673,12 @@ int main(int argc, char* argv[])
        //       bool passPFloose = patUtils::passPFJetID("Loose", jet); //looseJetIdSelector.getBitTemplate();
        //       pat::strbitset hasTightId = tightJetIdSelector.getBitTemplate();
 
-       //for (std::vector<pat::Jet >::const_iterator j = jets.begin(); j!=jets.end(); j++) {
+
+
+       if ( verbose ) printf("\n\n Reconstructed jets : %lu\n", jets.size() ) ;
+
+       //for (std::vector<pat::Jet >::const_iterator j = jets.begin(); j!=jets.end(); j++) 
+       int ijet(0) ;
        for (pat::Jet &j : jets) {
 	 if(j.pt() < 15) continue;
 
@@ -661,6 +712,16 @@ int main(int argc, char* argv[])
 	 ev.jet_pu[ev.jet] = j.pileup();
 	 ev.jet_puId[ev.jet] = j.userFloat("pileupJetId:fullDiscriminant");
 	 ev.jet_partonFlavour[ev.jet] = j.partonFlavour();
+
+         if ( verbose ) {
+            printf("    %2d : pt=%6.1f, eta=%7.3f, phi=%7.3f : ID=%s%s, bCSV=%7.3f, PUID=%7.3f\n",
+                ijet, j.pt(), j.eta(), j.phi(),
+                (patUtils::passPFJetID("Loose", j)?"L":" "),
+                (patUtils::passPFJetID("Tight", j)?"T":" "),
+                j.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
+                j.userFloat("pileupJetId:fullDiscriminant")
+             ) ;
+         }
 
 	 if (isMC) {
 
@@ -703,6 +764,7 @@ int main(int argc, char* argv[])
 	 else     ev.jet_genpt[ev.jet] = 0;
 
 	 ev.jet++;
+         ijet++ ;
        }
 
        //
@@ -780,9 +842,124 @@ int main(int argc, char* argv[])
        }
        */
 
+
+
+
+
+       //-- Inclusive Secondary Vertices
+
+       reco::VertexCompositePtrCandidateCollection sec_vert ;
+       fwlite::Handle< reco::VertexCompositePtrCandidateCollection > svHandle ;
+       svHandle.getByLabel( event, "slimmedSecondaryVertices" ) ;
+       if ( svHandle.isValid() ) { sec_vert = *svHandle ; } else { printf("\n\n *** bad handle for reco::VertexCompositePtrCandidateCollection\n\n") ; gSystem -> Exit(-1) ; }
+
+       ev.sv = sec_vert.size() ;
+       if ( verbose ) printf("\n\n ---- Inclusive Secondary Vertices:\n" ) ;
+       for ( unsigned int isv=0; isv<sec_vert.size(); isv++ ) {
+
+          if (verbose ) {
+            printf(" %3d :   x,y,z = %9.5f, %9.5f, %9.5f :  Ntrk = %2lu : chi2 = %7.3f, Ndof = %5.2f\n",
+             isv,
+             sec_vert[isv].position().x(),
+             sec_vert[isv].position().y(),
+             sec_vert[isv].position().z(),
+             sec_vert[isv].numberOfDaughters(),
+             sec_vert[isv].vertexChi2(),
+             sec_vert[isv].vertexNdof()
+             ) ;
+          }
+
+          ev.sv_chi2[isv] = sec_vert[isv].vertexChi2() ;
+          ev.sv_ndof[isv] = sec_vert[isv].vertexNdof() ;
+
+          ev.sv_dxy[isv]  = sqrt( pow((sec_vert[isv].position().x() - PV.x()),2) + pow((sec_vert[isv].position().y() - PV.y()),2) ) ;
+          ev.sv_dxyz[isv] = sqrt( pow((sec_vert[isv].position().x() - PV.x()),2) + pow((sec_vert[isv].position().y() - PV.y()),2) + pow((sec_vert[isv].position().z() - PV.z()),2) ) ;
+
+          if ( verbose ) {
+             printf("      dx,dy,dz = %9.5f, %9.5f, %9.5f :  dxy = %9.5f , dxyz = %9.5f\n",
+               sec_vert[isv].position().x() - PV.x(),
+               sec_vert[isv].position().y() - PV.y(),
+               sec_vert[isv].position().z() - PV.z(),
+               ev.sv_dxy[isv],
+               ev.sv_dxyz[isv]
+             ) ;
+          }
+
+
+          TLorentzVector sv_p4 ;
+
+          for ( unsigned int id=0; id<sec_vert[isv].numberOfDaughters(); id++ ) {
+
+             reco::CandidatePtr dau = sec_vert[isv].daughterPtr(id) ;
+             TLorentzVector svd_p4( dau->px(), dau->py(), dau->pz(), dau->energy() ) ;
+             sv_p4 += svd_p4 ;
+
+             if ( verbose ) {
+                printf("      trk %2d :  pt=%6.1f, eta=%7.3f, phi = %7.3f\n",
+                   id,
+                   dau->pt(),
+                   dau->eta(),
+                   dau->phi()
+                ) ;
+             }
+
+          } // id
+
+          ev.sv_ntrk[isv] = sec_vert[isv].numberOfDaughters() ;
+
+          ev.sv_px[isv] = sv_p4.Px() ;
+          ev.sv_py[isv] = sv_p4.Py() ;
+          ev.sv_pz[isv] = sv_p4.Pz() ;
+          ev.sv_en[isv] = sv_p4.E() ;
+
+          GlobalVector dxyz( sec_vert[isv].position().x() - PV.x(), sec_vert[isv].position().y() - PV.y(), sec_vert[isv].position().z() - PV.z() ) ;
+          GlobalVector sv_p3( sv_p4.Px(), sv_p4.Py(), sv_p4.Pz() ) ;
+          ev.sv_cos_dxyz_p[isv] = -2. ;
+          if ( sv_p3.mag() * dxyz.mag() > 0 ) {
+             ev.sv_cos_dxyz_p[isv] = sv_p3.dot( dxyz ) / ( sv_p3.mag() * dxyz.mag() ) ;
+          }
+          double sv_pt = sqrt( pow( sv_p3.x(), 2. ) + pow( sv_p3.y(), 2. ) ) ;
+          if ( verbose ) {
+             printf("  secondary vertex pt = %6.1f, mass = %6.2f\n", sv_pt, sv_p4.M() ) ;
+             printf("  cos(pv,sv) = %6.3f\n", ev.sv_cos_dxyz_p[isv] ) ;
+          }
+
+          const reco::Vertex sv( sec_vert[isv].position(), sec_vert[isv].error() ) ;
+          Measurement1D projected_flight_length = reco::SecondaryVertex::computeDist3d( PV, sv, sv_p3, true ) ;
+          if ( verbose ) {
+             printf("  projected flight length: val = %9.5f , err = %9.5f , signif = %9.5f\n",
+                 projected_flight_length.value(), projected_flight_length.error(), projected_flight_length.significance() ) ;
+          }
+          ev.sv_dxyz_signif[isv] = projected_flight_length.significance() ;
+
+
+
+
+          if ( verbose ) printf("\n") ;
+
+       } // isv
+
+
+
+
+
+
+
+
+
+
+
+
+
        summaryHandler_.fillTree();
 
-     }
+       if ( maxevents > 0 && iev == maxevents ) {
+          printf("Reached maxevents (%d)\n", maxevents ) ;
+          break ;
+       }
+
+     } // loop over events.
+
      /*
        pat::METCollection puppimets;
        fwlite::Handle< pat::METCollection > puppimetsHandle;
@@ -797,11 +974,22 @@ int main(int argc, char* argv[])
      printf("\n");
      delete file;
 
-  }
+     if ( maxevents > 0 && iev == maxevents ) {
+        printf("Reached maxevents (%d)\n", maxevents ) ;
+        break ;
+     }
+
+  } // loop over files : f
+
   //##############################################
   //########     SAVING HISTO TO FILE     ########
   //##############################################
   //
+
+  printf("\n\n Done with loop over input files.\n\n") ;
+
+  //--- owen : Seems like trying to move the output file before the TFileService destructor
+  //           is called, where Write and Close happen, sometimes results in a corrupt output file.
 
   //scale all events by 1/N to avoid the initial loop to stupidly count the events
   //mon.Scale(1.0/totalNumEvent);
@@ -809,6 +997,14 @@ int main(int argc, char* argv[])
   TString terminationCmd = "";
   //save control plots to file
   printf("Results save in local directory and moved to %s\n", outUrl.Data());
+
+
+
+  //-- owen: explicitly call write and close before trying to move the output root file.
+  fs.file().Write() ;
+  fs.file().Close() ;
+
+
 
   //save all to the file
   terminationCmd += TString("mv test.root ") + outUrl + ";";

@@ -3,14 +3,17 @@
 #include "DataFormats/FWLite/interface/Event.h"
 #include "DataFormats/PatCandidates/interface/GenericParticle.h"
 #include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Candidate/interface/OverlapChecker.h"
 #include "DataFormats/Candidate/interface/VertexCompositePtrCandidate.h"
+#include "DataFormats/GeometryVector/interface/GlobalVector.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "RecoBTag/SecondaryVertex/interface/SecondaryVertex.h"
 #include "FWCore/FWLite/interface/FWLiteEnabler.h"
 #include "PhysicsTools/FWLite/interface/CommandLineParser.h"
 #include "TSystem.h"
+#include "TLorentzVector.h"
 #include "TFile.h"
-#include "TVector3.h"
 
 char pname[100] ;
 
@@ -18,7 +21,7 @@ const char* mcname( int pdgid ) ;
 
 bool isAncestor( const reco::Candidate* ancestor, const reco::Candidate* daughter ) ;
 
-double drMatch( double eta, double phi, pat::PackedGenParticleCollection& packed_gen, int& match_ipgp ) ;
+double drMatchPGP( double eta, double phi, pat::PackedGenParticleCollection& packed_gen, int& match_ipgp ) ;
 
 //---------------------------
 
@@ -65,6 +68,13 @@ double drMatch( double eta, double phi, pat::PackedGenParticleCollection& packed
                printf("\n  Primary Vertex : x,y,z = %9.5f, %9.5f, %9.5f\n\n", PV.x(), PV.y(), PV.z() ) ;
        
 
+
+               pat::JetCollection jets;
+               fwlite::Handle< pat::JetCollection > jetsHandle;
+               jetsHandle.getByLabel(event, "slimmedJets");
+               if(jetsHandle.isValid()){ jets = *jetsHandle;} else { printf("\n\n *** bad slimmedJets handle.\n\n") ; gSystem->Exit(-1) ; }
+
+       
 
                reco::GenParticleCollection gen;
                fwlite::Handle< reco::GenParticleCollection > genHandle;
@@ -275,17 +285,23 @@ double drMatch( double eta, double phi, pat::PackedGenParticleCollection& packed
                      sec_vert[isv].vertexChi2(),
                      sec_vert[isv].vertexNdof()
                      ) ;
-                  printf("      dx,dy,dz = %9.5f, %9.5f, %9.5f :  dxy = %9.5f\n",
+                  double sv_dxy = sqrt( pow((sec_vert[isv].position().x() - PV.x()),2) + pow((sec_vert[isv].position().y() - PV.y()),2) ) ;
+                  double sv_dxyz = sqrt( pow((sec_vert[isv].position().x() - PV.x()),2) + pow((sec_vert[isv].position().y() - PV.y()),2) + pow((sec_vert[isv].position().z() - PV.z()),2) ) ;
+                  printf("      dx,dy,dz = %9.5f, %9.5f, %9.5f :  dxy = %9.5f , dxyz = %9.5f\n",
                        sec_vert[isv].position().x() - PV.x(),
                        sec_vert[isv].position().y() - PV.y(),
                        sec_vert[isv].position().z() - PV.z(),
-                       sqrt( pow((sec_vert[isv].position().x() - PV.x()),2) + pow((sec_vert[isv].position().y() - PV.y()),2) )
+                       sv_dxy,
+                       sv_dxyz
                      ) ;
-                  TVector3 sv_p3 ;
+                  GlobalVector sv_p3 ;
+                  TLorentzVector sv_p4 ;
                   for ( unsigned int id=0; id<sec_vert[isv].numberOfDaughters(); id++ ) {
                      reco::CandidatePtr dau = sec_vert[isv].daughterPtr(id) ;
-                     TVector3 svd_p3( dau->px(), dau->py(), dau->pz() ) ;
+                     TLorentzVector svd_p4( dau->px(), dau->py(), dau->pz(), dau->energy() ) ;
+                     GlobalVector svd_p3( dau->px(), dau->py(), dau->pz() ) ;
                      sv_p3 += svd_p3 ;
+                     sv_p4 += svd_p4 ;
                      printf("      trk %2d :  pt=%6.1f, eta=%7.3f, phi = %7.3f",
                            id,
                            dau->pt(),
@@ -293,7 +309,7 @@ double drMatch( double eta, double phi, pat::PackedGenParticleCollection& packed
                            dau->phi()
                      ) ;
                      int match_ipgp(-1) ;
-                     double drm = drMatch( dau->eta(), dau->phi(), packed_gen, match_ipgp ) ;
+                     double drm = drMatchPGP( dau->eta(), dau->phi(), packed_gen, match_ipgp ) ;
                      printf(" : dr=%5.3f ipgp=%3d",
                            drm,
                            match_ipgp
@@ -314,13 +330,115 @@ double drMatch( double eta, double phi, pat::PackedGenParticleCollection& packed
                      }
                      printf("\n") ;
                   } // id
-                  TVector3 dxyz( sec_vert[isv].position().x() - PV.x(), sec_vert[isv].position().y() - PV.y(), sec_vert[isv].position().z() - PV.z() ) ;
+
+                  GlobalVector dxyz( sec_vert[isv].position().x() - PV.x(), sec_vert[isv].position().y() - PV.y(), sec_vert[isv].position().z() - PV.z() ) ;
                   double cos_pv_sv = -2. ;
-                  if ( sv_p3.Mag() * dxyz.Mag() > 0 ) {
-                     cos_pv_sv = sv_p3.Dot( dxyz ) / ( sv_p3.Mag() * dxyz.Mag() ) ;
+                  if ( sv_p3.mag() * dxyz.mag() > 0 ) {
+                     cos_pv_sv = sv_p3.dot( dxyz ) / ( sv_p3.mag() * dxyz.mag() ) ;
                   }
+                  double sv_pt = sqrt( pow( sv_p3.x(), 2. ) + pow( sv_p3.y(), 2. ) ) ;
+                  printf("  secondary vertex pt = %6.1f, mass = %6.2f\n", sv_pt, sv_p4.M() ) ;
                   printf("  cos(pv,sv) = %6.3f\n", cos_pv_sv ) ;
+
+                  const reco::Vertex sv( sec_vert[isv].position(), sec_vert[isv].error() ) ;
+                  Measurement1D projected_flight_length = reco::SecondaryVertex::computeDist3d( PV, sv, sv_p3, true ) ;
+                  printf("  projected flight length: val = %9.5f , err = %9.5f , signif = %9.5f\n",
+                      projected_flight_length.value(), projected_flight_length.error(), projected_flight_length.significance() ) ;
+
+                  double minDrJet15(9999.) ;
+                  double minDrJet20(9999.) ;
+                  double minDrJet25(9999.) ;
+                  double minDrJet30(9999.) ;
+                  int closest_jet15_idx(-1) ;
+                  int closest_jet20_idx(-1) ;
+                  int closest_jet25_idx(-1) ;
+                  int closest_jet30_idx(-1) ;
+
+                  //TLorentzVector sv_p4( sv_p3.x(), sv_p3.y(), sv_p3.z(), sv_p3.mag() ) ;
+
+                  for ( unsigned int ij=0; ij<jets.size(); ij++ ) {
+
+                     if ( jets[ij].pt() < 15 ) continue ;
+
+                     double deta = fabs( sv_p4.Eta() - jets[ij].eta() ) ;
+                     double dphi = fabs( sv_p4.Phi() - jets[ij].phi() ) ;
+                     if ( dphi > 3.14159265 ) dphi -= 2*3.14159265 ;
+                     if ( dphi <-3.14159265 ) dphi += 2*3.14159265 ;
+                     double dr = sqrt( dphi*dphi + deta*deta ) ;
+
+                     if ( jets[ij].pt() > 15 && dr < minDrJet15 ) {
+                        minDrJet15 = dr ;
+                        closest_jet15_idx = ij ;
+                     }
+                     if ( jets[ij].pt() > 20 && dr < minDrJet20 ) {
+                        minDrJet20 = dr ;
+                        closest_jet20_idx = ij ;
+                     }
+                     if ( jets[ij].pt() > 25 && dr < minDrJet25 ) {
+                        minDrJet25 = dr ;
+                        closest_jet25_idx = ij ;
+                     }
+                     if ( jets[ij].pt() > 30 && dr < minDrJet30 ) {
+                        minDrJet30 = dr ;
+                        closest_jet30_idx = ij ;
+                     }
+
+                  } // ij
+
+                  if ( closest_jet15_idx >= 0 ) {
+                     printf("  closest jet, pt>15 :  dr = %6.3f,  pt= %6.1f, eta= %7.3f, phi = %7.3f,  bCSV=%7.3f\n",
+                        minDrJet15, jets[closest_jet15_idx].pt(), jets[closest_jet15_idx].eta(), jets[closest_jet15_idx].phi(),
+                        jets[closest_jet15_idx].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") ) ;
+                  }
+                  if ( closest_jet20_idx >= 0 ) {
+                     printf("  closest jet, pt>20 :  dr = %6.3f,  pt= %6.1f, eta= %7.3f, phi = %7.3f,  bCSV=%7.3f\n",
+                        minDrJet20, jets[closest_jet20_idx].pt(), jets[closest_jet20_idx].eta(), jets[closest_jet20_idx].phi(),
+                        jets[closest_jet20_idx].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") ) ;
+                  }
+                  if ( closest_jet25_idx >= 0 ) {
+                     printf("  closest jet, pt>25 :  dr = %6.3f,  pt= %6.1f, eta= %7.3f, phi = %7.3f,  bCSV=%7.3f\n",
+                        minDrJet25, jets[closest_jet25_idx].pt(), jets[closest_jet25_idx].eta(), jets[closest_jet25_idx].phi(),
+                        jets[closest_jet25_idx].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") ) ;
+                  }
+                  if ( closest_jet30_idx >= 0 ) {
+                     printf("  closest jet, pt>30 :  dr = %6.3f,  pt= %6.1f, eta= %7.3f, phi = %7.3f,  bCSV=%7.3f\n",
+                        minDrJet30, jets[closest_jet30_idx].pt(), jets[closest_jet30_idx].eta(), jets[closest_jet30_idx].phi(),
+                        jets[closest_jet30_idx].bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags") ) ;
+                  }
+
+                  bool sv_good( true ) ;
+                  if ( sv_dxy > 3. ) {  // are the units of vertex position cm?
+                     sv_good = false ;
+                     printf("    Transverse fligth length too long (>3 cm) : %9.5f\n", sv_dxy ) ;
+                  }
+                  if ( projected_flight_length.significance() < 4. ) {
+                     sv_good = false ;
+                     printf("    Projected flight length significance too low (<4) : %5.2f\n", projected_flight_length.significance() ) ;
+                  }
+                  if ( cos_pv_sv < 0.98 ) {
+                     sv_good = false ;
+                     printf("    cos of angle between flight length and momentum too low (<0.98) : %6.3f\n", cos_pv_sv ) ;
+                  }
+                  if ( sec_vert[isv].numberOfDaughters() < 3 ) {
+                     sv_good = false ;
+                     printf("    too few daughters (<3) : %lu\n", sec_vert[isv].numberOfDaughters() ) ;
+                  }
+                  if ( sv_pt < 10. ) {
+                     sv_good = false ;
+                     printf("    pt too low (<10): %7.1f\n", sv_pt ) ;
+                  }
+                  if ( minDrJet20 < 0.4 ) {
+                     sv_good = false ;
+                     printf("    Too close to a jet with pt>20 :   dr = %6.3f,  pt= %6.1f, eta= %7.3f, phi = %7.3f\n",
+                        minDrJet20, jets[closest_jet20_idx].pt(), jets[closest_jet20_idx].eta(), jets[closest_jet20_idx].phi() ) ;
+                  }
+                  if ( sv_good ) {
+                     printf("    *** SV is good.\n" ) ;
+                  }
+
+
                   printf("\n") ;
+
                } // isv
 
 
@@ -481,7 +599,7 @@ bool isAncestor( const reco::Candidate* ancestor, const reco::Candidate* daughte
 
 //========================================================================
 
-double drMatch( double eta, double phi, pat::PackedGenParticleCollection& packed_gen, int& match_ipgp ) {
+double drMatchPGP( double eta, double phi, pat::PackedGenParticleCollection& packed_gen, int& match_ipgp ) {
 
    double minDr = 9999. ;
    match_ipgp = -1 ;
@@ -507,8 +625,9 @@ double drMatch( double eta, double phi, pat::PackedGenParticleCollection& packed
 
    return minDr ;
 
-} // drMatch
+} // drMatchPGP
 
+//========================================================================
 
 
 
