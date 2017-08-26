@@ -16,7 +16,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     //event info
     t_->Branch("run",        	&evSummary_.run,            "run/I");
     t_->Branch("lumi",       	&evSummary_.lumi,           "lumi/I");
-    t_->Branch("event",      	&evSummary_.event,          "event/I");
+    t_->Branch("event",      	&evSummary_.event,          "event/L");
     t_->Branch("curAvgInstLumi",&evSummary_.curAvgInstLumi, "curAvgInstLumi/F");
     t_->Branch("curIntegLumi", 	&evSummary_.curIntegLumi,   "curIntegLumi/F");
 
@@ -222,6 +222,22 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("jet_partonMotherIdx",   evSummary_.jet_partonMotherIdx,     "jet_partonMotherIdx[jet]/I"); 
     t_->Branch("jet_hadronFlavour",     evSummary_.jet_hadronFlavour,       "jet_hadronFlavour[jet]/I");
     t_->Branch("jet_genpt",             evSummary_.jet_genpt,               "jet_genpt[jet]/F");
+
+
+
+    //sv : Inclusive Secondary Vertices from slimmedSecondaryVertices
+    t_->Branch("sv"              , &evSummary_.sv              , "sv/I" ) ;
+    t_->Branch("sv_px"           , evSummary_.sv_px            , "sv_px[sv]/F" ) ;
+    t_->Branch("sv_py"           , evSummary_.sv_py            , "sv_py[sv]/F" ) ;
+    t_->Branch("sv_pz"           , evSummary_.sv_pz            , "sv_pz[sv]/F" ) ;
+    t_->Branch("sv_en"           , evSummary_.sv_en            , "sv_en[sv]/F" ) ;
+    t_->Branch("sv_ntrk"         , evSummary_.sv_ntrk          , "sv_ntrk[sv]/I" ) ;
+    t_->Branch("sv_dxy"          , evSummary_.sv_dxy           , "sv_dxy[sv]/F" ) ;
+    t_->Branch("sv_dxyz"         , evSummary_.sv_dxyz          , "sv_dxyz[sv]/F" ) ;
+    t_->Branch("sv_dxyz_signif"  , evSummary_.sv_dxyz_signif   , "sv_dxyz_signif[sv]/F" ) ;
+    t_->Branch("sv_cos_dxyz_p"   , evSummary_.sv_cos_dxyz_p    , "sv_cos_dxyz_p[sv]/F" ) ;
+    t_->Branch("sv_chi2"         , evSummary_.sv_chi2          , "sv_chi2[sv]/F" ) ;
+    t_->Branch("sv_ndof"         , evSummary_.sv_ndof          , "sv_ndof[sv]/F" ) ;
 
 
     //fjet (ak8PFJetsCHS)
@@ -497,6 +513,24 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("jet_hadronFlavour",       evSummary_.jet_hadronFlavour);
     t_->SetBranchAddress("jet_genpt",               evSummary_.jet_genpt);
 
+
+
+
+    //sv : Inclusive Secondary Vertices from slimmedSecondaryVertices
+    t_->SetBranchAddress("sv"              , &evSummary_.sv               ) ;
+    t_->SetBranchAddress("sv_px"           , evSummary_.sv_px             ) ;
+    t_->SetBranchAddress("sv_py"           , evSummary_.sv_py             ) ;
+    t_->SetBranchAddress("sv_pz"           , evSummary_.sv_pz             ) ;
+    t_->SetBranchAddress("sv_en"           , evSummary_.sv_en             ) ;
+    t_->SetBranchAddress("sv_ntrk"         , evSummary_.sv_ntrk           ) ;
+    t_->SetBranchAddress("sv_dxy"          , evSummary_.sv_dxy            ) ;
+    t_->SetBranchAddress("sv_dxyz"         , evSummary_.sv_dxyz           ) ;
+    t_->SetBranchAddress("sv_dxyz_signif"  , evSummary_.sv_dxyz_signif    ) ;
+    t_->SetBranchAddress("sv_cos_dxyz_p"   , evSummary_.sv_cos_dxyz_p     ) ;
+    t_->SetBranchAddress("sv_chi2"         , evSummary_.sv_chi2           ) ;
+    t_->SetBranchAddress("sv_ndof"         , evSummary_.sv_ndof           ) ;
+
+
 /*
     //pjet: slimmedJetsPuppi
     t_->SetBranchAddress("pjet",                     &evSummary_.pjet);
@@ -588,6 +622,7 @@ void DataEvtSummaryHandler::resetStruct()
     evSummary_.en=0;
     evSummary_.ta=0;
     evSummary_.jet=0;
+    evSummary_.sv=0;
     //evSummary_.pjet=0;
     evSummary_.fjet=0;
     evSummary_.npdfs=0;

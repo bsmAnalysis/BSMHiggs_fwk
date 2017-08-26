@@ -75,6 +75,7 @@ runProcess = cms.PSet(
     lumisToProcess = LumiList.LumiList(filename = theLumiMask).getVLuminosityBlockRange(),
     pujetidparas = cms.PSet(pu_jetid),
     electronidparas = cms.PSet(myVidElectronId),
+    verbose = cms.bool(False),
     maxevents = cms.int32(-1) # set to -1 when running on grid. 
 )
 
