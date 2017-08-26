@@ -102,6 +102,32 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
         }
     }
 
+    // fat Jet
+    size_t nfatjet(0);
+    for(Int_t i=0; i<ev.fjet; i++) {
+      LorentzVector P4( ev.fjet_px[i],ev.fjet_py[i],ev.fjet_pz[i],ev.fjet_en[i] );
+      if (P4.pt()>0) {  
+	phys.fatjets.push_back( PhysicsObject_FatJet(P4) );
+	phys.fatjets[i].setBtagInfo(ev.fjet_btag0[i]);
+	phys.fatjets[i].setSubjetInfo(ev.fjet_prunedM[i], ev.fjet_softdropM[i], ev.fjet_tau1[i], ev.fjet_tau2[i], ev.fjet_tau3[i]);
+
+	nfatjet++;
+      }
+    }
+
+
+    // secondary vertices 
+    size_t nsv(0);
+    for (Int_t i=0; i<ev.sv; i++) {
+      LorentzVector P4( ev.sv_px[i], ev.sv_py[i], ev.sv_pz[i], ev.sv_en[i] );
+      if (P4.pt()>0) {
+	phys.sec_v.push_back( PhysicsObject_SV(P4, ev.sv_chi2[i], ev.sv_ndof[i]) );
+	phys.sec_v[i].setSVinfo(ev.sv_ntrk[i], ev.sv_dxy[i], ev.sv_dxyz[i], ev.sv_dxyz_signif[i], ev.sv_cos_dxyz_p[i]);
+
+	nsv++;
+      }
+    }
+
 
     //generator level particles
     for(Int_t ipart=0; ipart<ev.nmcparticles; ipart++) {
@@ -117,11 +143,6 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
         case 16:
         case -16: {
 	  phys.genneutrinos.push_back( PhysicsObject(p4,ev.mc_id[ipart],ev.mc_mom[ipart],ev.mc_momidx[ipart]) );
-        }
-        break;
-        case 2000012:
-        case -2000012: {
-	  phys.genWIMPs.push_back( PhysicsObject(p4,ev.mc_id[ipart],ev.mc_mom[ipart],ev.mc_momidx[ipart]) );
         }
         break;
 	case 35:

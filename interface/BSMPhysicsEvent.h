@@ -156,10 +156,58 @@ public :
 
 };
 
+class PhysicsObject_FatJet : public LorentzVector {
+ public:
+ PhysicsObject_FatJet(LorentzVector vec) :
+  LorentzVector(vec) { }
+
+  void setBtagInfo(Float_t btag0_=0) {
+    btag0=btag0_;
+  }
+
+  void setSubjetInfo(Float_t prunedM_, Float_t softdropM_, Float_t tau1_, Float_t tau2_, Float_t tau3_)
+  {
+    prunedM=prunedM_;
+    softdropM=softdropM_;
+    tau1=tau1_;
+    tau2=tau2_;
+    tau3=tau3_;
+  }
+
+  Float_t btag0;
+  Float_t prunedM, softdropM;
+  Float_t tau1, tau2, tau3;
+
+};
+
+class PhysicsObject_SV : public LorentzVector {
+ public:
+ PhysicsObject_SV(LorentzVector vec, Float_t chi2_, Float_t ndof_) :
+  LorentzVector(vec), chi2(chi2_), ndof(ndof_) { }
+
+  void setSVinfo(Int_t ntrk_, Float_t dxy_, Float_t dxyz_, Float_t dxyz_signif_, Float_t cos_dxyz_p_)
+  {
+    ntrk=ntrk_;
+    dxy=dxy_;
+    dxyz=dxyz_;
+    dxyz_signif=dxyz_signif_;
+    cos_dxyz_p=cos_dxyz_p_;
+  }
+  
+  Float_t chi2, ndof;
+
+  Int_t ntrk;
+  Float_t dxy, dxyz, dxyz_signif;
+  Float_t cos_dxyz_p;
+
+};
+
 
 typedef std::vector<PhysicsObject>        PhysicsObjectCollection;
 typedef std::vector<PhysicsObject_Lepton> PhysicsObjectLeptonCollection;
 typedef std::vector<PhysicsObject_Jet>    PhysicsObjectJetCollection;
+typedef std::vector<PhysicsObject_FatJet> PhysicsObjectFatJetCollection;
+typedef std::vector<PhysicsObject_SV>     PhysicsObjectSVCollection;
 
 //
 struct PhysicsEvent_t {
@@ -168,10 +216,12 @@ struct PhysicsEvent_t {
   
   PhysicsObjectLeptonCollection leptons;
   PhysicsObjectJetCollection jets;
+  PhysicsObjectFatJetCollection fatjets;
+  PhysicsObjectSVCollection sec_v;
   LorentzVector met, metNoHF;
   
   PhysicsObjectCollection genparticles;
-  PhysicsObjectCollection genneutrinos,genleptons,genWIMPs,genHiggs,genpartons;
+  PhysicsObjectCollection genneutrinos,genleptons,genHiggs,genpartons;
   PhysicsObjectCollection genjets;
 };
 
