@@ -31,6 +31,7 @@
 #include "DataFormats/PatCandidates/interface/Tau.h"
 #include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
 #include "DataFormats/PatCandidates/interface/GenericParticle.h"
+#include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
 
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -116,6 +117,32 @@ const reco::Candidate* findFirstMotherWithDifferentID(const reco::Candidate *par
   }
   return 0; 
 }         
+
+//========================================================================
+
+bool isAncestor( const reco::Candidate& ancestor, const reco::Candidate& daughter ) {
+
+   ////printf(" in isAncestor:  ancestor ID = %d     ,     daughter ID = %d\n", ancestor.pdgId(),  daughter.pdgId() ) ;
+
+  //-- totally stupid way that works...
+   if ( ancestor.pdgId() == daughter.pdgId() ) {
+      if ( fabs( ancestor.pt() - daughter.pt() ) < 0.1
+         && fabs( ancestor.phi() - daughter.phi() ) < 0.01
+         && fabs( ancestor.eta() - daughter.eta() ) < 0.01 )
+         //printf(" these two are the same.\n" ) ;
+         return true ;
+   }
+
+   for (size_t i=0; i< daughter.numberOfMothers(); i++) {
+      if ( isAncestor( ancestor, *(daughter.mother(i)) ) ) {
+         return true ;
+      }
+   } // i
+   return false ;
+
+} // isAncestor
+
+//========================================================================
 
 
 int main(int argc, char* argv[])
@@ -263,6 +290,9 @@ int main(int argc, char* argv[])
        //Skip bad lumi
        if(!isMC && !goodLumiFilter.isGoodLumi(event.eventAuxiliary().run(),event.eventAuxiliary().luminosityBlock()))continue;
 
+       ev.mcbh = 0 ;
+       std::vector<reco::GenParticle> b_hadrons ;
+
        if (isMC) {
 
 	 ev.nmcparticles = 0;
@@ -355,14 +385,38 @@ int main(int argc, char* argv[])
 	 genHandle.getByLabel(event, "prunedGenParticles");
 	 if(genHandle.isValid()){ gen = *genHandle;}
 	 
+
 	 std::vector<TLorentzVector> chLeptons;       
 
          if ( verbose ) { printf("\n\n Gen particles:\n" ) ; }
 
 	 //Look for mother particle and Fill gen variables
 	 for(unsigned int igen=0; igen<gen.size(); igen++){ 
-	   if(!gen[igen].isHardProcess()) continue; 
 	   
+           {
+              int pdgId = gen[igen].pdgId();
+              if (  abs( pdgId ) == 511
+                 || abs( pdgId ) == 521
+                 || abs( pdgId ) == 531
+                 || abs( pdgId ) == 541
+                 || abs( pdgId ) == 5122
+                 || abs( pdgId ) == 5112
+                 || abs( pdgId ) == 5222
+                 || abs( pdgId ) == 5132
+                 || abs( pdgId ) == 5232
+                 || abs( pdgId ) == 5332 ) {
+                 b_hadrons.emplace_back( gen[igen] ) ;
+                 ev.mcbh_id[ev.mcbh] = pdgId ;
+                 ev.mcbh_px[ev.mcbh] = gen[igen].px() ;
+                 ev.mcbh_py[ev.mcbh] = gen[igen].py() ;
+                 ev.mcbh_pz[ev.mcbh] = gen[igen].pz() ;
+                 ev.mcbh_en[ev.mcbh] = gen[igen].energy() ;
+                 ev.mcbh ++ ;
+              }
+           }
+
+	   if(!gen[igen].isHardProcess()) continue; 
+
 	     //find the ID of the first mother that has a different ID than the particle itself
 	   const reco::Candidate* mom = findFirstMotherWithDifferentID(&gen[igen]);
 	     
@@ -414,6 +468,15 @@ int main(int argc, char* argv[])
 	   } // has mom?
 	   
 	 } // igen
+
+         if ( verbose ) {
+            printf("\n\n ---- ground state B hadrons:\n") ;
+            for ( int bi=0; bi<b_hadrons.size(); bi++ ) {
+               printf( " %2d %p : ID=%6d : m=%6.2f : pt=%6.1f, eta=%7.3f, phi=%7.3f\n",
+                 bi, b_hadrons[bi], b_hadrons[bi].pdgId(), b_hadrons[bi].mass(), b_hadrons[bi].pt(), b_hadrons[bi].eta(), b_hadrons[bi].phi()) ;
+            } // bi
+            printf("\n\n") ;
+         }
 	 
 	 //
 	 // gen jets
@@ -932,6 +995,114 @@ int main(int argc, char* argv[])
           }
           ev.sv_dxyz_signif[isv] = projected_flight_length.significance() ;
 
+
+          ev.sv_mc_nbh_moms[isv] = 0 ;
+          ev.sv_mc_nbh_daus[isv] = 0 ;
+          ev.sv_mc_mcbh_ind[isv] = -1 ;
+
+          if (isMC) {
+
+             //--- go through daughters and find which are from B hadrons
+
+             std::vector<int> bhmomind ;
+             std::vector<int> bhmom_ndau ;
+
+             for ( unsigned int id=0; id<sec_vert[isv].numberOfDaughters(); id++ ) {
+
+                reco::CandidatePtr dau = sec_vert[isv].daughterPtr(id) ;
+
+                //--- find closest match to a charged particle in packedGenParticles
+                pat::PackedGenParticleCollection packed_gen;
+                fwlite::Handle< pat::PackedGenParticleCollection > packed_genHandle;
+                packed_genHandle.getByLabel(event, "packedGenParticles");
+                if(packed_genHandle.isValid()){ packed_gen = *packed_genHandle; } else { printf("\n\n *** bad handle for pat::PackedGenParticleCollection\n\n") ; gSystem->Exit(-1) ; }
+
+                double minDr = 9999. ;
+                int match_ipgp = -1 ;
+
+                for ( unsigned int ipgp=0; ipgp<packed_gen.size(); ipgp++ ) {
+
+                   if ( packed_gen[ipgp].charge() == 0 ) continue ;
+
+                   double gp_eta = packed_gen[ipgp].eta() ;
+                   double gp_phi = packed_gen[ipgp].phi() ;
+
+                   double deta = fabs( dau->eta() - gp_eta ) ;
+                   double dphi = fabs( dau->phi() - gp_phi ) ;
+                   if ( dphi > 3.14159265 ) dphi -= 2*3.14159265 ;
+                   if ( dphi <-3.14159265 ) dphi += 2*3.14159265 ;
+                   double dr = sqrt( dphi*dphi + deta*deta ) ;
+                   if ( dr < minDr ) {
+                      minDr = dr ;
+                      match_ipgp = ipgp ;
+                   }
+
+                } // ipgp
+
+                if ( minDr < 0.02 && match_ipgp >= 0 ) {
+                   if ( verbose ) printf("  trk %2d matches pgp %3d , dr = %.4f", id, match_ipgp, minDr ) ; 
+                   for ( int bi=0; bi<b_hadrons.size(); bi++ ) {
+                      if ( isAncestor( b_hadrons[bi], packed_gen[match_ipgp] ) ) {
+                         if ( verbose ) printf(" : is daughter of B had %d (pt=%5.1f, eta=%7.3f, phi=%7.3f)",
+                          bi, b_hadrons[bi].pt(), b_hadrons[bi].eta(), b_hadrons[bi].phi()) ;
+                         ev.sv_mc_nbh_daus[isv] ++ ;
+                         if ( ev.sv_mc_mcbh_ind[isv] < 0 && ev.sv_mc_nbh_moms[isv] == 0 ) {
+                            ev.sv_mc_nbh_moms[isv] = 1 ;
+                            ev.sv_mc_mcbh_ind[isv] = bi ;
+                            bhmomind.emplace_back( bi ) ;
+                            bhmom_ndau.emplace_back( 1 ) ;
+                         } else if ( ev.sv_mc_nbh_moms[isv] >= 1 ) {
+                            bool found(false) ;
+                            for ( unsigned int i=0; i<bhmomind.size(); i++ ) {
+                               if ( bhmomind[i] == bi ) {
+                                  found = true ;
+                                  bhmom_ndau[i] ++ ;
+                                  break ;
+                               }
+                            } // i
+                            if ( !found ) {
+                               ev.sv_mc_nbh_moms[isv] ++ ;
+                               bhmomind.emplace_back( bi ) ;
+                               bhmom_ndau.emplace_back( 1 ) ;
+                            }
+                         }
+                      }
+                   } // bi
+                   if ( verbose ) printf("\n") ;
+                } // found a reasonable match?
+                
+
+             } // id
+
+             if ( bhmom_ndau.size() > 1 ) {
+                int max(0) ;
+                float maxpt(0.) ;
+                for ( unsigned int i = 0 ; i < bhmom_ndau.size() ; i++ ) {
+                   if ( bhmom_ndau[i] > max ) {
+                      max = bhmom_ndau[i] ;
+                      maxpt = sqrt( pow(ev.mcbh_px[bhmomind[i]], 2. ) + pow(ev.mcbh_py[bhmomind[i]], 2. ) ) ;
+                      ev.sv_mc_mcbh_ind[isv] = bhmomind[i] ;
+                   } else if ( bhmom_ndau[i] == max ) {
+                      float thispt = sqrt( pow(ev.mcbh_px[bhmomind[i]], 2. ) + pow(ev.mcbh_py[bhmomind[i]], 2. ) ) ;
+                      if ( thispt > maxpt ) {
+                         max = bhmom_ndau[i] ;
+                         maxpt = thispt ;
+                         ev.sv_mc_mcbh_ind[isv] = bhmomind[i] ;
+                      }
+                   }
+                } // i
+             }
+
+             if ( verbose ) {
+                if ( ev.sv_mc_nbh_moms[isv] > 0 ) {
+                   printf( "         MC b hadron : Nmoms = %d , Ndaus = %d ,  Index of mom with most tracks = %d\n",
+                    ev.sv_mc_nbh_moms[isv], ev.sv_mc_nbh_daus[isv], ev.sv_mc_mcbh_ind[isv] ) ;
+                } else {
+                   printf( "         MC b hadron : Nmoms = 0\n" ) ;
+                }
+             }
+
+          } // MC?
 
 
 

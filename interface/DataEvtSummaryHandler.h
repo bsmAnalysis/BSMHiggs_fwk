@@ -67,6 +67,11 @@ struct DataEvtSummary_t {
     Float_t mcj_px[MAXMCPARTICLES],mcj_py[MAXMCPARTICLES],mcj_pz[MAXMCPARTICLES],mcj_en[MAXMCPARTICLES];  
     Int_t mcj_id[MAXMCPARTICLES], mcj_status[MAXMCPARTICLES], mcj_mom[MAXMCPARTICLES];
 
+    //gen ground state B hadrons
+    Int_t   mcbh ;
+    Float_t mcbh_px[MAXMCPARTICLES], mcbh_py[MAXMCPARTICLES], mcbh_pz[MAXMCPARTICLES], mcbh_en[MAXMCPARTICLES] ;
+    Int_t   mcbh_id[MAXMCPARTICLES] ;
+
     //muon
     Int_t mn;
     Float_t mn_px[MAXPARTICLES],mn_py[MAXPARTICLES],mn_pz[MAXPARTICLES],mn_en[MAXPARTICLES];
@@ -123,6 +128,9 @@ struct DataEvtSummary_t {
     Float_t sv_dxy[MAXPARTICLES], sv_dxyz[MAXPARTICLES], sv_dxyz_signif[MAXPARTICLES] ;
     Float_t sv_cos_dxyz_p[MAXPARTICLES] ;
     Float_t sv_chi2[MAXPARTICLES], sv_ndof[MAXPARTICLES] ;
+    Int_t   sv_mc_nbh_moms[MAXPARTICLES] ;
+    Int_t   sv_mc_nbh_daus[MAXPARTICLES] ;
+    Int_t   sv_mc_mcbh_ind[MAXPARTICLES] ;
 
 
 
