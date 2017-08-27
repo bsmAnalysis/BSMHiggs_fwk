@@ -48,6 +48,8 @@ cd $CMSSW_BASE/src/UserCode
 git clone git@github.com:yourgithubid/BSMHiggs_fwk.git bsmhiggs_fwk
 cd bsmhiggs_fwk
 git remote add upstream git@github.com:bsmAnalysis/BSMHiggs_fwk.git
+
+- Update your repository and start your changes:
 git remote update
 git merge upstream/master
 ```

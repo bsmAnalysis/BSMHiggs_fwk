@@ -72,6 +72,11 @@ const float CSVLooseWP = 0.5426;  // Updated to 80X Moriond17 Loose
 const float CSVMediumWP = 0.800;
 const float CSVTightWP = 0.935;
 
+//https://twiki.cern.ch/twiki/bin/viewauth/CMS/Hbbtagging#8_0_X
+// https://indico.cern.ch/event/543002/contributions/2205058/attachments/1295600/1932387/cv-doubleb-tagging-btv-approval.pdf (definition of WPs: slide 16)
+const float DBLooseWP = 0.3;
+const float DBMediumWP = 0.6;
+const float DBTightWP = 0.9;
 
 int main(int argc, char* argv[])
 {
@@ -284,7 +289,7 @@ int main(int argc, char* argv[])
     h->GetXaxis()->SetBinLabel(7,"|E_{T}^{miss}-#it{q}_{T}|/#it{q}_{T}<0.2");
     h->GetXaxis()->SetBinLabel(8,"E_{T}^{miss}>80");
 
-    h=(TH1F*) mon.addHistogram( new TH1F ("DMAcceptance", ";;Events", 3,0,3) );
+    h=(TH1F*) mon.addHistogram( new TH1F ("Acceptance", ";;Events", 3,0,3) );
     h->GetXaxis()->SetBinLabel(1,"Trigger && 2 Tight Leptons");
     h->GetXaxis()->SetBinLabel(2,"Trigger && 2 Tight Leptons && #geq 1 Leptons in MEX/1");
     h->GetXaxis()->SetBinLabel(3,"Trigger && 2 Tight Leptons && =2 Leptons in MEX/1");
@@ -747,7 +752,7 @@ int main(int argc, char* argv[])
         double BTagWeights(1.0);
         for(size_t ijet=0; ijet<corrJets.size(); ijet++) {
 
-            if(corrJets[ijet].pt()<15) continue;
+            if(corrJets[ijet].pt()<20) continue;
             if(fabs(corrJets[ijet].eta())>4.7) continue;
 
             //jet ID
@@ -926,7 +931,7 @@ int main(int argc, char* argv[])
 	    }
 
 	  } else {std::cout << "Not all 4-bs found in aa decays" << std::endl;}
-
+	  /*
 	// RECO level a(bb) and H(4b) masses
 	  PhysicsObjectJetCollection recojFromA1;
 	  PhysicsObjectJetCollection recojFromA2;
@@ -995,10 +1000,10 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("higgsPt","btrg",(recobFromA1[0]+recobFromA1[1]+recobFromA2[0]+recobFromA2[1]).pt(),weight);
 	    }
 	  }
-
+	  */
 
 	} // isSignal
-
+	
 
 	
         //#########################################################

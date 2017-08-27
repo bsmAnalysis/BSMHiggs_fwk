@@ -786,45 +786,38 @@ int main(int argc, char* argv[])
              ) ;
          }
 
-	 if (isMC) {
+	 const reco::GenParticle *pJet = j.genParton();
+	 if (pJet) {
+	   const reco::Candidate* mom = findFirstMotherWithDifferentID(&(*pJet));
+	   if (mom) {
+	     ev.jet_mother_id[ev.jet] = mom->pdgId();
 
-	   reco::GenParticleCollection gen;
-	   fwlite::Handle< reco::GenParticleCollection > genHandle;
-	   genHandle.getByLabel(event, "prunedGenParticles");
-	   if(genHandle.isValid()){ gen = *genHandle;}
-
-	   const reco::GenParticle *pJet = j.genParton();
-	   if (pJet) {
-	     const reco::Candidate* mom = findFirstMotherWithDifferentID(&(*pJet));
-	     if (mom) { 
-	       
-	       // loop over genParticles to find the mom index
-	       int idx=0; int idxx=0;
-	       for(unsigned int ig=0; ig<gen.size(); ig++){ 
-		 if(!gen[ig].isHardProcess()) continue; 
-		 
-		 const reco::Candidate* imom = findFirstMotherWithDifferentID(&gen[ig]);
-		 if (imom) {
-		   if ( mom->p4() == gen[ig].p4() && idxx==0) { idxx=idx; } 
-		   idx++;      
-		 }
-	       }
-	       ev.jet_partonMotherIdx[ev.jet] = idxx;
-	       ev.jet_partonMother[ev.jet] = mom->pdgId(); 
-	     }
+	     ev.jet_parton_px[ev.jet] = pJet->px();
+	     ev.jet_parton_py[ev.jet] = pJet->py(); 
+	     ev.jet_parton_pz[ev.jet] = pJet->pz(); 
+	     ev.jet_parton_en[ev.jet] = pJet->energy();
+	   
 	   } else {
-	     ev.jet_partonMotherIdx[ev.jet] = -1;
-	     ev.jet_partonMother[ev.jet] = -999;
+	     ev.jet_mother_id[ev.jet] = 0;
+
+	     ev.jet_parton_px[ev.jet] = 0.;
+	     ev.jet_parton_py[ev.jet] = 0.;
+	     ev.jet_parton_pz[ev.jet] = 0.;
+	     ev.jet_parton_en[ev.jet] = 0.;
 	   }
 	 } else {
-	   ev.jet_partonMotherIdx[ev.jet] = -1;                                                                                                                                                        
-	   ev.jet_partonMother[ev.jet] = -999; 
+	   ev.jet_mother_id[ev.jet] = 0;
+
+	   ev.jet_parton_px[ev.jet] = 0.; 
+	   ev.jet_parton_py[ev.jet] = 0.; 
+	   ev.jet_parton_pz[ev.jet] = 0.; 
+	   ev.jet_parton_en[ev.jet] = 0.; 
 	 }
 
 	 ev.jet_hadronFlavour[ev.jet] = j.hadronFlavour();
 	 const reco::GenJet *gJet=j.genJet();
 	 if(gJet) ev.jet_genpt[ev.jet] = gJet->pt();
-	 else     ev.jet_genpt[ev.jet] = 0;
+	 else     ev.jet_genpt[ev.jet] = 0.;
 
 	 ev.jet++;
          ijet++ ;
@@ -850,7 +843,7 @@ int main(int argc, char* argv[])
 	 
 	 const reco::GenJet *gJet=j.genJet();
 	 if(gJet) ev.fjet_genpt[ev.fjet] = gJet->pt();
-	 else     ev.fjet_genpt[ev.fjet] = 0;
+	 else     ev.fjet_genpt[ev.fjet] = 0.;
 
 	 ev.fjet_prunedM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSPrunedMass");
 	 ev.fjet_softdropM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSSoftDropMass");
@@ -858,6 +851,36 @@ int main(int argc, char* argv[])
 	 ev.fjet_tau1[ev.fjet] =  (float) j.userFloat("NjettinessAK8:tau1");
 	 ev.fjet_tau2[ev.fjet] =  (float) j.userFloat("NjettinessAK8:tau2");
 	 ev.fjet_tau3[ev.fjet] =  (float) j.userFloat("NjettinessAK8:tau3");
+
+	 ev.fjet_partonFlavour[ev.fjet] = j.partonFlavour();
+	 ev.fjet_hadronFlavour[ev.fjet] = j.hadronFlavour();
+
+	 const reco::GenParticle *pJet = j.genParton();
+	 if (pJet) {
+	   const reco::Candidate* mom = findFirstMotherWithDifferentID(&(*pJet));
+	   if (mom) {
+	     ev.fjet_mother_id[ev.jet] = mom->pdgId(); 
+
+	     ev.fjet_parton_px[ev.fjet] = pJet->px();
+	     ev.fjet_parton_py[ev.fjet] = pJet->py();
+	     ev.fjet_parton_pz[ev.fjet] = pJet->pz();
+	     ev.fjet_parton_en[ev.fjet] = pJet->energy();
+	   } else {
+	     ev.fjet_mother_id[ev.jet] = 0;
+	     
+	     ev.fjet_parton_px[ev.fjet] = 0.;
+	     ev.fjet_parton_py[ev.fjet] = 0.;
+	     ev.fjet_parton_pz[ev.fjet] = 0.;
+	     ev.fjet_parton_en[ev.fjet] = 0.;
+	   }
+	 } else {
+	   ev.fjet_mother_id[ev.jet] = 0;
+
+	   ev.fjet_parton_px[ev.fjet] = 0.;
+	   ev.fjet_parton_py[ev.fjet] = 0.;
+	   ev.fjet_parton_pz[ev.fjet] = 0.;
+	   ev.fjet_parton_en[ev.fjet] = 0.;
+	 }
 
 	 ev.fjet++;
        }
