@@ -738,7 +738,7 @@ int main(int argc, char* argv[])
 
 
 
-       if ( verbose ) printf("\n\n Reconstructed jets : %lu\n", jets.size() ) ;
+       if ( verbose ) printf("\n\n ----- Reconstructed jets : %lu\n", jets.size() ) ;
 
        //for (std::vector<pat::Jet >::const_iterator j = jets.begin(); j!=jets.end(); j++) 
        int ijet(0) ;
@@ -833,6 +833,9 @@ int main(int argc, char* argv[])
 
        ev.fjet=0;
        
+       if ( verbose ) printf("\n\n ----- Reconstructed AK8 jets : %lu\n", fatjets.size() ) ;  
+
+       int ifjet(0) ; 
        for (const pat::Jet &j : fatjets) {
 	 ev.fjet_px[ev.fjet] = j.correctedP4(0).px();
 	 ev.fjet_py[ev.fjet] = j.correctedP4(0).py();
@@ -840,6 +843,13 @@ int main(int argc, char* argv[])
 	 ev.fjet_en[ev.fjet] = j.correctedP4(0).energy();
 
 	 ev.fjet_btag0[ev.jet] = j.bDiscriminator("pfBoostedDoubleSecondaryVertexAK8BJetTags");
+
+	 if ( verbose ) {  
+	   printf("\n    %3d : pt=%6.1f, eta=%7.3f, phi=%7.3f : boostedSV=%7.3f\n", 
+		  ifjet, j.pt(), j.eta(), j.phi(),
+		  j.bDiscriminator("pfBoostedDoubleSecondaryVertexAK8BJetTags")
+		  ) ;
+         }  
 	 
 	 const reco::GenJet *gJet=j.genJet();
 	 if(gJet) ev.fjet_genpt[ev.fjet] = gJet->pt();
@@ -852,6 +862,41 @@ int main(int argc, char* argv[])
 	 ev.fjet_tau2[ev.fjet] =  (float) j.userFloat("NjettinessAK8:tau2");
 	 ev.fjet_tau3[ev.fjet] =  (float) j.userFloat("NjettinessAK8:tau3");
 
+	 // Add soft drop subjets
+
+	 if ( verbose ) {
+	   printf("\n   This AK8 jet has N = %3d subjet collections\n",j.nSubjetCollections());
+
+	   std::vector<std::string> const & sjNames = j.subjetCollectionNames();
+	   for (auto const & it : sjNames) {
+	     printf("   Subjet collection name %s , ", it.c_str());
+	   } 
+	   printf("\n") ; 
+	 }
+
+	 auto const & sdSubjets = j.subjets("SoftDrop"); 
+	 //To save space, the Soft Drop Subjets are stored in positions 0 and 1 in the constituent list.
+	 int count_subj(0);
+
+	 TLorentzVector softdrop_subjet; 
+	 for ( auto const & it : sdSubjets ) {
+	   softdrop_subjet.SetPtEtaPhiM(it->correctedP4(0).pt(), it->correctedP4(0).eta(), it->correctedP4(0).phi(), it->correctedP4(0).mass()); 
+	   
+	   count_subj++;
+	   if ( verbose ) {
+	     
+	     printf("\n    Soft drop subjet  %3d : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f",
+		    count_subj,
+		    softdrop_subjet.Pt(),
+		    softdrop_subjet.Eta(),
+		    softdrop_subjet.Phi(),
+		    softdrop_subjet.M()
+		    
+		    );
+
+	   }
+	 } // subjets
+	 
 	 ev.fjet_partonFlavour[ev.fjet] = j.partonFlavour();
 	 ev.fjet_hadronFlavour[ev.fjet] = j.hadronFlavour();
 
@@ -859,14 +904,14 @@ int main(int argc, char* argv[])
 	 if (pJet) {
 	   const reco::Candidate* mom = findFirstMotherWithDifferentID(&(*pJet));
 	   if (mom) {
-	     ev.fjet_mother_id[ev.jet] = mom->pdgId(); 
+	     ev.fjet_mother_id[ev.fjet] = mom->pdgId(); 
 
 	     ev.fjet_parton_px[ev.fjet] = pJet->px();
 	     ev.fjet_parton_py[ev.fjet] = pJet->py();
 	     ev.fjet_parton_pz[ev.fjet] = pJet->pz();
 	     ev.fjet_parton_en[ev.fjet] = pJet->energy();
 	   } else {
-	     ev.fjet_mother_id[ev.jet] = 0;
+	     ev.fjet_mother_id[ev.fjet] = 0;
 	     
 	     ev.fjet_parton_px[ev.fjet] = 0.;
 	     ev.fjet_parton_py[ev.fjet] = 0.;
@@ -874,7 +919,7 @@ int main(int argc, char* argv[])
 	     ev.fjet_parton_en[ev.fjet] = 0.;
 	   }
 	 } else {
-	   ev.fjet_mother_id[ev.jet] = 0;
+	   ev.fjet_mother_id[ev.fjet] = 0;
 
 	   ev.fjet_parton_px[ev.fjet] = 0.;
 	   ev.fjet_parton_py[ev.fjet] = 0.;
@@ -883,6 +928,7 @@ int main(int argc, char* argv[])
 	 }
 
 	 ev.fjet++;
+	 ifjet++;
        }
 
        
@@ -940,7 +986,7 @@ int main(int argc, char* argv[])
        if ( svHandle.isValid() ) { sec_vert = *svHandle ; } else { printf("\n\n *** bad handle for reco::VertexCompositePtrCandidateCollection\n\n") ; gSystem -> Exit(-1) ; }
 
        ev.sv = sec_vert.size() ;
-       if ( verbose ) printf("\n\n ---- Inclusive Secondary Vertices:\n" ) ;
+       if ( verbose ) printf("\n\n\n ---- Inclusive Secondary Vertices:\n" ) ;
        for ( unsigned int isv=0; isv<sec_vert.size(); isv++ ) {
 
           if (verbose ) {
