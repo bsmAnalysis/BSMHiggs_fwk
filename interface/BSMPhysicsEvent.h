@@ -126,8 +126,8 @@ public :
 //
 class PhysicsObject_Jet : public LorentzVector {
 public :
-    PhysicsObject_Jet(LorentzVector vec, Float_t pumva_, Bool_t isPFLoose_, Bool_t isPFTight_):
-        LorentzVector(vec), pumva(pumva_), isPFLoose(isPFLoose_), isPFTight(isPFTight_) { }
+ PhysicsObject_Jet(LorentzVector vec, Float_t pumva_, Bool_t isPFLoose_, Bool_t isPFTight_):
+  LorentzVector(vec), pumva(pumva_), isPFLoose(isPFLoose_), isPFTight(isPFTight_) { }
 
     void setBtagInfo(Float_t btag0_=0, Float_t btag1_=0, Float_t btag2_=0, Float_t btag3_=0, Float_t btag4_=0, Float_t btag5_=0, Float_t btag6_=0, Float_t btag7_=0) {
         btag0=btag0_;
@@ -140,19 +140,93 @@ public :
         btag7=btag7_;
     }
 
-    void setGenInfo(Int_t flavid_, Int_t motherid_, Int_t motheridx_, Float_t genPt_)
+    void setGenInfo(Int_t flavid_, Int_t partonid_, Int_t motherid_, Float_t parton_px_, Float_t parton_py_, Float_t parton_pz_, Float_t parton_en_, Float_t genPt_)
     {
 	flavid=flavid_;
-	motherid=motherid_; motheridx=motheridx_;
+	partonid=partonid_;
+	motherid=motherid_;
+	parton_px=parton_px_;
+	parton_py=parton_py_;
+	parton_pz=parton_pz_;
+	parton_en=parton_en_;
 	genPt=genPt_;
     }
 
     Float_t btag0, btag1, btag2, btag3, btag4, btag5, btag6, btag7;
     Float_t pumva;
     Bool_t isPFLoose,isPFTight;
-    Int_t motherid, motheridx;
-    Int_t flavid;
+    Int_t flavid, partonid, motherid;
+    Float_t parton_px, parton_py, parton_pz, parton_en;
     Float_t genPt;
+
+};
+
+class PhysicsObject_FatJet : public LorentzVector {
+ public:
+ PhysicsObject_FatJet(LorentzVector vec) :
+  LorentzVector(vec) { }
+
+  void setBtagInfo(Float_t btag0_=0) {
+    btag0=btag0_;
+  }
+
+  void setSubjetInfo(Float_t prunedM_, Float_t softdropM_, Float_t tau1_, Float_t tau2_, Float_t tau3_)
+  {
+    prunedM=prunedM_;
+    softdropM=softdropM_;
+    tau1=tau1_;
+    tau2=tau2_;
+    tau3=tau3_;
+  }
+
+  void setGenInfo(Int_t flavid_, Int_t partonid_, Int_t motherid_, Float_t parton_px_, Float_t parton_py_, Float_t parton_pz_, Float_t parton_en_)
+  {
+    flavid=flavid_; 
+    partonid=partonid_;
+    motherid=motherid_;
+    parton_px=parton_px_; 
+    parton_py=parton_py_;
+    parton_pz=parton_pz_;
+    parton_en=parton_en_;
+  }
+
+  Float_t btag0;
+  Float_t prunedM, softdropM;
+  Float_t tau1, tau2, tau3;
+
+  Int_t flavid, partonid, motherid;
+  Float_t parton_px, parton_py, parton_pz, parton_en;
+
+};
+
+class PhysicsObject_SV : public LorentzVector {
+ public:
+ PhysicsObject_SV(LorentzVector vec, Float_t chi2_, Float_t ndof_) :
+  LorentzVector(vec), chi2(chi2_), ndof(ndof_) { }
+
+  void setSVinfo(Int_t ntrk_, Float_t dxy_, Float_t dxyz_, Float_t dxyz_signif_, Float_t cos_dxyz_p_)
+  {
+    ntrk=ntrk_;
+    dxy=dxy_;
+    dxyz=dxyz_;
+    dxyz_signif=dxyz_signif_;
+    cos_dxyz_p=cos_dxyz_p_;
+  }
+
+  void setGenInfo(Int_t sv_mc_nbh_moms_, Int_t sv_mc_nbh_daus_, Int_t sv_mc_mcbh_ind_)
+  {
+    sv_mc_nbh_moms=sv_mc_nbh_moms_;
+    sv_mc_nbh_daus=sv_mc_nbh_daus_;
+    sv_mc_mcbh_ind=sv_mc_mcbh_ind_;
+  }
+  
+  Float_t chi2, ndof;
+
+  Int_t ntrk;
+  Float_t dxy, dxyz, dxyz_signif;
+  Float_t cos_dxyz_p;
+
+  Int_t sv_mc_nbh_moms, sv_mc_nbh_daus, sv_mc_mcbh_ind;
 
 };
 
@@ -160,6 +234,8 @@ public :
 typedef std::vector<PhysicsObject>        PhysicsObjectCollection;
 typedef std::vector<PhysicsObject_Lepton> PhysicsObjectLeptonCollection;
 typedef std::vector<PhysicsObject_Jet>    PhysicsObjectJetCollection;
+typedef std::vector<PhysicsObject_FatJet> PhysicsObjectFatJetCollection;
+typedef std::vector<PhysicsObject_SV>     PhysicsObjectSVCollection;
 
 //
 struct PhysicsEvent_t {
@@ -168,10 +244,12 @@ struct PhysicsEvent_t {
   
   PhysicsObjectLeptonCollection leptons;
   PhysicsObjectJetCollection jets;
+  PhysicsObjectFatJetCollection fatjets;
+  PhysicsObjectSVCollection svs;
   LorentzVector met, metNoHF;
   
   PhysicsObjectCollection genparticles;
-  PhysicsObjectCollection genneutrinos,genleptons,genWIMPs,genHiggs,genpartons;
+  PhysicsObjectCollection genneutrinos,genleptons,genHiggs,genpartons;
   PhysicsObjectCollection genjets;
 };
 

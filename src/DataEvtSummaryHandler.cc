@@ -227,9 +227,12 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("jet_PFLoose",           evSummary_.jet_PFLoose,             "jet_PFLoose[jet]/O");
     t_->Branch("jet_PFTight",           evSummary_.jet_PFTight,             "jet_PFTight[jet]/O");
     t_->Branch("jet_partonFlavour",     evSummary_.jet_partonFlavour,       "jet_partonFlavour[jet]/I");
-    t_->Branch("jet_partonMother",      evSummary_.jet_partonMother,        "jet_partonMother[jet]/I");
-    t_->Branch("jet_partonMotherIdx",   evSummary_.jet_partonMotherIdx,     "jet_partonMotherIdx[jet]/I"); 
     t_->Branch("jet_hadronFlavour",     evSummary_.jet_hadronFlavour,       "jet_hadronFlavour[jet]/I");
+    t_->Branch("jet_mother_id",         evSummary_.jet_mother_id,           "jet_mother_id[jet]/I");
+    t_->Branch("jet_parton_px",         evSummary_.jet_parton_px,        "jet_parton_px[jet]/F");
+    t_->Branch("jet_parton_py",         evSummary_.jet_parton_py,        "jet_parton_py[jet]/F");
+    t_->Branch("jet_parton_pz",         evSummary_.jet_parton_pz,        "jet_parton_pz[jet]/F");
+    t_->Branch("jet_parton_en",         evSummary_.jet_parton_en,        "jet_parton_en[jet]/F");
     t_->Branch("jet_genpt",             evSummary_.jet_genpt,               "jet_genpt[jet]/F");
 
 
@@ -267,7 +270,13 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("fjet_tau1",             evSummary_.fjet_tau1,               "fjet_tau1[fjet]/F");
     t_->Branch("fjet_tau2",             evSummary_.fjet_tau2,               "fjet_tau2[fjet]/F");
     t_->Branch("fjet_tau3",             evSummary_.fjet_tau3,               "fjet_tau3[fjet]/F");
-
+    t_->Branch("fjet_mother_id",         evSummary_.fjet_mother_id,           "fjet_mother_id[fjet]/I"); 
+    t_->Branch("fjet_parton_px",      evSummary_.fjet_parton_px,        "fjet_parton_px[fjet]/F");
+    t_->Branch("fjet_parton_py",      evSummary_.fjet_parton_py,        "fjet_parton_py[fjet]/F");
+    t_->Branch("fjet_parton_pz",      evSummary_.fjet_parton_pz,        "fjet_parton_pz[fjet]/F");
+    t_->Branch("fjet_parton_en",      evSummary_.fjet_parton_en,        "fjet_parton_en[fjet]/F");
+    t_->Branch("fjet_partonFlavour",      evSummary_.fjet_partonFlavour,        "fjet_partonFlavour[fjet]/I");
+    t_->Branch("fjet_hadronFlavour",      evSummary_.fjet_hadronFlavour,        "fjet_hadronFlavour[fjet]/I");
 
     //met
     t_->Branch("met_pt",               	&evSummary_.met_pt,                 "met_pt/F");
@@ -532,10 +541,13 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("jet_puId",                evSummary_.jet_puId);
     t_->SetBranchAddress("jet_PFLoose",             evSummary_.jet_PFLoose);
     t_->SetBranchAddress("jet_PFTight",             evSummary_.jet_PFTight);
+    t_->SetBranchAddress("jet_mother_id",           evSummary_.jet_mother_id);
     t_->SetBranchAddress("jet_partonFlavour",       evSummary_.jet_partonFlavour);
-    t_->SetBranchAddress("jet_partonMother",        evSummary_.jet_partonMother);
-    t_->SetBranchAddress("jet_partonMotherIdx",     evSummary_.jet_partonMotherIdx); 
     t_->SetBranchAddress("jet_hadronFlavour",       evSummary_.jet_hadronFlavour);
+    t_->SetBranchAddress("jet_parton_px",           evSummary_.jet_parton_px);
+    t_->SetBranchAddress("jet_parton_py",           evSummary_.jet_parton_py);
+    t_->SetBranchAddress("jet_parton_pz",           evSummary_.jet_parton_pz);
+    t_->SetBranchAddress("jet_parton_en",           evSummary_.jet_parton_en);
     t_->SetBranchAddress("jet_genpt",               evSummary_.jet_genpt);
 
 
@@ -595,7 +607,13 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("fjet_tau1",               evSummary_.fjet_tau1);
     t_->SetBranchAddress("fjet_tau2",               evSummary_.fjet_tau2);
     t_->SetBranchAddress("fjet_tau3",               evSummary_.fjet_tau3);
-
+    t_->SetBranchAddress("fjet_mother_id",           evSummary_.fjet_mother_id);
+    t_->SetBranchAddress("fjet_partonFlavour",      evSummary_.fjet_partonFlavour);
+    t_->SetBranchAddress("fjet_hadrononFlavour",      evSummary_.fjet_hadronFlavour); 
+    t_->SetBranchAddress("fjet_parton_px",           evSummary_.fjet_parton_px);
+    t_->SetBranchAddress("fjet_parton_py",           evSummary_.fjet_parton_py);
+    t_->SetBranchAddress("fjet_parton_pz",           evSummary_.fjet_parton_pz);
+    t_->SetBranchAddress("fjet_parton_en",           evSummary_.fjet_parton_en);
 
     //met
     t_->SetBranchAddress("met_pt",                  &evSummary_.met_pt);

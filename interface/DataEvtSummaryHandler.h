@@ -116,8 +116,8 @@ struct DataEvtSummary_t {
     Float_t jet_btag8[MAXPARTICLES],jet_btag9[MAXPARTICLES],jet_btag10[MAXPARTICLES];
     Float_t jet_mass[MAXPARTICLES],jet_area[MAXPARTICLES],jet_pu[MAXPARTICLES],jet_puId[MAXPARTICLES],jet_genpt[MAXPARTICLES];
     Bool_t jet_PFLoose[MAXPARTICLES], jet_PFTight[MAXPARTICLES];
-  Int_t jet_partonFlavour[MAXPARTICLES], jet_partonMother[MAXPARTICLES], jet_partonMotherIdx[MAXPARTICLES], jet_hadronFlavour[MAXPARTICLES];
-
+  Int_t jet_partonFlavour[MAXPARTICLES], jet_hadronFlavour[MAXPARTICLES], jet_mother_id[MAXPARTICLES];
+    Float_t jet_parton_px[MAXPARTICLES], jet_parton_py[MAXPARTICLES], jet_parton_pz[MAXPARTICLES], jet_parton_en[MAXPARTICLES];
 
 
 
@@ -149,9 +149,11 @@ struct DataEvtSummary_t {
     Int_t fjet;
     Float_t fjet_px[MAXPARTICLES],fjet_py[MAXPARTICLES],fjet_pz[MAXPARTICLES],fjet_en[MAXPARTICLES];
     Float_t fjet_btag0[MAXPARTICLES];
-  Float_t fjet_prunedM[MAXPARTICLES], fjet_softdropM[MAXPARTICLES]; //fjet_trimmedM[MAXPARTICLES],fjet_filteredM[MAXPARTICLES];
+    Float_t fjet_prunedM[MAXPARTICLES], fjet_softdropM[MAXPARTICLES]; //fjet_trimmedM[MAXPARTICLES],fjet_filteredM[MAXPARTICLES];
     Float_t fjet_tau1[MAXPARTICLES],fjet_tau2[MAXPARTICLES],fjet_tau3[MAXPARTICLES];
     Float_t fjet_genpt[MAXPARTICLES];
+  Int_t fjet_partonFlavour[MAXPARTICLES], fjet_hadronFlavour[MAXPARTICLES], fjet_mother_id[MAXPARTICLES];
+    Float_t fjet_parton_px[MAXPARTICLES], fjet_parton_py[MAXPARTICLES], fjet_parton_pz[MAXPARTICLES], fjet_parton_en[MAXPARTICLES];
 
     //met
     Float_t met_pt,met_phi,met_sumMET;

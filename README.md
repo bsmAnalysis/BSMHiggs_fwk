@@ -37,25 +37,6 @@ find UserCode/bsmhiggs_fwk/ -type f -name '*.cc' -exec sed -i -e 's/HiggsAnalysi
 scramv1 b -j 16 
 ```
 
-
-# An important note about PR in 80X (2016)
-Please before doing your PR, be sure to:
- - test your changes
- - reverse the changes due to th1fmorph thanks to the following command (and be sure to not add those new files in your git add):
-```bash 
-#TO DO before a PR
-cd $CMSSW_BASE/src
-find UserCode/bsmhiggs_fwk/ -type f -name '*.cc' -exec sed -i -e 's/UserCode\/bsmhiggs_fwk\/interface\/th1fmorph.h/HiggsAnalysis\/CombinedLimit\/interface\/th1fmorph.h/g' {} \;
-```
- - then you can make your PR
- - if you want to continue developing, don't forget to reverse this once again:
-```bash 
-#TO DO after a PR to be able to continue to work
-cd $CMSSW_BASE/src
-find UserCode/bsmhiggs_fwk/ -type f -name '*.cc' -exec sed -i -e 's/HiggsAnalysis\/CombinedLimit\/interface\/th1fmorph.h/UserCode\/bsmhiggs_fwk\/interface\/th1fmorph.h/g' {} \;
-```
-
-
 # For developers
 
 We have decided to use pull-request mode for the master development.
@@ -67,6 +48,8 @@ cd $CMSSW_BASE/src/UserCode
 git clone git@github.com:yourgithubid/BSMHiggs_fwk.git bsmhiggs_fwk
 cd bsmhiggs_fwk
 git remote add upstream git@github.com:bsmAnalysis/BSMHiggs_fwk.git
+
+- Update your repository and start your changes:
 git remote update
 git merge upstream/master
 ```
@@ -75,7 +58,7 @@ git merge upstream/master
 git commit -a -m "Added feature A, B, C"
 git push
 ```
-- Make a pull request agains the cms2l2v. See [details](https://help.github.com/articles/using-pull-requests/)
+- Make a pull request against the bsmAnalysis. See [details](https://help.github.com/articles/using-pull-requests/)
 
 
 # For creating private samples

@@ -94,12 +94,40 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
     for(Int_t i=0; i<ev.jet; i++) {
         LorentzVector P4( ev.jet_px[i],ev.jet_py[i],ev.jet_pz[i],ev.jet_en[i] );
         if(P4.pt()>0) {
-            phys.jets.push_back( PhysicsObject_Jet( P4,ev.jet_puId[i],ev.jet_PFLoose[i],ev.jet_PFTight[i] ) );
+	  phys.jets.push_back( PhysicsObject_Jet( P4, ev.jet_puId[i],ev.jet_PFLoose[i],ev.jet_PFTight[i] ) );
             phys.jets[i].setBtagInfo(ev.jet_btag0[i],ev.jet_btag1[i],ev.jet_btag2[i],ev.jet_btag3[i],ev.jet_btag4[i],ev.jet_btag5[i],ev.jet_btag6[i],ev.jet_btag7[i]);
-            phys.jets[i].setGenInfo(ev.jet_partonFlavour[i], ev.jet_partonMother[i], ev.jet_partonMotherIdx[i], ev.jet_genpt[i]);
+            phys.jets[i].setGenInfo(ev.jet_partonFlavour[i], ev.jet_hadronFlavour[i], ev.jet_mother_id[i], ev.jet_parton_px[i], ev.jet_parton_py[i], ev.jet_parton_pz[i], ev.jet_parton_en[i], ev.jet_genpt[i]);
 
             njet++;
         }
+    }
+
+    // fat Jet
+    size_t nfatjet(0);
+    for(Int_t i=0; i<ev.fjet; i++) {
+      LorentzVector P4( ev.fjet_px[i],ev.fjet_py[i],ev.fjet_pz[i],ev.fjet_en[i] );
+      if (P4.pt()>0) {  
+	phys.fatjets.push_back( PhysicsObject_FatJet(P4) );
+	phys.fatjets[i].setBtagInfo(ev.fjet_btag0[i]);
+	phys.fatjets[i].setSubjetInfo(ev.fjet_prunedM[i], ev.fjet_softdropM[i], ev.fjet_tau1[i], ev.fjet_tau2[i], ev.fjet_tau3[i]);
+	phys.fatjets[i].setGenInfo(ev.fjet_partonFlavour[i], ev.fjet_hadronFlavour[i], ev.fjet_mother_id[i], ev.fjet_parton_px[i], ev.fjet_parton_py[i], ev.fjet_parton_pz[i], ev.fjet_parton_en[i]);
+
+	nfatjet++;
+      }
+    }
+
+
+    // secondary vertices 
+    size_t nsv(0);
+    for (Int_t i=0; i<ev.sv; i++) {
+      LorentzVector P4( ev.sv_px[i], ev.sv_py[i], ev.sv_pz[i], ev.sv_en[i] );
+      if (P4.pt()>0) {
+	phys.svs.push_back( PhysicsObject_SV(P4, ev.sv_chi2[i], ev.sv_ndof[i]) );
+	phys.svs[i].setSVinfo(ev.sv_ntrk[i], ev.sv_dxy[i], ev.sv_dxyz[i], ev.sv_dxyz_signif[i], ev.sv_cos_dxyz_p[i]);
+	phys.svs[i].setGenInfo(ev.sv_mc_nbh_moms[i], ev.sv_mc_nbh_daus[i], ev.sv_mc_mcbh_ind[i]);
+
+	nsv++;
+      }
     }
 
 
@@ -117,11 +145,6 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
         case 16:
         case -16: {
 	  phys.genneutrinos.push_back( PhysicsObject(p4,ev.mc_id[ipart],ev.mc_mom[ipart],ev.mc_momidx[ipart]) );
-        }
-        break;
-        case 2000012:
-        case -2000012: {
-	  phys.genWIMPs.push_back( PhysicsObject(p4,ev.mc_id[ipart],ev.mc_mom[ipart],ev.mc_momidx[ipart]) );
         }
         break;
 	case 35:
