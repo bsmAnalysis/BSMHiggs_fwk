@@ -143,6 +143,7 @@ bool isAncestor( const reco::Candidate& ancestor, const reco::Candidate& daughte
 
 } // isAncestor
 
+ 
 //========================================================================
 
 
@@ -786,30 +787,35 @@ int main(int argc, char* argv[])
                 j.userFloat("pileupJetId:fullDiscriminant")
              ) ;
          }
+	 
 
 	 ev.jet_mother_id[ev.jet] = 0;
-
+	 
 	 ev.jet_parton_px[ev.jet] = 0.; 
 	 ev.jet_parton_py[ev.jet] = 0.; 
 	 ev.jet_parton_pz[ev.jet] = 0.; 
 	 ev.jet_parton_en[ev.jet] = 0.; 
+	 
+	 if (isMC) {
 
-	 const reco::GenParticle *pJet = j.genParton();
-	 if (pJet) {
-	   const reco::Candidate* mom = findFirstMotherWithDifferentID(&(*pJet));
-	   if (mom) {
-	     ev.jet_mother_id[ev.jet] = mom->pdgId();
+	   const reco::GenParticle *pJet = j.genParton();
+	   if (pJet) {
+	     const reco::Candidate* mom = findFirstMotherWithDifferentID(&(*pJet));
+	     if (mom) {
+	       ev.jet_mother_id[ev.jet] = mom->pdgId();
 
-	     ev.jet_parton_px[ev.jet] = pJet->px();
-	     ev.jet_parton_py[ev.jet] = pJet->py(); 
-	     ev.jet_parton_pz[ev.jet] = pJet->pz(); 
-	     ev.jet_parton_en[ev.jet] = pJet->energy();
-	   
+	       ev.jet_parton_px[ev.jet] = pJet->px();
+	       ev.jet_parton_py[ev.jet] = pJet->py(); 
+	       ev.jet_parton_pz[ev.jet] = pJet->pz(); 
+	       ev.jet_parton_en[ev.jet] = pJet->energy();
+	       
+	     }
 	   }
-	 }
+
+	 } // isMC
 
 	 ev.jet_hadronFlavour[ev.jet] = j.hadronFlavour();
-	 const reco::GenJet *gJet=j.genJet();
+	 const reco::GenJet *gJet=j.genJet(); 
 	 if(gJet) ev.jet_genpt[ev.jet] = gJet->pt();
 	 else     ev.jet_genpt[ev.jet] = 0.;
 
@@ -925,19 +931,23 @@ int main(int argc, char* argv[])
 	 ev.fjet_parton_py[ev.fjet] = 0.; 
 	 ev.fjet_parton_pz[ev.fjet] = 0.; 
 	 ev.fjet_parton_en[ev.fjet] = 0.; 
+	 
+	 if (isMC) {
 
-	 const reco::GenParticle *pJet = j.genParton();
-	 if (pJet) {
-	   const reco::Candidate* mom = findFirstMotherWithDifferentID(&(*pJet));
-	   if (mom) {
-	     ev.fjet_mother_id[ev.fjet] = mom->pdgId(); 
+	   const reco::GenParticle *pJet = j.genParton();
+	   if (pJet) {
+	     const reco::Candidate* mom = findFirstMotherWithDifferentID(&(*pJet));
+	     if (mom) {
+	       ev.fjet_mother_id[ev.fjet] = mom->pdgId(); 
 
-	     ev.fjet_parton_px[ev.fjet] = pJet->px();
-	     ev.fjet_parton_py[ev.fjet] = pJet->py();
-	     ev.fjet_parton_pz[ev.fjet] = pJet->pz();
-	     ev.fjet_parton_en[ev.fjet] = pJet->energy();
+	       ev.fjet_parton_px[ev.fjet] = pJet->px();
+	       ev.fjet_parton_py[ev.fjet] = pJet->py();
+	       ev.fjet_parton_pz[ev.fjet] = pJet->pz();
+	       ev.fjet_parton_en[ev.fjet] = pJet->energy();
+	     }
 	   }
-	 }
+	   
+	 } // isMC
 
 	 ev.fjet++;
 	 ifjet++;
