@@ -107,6 +107,8 @@ int main(int argc, char* argv[])
     TString dtag=runProcess.getParameter<std::string>("tag");
     TString suffix=runProcess.getParameter<std::string>("suffix");
 
+    bool verbose = runProcess.getParameter<bool>("verbose");
+
     TString url=runProcess.getParameter<std::string>("input");
     TString outFileUrl(gSystem->BaseName(url));
     outFileUrl.ReplaceAll(".root","");
@@ -494,6 +496,8 @@ int main(int argc, char* argv[])
 	  printf("."); fflush(stdout);
         }
 
+	if ( verbose ) printf("\n\n Event info %3d: \n",iev);
+
         //##############################################   EVENT LOOP STARTS   ##############################################
         //load the event content from tree
         summaryHandler_.getEntry(iev);
@@ -566,6 +570,7 @@ int main(int argc, char* argv[])
 
         LorentzVector metP4=phys.met; //variedMET[0];
         PhysicsObjectJetCollection &corrJets = phys.jets; //variedJets[0];
+	PhysicsObjectFatJetCollection &fatJets = phys.fatjets;
 
         //
         // LEPTON ANALYSIS
@@ -745,7 +750,7 @@ int main(int argc, char* argv[])
         //JET AND BTAGGING ANALYSIS
         //
         PhysicsObjectJetCollection GoodIdJets;
-	PhysicsObjectJetCollection bJets;
+	PhysicsObjectJetCollection CSVLoosebJets;
 
         int nJetsGood30(0);
         int nCSVLtags(0),nCSVMtags(0),nCSVTtags(0);
@@ -774,7 +779,7 @@ int main(int argc, char* argv[])
 
 
             //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X
-            if(corrJets[ijet].pt()>15 && fabs(corrJets[ijet].eta())<2.4)  {
+            if(corrJets[ijet].pt()>20 && fabs(corrJets[ijet].eta())<2.4)  {
 
                 nCSVLtags += (corrJets[ijet].btag0>CSVLooseWP);
                 nCSVMtags += (corrJets[ijet].btag0>CSVMediumWP);
@@ -798,7 +803,7 @@ int main(int argc, char* argv[])
 		} // isMC
 		
 		// Fill b-jet vector:
-		if (hasCSVtag) { bJets.push_back(corrJets[ijet]); }
+		if (hasCSVtag) { CSVLoosebJets.push_back(corrJets[ijet]); }
 
             } // b-jet loop
         } // jet loop
@@ -806,14 +811,56 @@ int main(int argc, char* argv[])
         //using CSV Medium WP
 	//        passBveto=(nCSVMtags==0);
 	mon.fillHisto("njets_raw",tags, GoodIdJets.size(),weight);
-	mon.fillHisto("nbjets_raw",tags, bJets.size(),weight);
+	mon.fillHisto("nbjets_raw",tags, CSVLoosebJets.size(),weight);
 
         for(size_t ij=0; ij<GoodIdJets.size(); ij++) {
             mon.fillHisto("jet_pt_raw",   tags, GoodIdJets[ij].pt(),weight);
             mon.fillHisto("jet_eta_raw",  tags, GoodIdJets[ij].eta(),weight);
         }
 
+
+	// AK8 + double-b tagger fat-jet collection
+	PhysicsObjectFatJetCollection DBfatJets; // collection of AK8 fat jets
+
+	int ifjet(0);
+	for(size_t ijet=0; ijet<fatJets.size(); ijet++) {
 	
+	  if(fatJets[ijet].pt()<20.) continue;
+	  if(fabs(fatJets[ijet].eta())>2.4) continue;
+
+	  ifjet++;
+
+	  std::vector<TLorentzVector > subjets; // vector of subjets for each AK8 jet   
+
+	  int count_sbj(0);   
+	  // Examine soft drop subjets in AK8 jet:
+	  count_sbj = fatJets[ijet].nSubj;
+	  if ( verbose ) printf("\n\n Print info for subjets in AK8 %3d : ", ifjet);
+
+	  for (int is=0; is<count_sbj; is++) 
+	    {
+	      TLorentzVector subjet;
+	      subjet.SetPxPyPzE(fatJets[ijet].subjet_px[is], fatJets[ijet].subjet_py[is], fatJets[ijet].subjet_pz[is], fatJets[ijet].subjet_en[is]);
+	      subjets.push_back(subjet);
+	    }
+
+	  if ( verbose ) {
+
+	    for (auto & it : subjets ) {
+	      printf("\n subjet in Ntuple has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f",   
+		     it.Pt(),
+		     it.Eta(),
+		     it.Phi(),
+		     it.M()
+		     );
+	    }
+
+	  }
+
+	  bool hasDBtag(fatJets[ijet].btag0>DBLooseWP);
+	  if (hasDBtag) DBfatJets.push_back(fatJets[ijet]);
+
+	}
         //#########################################################################
         //####################  Generator Level Reweighting  ######################
         //#########################################################################
