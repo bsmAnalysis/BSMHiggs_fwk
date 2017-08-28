@@ -182,18 +182,11 @@ class PhysicsObject_FatJet : public LorentzVector {
     tau3=tau3_;
   }
 
-  void setSubjets(Int_t nSubj_, Float_t subjet_px_[] , Float_t subjet_py_[], Float_t subjet_pz_[], Float_t subjet_en_[])
+  void setSubjets(Int_t nSubj_, Float_t subjet_px_[], Float_t subjet_py_[], Float_t subjet_pz_[], Float_t subjet_en_[])
   {
     nSubj=nSubj_;
-    //Initialize
-    for (int i=0; i<4; i++) {
-      subjet_px[i] = 0.;
-      subjet_py[i] = 0.;
-      subjet_pz[i] = 0.;
-      subjet_en[i] = 0.;
-    }
 
-    for (int i=0; i<nSubj; i++) {
+    for (int i=0; i<2; i++) {
       subjet_px[i] = subjet_px_[i];
       subjet_py[i] = subjet_py_[i];
       subjet_pz[i] = subjet_pz_[i];

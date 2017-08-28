@@ -900,24 +900,23 @@ int main(int argc, char* argv[])
 	   }
 	 } // subjets
 
-	 for (int i=0; i<4; i++) { // store up to 4 subjets for each AK8 jet ?
+	 for (int i=0; i<2; i++) { // store up to 4 subjets for each AK8 jet ?
 	   ev.fjet_subjets_px[ev.fjet][i] = 0.;
 	   ev.fjet_subjets_py[ev.fjet][i] = 0.;
 	   ev.fjet_subjets_pz[ev.fjet][i] = 0.;
 	   ev.fjet_subjets_en[ev.fjet][i] = 0.;
 	 }
-
+       
 	 int csb(0);
 	 for ( auto & it : softdrop_subjets ) {
+	   if (csb>1) break; // up to 2 subjets  
+	   //	   if (it.Pt()>20.) { // only store subjets above 20 GeV ?
+	   ev.fjet_subjets_px[ev.fjet][csb] = it.Px();
+	   ev.fjet_subjets_py[ev.fjet][csb] = it.Py();
+	   ev.fjet_subjets_pz[ev.fjet][csb] = it.Pz();
+	   ev.fjet_subjets_en[ev.fjet][csb] = it.E();
 	   
-	   if (it.Pt()>20.) { // only store subjets above 20 GeV ?
-	     ev.fjet_subjets_px[ev.fjet][csb] = it.Px();
-	     ev.fjet_subjets_py[ev.fjet][csb] = it.Py();
-	     ev.fjet_subjets_pz[ev.fjet][csb] = it.Pz();
-	     ev.fjet_subjets_en[ev.fjet][csb] = it.E();
-	     
 	     csb++;
-	   }
 	 }
 	 ev.fjet_subjet_count[ev.fjet] = csb;
 
