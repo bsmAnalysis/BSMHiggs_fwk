@@ -15,6 +15,9 @@
 enum PhysicsObjects   { MET=0,JET=1,TOP=6,ELECTRON=11, MUON=13, TAU=15, GLUON=21, PHOTON=22, Z=23, W=24};
 enum LeptonChannels { UNKNOWN=0,MUMU=1,MU=2,EE=3,E=4,EMU=5,ETAU=6,MUTAU=7, GAMMA=22};
 
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector; 
+typedef std::vector<LorentzVector> LorentzVectorCollection;
+
 
 struct ptsort: public std::binary_function<LorentzVector, LorentzVector, bool> 
 {
@@ -179,6 +182,25 @@ class PhysicsObject_FatJet : public LorentzVector {
     tau3=tau3_;
   }
 
+  void setSubjets(Int_t nSubj_, Float_t subjet_px_[] , Float_t subjet_py_[], Float_t subjet_pz_[], Float_t subjet_en_[])
+  {
+    nSubj=nSubj_;
+    //Initialize
+    for (int i=0; i<4; i++) {
+      subjet_px[i] = 0.;
+      subjet_py[i] = 0.;
+      subjet_pz[i] = 0.;
+      subjet_en[i] = 0.;
+    }
+
+    for (int i=0; i<nSubj; i++) {
+      subjet_px[i] = subjet_px_[i];
+      subjet_py[i] = subjet_py_[i];
+      subjet_pz[i] = subjet_pz_[i];
+      subjet_en[i] = subjet_en_[i];
+    }
+  }
+
   void setGenInfo(Int_t flavid_, Int_t partonid_, Int_t motherid_, Float_t parton_px_, Float_t parton_py_, Float_t parton_pz_, Float_t parton_en_)
   {
     flavid=flavid_; 
@@ -193,6 +215,9 @@ class PhysicsObject_FatJet : public LorentzVector {
   Float_t btag0;
   Float_t prunedM, softdropM;
   Float_t tau1, tau2, tau3;
+
+  Int_t nSubj;
+  Float_t subjet_px[4], subjet_py[4], subjet_pz[4], subjet_en[4];
 
   Int_t flavid, partonid, motherid;
   Float_t parton_px, parton_py, parton_pz, parton_en;

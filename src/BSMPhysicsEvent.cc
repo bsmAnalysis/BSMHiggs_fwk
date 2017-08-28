@@ -110,6 +110,8 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
 	phys.fatjets.push_back( PhysicsObject_FatJet(P4) );
 	phys.fatjets[i].setBtagInfo(ev.fjet_btag0[i]);
 	phys.fatjets[i].setSubjetInfo(ev.fjet_prunedM[i], ev.fjet_softdropM[i], ev.fjet_tau1[i], ev.fjet_tau2[i], ev.fjet_tau3[i]);
+	phys.fatjets[i].setSubjets(ev.fjet_subjet_count[i], ev.fjet_subjets_px[i], ev.fjet_subjets_py[i], ev.fjet_subjets_pz[i], ev.fjet_subjets_en[i]);
+	
 	phys.fatjets[i].setGenInfo(ev.fjet_partonFlavour[i], ev.fjet_hadronFlavour[i], ev.fjet_mother_id[i], ev.fjet_parton_px[i], ev.fjet_parton_py[i], ev.fjet_parton_pz[i], ev.fjet_parton_en[i]);
 
 	nfatjet++;

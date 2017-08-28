@@ -91,6 +91,7 @@
 #include "TROOT.h"
 #include "TNtuple.h"
 #include "TLorentzVector.h"
+#include "Math/LorentzVector.h" 
 #include <Math/VectorUtil.h>
 #include "TRandom3.h"
 
@@ -786,6 +787,13 @@ int main(int argc, char* argv[])
              ) ;
          }
 
+	 ev.jet_mother_id[ev.jet] = 0;
+
+	 ev.jet_parton_px[ev.jet] = 0.; 
+	 ev.jet_parton_py[ev.jet] = 0.; 
+	 ev.jet_parton_pz[ev.jet] = 0.; 
+	 ev.jet_parton_en[ev.jet] = 0.; 
+
 	 const reco::GenParticle *pJet = j.genParton();
 	 if (pJet) {
 	   const reco::Candidate* mom = findFirstMotherWithDifferentID(&(*pJet));
@@ -797,21 +805,7 @@ int main(int argc, char* argv[])
 	     ev.jet_parton_pz[ev.jet] = pJet->pz(); 
 	     ev.jet_parton_en[ev.jet] = pJet->energy();
 	   
-	   } else {
-	     ev.jet_mother_id[ev.jet] = 0;
-
-	     ev.jet_parton_px[ev.jet] = 0.;
-	     ev.jet_parton_py[ev.jet] = 0.;
-	     ev.jet_parton_pz[ev.jet] = 0.;
-	     ev.jet_parton_en[ev.jet] = 0.;
 	   }
-	 } else {
-	   ev.jet_mother_id[ev.jet] = 0;
-
-	   ev.jet_parton_px[ev.jet] = 0.; 
-	   ev.jet_parton_py[ev.jet] = 0.; 
-	   ev.jet_parton_pz[ev.jet] = 0.; 
-	   ev.jet_parton_en[ev.jet] = 0.; 
 	 }
 
 	 ev.jet_hadronFlavour[ev.jet] = j.hadronFlavour();
@@ -842,7 +836,7 @@ int main(int argc, char* argv[])
 	 ev.fjet_pz[ev.fjet] = j.correctedP4(0).pz();
 	 ev.fjet_en[ev.fjet] = j.correctedP4(0).energy();
 
-	 ev.fjet_btag0[ev.jet] = j.bDiscriminator("pfBoostedDoubleSecondaryVertexAK8BJetTags");
+	 ev.fjet_btag0[ev.fjet] = j.bDiscriminator("pfBoostedDoubleSecondaryVertexAK8BJetTags");
 
 	 if ( verbose ) {  
 	   printf("\n    %3d : pt=%6.1f, eta=%7.3f, phi=%7.3f : boostedSV=%7.3f\n", 
@@ -875,13 +869,17 @@ int main(int argc, char* argv[])
 	 }
 
 	 auto const & sdSubjets = j.subjets("SoftDrop"); 
-	 //To save space, the Soft Drop Subjets are stored in positions 0 and 1 in the constituent list.
+	 //The Soft Drop Subjets are stored in positions 0  in the subjet collection list.
 	 int count_subj(0);
 
-	 TLorentzVector softdrop_subjet; 
+	 std::vector<TLorentzVector> softdrop_subjets; 
 	 for ( auto const & it : sdSubjets ) {
+
+	   TLorentzVector softdrop_subjet;
 	   softdrop_subjet.SetPtEtaPhiM(it->correctedP4(0).pt(), it->correctedP4(0).eta(), it->correctedP4(0).phi(), it->correctedP4(0).mass()); 
 	   
+	   softdrop_subjets.push_back(softdrop_subjet);
+
 	   count_subj++;
 	   if ( verbose ) {
 	     
@@ -891,14 +889,42 @@ int main(int argc, char* argv[])
 		    softdrop_subjet.Eta(),
 		    softdrop_subjet.Phi(),
 		    softdrop_subjet.M()
-		    
 		    );
 
 	   }
 	 } // subjets
-	 
+
+	 for (int i=0; i<4; i++) { // store up to 4 subjets for each AK8 jet ?
+	   ev.fjet_subjets_px[ev.fjet][i] = 0.;
+	   ev.fjet_subjets_py[ev.fjet][i] = 0.;
+	   ev.fjet_subjets_pz[ev.fjet][i] = 0.;
+	   ev.fjet_subjets_en[ev.fjet][i] = 0.;
+	 }
+
+	 int csb(0);
+	 for ( auto & it : softdrop_subjets ) {
+	   
+	   if (it.Pt()>20.) { // only store subjets above 20 GeV ?
+	     ev.fjet_subjets_px[ev.fjet][csb] = it.Px();
+	     ev.fjet_subjets_py[ev.fjet][csb] = it.Py();
+	     ev.fjet_subjets_pz[ev.fjet][csb] = it.Pz();
+	     ev.fjet_subjets_en[ev.fjet][csb] = it.E();
+	     
+	     csb++;
+	   }
+	 }
+	 ev.fjet_subjet_count[ev.fjet] = csb;
+
+
 	 ev.fjet_partonFlavour[ev.fjet] = j.partonFlavour();
 	 ev.fjet_hadronFlavour[ev.fjet] = j.hadronFlavour();
+
+	 ev.fjet_mother_id[ev.fjet] = 0; 
+
+	 ev.fjet_parton_px[ev.fjet] = 0.; 
+	 ev.fjet_parton_py[ev.fjet] = 0.; 
+	 ev.fjet_parton_pz[ev.fjet] = 0.; 
+	 ev.fjet_parton_en[ev.fjet] = 0.; 
 
 	 const reco::GenParticle *pJet = j.genParton();
 	 if (pJet) {
@@ -910,21 +936,7 @@ int main(int argc, char* argv[])
 	     ev.fjet_parton_py[ev.fjet] = pJet->py();
 	     ev.fjet_parton_pz[ev.fjet] = pJet->pz();
 	     ev.fjet_parton_en[ev.fjet] = pJet->energy();
-	   } else {
-	     ev.fjet_mother_id[ev.fjet] = 0;
-	     
-	     ev.fjet_parton_px[ev.fjet] = 0.;
-	     ev.fjet_parton_py[ev.fjet] = 0.;
-	     ev.fjet_parton_pz[ev.fjet] = 0.;
-	     ev.fjet_parton_en[ev.fjet] = 0.;
 	   }
-	 } else {
-	   ev.fjet_mother_id[ev.fjet] = 0;
-
-	   ev.fjet_parton_px[ev.fjet] = 0.;
-	   ev.fjet_parton_py[ev.fjet] = 0.;
-	   ev.fjet_parton_pz[ev.fjet] = 0.;
-	   ev.fjet_parton_en[ev.fjet] = 0.;
 	 }
 
 	 ev.fjet++;
