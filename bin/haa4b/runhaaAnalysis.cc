@@ -639,18 +639,7 @@ int main(int argc, char* argv[])
         // ID + ISO scale factors (only muons for the time being)
         // Need to implement variations for errors (unused for now)
         if(isMC) {
-            float llScaleFactor = 1.0;
-            if(abs(id1)==13) llScaleFactor *= lsf.getLeptonEfficiency( lep1.pt(), lep1.eta(), abs(id1) ).first;
-            if(abs(id2)==13) llScaleFactor *= lsf.getLeptonEfficiency( lep2.pt(), lep2.eta(), abs(id2) ).first;
-            if(llScaleFactor>0) weight *= llScaleFactor;
-
-            //electron ID SF
-            if(abs(id1)==11) weight *= getSFfrom2DHist( fabs(lep1.eta()), lep1.pt(), h_ElectronMediumWPSF );
-            if(abs(id2)==11) weight *= getSFfrom2DHist( fabs(lep2.eta()), lep2.pt(), h_ElectronMediumWPSF );
-
-            //electron RECO SF
-            if(abs(id1)==11) weight *= getSFfrom2DHist( lep1.eta(), lep1.pt(), h_ElectronRECOSF );
-            if(abs(id2)==11) weight *= getSFfrom2DHist( lep2.eta(), lep2.pt(), h_ElectronRECOSF );
+         
         }
 	*/
 
@@ -749,6 +738,12 @@ int main(int argc, char* argv[])
         //
         //JET AND BTAGGING ANALYSIS
         //
+
+	//###########################################################
+	//  AK4 jets ,
+	// AK4 jets + CSVloose b-tagged configuration
+	//###########################################################
+	
         PhysicsObjectJetCollection GoodIdJets;
 	PhysicsObjectJetCollection CSVLoosebJets;
 
@@ -767,7 +762,6 @@ int main(int argc, char* argv[])
             //check overlaps with selected leptons
             double minDR(999.);
 	    for(size_t ilep=0; ilep<goodLeptons.size(); ilep++) {
-	    //            for(std::vector<LorentzVector>::iterator lIt = goodLeptons.begin(); lIt != goodLeptons.end(); lIt++) {
                 double dR = deltaR( corrJets[ijet], goodLeptons[ilep].second );
                 if(dR > minDR) continue;
                 minDR = dR;
@@ -785,9 +779,9 @@ int main(int argc, char* argv[])
                 nCSVMtags += (corrJets[ijet].btag0>CSVMediumWP);
                 nCSVTtags += (corrJets[ijet].btag0>CSVTightWP);
 
-		//                if(!isMC) continue;
                 bool hasCSVtag(corrJets[ijet].btag0>CSVLooseWP);
 		if (isMC) {
+		  // Apply b-tag SFs with Moriond17 recommendations (2016 data):
 		  btsfutil.SetSeed(ev.event*10 + ijet*10000);
 
 		  if(abs(corrJets[ijet].flavid)==5) {
@@ -808,8 +802,7 @@ int main(int argc, char* argv[])
             } // b-jet loop
         } // jet loop
 
-        //using CSV Medium WP
-	//        passBveto=(nCSVMtags==0);
+	// Fill Histogrames with AK4,AK4 + CVS basics:
 	mon.fillHisto("njets_raw",tags, GoodIdJets.size(),weight);
 	mon.fillHisto("nbjets_raw",tags, CSVLoosebJets.size(),weight);
 
@@ -819,34 +812,33 @@ int main(int argc, char* argv[])
         }
 
 
+	//###########################################################
+	// Now AK8 fat jets configuration
+	//###########################################################
+	
 	// AK8 + double-b tagger fat-jet collection
 	PhysicsObjectFatJetCollection DBfatJets; // collection of AK8 fat jets
 
 	int ifjet(0);
-	for(size_t ijet=0; ijet<fatJets.size(); ijet++) {
+	//	for(size_t ijet=0; ijet<fatJets.size(); ijet++) {
+	for (auto & ijet : fatJets ) {
 	
-	  if(fatJets[ijet].pt()<20.) continue;
-	  if(fabs(fatJets[ijet].eta())>2.4) continue;
+	  if(ijet.pt()<20) continue;
+	  if(fabs(ijet.eta())>2.4) continue;
 
 	  ifjet++;
+	  
+	  std::vector<LorentzVector > subjets; // vector of subjets for each AK8 jet   
 
-	  std::vector<TLorentzVector > subjets; // vector of subjets for each AK8 jet   
-
-	  int count_sbj(0);   
-	  // Examine soft drop subjets in AK8 jet:
-	  count_sbj = fatJets[ijet].nSubj;
+	  int count_sbj(0);
+	    // Examine soft drop subjets in AK8 jet:
+	  count_sbj = ijet.subjets.size(); // count subjets above 20 GeV only
+	  
 	  if ( verbose ) printf("\n\n Print info for subjets in AK8 %3d : ", ifjet);
 
-	  for (int is=0; is<count_sbj; is++) 
-	    {
-	      TLorentzVector subjet;
-	      subjet.SetPxPyPzE(fatJets[ijet].subjet_px[is], fatJets[ijet].subjet_py[is], fatJets[ijet].subjet_pz[is], fatJets[ijet].subjet_en[is]);
-	      subjets.push_back(subjet);
-	    }
-
 	  if ( verbose ) {
-
-	    for (auto & it : subjets ) {
+	    // loop over subjets of AK8 jet
+	    for (auto & it : ijet.subjets ) {
 	      printf("\n subjet in Ntuple has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f",   
 		     it.Pt(),
 		     it.Eta(),
@@ -854,15 +846,62 @@ int main(int argc, char* argv[])
 		     it.M()
 		     );
 	    }
+	    printf("\n\n");
+	  } // verbose
 
+	  bool hasDBtag(ijet.btag0>DBLooseWP);
+	  
+	  if (hasDBtag && count_sbj>0) {
+	    // double-b tagger + at least 1 subjet in AK8
+	    DBfatJets.push_back(ijet);
 	  }
+	  
+	} // AK8 fatJets loop
+	
+	//###########################################################
+	//  Configure cleaned Ak4 and AK4 + CSVloose Jets : 
+	//       Require DR separation with AK8 subjets
+	//###########################################################
 
-	  bool hasDBtag(fatJets[ijet].btag0>DBLooseWP);
-	  if (hasDBtag) DBfatJets.push_back(fatJets[ijet]);
+	PhysicsObjectJetCollection cleanedGoodIdJets;
+	PhysicsObjectJetCollection cleanedCSVLoosebJets;
+	
+	for (auto & ib : CSVLoosebJets) {
 
-	}
+	  bool hasOverlap(0);
+	  
+	  // Loop over AK8 jets and find subjets
+	  for (auto & ifb : DBfatJets) {
+	    for (auto & it : ifb.subjets) { // subjets loop
+	      hasOverlap = (deltaR(ib, it)<0.4);
+
+	      if ( verbose ) {
+		if (hasOverlap) {
+
+		  printf("\n Found overlap of b-jet : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f \n with subjet in AK8: pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f \n",
+			 ib.Pt(),
+			 ib.Eta(),
+			 ib.Phi(),
+			 ib.M(),
+
+			 it.Pt(),
+			 it.Eta(),
+			 it.Phi(),
+			 it.M()
+			 );
+		  
+		} // hasOverlap
+	      } //verbose
+	      
+	    } // subjets loop
+	  } // AK8 loop
+
+	  if (!hasOverlap) cleanedCSVLoosebJets.push_back(ib);
+	  
+	} // CSV b-jet loop
+	
         //#########################################################################
-        //####################  Generator Level Reweighting  ######################
+        //####################  Generator Level Signal Analysis  ######################
         //#########################################################################
 
 	if (isSignal) {
