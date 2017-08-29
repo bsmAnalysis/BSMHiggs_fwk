@@ -279,10 +279,10 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("fjet_hadronFlavour",      evSummary_.fjet_hadronFlavour,        "fjet_hadronFlavour[fjet]/I");
 
     t_->Branch("fjet_subjet_count",         evSummary_.fjet_subjet_count,           "fjet_subjet_count[fjet]/I");
-    t_->Branch("fjet_subjets_px",         &evSummary_.fjet_subjets_px,           "fjet_subjets_px[fjet]/F");
-    t_->Branch("fjet_subjets_py",         &evSummary_.fjet_subjets_py,           "fjet_subjets_py[fjet]/F");
-    t_->Branch("fjet_subjets_pz",         &evSummary_.fjet_subjets_pz,           "fjet_subjets_pz[fjet]/F"); 
-    t_->Branch("fjet_subjets_en",         &evSummary_.fjet_subjets_en,           "fjet_subjets_en[fjet]/F"); 
+    t_->Branch("fjet_subjets_px",         &evSummary_.fjet_subjets_px,           "fjet_subjets_px[fjet][2]/F");
+    t_->Branch("fjet_subjets_py",         &evSummary_.fjet_subjets_py,           "fjet_subjets_py[fjet][2]/F");
+    t_->Branch("fjet_subjets_pz",         &evSummary_.fjet_subjets_pz,           "fjet_subjets_pz[fjet][2]/F"); 
+    t_->Branch("fjet_subjets_en",         &evSummary_.fjet_subjets_en,           "fjet_subjets_en[fjet][2]/F"); 
 
     //met
     t_->Branch("met_pt",               	&evSummary_.met_pt,                 "met_pt/F");

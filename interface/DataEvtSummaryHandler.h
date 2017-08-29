@@ -21,7 +21,9 @@
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 typedef std::vector<LorentzVector> LorentzVectorCollection;
 
-#define MAXSB 4
+const Int_t MAXSB = 2;
+
+//#define MAXSB 2
 #define MAXPARTICLES 50
 #define MAXMCPARTICLES 250
 #define MAXLHEWEIGHTS 500
@@ -152,7 +154,7 @@ struct DataEvtSummary_t {
     Float_t fjet_prunedM[MAXPARTICLES], fjet_softdropM[MAXPARTICLES]; //fjet_trimmedM[MAXPARTICLES],fjet_filteredM[MAXPARTICLES];
     Float_t fjet_tau1[MAXPARTICLES],fjet_tau2[MAXPARTICLES],fjet_tau3[MAXPARTICLES];
     Float_t fjet_genpt[MAXPARTICLES];
-    Int_t fjet_partonFlavour[MAXPARTICLES], fjet_hadronFlavour[MAXPARTICLES], fjet_mother_id[MAXPARTICLES];
+  Int_t fjet_partonFlavour[MAXPARTICLES], fjet_hadronFlavour[MAXPARTICLES], fjet_mother_id[MAXPARTICLES];
     Float_t fjet_parton_px[MAXPARTICLES], fjet_parton_py[MAXPARTICLES], fjet_parton_pz[MAXPARTICLES], fjet_parton_en[MAXPARTICLES];
     Int_t fjet_subjet_count[MAXPARTICLES];
   Float_t fjet_subjets_px[MAXPARTICLES][MAXSB], fjet_subjets_py[MAXPARTICLES][MAXSB], fjet_subjets_pz[MAXPARTICLES][MAXSB], fjet_subjets_en[MAXPARTICLES][MAXSB];

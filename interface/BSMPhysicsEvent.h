@@ -15,9 +15,6 @@
 enum PhysicsObjects   { MET=0,JET=1,TOP=6,ELECTRON=11, MUON=13, TAU=15, GLUON=21, PHOTON=22, Z=23, W=24};
 enum LeptonChannels { UNKNOWN=0,MUMU=1,MU=2,EE=3,E=4,EMU=5,ETAU=6,MUTAU=7, GAMMA=22};
 
-typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector; 
-typedef std::vector<LorentzVector> LorentzVectorCollection;
-
 
 struct ptsort: public std::binary_function<LorentzVector, LorentzVector, bool> 
 {
@@ -182,7 +179,7 @@ class PhysicsObject_FatJet : public LorentzVector {
     tau3=tau3_;
   }
 
-  void setSubjets(Int_t nSubj_, Float_t subjet_px_[], Float_t subjet_py_[], Float_t subjet_pz_[], Float_t subjet_en_[])
+  void setSubjets(Int_t nSubj_, Float_t subjet_px_[2], Float_t subjet_py_[2], Float_t subjet_pz_[2], Float_t subjet_en_[2])
   {
     nSubj=nSubj_;
 
@@ -210,7 +207,7 @@ class PhysicsObject_FatJet : public LorentzVector {
   Float_t tau1, tau2, tau3;
 
   Int_t nSubj;
-  Float_t subjet_px[4], subjet_py[4], subjet_pz[4], subjet_en[4];
+  Float_t subjet_px[2], subjet_py[2], subjet_pz[2], subjet_en[2];
 
   Int_t flavid, partonid, motherid;
   Float_t parton_px, parton_py, parton_pz, parton_en;
@@ -280,8 +277,6 @@ int getDileptonId(int id1, int id2);
 
 bool isDYToLL(int id1, int id2);
 bool isDYToTauTau(int id1, int id2);
-float getSFfrom2DHist(double xval, double yval, TH2F* h_);
-float getSFfrom1DHist(double xval, TH1F* h_);
 
 float getNLOEWKZZWeight(double trailing_pt);
 float kfactor_qqZZ_qcd_dPhi(float GENdPhiZZ);
