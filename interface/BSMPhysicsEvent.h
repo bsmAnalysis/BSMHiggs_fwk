@@ -184,11 +184,11 @@ class PhysicsObject_FatJet : public LorentzVector {
     nSubj=nSubj_;
 
     for (int i=0; i<2; i++) {
-      subjet_px[i] = subjet_px_[i];
-      subjet_py[i] = subjet_py_[i];
-      subjet_pz[i] = subjet_pz_[i];
-      subjet_en[i] = subjet_en_[i];
+      LorentzVector subjet;
+      subjet.SetPxPyPzE(subjet_px_[i], subjet_py_[i], subjet_pz_[i], subjet_en_[i]);
+      if (subjet.Pt()>20) { subjets.push_back(subjet); }
     }
+
   }
 
   void setGenInfo(Int_t flavid_, Int_t partonid_, Int_t motherid_, Float_t parton_px_, Float_t parton_py_, Float_t parton_pz_, Float_t parton_en_)
@@ -207,7 +207,8 @@ class PhysicsObject_FatJet : public LorentzVector {
   Float_t tau1, tau2, tau3;
 
   Int_t nSubj;
-  Float_t subjet_px[2], subjet_py[2], subjet_pz[2], subjet_en[2];
+  //  Float_t subjet_px[2], subjet_py[2], subjet_pz[2], subjet_en[2];
+  std::vector<LorentzVector> subjets;
 
   Int_t flavid, partonid, motherid;
   Float_t parton_px, parton_py, parton_pz, parton_en;
