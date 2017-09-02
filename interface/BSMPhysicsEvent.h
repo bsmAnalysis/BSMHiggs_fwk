@@ -20,7 +20,7 @@ struct ptsort: public std::binary_function<LorentzVector, LorentzVector, bool>
 {
   bool operator () (const LorentzVector & x, const LorentzVector & y) 
   { 
-    return  (x.pt() > y.pt() ) ; 
+    return  ( x.pt() > y.pt() ) ; 
   }
 }; 
 
@@ -33,8 +33,6 @@ public :
     Int_t momid;
     Int_t momidx;
 };
-
-
 
 
 //
@@ -129,7 +127,7 @@ public :
  PhysicsObject_Jet(LorentzVector vec, Float_t pumva_, Bool_t isPFLoose_, Bool_t isPFTight_):
   LorentzVector(vec), pumva(pumva_), isPFLoose(isPFLoose_), isPFTight(isPFTight_) { }
 
-    void setBtagInfo(Float_t btag0_=0, Float_t btag1_=0, Float_t btag2_=0, Float_t btag3_=0, Float_t btag4_=0, Float_t btag5_=0, Float_t btag6_=0, Float_t btag7_=0) {
+    void setBtagInfo(Float_t btag0_, Float_t btag1_, Float_t btag2_, Float_t btag3_, Float_t btag4_, Float_t btag5_, Float_t btag6_, Float_t btag7_) {
         btag0=btag0_;
         btag1=btag1_;
         btag2=btag2_;
@@ -166,7 +164,7 @@ class PhysicsObject_FatJet : public LorentzVector {
  PhysicsObject_FatJet(LorentzVector vec) :
   LorentzVector(vec) { }
 
-  void setBtagInfo(Float_t btag0_=0) {
+  void setBtagInfo(Float_t btag0_) {
     btag0=btag0_;
   }
 
@@ -252,6 +250,7 @@ typedef std::vector<PhysicsObject_Lepton> PhysicsObjectLeptonCollection;
 typedef std::vector<PhysicsObject_Jet>    PhysicsObjectJetCollection;
 typedef std::vector<PhysicsObject_FatJet> PhysicsObjectFatJetCollection;
 typedef std::vector<PhysicsObject_SV>     PhysicsObjectSVCollection;
+
 
 //
 struct PhysicsEvent_t {
