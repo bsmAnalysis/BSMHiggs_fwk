@@ -234,6 +234,31 @@ int main(int argc, char* argv[])
 
   //MC normalization (to 1/pb)
   double xsecWeight = 1.0;
+
+  //pileup weighting
+  edm::LumiReWeighting* LumiWeights = NULL;
+  utils::cmssw::PuShifter_t PuShifters;
+  double PUNorm[] = {1,1,1};
+ 
+  if(isMC){
+    std::vector<double> dataPileupDistributionDouble = runProcess.getParameter< std::vector<double> >("datapileup");
+    std::vector<float> dataPileupDistribution; for(unsigned int i=0;i<dataPileupDistributionDouble.size();i++){dataPileupDistribution.push_back(dataPileupDistributionDouble[i]);}
+    std::vector<float> mcPileupDistribution;
+    
+    double totalNumEvent = utils::getMCPileupDistributionAndTotalEventFromMiniAOD(urls,dataPileupDistribution.size(), mcPileupDistribution);
+    xsecWeight=xsec/totalNumEvent;
+    
+    //utils::getMCPileupDistributionFromMiniAOD(urls,dataPileupDistribution.size(), mcPileupDistribution);
+    while(mcPileupDistribution.size()<dataPileupDistribution.size())  mcPileupDistribution.push_back(0.0);
+    while(mcPileupDistribution.size()>dataPileupDistribution.size())dataPileupDistribution.push_back(0.0);
+    gROOT->cd();  //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
+    LumiWeights = new edm::LumiReWeighting(mcPileupDistribution,dataPileupDistribution);
+    PuShifters=utils::cmssw::getPUshifters(dataPileupDistribution,0.05);
+    utils::getPileupNormalization(mcPileupDistribution, PUNorm, LumiWeights, PuShifters);
+  }
+
+  gROOT->cd(); //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
+  
   string debugText = "";
 
   float curAvgInstLumi_;
@@ -280,13 +305,19 @@ int main(int argc, char* argv[])
 
        float weight = xsecWeight;
 
+        // PU weights
+       float puWeight_(1.0);
+       // double puWeightUp_ = 1.0;
+       // double puWeightDown_ = 1.0;
+       ev.puWeight = puWeight_;
+       
        //##############################################   EVENT LOOP STARTS   ##############################################
        //if(!isMC && duplicatesChecker.isDuplicate( ev.run, ev.lumi, ev.event) ) { nDuplicates++; continue; }
        
        ev.run = event.eventAuxiliary().run() ;
        ev.lumi = event.eventAuxiliary().luminosityBlock() ;
        ev.event = event.eventAuxiliary().event() ;
-
+       
        if ( verbose ) { printf("\n\n ================= Run %u , lumi %u , event %lld\n\n", ev.run, ev.lumi, ev.event ) ; }
 
        //Skip bad lumi
@@ -321,6 +352,19 @@ int main(int argc, char* argv[])
 	 mon_.fillHisto("pileup","all",ev.ngenITpu,0);
 	 mon_.fillHisto("pileuptrue","all",truePU,0);
 
+	 //WEIGHT for Pileup
+	 int ngenITpu = 0;
+	 // fwlite::Handle< std::vector<PileupSummaryInfo> > puInfoH;
+	 //puInfoH.getByLabel(ev, "slimmedAddPileupInfo");
+	 for(std::vector<PileupSummaryInfo>::const_iterator it = puInfoH->begin(); it != puInfoH->end(); it++){
+	   if(it->getBunchCrossing()==0)      { ngenITpu += it->getTrueNumInteractions(); } //getPU_NumInteractions();
+	 }
+	 puWeight_  = LumiWeights->weight(ngenITpu) * PUNorm[0];
+	 ev.puWeight = puWeight_;
+	 // puWeightUp  = PuShifters[utils::cmssw::PUUP  ]->Eval(ngenITpu) * (PUNorm[2]/PUNorm[0]);
+	 // puWeightDown = PuShifters[utils::cmssw::PUDOWN]->Eval(ngenITpu) * (PUNorm[1]/PUNorm[0]);
+	 // weight *= puWeight;
+	 
          if ( verbose ) { printf("  MC : Npu= %3d, truePU = %5.1f\n", npuIT, truePU ) ; }
 
 	 //retrieve pdf info
@@ -776,7 +820,6 @@ int main(int argc, char* argv[])
 	 ev.jet_area[ev.jet] = j.jetArea();
 	 ev.jet_pu[ev.jet] = j.pileup();
 	 ev.jet_puId[ev.jet] = j.userFloat("pileupJetId:fullDiscriminant");
-	 ev.jet_partonFlavour[ev.jet] = j.partonFlavour();
 
          if ( verbose ) {
             printf("    %2d : pt=%6.1f, eta=%7.3f, phi=%7.3f : ID=%s%s, bCSV=%7.3f, PUID=%7.3f\n",
@@ -795,6 +838,10 @@ int main(int argc, char* argv[])
 	 ev.jet_parton_py[ev.jet] = 0.; 
 	 ev.jet_parton_pz[ev.jet] = 0.; 
 	 ev.jet_parton_en[ev.jet] = 0.; 
+
+	 ev.jet_partonFlavour[ev.jet] = 0;
+	 ev.jet_hadronFlavour[ev.jet] = 0;
+	 ev.jet_genpt[ev.jet] = 0.;
 	 
 	 if (isMC) {
 
@@ -812,13 +859,13 @@ int main(int argc, char* argv[])
 	     }
 	   }
 
+	   ev.jet_partonFlavour[ev.jet] = j.partonFlavour();
+	   ev.jet_hadronFlavour[ev.jet] = j.hadronFlavour();
+	   const reco::GenJet *gJet=j.genJet(); 
+	   if(gJet) ev.jet_genpt[ev.jet] = gJet->pt();
+	   else     ev.jet_genpt[ev.jet] = 0.;
 	 } // isMC
-
-	 ev.jet_hadronFlavour[ev.jet] = j.hadronFlavour();
-	 const reco::GenJet *gJet=j.genJet(); 
-	 if(gJet) ev.jet_genpt[ev.jet] = gJet->pt();
-	 else     ev.jet_genpt[ev.jet] = 0.;
-
+	 
 	 ev.jet++;
          ijet++ ;
        }
@@ -851,9 +898,6 @@ int main(int argc, char* argv[])
 		  ) ;
          }  
 	 
-	 const reco::GenJet *gJet=j.genJet();
-	 if(gJet) ev.fjet_genpt[ev.fjet] = gJet->pt();
-	 else     ev.fjet_genpt[ev.fjet] = 0.;
 
 	 ev.fjet_prunedM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSPrunedMass");
 	 ev.fjet_softdropM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSSoftDropMass");
@@ -921,8 +965,8 @@ int main(int argc, char* argv[])
 	 ev.fjet_subjet_count[ev.fjet] = csb;
 
 
-	 ev.fjet_partonFlavour[ev.fjet] = j.partonFlavour();
-	 ev.fjet_hadronFlavour[ev.fjet] = j.hadronFlavour();
+	 ev.fjet_partonFlavour[ev.fjet] = 0;
+	 ev.fjet_hadronFlavour[ev.fjet] = 0;
 
 	 ev.fjet_mother_id[ev.fjet] = 0; 
 
@@ -945,6 +989,13 @@ int main(int argc, char* argv[])
 	       ev.fjet_parton_en[ev.fjet] = pJet->energy();
 	     }
 	   }
+
+	   ev.fjet_partonFlavour[ev.fjet] = j.partonFlavour();
+	   ev.fjet_hadronFlavour[ev.fjet] = j.hadronFlavour();
+	   
+	   const reco::GenJet *gJet=j.genJet();
+	   if(gJet) ev.fjet_genpt[ev.fjet] = gJet->pt();
+	   else     ev.fjet_genpt[ev.fjet] = 0.;
 	   
 	 } // isMC
 

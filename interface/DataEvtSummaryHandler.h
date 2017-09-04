@@ -13,6 +13,7 @@
 #include "Math/LorentzVector.h"
 #include "TMath.h"
 #include "TVector2.h"
+#include "TVector3.h"
 #include "TTree.h"
 #include "TLorentzVector.h"
 
@@ -32,6 +33,7 @@ struct DataEvtSummary_t {
 
     Int_t run,lumi;
     Long64_t event;
+  Float_t puWeight;
     Float_t curAvgInstLumi,curIntegLumi;
     Bool_t hasTrigger;
     Int_t triggerType;
