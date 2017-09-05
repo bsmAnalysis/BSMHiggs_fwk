@@ -287,8 +287,9 @@ for procBlock in procList :
 
             if(opt.resubmit==False):
                FileList = getByLabel(procData,'dset',['"UnknownDataset"'])
+#               if(LaunchOnCondor.subTool!='crab'): DatasetNameForCRAB = FileList[0]
                LaunchOnCondor.SendCluster_Create(FarmDirectory, JobName + '_' + dtag+filt)
-               if(LaunchOnCondor.subTool!='crab'):FileList = getFileList(procData, int(opt.NFile) )
+               if(LaunchOnCondor.subTool!='crab'): FileList = getFileList(procData, int(opt.NFile) )
 
                for s in range(0,len(FileList)):
                    LaunchOnCondor.Jobs_FinalCmds= []
@@ -308,7 +309,11 @@ for procBlock in procList :
                    prodfilepath=opt.outdir +'/'+ dtag + suffix + '_' + str(s) + filt
                	   sedcmd = 'sed \''
                    sedcmd += 's%"@dtag"%"' + dtag +'"%;'
-                   sedcmd += 's%"@input"%' + eventsFile+'%;'
+                   if(LaunchOnCondor.subTool!='crab'):
+                       sedcmd += 's%"@input"%' + eventsFile+'%;'
+                   else:
+                       putempty = ''
+                       sedcmd += 's%"@input"%' + putempty +'%;'
             	   sedcmd += 's%@outfile%' + prodfilepath+'.root%;'
             	   sedcmd += 's%@isMC%' + str(not (isdata or isdatadriven) )+'%;'
             	   sedcmd += 's%@mctruthmode%'+str(mctruthmode)+'%;'
@@ -344,18 +349,23 @@ for procBlock in procList :
                    else:
                        if(LaunchOnCondor.subTool=='crab'):
                           LaunchOnCondor.Jobs_CRABDataset  = FileList[0]
+#                          LaunchOnCondor.Jobs_CRABlumiMask = getByLabel(procData,'lumiMask','')
                           LaunchOnCondor.Jobs_CRABcfgFile  = cfgfile
                           LaunchOnCondor.Jobs_CRABexe      = opt.theExecutable
-                          if(commands.getstatusoutput("whoami")[1]=='vischia'):
-                              LaunchOnCondor.Jobs_CRABStorageSite = 'T2_PT_NCG_Lisbon'
+                          if(commands.getstatusoutput("whoami")[1]=='georgia'):
+                              LaunchOnCondor.Jobs_CRABStorageSite = 'T2_CH_CERN'
+                          else: 
+                              LaunchOnCondor.Jobs_CRABStorageSite = 'T2_US_UCSD'
+                          if(isdata):
+                              LaunchOnCondor.Jobs_CRABsplitting = 'LumiBased'
                           else:
-                              LaunchOnCondor.Jobs_CRABStorageSite = 'T2_BE_UCL'
+                              LaunchOnCondor.Jobs_CRABsplitting = 'FileBased'
                           LaunchOnCondor.Jobs_CRABname     = dtag + '_' + str(s)
                           LaunchOnCondor.Jobs_CRABInDBS    = getByLabel(procData,'dbsURL','global')
-                          if(split>0):
-                              LaunchOnCondor.Jobs_CRABUnitPerJob = 100 / split 
-                          else:
-                              LaunchOnCondor.Jobs_CRABUnitPerJob = int(opt.NFile)
+#                          if(split>0):
+#                              LaunchOnCondor.Jobs_CRABUnitPerJob = 100 / split 
+#                          else:
+#                              LaunchOnCondor.Jobs_CRABUnitPerJob = int(opt.NFile)
                        LaunchOnCondor.SendCluster_Push(["BASH", str(opt.theExecutable + ' ' + cfgfile)])
 
                LaunchOnCondor.SendCluster_Submit()
