@@ -34,12 +34,14 @@ Jobs_FinalCmds    = []
 Jobs_RunHere      = 0
 Jobs_EmailReport  = False
 Jobs_CRABDataset  = '""'
+#Jobs_CRABlumiMask = ''
+Jobs_CRABsplitting = ''
 Jobs_CRABcfgFile  = ''
 Jobs_CRABexe      = "runExample"
-Jobs_CRABStorageSite = 'T2_BE_UCL'
+Jobs_CRABStorageSite = 'T2_US_UCSD'
 Jobs_CRABname     = Jobs_CRABexe
 Jobs_CRABInDBS    = "global"
-Jobs_CRABUnitPerJob = 10
+Jobs_CRABUnitPerJob = 5
 Jobs_CRABLFN = ''
 Jobs_List = []
 Jobs_LocalNJobs = 8
@@ -211,50 +213,53 @@ def CreateTheShellFile(argv):
 
 def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
     global Jobs_CRABDataset
+#    global Jobs_CRABlumiMask
     global Jobs_CRABcfgFile
     global Jobs_CRABexe
     global Jobs_CRABStorageSite
     global Jobs_CRABname
     global Jobs_CRABInDBS
+    global Jobs_CRABsplitting
     global Jobs_CRABUnitPerJob
    
     os.system("rm -rdf " + crabWorkDir+"/crab_"+Jobs_CRABname) #first delete previous crab directory
 
     config_file=open(crabConfigPath,'w')
-    config_file.write('from WMCore.Configuration import Configuration\n')
+#    config_file.write('from WMCore.Configuration import Configuration\n')
+    config_file.write('from CRABClient.UserUtilities import config\n')
+    config_file.write('config = config()\n')
     config_file.write('import os\n')
-    config_file.write('config = Configuration()\n')
+#    config_file.write('config = Configuration()\n')
     config_file.write('\n')
-    config_file.write('config.section_("General")\n')
     config_file.write('config.General.requestName = "%s"\n' % Jobs_CRABname)
     config_file.write('config.General.workArea = "%s"\n' % crabWorkDir)
-    config_file.write('config.General.transferOutputs=True\n')
-    config_file.write('#config.General.transferLogs=True\n')
+#    config_file.write('config.General.transferOutputs = True\n')
+    config_file.write('config.General.transferLogs = True\n')
     config_file.write('\n')
-    config_file.write('config.section_("JobType")\n')
-    config_file.write('config.JobType.pluginName = "Analysis"\n')
+    config_file.write('config.JobType.pluginName = \'Analysis\'\n')
     config_file.write('config.JobType.psetName = "'+Jobs_CRABcfgFile+'"\n')
     config_file.write('config.JobType.scriptExe = "%s"\n' % exePath)
     config_file.write('config.JobType.sendPythonFolder = True\n')
     config_file.write('config.JobType.inputFiles = ["'+os.path.expanduser(Jobs_ProxyDir+"/x509_proxy")+'", os.environ["CMSSW_BASE"]+"/bin/"+os.environ["SCRAM_ARCH"]+"/'+Jobs_CRABexe+'"]\n')
-    config_file.write('config.JobType.outputFiles = ["output.root"]\n')
+    config_file.write('config.JobType.outputFiles = ["test.root"]\n')
     config_file.write('\n')
-    config_file.write('config.section_("Data")\n')
-    config_file.write('config.Data.inputDataset = '+Jobs_CRABDataset+'\n')
-    config_file.write('config.Data.inputDBS = "%s"\n' % Jobs_CRABInDBS)
-    config_file.write('config.Data.splitting = "FileBased"\n')
+    config_file.write('config.Data.inputDataset = \''+Jobs_CRABDataset+'\'\n')
+#    config_file.write('config.Data.lumiMask = "'+Jobs_CRABlumiMask+'"\n')
+#    config_file.write('config.Data.inputDBS = "%s"\n' % Jobs_CRABInDBS)
+    config_file.write('config.Data.splitting = \''+Jobs_CRABsplitting+'\'\n')
     config_file.write('config.Data.unitsPerJob = %d\n' % Jobs_CRABUnitPerJob)
+    config_file.write('config.Data.totalUnits = 1\n')
     config_file.write('config.Data.publication = False\n')
-    config_file.write('#config.Data.publishDBS = \'phys03\'\n')
-    config_file.write('config.Data.ignoreLocality = False\n')
+#    config_file.write('#config.Data.publishDBS = \'phys03\'\n')
+    config_file.write('config.Data.ignoreLocality = True\n')
     if Jobs_CRABLFN == '':
         config_file.write('#config.Data.outLFNDirBase = \'/store/user/<username>/Debug\'\n')
     else:
         config_file.write('config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n')
         print 'config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n'
     config_file.write('\n')
-    config_file.write('config.section_("Site")\n')
-    config_file.write('config.Site.storageSite = "'+Jobs_CRABStorageSite+'"\n')
+    config_file.write('config.Site.storageSite = \''+Jobs_CRABStorageSite+'\'\n')
+    config_file.write('config.Site.whitelist = [\'T2_CH_CERN\',\'T2_US_UCSD\']')
     config_file.close()
 
 
