@@ -10,7 +10,6 @@ import pwd
 
 PROXYDIR = "~/x509_user_proxy"
 DatasetFileDB = "DAS"  #DEFAULT: will use das_client.py command line interface
-#DatasetFileDB = "DBS" #OPTION:  will use curl to parse https GET request on DBSserver
 
 cachedQueryDB = sqlite3.connect(os.path.expandvars('${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/das_query_cache.db') )
 cachedQueryDBcursor = cachedQueryDB.cursor()
@@ -180,8 +179,7 @@ def CacheInputs(FileList):
    List = FileList.replace('"','').replace(',','').split('\\n')
    for l in List:
       if(len(l)<2):continue
-      if("IIHE" in localTier): CopyCommand += "dccp " + l + " " + l[l.rfind('/')+1:] + ";\n"
-      else: CopyCommand += "cp " + l + " " + l[l.rfind('/')+1:] + ";\n"
+      CopyCommand += "xrdcp " + l + " " + l[l.rfind('/')+1:] + ";\n"
       DeleteCommand += "rm -f " + l[l.rfind('/')+1:] + ";\n"
       NewList += '"' +  l[l.rfind('/')+1:] + '",\\n'
    return (NewList, CopyCommand, DeleteCommand)
@@ -294,8 +292,8 @@ for procBlock in procList :
                for s in range(0,len(FileList)):
                    LaunchOnCondor.Jobs_FinalCmds= []
                    LaunchOnCondor.Jobs_InitCmds = ['ulimit -c 0;'] 
-                   if(not isLocalSample):LaunchOnCondor.Jobs_InitCmds      += [initialCommand]
-
+                   if(not isLocalSample): LaunchOnCondor.Jobs_InitCmds += [initialCommand]
+                       
                    #create the cfg file
                    eventsFile = FileList[s]
                    eventsFile = eventsFile.replace('?svcClass=default', '')
@@ -306,14 +304,20 @@ for procBlock in procList :
                       LaunchOnCondor.Jobs_InitCmds.append(result[1])
                       LaunchOnCondor.Jobs_FinalCmds.append(result[2])
 
+                   if(not isLocalSample):
+                       result = CacheInputs(eventsFile) 
+                       eventsFile = result[0]
+                       LaunchOnCondor.Jobs_InitCmds.append(result[1])  
+                       LaunchOnCondor.Jobs_FinalCmds.append(result[2])
+
                    prodfilepath=opt.outdir +'/'+ dtag + suffix + '_' + str(s) + filt
                	   sedcmd = 'sed \''
                    sedcmd += 's%"@dtag"%"' + dtag +'"%;'
-                   if(LaunchOnCondor.subTool!='crab'):
-                       sedcmd += 's%"@input"%' + eventsFile+'%;'
-                   else:
-                       putempty = ''
-                       sedcmd += 's%"@input"%' + putempty +'%;'
+#                   if(LaunchOnCondor.subTool!='crab'):
+                   sedcmd += 's%"@input"%' + eventsFile+'%;'
+#                   else:
+#                       putempty = ''
+#                       sedcmd += 's%"@input"%' + putempty +'%;'
             	   sedcmd += 's%@outfile%' + prodfilepath+'.root%;'
             	   sedcmd += 's%@isMC%' + str(not (isdata or isdatadriven) )+'%;'
             	   sedcmd += 's%@mctruthmode%'+str(mctruthmode)+'%;'
@@ -394,5 +398,3 @@ if(len(nonLocalSamples)>0):
    for nonLocalSample in nonLocalSamples:
       print nonLocalSample
 
-#if("IIHE" in localTier):
-#    os.system("big-submission "+FarmDirectory+"/inputs/big.cmd") #now done in the submit.sh script

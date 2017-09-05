@@ -225,11 +225,9 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
     os.system("rm -rdf " + crabWorkDir+"/crab_"+Jobs_CRABname) #first delete previous crab directory
 
     config_file=open(crabConfigPath,'w')
-#    config_file.write('from WMCore.Configuration import Configuration\n')
     config_file.write('from CRABClient.UserUtilities import config\n')
     config_file.write('config = config()\n')
     config_file.write('import os\n')
-#    config_file.write('config = Configuration()\n')
     config_file.write('\n')
     config_file.write('config.General.requestName = "%s"\n' % Jobs_CRABname)
     config_file.write('config.General.workArea = "%s"\n' % crabWorkDir)
@@ -248,7 +246,7 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
 #    config_file.write('config.Data.inputDBS = "%s"\n' % Jobs_CRABInDBS)
     config_file.write('config.Data.splitting = \''+Jobs_CRABsplitting+'\'\n')
     config_file.write('config.Data.unitsPerJob = %d\n' % Jobs_CRABUnitPerJob)
-    config_file.write('config.Data.totalUnits = 1\n')
+    config_file.write('config.Data.totalUnits = -1\n')
     config_file.write('config.Data.publication = False\n')
 #    config_file.write('#config.Data.publishDBS = \'phys03\'\n')
     config_file.write('config.Data.ignoreLocality = True\n')
