@@ -27,31 +27,33 @@ step=$1   #variable that store the analysis step to run
 
 #Additional arguments to take into account
 arguments=''; for var in "${@:2}"; do arguments=$arguments" "$var; done
+#arguments='crab3'; for var in "${@:2}"; do arguments=$arguments" "$var; done
 if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$arguments ;fi 
 
 #--------------------------------------------------
 # Global Variables
 #--------------------------------------------------
 
-SUFFIX=_2017_08_13_b
+SUFFIX=_2017_09_06
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
 JSON=$MAINDIR/samples.json
 GOLDENJSON=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/json/
 RESULTSDIR=$MAINDIR/results$SUFFIX
+STORAGEDIR=/eos/cms/store/user/georgia/results$SUFFIX
 PLOTSDIR=$MAINDIR/plots${SUFFIX}
 PLOTTER=$MAINDIR/plotter${SUFFIX}
  
 ####################### Settings for Ntuple Analysis ##################
 NTPL_INPUT=$MAINDIR/ntuples
 NTPL_JSON=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/samples_haa4b.json
-NTPL_OUTDIR=$MAINDIR/resultsNtupl$SUFFIX
+NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX
 RUNLOG=$NTPL_OUTDIR/LOGFILES/runSelection.log
 
 queue='cmscaf1nd'
 
-#IF CRAB3 is provided in argument, use crab submissiong instead of condor/lsf 
+#IF CRAB3 is provided in argument, use crab submission instead of condor/lsf 
 if [[ $arguments == *"crab3"* ]]; then queue='crab3' ;fi  
 
 ################################################# STEPS between 0 and 1
@@ -81,14 +83,14 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "JOB SUBMISSION for Ntuplization"
        echo "Input: " $JSON
        echo "Output: " $RESULTSDIR
-       runAnalysisOverSamples.py -e runNtuplizer -j $JSON -o $RESULTSDIR  -c $MAINDIR/../runAnalysis_cfg.py.templ -p "" -s $queue --report True --key haa_signal $arguments
+       runAnalysisOverSamples.py -e runNtuplizer -j $JSON -o $RESULTSDIR  -c $MAINDIR/../runAnalysis_cfg.py.templ -z $STORAGEDIR -p "@data_pileup=datapileup_latest @verbose=False" -s $queue --report True --key haa_test $arguments
    fi    
 
    if [[ $step == 1.1 ]]; then  #submit jobs for h->aa->XXYY analysis
        echo "JOB SUBMISSION for BSM h->aa Analysis"
        echo "Input: " $NTPL_JSON
        echo "Output: " $NTPL_OUTDIR
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@data_pileup=datapileup_latest @runSystematics=False @usemetNoHF=False" -s $queue -t MC13TeV_Wh_amass50
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@data_pileup=datapileup_latest @runSystematics=False @usemetNoHF=False @verbose=True" -s $queue -t MC13TeV_Wh_amass20
        #-t MC13TeV_Wh_amass50
        #tag to match sample: "-t MC13TeV_Wh_amass20"
    fi
