@@ -322,7 +322,7 @@ int main(int argc, char* argv[])
 
        //Skip bad lumi
        if(!isMC && !goodLumiFilter.isGoodLumi(event.eventAuxiliary().run(),event.eventAuxiliary().luminosityBlock()))continue;
-
+       
        ev.mcbh = 0 ;
        std::vector<reco::GenParticle> b_hadrons ;
 
@@ -618,8 +618,8 @@ int main(int argc, char* argv[])
        // Apply Bad Charged Hadron and Bad Muon Filters from MiniAOD (for Run II 2016 only )
        filterbadChCandidate = metFilter.passBadChargedCandidateFilter(event); if (!filterbadChCandidate) {  metFilterValue=9; }
        filterbadPFMuon = metFilter.passBadPFMuonFilter(event); if (!filterbadPFMuon) { metFilterValue=8; }
-       filterbadMuonHIP = metFilter.BadGlobalMuonTaggerFilter(event,outbadMuon,false); if (!filterbadMuonHIP) { metFilterValue=10; }
-       filterduplicateMuonHIP = metFilter.BadGlobalMuonTaggerFilter(event,outduplicateMuon,true); if (!filterduplicateMuonHIP) { metFilterValue=11; }
+       //       filterbadMuonHIP = metFilter.BadGlobalMuonTaggerFilter(event,outbadMuon,false); if (!filterbadMuonHIP) { metFilterValue=10; }
+       // filterduplicateMuonHIP = metFilter.BadGlobalMuonTaggerFilter(event,outduplicateMuon,true); if (!filterduplicateMuonHIP) { metFilterValue=11; }
        
        mon_.fillHisto("metFilter", "all", metFilterValue, 1.0);
        
@@ -636,7 +636,7 @@ int main(int argc, char* argv[])
        //       if(!ev.hasTrigger) return false; // skip the event if no trigger, for both Data and MC
 
        //##############################################   EVENT PASSED THE TRIGGER   ######################################
-       if (metFilterValue==10 || metFilterValue==11) { metFilterValue=0; }
+       //if (metFilterValue==10 || metFilterValue==11) { metFilterValue=0; }
        if( metFilterValue!=0 ) continue;	 //Note this must also be applied on MC
 
        // Apply Bad Charged Hadron and Bad Muon Filters from MiniAOD (for Run II 2016 only )
@@ -1055,7 +1055,8 @@ int main(int argc, char* argv[])
        reco::VertexCompositePtrCandidateCollection sec_vert ;
        fwlite::Handle< reco::VertexCompositePtrCandidateCollection > svHandle ;
        svHandle.getByLabel( event, "slimmedSecondaryVertices" ) ;
-       if ( svHandle.isValid() ) { sec_vert = *svHandle ; } else { printf("\n\n *** bad handle for reco::VertexCompositePtrCandidateCollection\n\n") ; gSystem -> Exit(-1) ; }
+       if ( svHandle.isValid() ) { sec_vert = *svHandle ;} 
+       else { printf("\n\n *** bad handle for reco::VertexCompositePtrCandidateCollection\n\n") ; return false; }//gSystem -> Exit(-1) ; }
 
        ev.sv = sec_vert.size() ;
        if ( verbose ) printf("\n\n\n ---- Inclusive Secondary Vertices:\n" ) ;
@@ -1252,17 +1253,7 @@ int main(int argc, char* argv[])
        } // isv
 
 
-
-
-
-
-
-
-
-
-
-
-
+       // Fill Tree
        summaryHandler_.fillTree();
 
        if ( maxevents > 0 && iev == maxevents ) {
@@ -1310,17 +1301,14 @@ int main(int argc, char* argv[])
   //save control plots to file
   printf("Results save in local directory and moved to %s\n", outUrl.Data());
 
-
-
   //-- owen: explicitly call write and close before trying to move the output root file.
   fs.file().Write() ;
   fs.file().Close() ;
 
-
-
   //save all to the file
   terminationCmd += TString("mv test.root ") + outUrl + ";";
  
+  
   if(!isMC && debugText!=""){
      TString outTxtUrl= outUrl + ".txt";
      terminationCmd += TString("mv out.txt ") + outTxtUrl + ";";
@@ -1329,12 +1317,13 @@ int main(int argc, char* argv[])
      printf("TextFile URL = %s\n",outTxtUrl.Data());
      if(outTxtFile)fclose(outTxtFile);
   }
+  
 
   //Now that everything is done, dump the list of lumiBlock that we processed in this job
   if(!isMC){
-     terminationCmd += TString("mv out.json ") + ((outUrl.ReplaceAll(".root",""))+".json") + ";";
-     goodLumiFilter.FindLumiInFiles(urls);
-     goodLumiFilter.DumpToJson("out.json");
+    terminationCmd += TString("mv out.json ") + ((outUrl.ReplaceAll(".root",""))+".json") + ";";
+    goodLumiFilter.FindLumiInFiles(urls);
+    goodLumiFilter.DumpToJson("out.json");
   }
 
   system(terminationCmd.Data());

@@ -196,6 +196,7 @@ parser.add_option('-R', '--R'          ,    dest='requirementtoBatch' , help='re
 parser.add_option('-j', '--json'       ,    dest='samplesDB'          , help='samples json file'                         , default='')
 parser.add_option('-d', '--dir'        ,    dest='indir'              , help='input directory or tag in json file'       , default='aoddir')
 parser.add_option('-o', '--out'        ,    dest='outdir'             , help='output directory'                          , default='')
+parser.add_option('-z', '--zzz'        ,    dest='storagedir'         , help='output T2 storage directory'               , default='')
 parser.add_option('-t', '--tag'        ,    dest='onlytag'            , help='process only samples matching this tag'    , default='all')
 parser.add_option('-k', '--key'        ,    dest='onlykeyword'        , help='process only samples matching this keyword', default='')
 parser.add_option('-K', '--skipkey'    ,    dest='skipkeyword'        , help='skip process matching this keyword'        , default='')
@@ -311,14 +312,14 @@ for procBlock in procList :
                        LaunchOnCondor.Jobs_FinalCmds.append(result[2])
 
                    prodfilepath=opt.outdir +'/'+ dtag + suffix + '_' + str(s) + filt
+                   if(opt.storagedir>0):
+                       outfilepath=opt.storagedir+'/'+ dtag + suffix + '_' + str(s) + filt 
+                   else:
+                       outfilepath=prodfilepath
                	   sedcmd = 'sed \''
                    sedcmd += 's%"@dtag"%"' + dtag +'"%;'
-#                   if(LaunchOnCondor.subTool!='crab'):
                    sedcmd += 's%"@input"%' + eventsFile+'%;'
-#                   else:
-#                       putempty = ''
-#                       sedcmd += 's%"@input"%' + putempty +'%;'
-            	   sedcmd += 's%@outfile%' + prodfilepath+'.root%;'
+            	   sedcmd += 's%@outfile%' + outfilepath+'.root%;'
             	   sedcmd += 's%@isMC%' + str(not (isdata or isdatadriven) )+'%;'
             	   sedcmd += 's%@mctruthmode%'+str(mctruthmode)+'%;'
                    sedcmd += 's%@resonance%'+str(resonance)+'%;'
