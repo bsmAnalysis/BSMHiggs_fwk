@@ -301,7 +301,6 @@ for procBlock in procList :
                    if(doCacheInputs and isLocalSample):
                       result = CacheInputs(eventsFile)
                       eventsFile = result[0]
-                      if("IIHE" in localTier): LaunchOnCondor.Jobs_InitCmds.append('if [ -d $TMPDIR ] ; then cd $TMPDIR ; fi;\n')
                       LaunchOnCondor.Jobs_InitCmds.append(result[1])
                       LaunchOnCondor.Jobs_FinalCmds.append(result[2])
 
@@ -312,10 +311,9 @@ for procBlock in procList :
                        LaunchOnCondor.Jobs_FinalCmds.append(result[2])
 
                    prodfilepath=opt.outdir +'/'+ dtag + suffix + '_' + str(s) + filt
-                   if(opt.storagedir>0):
+                   if(opt.storagedir>0):   
                        outfilepath=opt.storagedir+'/'+ dtag + suffix + '_' + str(s) + filt 
-                   else:
-                       outfilepath=prodfilepath
+                   else: outfilepath=prodfilepath
                	   sedcmd = 'sed \''
                    sedcmd += 's%"@dtag"%"' + dtag +'"%;'
                    sedcmd += 's%"@input"%' + eventsFile+'%;'
@@ -359,12 +357,9 @@ for procBlock in procList :
                           LaunchOnCondor.Jobs_CRABexe      = opt.theExecutable
                           if(commands.getstatusoutput("whoami")[1]=='georgia'):
                               LaunchOnCondor.Jobs_CRABStorageSite = 'T2_CH_CERN'
-                          else: 
-                              LaunchOnCondor.Jobs_CRABStorageSite = 'T2_US_UCSD'
-                          if(isdata):
-                              LaunchOnCondor.Jobs_CRABsplitting = 'LumiBased'
-                          else:
-                              LaunchOnCondor.Jobs_CRABsplitting = 'FileBased'
+                          else: LaunchOnCondor.Jobs_CRABStorageSite = 'T2_US_UCSD'
+                          if(isdata): LaunchOnCondor.Jobs_CRABsplitting = 'LumiBased'
+                          else: LaunchOnCondor.Jobs_CRABsplitting = 'FileBased'
                           LaunchOnCondor.Jobs_CRABname     = dtag + '_' + str(s)
                           LaunchOnCondor.Jobs_CRABInDBS    = getByLabel(procData,'dbsURL','global')
 #                          if(split>0):
@@ -374,13 +369,16 @@ for procBlock in procList :
                        LaunchOnCondor.SendCluster_Push(["BASH", str(opt.theExecutable + ' ' + cfgfile)])
 
                LaunchOnCondor.SendCluster_Submit()
-
+### Resubmit failed jobs:
             else:
                configList = commands.getstatusoutput('ls ' + opt.outdir +'/'+ dtag + suffix + '*_cfg.py')[1].split('\n')
                failedList = []
                for cfgfile in configList:
+                  if (opt.storagedir>0): 
+                      cfgfile = cfgfile.replace(opt.outdir, opt.storagedir) 
                   if( not os.path.isfile( cfgfile.replace('_cfg.py','.root'))):
-                     failedList+= [cfgfile]
+                      if (opt.storagedir>0): cfgfile = cfgfile.replace(opt.storagedir, opt.outdir)
+                      failedList+= [cfgfile]
 
                if(len(failedList)>0):
                   LaunchOnCondor.SendCluster_Create(FarmDirectory, JobName + '_' + dtag)
