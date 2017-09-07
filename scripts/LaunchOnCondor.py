@@ -145,9 +145,12 @@ def CreateTheShellFile(argv):
     else: 
         shell_file.write('export VO_CMS_SW_DIR='+os.getenv("VO_CMS_SW_DIR","/nfs/soft/cms")+'\n')            
     #shell_file.write('source /nfs/soft/cms/cmsset_default.sh\n')
-    shell_file.write('export X509_USER_PROXY='+Farm_Directories[1]+'x509_proxy\n')
-#    shell_file.write('export XRD_NETWORKSTACK=IPv4\n')
+#    shell_file.write('export X509_USER_PROXY='+Farm_Directories[1]+'x509_proxy\n')
+    shell_file.write('export XRD_NETWORKSTACK=IPv4\n')
     shell_file.write('cd ' + os.getcwd() + '\n')
+#    if 'cern' in hostname:
+#        shell_file.write('source /afs/cern.ch/cms/cmsset_default.sh\n')                                                  
+#        shell_file.write('source /afs/cern.ch/cms/LCG/LCG-2/UI/cms_ui_env.sh\n')   
     shell_file.write('eval `scramv1 runtime -sh`\n')
 
     if Jobs_RunHere==0:
@@ -247,7 +250,6 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
     config_file.write('config.Data.unitsPerJob = %d\n' % Jobs_CRABUnitPerJob)
     config_file.write('config.Data.totalUnits = -1\n')
     config_file.write('config.Data.publication = False\n')
-#    config_file.write('#config.Data.publishDBS = \'phys03\'\n')
     config_file.write('config.Data.ignoreLocality = True\n')
     if Jobs_CRABLFN == '':
         config_file.write('#config.Data.outLFNDirBase = \'/store/user/<username>/Debug\'\n')
