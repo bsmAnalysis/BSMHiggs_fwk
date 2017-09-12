@@ -624,7 +624,8 @@ int main(int argc, char* argv[])
        mon_.fillHisto("metFilter", "all", metFilterValue, 1.0);
        
        ev.hasTrigger  = ( mumuTrigger||muTrigger||eeTrigger||highPTeeTrigger||eTrigger||emuTrigger );
-       
+       //ev.hasTrigger  = ( muTrigger||eTrigger||emuTrigger ); 
+
        ev.triggerType = ( mumuTrigger  << 0 )
 	 | ( muTrigger  << 1 )
 	 | ( eeTrigger << 2 )
@@ -633,7 +634,7 @@ int main(int argc, char* argv[])
          | ( emuTrigger << 5 ) ;
 
        //if(!isMC_ && !ev.hasTrigger) return; // skip the event if no trigger, only for Data
-       //       if(!ev.hasTrigger) return false; // skip the event if no trigger, for both Data and MC
+       if(!ev.hasTrigger) continue; // skip the event if no trigger, for both Data and MC
 
        //##############################################   EVENT PASSED THE TRIGGER   ######################################
        //if (metFilterValue==10 || metFilterValue==11) { metFilterValue=0; }
@@ -684,7 +685,7 @@ int main(int argc, char* argv[])
 	 ev.mn_pz[ev.mn] = mu.pz();
 	 ev.mn_en[ev.mn] = mu.energy();
 	 ev.mn_id[ev.mn] = 13*mu.charge();
-
+	 /*
 	 ev.mn_d0[ev.mn] = -mu.muonBestTrack()->dxy(PV.position());
 	 ev.mn_dZ[ev.mn] = mu.muonBestTrack()->dz(PV.position());
 	 ev.mn_ip3d[ev.mn] = mu.dB(pat::Muon::PV3D);
@@ -705,7 +706,7 @@ int main(int argc, char* argv[])
 	 ev.mn_chargedIsoR04[ev.mn] = mu.pfIsolationR04().sumChargedHadronPt;
 	 ev.mn_photonIsoR04[ev.mn] = mu.pfIsolationR04().sumPhotonEt;
 	 ev.mn_neutralHadIsoR04[ev.mn] = mu.pfIsolationR04().sumNeutralHadronEt;
-	 /*
+	 
 	 ev.mn_nMatches[ev.mn]                   = mu.numberOfMatches();
 	 ev.mn_nMatchedStations[ev.mn]           = mu.numberOfMatchedStations();
 	 ev.mn_validMuonHits[ev.mn]              = mu.isGlobalMuon() ? mu.globalTrack().hitPattern().numberOfValidMuonHits() : 0.;
@@ -789,7 +790,7 @@ int main(int argc, char* argv[])
        //for (std::vector<pat::Jet >::const_iterator j = jets.begin(); j!=jets.end(); j++) 
        int ijet(0) ;
        for (pat::Jet &j : jets) {
-	 if(j.pt() < 15) continue;
+	 if(j.pt() < 20) continue;
 
 	 //jet id
 	 //	 hasLooseId.set(false);
@@ -873,6 +874,7 @@ int main(int argc, char* argv[])
        //
        // jet selection (AK8Jets)
        //
+
        pat::JetCollection fatjets; 
        fwlite::Handle< pat::JetCollection > jetsAK8Handle; 
        jetsAK8Handle.getByLabel(event, "slimmedJetsAK8"); 
@@ -1002,7 +1004,6 @@ int main(int argc, char* argv[])
 	 ev.fjet++;
 	 ifjet++;
        }
-
        
        /*
        pat::PhotonCollection photons;
@@ -1048,15 +1049,13 @@ int main(int argc, char* argv[])
 
 
 
-
-
        //-- Inclusive Secondary Vertices
 
        reco::VertexCompositePtrCandidateCollection sec_vert ;
        fwlite::Handle< reco::VertexCompositePtrCandidateCollection > svHandle ;
        svHandle.getByLabel( event, "slimmedSecondaryVertices" ) ;
        if ( svHandle.isValid() ) { sec_vert = *svHandle ;} 
-       else { printf("\n\n *** bad handle for reco::VertexCompositePtrCandidateCollection\n\n") ; return false; }//gSystem -> Exit(-1) ; }
+       else { printf("\n\n *** bad handle for reco::VertexCompositePtrCandidateCollection\n\n") ; gSystem -> Exit(-1) ; }
 
        ev.sv = sec_vert.size() ;
        if ( verbose ) printf("\n\n\n ---- Inclusive Secondary Vertices:\n" ) ;
