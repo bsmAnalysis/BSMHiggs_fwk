@@ -370,14 +370,15 @@ for procBlock in procList :
                           if(commands.getstatusoutput("whoami")[1]=='georgia'):
                               LaunchOnCondor.Jobs_CRABStorageSite = 'T2_CH_CERN'
                           else: LaunchOnCondor.Jobs_CRABStorageSite = 'T2_US_UCSD'
-                          if(isdata): LaunchOnCondor.Jobs_CRABsplitting = 'LumiBased'
+                          if(isdata): 
+                              LaunchOnCondor.Jobs_CRABsplitting = 'LumiBased'
                           else: LaunchOnCondor.Jobs_CRABsplitting = 'FileBased'
                           LaunchOnCondor.Jobs_CRABname     = dtag + '_' + str(s)
                           LaunchOnCondor.Jobs_CRABInDBS    = getByLabel(procData,'dbsURL','global')
-#                          if(split>0):
-#                              LaunchOnCondor.Jobs_CRABUnitPerJob = 100 / split 
-#                          else:
-#                              LaunchOnCondor.Jobs_CRABUnitPerJob = int(opt.NFile)
+                          if(split>0):
+                              LaunchOnCondor.Jobs_CRABUnitPerJob = 100 / split 
+                          else:
+                              LaunchOnCondor.Jobs_CRABUnitPerJob = int(opt.NFile)
                        LaunchOnCondor.SendCluster_Push(["BASH", str(opt.theExecutable + ' ' + cfgfile)])
 
                LaunchOnCondor.SendCluster_Submit()
