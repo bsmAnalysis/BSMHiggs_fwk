@@ -290,9 +290,9 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, fwkPath, cfgPath):
     exe_file.write('echo "================= Dumping Input files ===================="\n')
     exe_file.write('python -c "import PSet; print '"\n"'.join(list(PSet.process.source.fileNames))"\n')
     exe_file.write('\n')
-#    exe_file.write('#Actually run the script\n')
-#    exe_file.write(Jobs_CRABexe + ' PSet.py\n')
-#    exe_file.close()
+    exe_file.write('#Actually run the script\n')
+    exe_file.write(Jobs_CRABexe + ' PSet.py\n')
+    exe_file.close()
 
     fwk_file=open(fwkPath,'w')
     fwk_file.write('<FrameworkJobReport>\n')
