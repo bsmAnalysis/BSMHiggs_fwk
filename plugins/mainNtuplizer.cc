@@ -123,7 +123,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<reco::VertexCollection> vtxTag_;
     edm::EDGetTokenT<reco::BeamSpot> beamSpotTag_;
     edm::EDGetTokenT<pat::MuonCollection> muonTag_;
-  edm::EDGetTokenT<pat::ElectronCollection> electronTag_;
+    edm::EDGetTokenT<pat::ElectronCollection> electronTag_;
   //  edm::EDGetTokenT<edm::View<pat::Electron> > electronTag_;
 
     // edm::EDGetTokenT<pat::TauCollection> tauTag_;
@@ -132,13 +132,13 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 //    edm::EDGetTokenT<pat::JetCollection> jetPuppiTag_;
     edm::EDGetTokenT<pat::JetCollection> fatjetTag_;
     edm::EDGetTokenT<pat::METCollection> metTag_;
-  edm::EDGetTokenT<pat::METCollection> metTagData_;
+    edm::EDGetTokenT<pat::METCollection> metTagData_;
     edm::EDGetTokenT<pat::METCollection> metNoHFTag_;
     edm::EDGetTokenT<pat::METCollection> metPuppiTag_;
 
     edm::EDGetTokenT<edm::TriggerResults> metFilterBitsTag_;
 
-  edm::EDGetTokenT<reco::VertexCompositePtrCandidateCollection> svTag_;
+    edm::EDGetTokenT<reco::VertexCompositePtrCandidateCollection> svTag_;
   
     edm::EDGetTokenT<edm::View<reco::GenParticle> > prunedGenTag_;
     edm::EDGetTokenT<std::vector<PileupSummaryInfo> > puInfoTag_;
@@ -147,54 +147,37 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   // edm::EDGetTokenT<edm::View<reco::GenJet> > genjetTag_;
   //  edm::InputTag lheRunInfoTag_;
   // edm::EDGetTokenT<LHERunInfoProduct> lheRunInfoToken_;
-  edm::EDGetTokenT<double> rhoFastjetAllTag_;
+    edm::EDGetTokenT<double> rhoFastjetAllTag_;
 
-  edm::EDGetTokenT<edm::TriggerResults> triggerBits_;
-  edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> triggerObjects_;
-  edm::EDGetTokenT<pat::PackedTriggerPrescales> triggerPrescales_;
+    edm::EDGetTokenT<edm::TriggerResults> triggerBits_;
+    edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> triggerObjects_;
+    edm::EDGetTokenT<pat::PackedTriggerPrescales> triggerPrescales_;
 
+    std::vector<std::string> DoubleMuTrigs_, DoubleEleTrigs_, SingleMuTrigs_, SingleEleTrigs_, MuEGTrigs_;// DoubleTauTrigs_;
 
-  std::vector<std::string> DoubleMuTrigs_, DoubleEleTrigs_, SingleMuTrigs_, SingleEleTrigs_, MuEGTrigs_;// DoubleTauTrigs_;
-
-
-  bool isMC_;
-  double xsec_;
-  int mctruthmode_;
-  bool verbose_;
+    bool isMC_;
+    double xsec_;
+    int mctruthmode_;
+    bool verbose_;
   
-  DataEvtSummaryHandler summaryHandler_;
-  SmartSelectionMonitor mon_;
+    DataEvtSummaryHandler summaryHandler_;
+    SmartSelectionMonitor mon_;
 
  
-  double xsecWeight;
-
-  //pileup weighting
-  // edm::LumiReWeighting* LumiWeights = NULL;
-  // utils::cmssw::PuShifter_t PuShifters;
-  // double PUNorm[3];// = {1,1,1};
-  
-  std::vector<double> dataPileupDistributionDouble;
-  std::vector<float> dataPileupDistribution;
-  std::vector<float> mcPileupDistribution;
-  double totalNumEvent;
-
-  patUtils::MetFilter metFilter;
+    double xsecWeight;
   
       virtual void beginJob() override;
       virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
       virtual void endJob() override;
 
       // ----------member data ---------------------------
-  float curAvgInstLumi_;
-  float curIntegLumi_;
-
-  //PhysicsTools/HepMCCandAlgos/plugins/PDFWeightsTest.cc
-  //PDFWeightsHelper pdfweightshelper;
+    float curAvgInstLumi_;
+    float curIntegLumi_;
   
-  int firstPdfWeight;
-  int lastPdfWeight;
-  int firstAlphasWeight;
-  int lastAlphasWeight;
+    int firstPdfWeight;
+    int lastPdfWeight;
+    int firstAlphasWeight;
+    int lastAlphasWeight;
   
 };
 
@@ -221,11 +204,11 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
 //    jetPuppiTag_(       consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("jetsPuppiTag"))               ),
     fatjetTag_(		consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("fatjetsTag"))			),
     metTag_(		consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metsTag"))			),
-   metTagData_(		consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metsTagData"))			),
+    metTagData_(		consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metsTagData"))			),
     metNoHFTag_(        consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metsNoHFTag"))                ),
     metPuppiTag_(       consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metsPuppiTag"))               ),
     metFilterBitsTag_(	consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("metFilterBitsTag"))		),
-   svTag_(		consumes<reco::VertexCompositePtrCandidateCollection>(iConfig.getParameter<edm::InputTag>("svTag"))			),
+    svTag_(		consumes<reco::VertexCompositePtrCandidateCollection>(iConfig.getParameter<edm::InputTag>("svTag"))			),
     prunedGenTag_(	consumes<edm::View<reco::GenParticle> >(iConfig.getParameter<edm::InputTag>("prunedTag"))	),
     puInfoTag_(         consumes<std::vector<PileupSummaryInfo> >(iConfig.getParameter<edm::InputTag>("puInfoTag"))     ),
     genInfoTag_(        consumes<GenEventInfoProduct>(iConfig.getParameter<edm::InputTag>("genInfoTag"))                ),
@@ -244,9 +227,9 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
     MuEGTrigs_(		iConfig.getParameter<std::vector<std::string> >("MuEGTrigs")					),
   //   mon_(	iConfig.getParameter<std::string>("dtag")							),
     isMC_(		iConfig.getParameter<bool>("isMC")								),
-  xsec_(  iConfig.getParameter<double>("xsec")                                                                          ),
-  mctruthmode_( iConfig.getParameter<int>("mctruthmode")                                                                ),
-  verbose_(		iConfig.getParameter<bool>("verbose")								),
+    xsec_(  iConfig.getParameter<double>("xsec")                                                                          ),
+    mctruthmode_( iConfig.getParameter<int>("mctruthmode")                                                                ),
+    verbose_(		iConfig.getParameter<bool>("verbose")								),
   // std::vector<std::string> urls=runProcess.getUntrackedParameter<std::vector<std::string> >("input");
     //rhoAllTag_(			consumes<double>(iConfig.getParameter<edm::InputTag>("rhoAll"))				),
     //rhoFastjetAllCaloTag_( 	consumes<double>(iConfig.getParameter<edm::InputTag>("rhoFastjetAllCalo")) 		),
@@ -256,7 +239,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   //    eleMediumIdMapTokenTrig_(	consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("eleMediumIdMapTrig"))	),
   // eleTightIdMapTokenTrig_(	consumes<edm::ValueMap<bool> >(iConfig.getParameter<edm::InputTag>("eleTightIdMapTrig"))	),
     curAvgInstLumi_(0),
-  curIntegLumi_(0)
+    curIntegLumi_(0)
 {
    //now do what ever initialization is needed
 
@@ -304,26 +287,6 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   
 //MC normalization (to 1/pb)
   xsecWeight = 1.0;
-
-  // PUNorm[3] = {1,1,1};
-  // if(isMC_){
-  //   dataPileupDistributionDouble = iConfig.getParameter< std::vector<double> >("datapileup");
-  //   for(unsigned int i=0;i<dataPileupDistributionDouble.size();i++){dataPileupDistribution.push_back(dataPileupDistributionDouble[i]);}
-  //   // std::vector<float> mcPileupDistribution;
-
-  //   // std::vector<std::string> urls=iConfig.getUntrackedParameter<std::vector<std::string> >("input");
-  //   totalNumEvent = utils::getMCPileupDistributionAndTotalEventFromMiniAOD(urls,dataPileupDistribution.size(), mcPileupDistribution);
-  //   xsecWeight=xsec_/totalNumEvent;
-    
-  //   //utils::getMCPileupDistributionFromMiniAOD(urls,dataPileupDistribution.size(), mcPileupDistribution);
-  //   while(mcPileupDistribution.size()<dataPileupDistribution.size())  mcPileupDistribution.push_back(0.0);
-  //   while(mcPileupDistribution.size()>dataPileupDistribution.size())dataPileupDistribution.push_back(0.0);
-  //   gROOT->cd();  //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
-  //   LumiWeights = new edm::LumiReWeighting(mcPileupDistribution,dataPileupDistribution);
-  //   PuShifters=utils::cmssw::getPUshifters(dataPileupDistribution,0.05);
-  //   utils::getPileupNormalization(mcPileupDistribution, PUNorm, LumiWeights, PuShifters);
-  // }
-  // gROOT->cd(); //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
 
   usesResource("TFileService");
 
@@ -397,19 +360,6 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      mon_.fillHisto("pileup","all",ev.ngenITpu,0);
      mon_.fillHisto("pileuptrue","all",truePU,0);
      
-     // //WEIGHT for Pileup
-     // int ngenITpu = 0;
-     // // edm::Handle< std::vector<PileupSummaryInfo> > puInfoH;
-     // //puInfoH.getByLabel(ev, "slimmedAddPileupInfo");
-     // for(std::vector<PileupSummaryInfo>::const_iterator it = puInfoH->begin(); it != puInfoH->end(); it++){
-     //   if(it->getBunchCrossing()==0)      { ngenITpu += it->getTrueNumInteractions(); } //getPU_NumInteractions();
-     // }
-     // puWeight_  = LumiWeights->weight(ngenITpu) * PUNorm[0];
-     // ev.puWeight = puWeight_;
-     // // puWeightUp  = PuShifters[utils::cmssw::PUUP  ]->Eval(ngenITpu) * (PUNorm[2]/PUNorm[0]);
-     // // puWeightDown = PuShifters[utils::cmssw::PUDOWN]->Eval(ngenITpu) * (PUNorm[1]/PUNorm[0]);
-     // // weight *= puWeight;
-     
      if ( verbose_ ) { printf("  MC : Npu= %3d, truePU = %5.1f\n", npuIT, truePU ) ; }
      
      //retrieve pdf info
@@ -477,11 +427,6 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      Handle<edm::View<reco::GenParticle> > pruned;
      event.getByToken(prunedGenTag_,pruned);
 
-     // edm::Handle< reco::GenParticleCollection > genHandle;
-     // event.getByToken(prunedGenTag_,genHandle);
-     // if(pruned.isValid()){ gen = *genHandle;}
-     
-     
      std::vector<TLorentzVector> chLeptons;       
      
      if ( verbose_ ) { printf("\n\n Gen particles:\n" ) ; }
@@ -1100,8 +1045,6 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        }
        */
 
-
-
        //-- Inclusive Secondary Vertices
 
        reco::VertexCompositePtrCandidateCollection sec_vert ;
@@ -1310,16 +1253,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 
         // Fill Tree
        summaryHandler_.fillTree();
-   
-// #ifdef THIS_IS_AN_EVENT_EXAMPLE
-//    Handle<ExampleData> pIn;
-//    iEvent.getByLabel("example",pIn);
-// #endif
-   
-// #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
-//    ESHandle<SetupData> pSetup;
-//    iSetup.get<SetupRecord>().get(pSetup);
-// #endif
+ 
 }
 
 //========================================================================
