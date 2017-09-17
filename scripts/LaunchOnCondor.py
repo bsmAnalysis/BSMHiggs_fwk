@@ -234,7 +234,7 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, fwkPath, cfgPath):
     config_file.write('config.General.requestName = "%s"\n' % Jobs_CRABname)
     config_file.write('config.General.workArea = "%s"\n' % crabWorkDir)
 #    config_file.write('config.General.transferOutputs = True\n')
-    config_file.write('config.General.transferLogs = True\n')
+    config_file.write('config.General.transferLogs = False\n')
     config_file.write('\n')
     config_file.write('config.JobType.pluginName = \'Analysis\'\n')
     config_file.write('config.JobType.psetName = "'+Jobs_CRABcfgFile+'"\n')
