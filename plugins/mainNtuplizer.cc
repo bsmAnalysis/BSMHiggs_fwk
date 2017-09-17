@@ -811,16 +811,16 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.jet_en[ev.jet] = j.energy(); //correctedP4(0).energy();
 
 	 ev.jet_btag0[ev.jet] = j.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-	 ev.jet_btag1[ev.jet] = j.bDiscriminator("pfJetBProbabilityBJetTags");
-	 ev.jet_btag2[ev.jet] = j.bDiscriminator("pfJetProbabilityBJetTags");
-	 ev.jet_btag3[ev.jet] = j.bDiscriminator("pfTrackCountingHighPurBJetTags");
-	 ev.jet_btag4[ev.jet] = j.bDiscriminator("pfTrackCountingHighEffBJetTags");
-	 ev.jet_btag5[ev.jet] = j.bDiscriminator("pfSimpleSecondaryVertexHighEffBJetTags");
-	 ev.jet_btag6[ev.jet] = j.bDiscriminator("pfSimpleSecondaryVertexHighPurBJetTags");
-	 ev.jet_btag7[ev.jet] = j.bDiscriminator("combinedSecondaryVertexBJetTags");
-	 ev.jet_btag8[ev.jet] = j.bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
-	 ev.jet_btag9[ev.jet] = j.bDiscriminator("pfCombinedSecondaryVertexSoftLeptonBJetTags");
-	 ev.jet_btag10[ev.jet] = j.bDiscriminator("pfCombinedMVABJetTags");
+	 // ev.jet_btag1[ev.jet] = j.bDiscriminator("pfJetBProbabilityBJetTags");
+	 // ev.jet_btag2[ev.jet] = j.bDiscriminator("pfJetProbabilityBJetTags");
+	 // ev.jet_btag3[ev.jet] = j.bDiscriminator("pfTrackCountingHighPurBJetTags");
+	 // ev.jet_btag4[ev.jet] = j.bDiscriminator("pfTrackCountingHighEffBJetTags");
+	 // ev.jet_btag5[ev.jet] = j.bDiscriminator("pfSimpleSecondaryVertexHighEffBJetTags");
+	 // ev.jet_btag6[ev.jet] = j.bDiscriminator("pfSimpleSecondaryVertexHighPurBJetTags");
+	 // ev.jet_btag7[ev.jet] = j.bDiscriminator("combinedSecondaryVertexBJetTags");
+	 // ev.jet_btag8[ev.jet] = j.bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
+	 // ev.jet_btag9[ev.jet] = j.bDiscriminator("pfCombinedSecondaryVertexSoftLeptonBJetTags");
+	 // ev.jet_btag10[ev.jet] = j.bDiscriminator("pfCombinedMVABJetTags");
 
 	 ev.jet_mass[ev.jet] = j.mass(); //correctedP4(0).M();
 	 ev.jet_area[ev.jet] = j.jetArea();
