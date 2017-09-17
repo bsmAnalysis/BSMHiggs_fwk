@@ -26,6 +26,7 @@
 <use name="SimDataFormats/GeneratorProducts"/>
 <use name="SimDataFormats/TrackingAnalysis"/>
 <use name="DataFormats/ParticleFlowCandidate"/>
+<use name="DataFormats/HepMCCandidate"/>
 <use name="DataFormats/METReco"/>
 <use name="RecoMET/METAlgorithms"/>
 <use name="RecoJets/JetProducers"/>
