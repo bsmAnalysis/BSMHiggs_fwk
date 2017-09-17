@@ -1,0 +1,96 @@
+import FWCore.ParameterSet.Config as cms
+
+process = cms.Process("bsmAnalysis")
+
+process.load("FWCore.MessageService.MessageLogger_cfi")
+#process.MessageLogger.cerr.FwkReport.reportEvery = 5000
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True),
+                                        SkipEvent = cms.untracked.vstring('ProductNotFound')
+                                        )
+
+
+##___________________________HCAL_Noise_Filter________________________________||
+#process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
+#process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
+#process.HBHENoiseFilterResultProducer.IgnoreTS4TS5ifJetInLowBVRegion=cms.bool(False)
+#process.HBHENoiseFilterResultProducer.defaultDecision = cms.string("HBHENoiseFilterResultRun2Loose")
+#
+#process.ApplyBaselineHBHENoiseFilter = cms.EDFilter('BooleanFlagFilter',
+#   inputLabel = cms.InputTag('HBHENoiseFilterResultProducer','HBHENoiseFilterResult'),
+#   reverseDecision = cms.bool(False)
+#)
+#
+#process.ApplyBaselineHBHEIsoNoiseFilter = cms.EDFilter('BooleanFlagFilter',
+#   inputLabel = cms.InputTag('HBHENoiseFilterResultProducer','HBHEIsoNoiseFilterResult'),
+#   reverseDecision = cms.bool(False)
+#)
+#
+
+process.mainNtuplizer = cms.EDAnalyzer('mainNtuplizer',
+
+    lheInfo = cms.InputTag("externalLHEProducer"),
+
+    beamSpotTag = cms.InputTag("offlineBeamSpot"),
+    verticesTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
+
+    rhoAll = cms.InputTag("fixedGridRhoAll"),
+    rhoFastjetAll = cms.InputTag("fixedGridRhoFastjetAll"),
+    rhoFastjetAllCalo = cms.InputTag("fixedGridRhoFastjetAllCalo"),
+    rhoFastjetCentralCalo = cms.InputTag("fixedGridRhoFastjetCentralCalo"),
+    rhoFastjetCentralChargedPileUp = cms.InputTag("fixedGridRhoFastjetCentralChargedPileUp"),
+    rhoFastjetCentralNeutral = cms.InputTag("fixedGridRhoFastjetCentralNeutral"),
+
+    muonsTag = cms.InputTag("slimmedMuons"),
+
+    electronsTag = cms.InputTag("slimmedElectrons"),
+
+    tausTag = cms.InputTag("slimmedTaus"),
+
+    photonsTag = cms.InputTag("slimmedPhotons"),
+
+    jetsTag = cms.InputTag("slimmedJets"),
+    jetsPuppiTag = cms.InputTag("slimmedJetsPuppi"),
+    fatjetsTag = cms.InputTag("slimmedJetsAK8"),
+
+    metsTag = cms.InputTag("slimmedMETs"),
+    metsTagData = cms.InputTag("slimmedMETsMuEGClean"),                                        
+    metsNoHFTag = cms.InputTag("slimmedMETsNoHF"),
+    metsPuppiTag = cms.InputTag("slimmedMETsPuppi"),
+
+    svTag = cms.InputTag("slimmedSecondaryVertices"),                                   
+
+    metFilterBitsTag = cms.InputTag("TriggerResults"),
+    packedTag = cms.InputTag("packedGenParticles"),
+    prunedTag = cms.InputTag("prunedGenParticles"),
+    genJetsTag = cms.InputTag("slimmedGenJets"),
+
+    puInfoTag = cms.InputTag("slimmedAddPileupInfo", "", "PAT"),
+    genInfoTag = cms.InputTag("generator", "", "SIM"),
+
+
+    ##trigger
+    bits = cms.InputTag("TriggerResults","","HLT"),
+    prescales = cms.InputTag("patTrigger"),
+    objects = cms.InputTag("selectedPatTrigger"),
+
+    	DoubleMuTrigs = cms.vstring("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v",
+					"HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v"
+				   ),
+
+    	DoubleEleTrigs = cms.vstring("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v",
+					),
+
+    	SingleMuTrigs = cms.vstring("HLT_IsoMu20_v",
+					"HLT_IsoTkMu20_v"),
+
+    	SingleEleTrigs = cms.vstring(#"HLT_Ele27_eta2p1_WPLoose_Gsf_v",
+					"HLT_Ele23_WPLoose_Gsf_v",
+					#"HLT_Ele22_eta2p1_WPLoose_Gsf_v"
+					),
+
+   	MuEGTrigs = cms.vstring("HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v",
+					"HLT_Mu17_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v"),
+
+	#DoubleTauTrigs = cms.vstring("HLT_DoubleMediumIsoPFTau40_Trk1_eta2p1_Reg_v")
+)
+

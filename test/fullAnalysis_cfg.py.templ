@@ -1,0 +1,50 @@
+import FWCore.ParameterSet.Config as cms
+
+from UserCode.bsmhiggs_fwk.mainNtuplizer_cfi import *
+
+process.load("FWCore.MessageService.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = 10000
+
+process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
+process.load("Configuration.EventContent.EventContent_cff")
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+
+
+#load run conditions
+#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.load('Configuration.Geometry.GeometryIdeal_cff')
+process.load('Configuration.StandardSequences.MagneticField_38T_cff')
+
+#------ Declare the correct global tag ------#
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+#process.GlobalTag.globaltag = '80X_dataRun2_2016SeptRepro_v7'
+process.GlobalTag.globaltag = '@gtag'
+
+process.mainNtuplizer.isMC = cms.bool(@isMC)
+process.mainNtuplizer.dtag = cms.string("@dtag")
+process.mainNtuplizer.xsec = cms.double(@xsec)
+process.mainNtuplizer.mctruthmode = cms.int32(@mctruthmode)
+process.mainNtuplizer.verbose = cms.bool(@verbose)
+
+
+process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring(
+    )
+)
+
+
+process.TFileService = cms.Service("TFileService",
+                                   fileName = cms.string("analysis.root")
+                                  )
+
+
+
+
+
+process.p = cms.Path(  process.mainNtuplizer )	
+#process.HBHENoiseFilterResultProducer * #produces HBHE baseline bools
+                        #process.ApplyBaselineHBHENoiseFilter *  #reject events based
+                        #process.ApplyBaselineHBHEIsoNoiseFilter *   #reject events based  < 10e-3 mistake rate
+                        #process.egmGsfElectronIDSequence * 
+#			process.mainNtuplizer
+#)

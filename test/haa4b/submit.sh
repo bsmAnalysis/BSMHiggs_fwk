@@ -34,14 +34,18 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 # Global Variables
 #--------------------------------------------------
 
-SUFFIX=_2017_09_06
+SUFFIX=_2017_09_17
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
 JSON=$MAINDIR/samples.json
 GOLDENJSON=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/json/
+
 RESULTSDIR=$MAINDIR/results$SUFFIX
-STORAGEDIR=/eos/cms/store/user/georgia/results$SUFFIX
+
+if [[ $arguments == *"crab3"* ]]; then STORAGEDIR='';
+else STORAGEDIR=/eos/cms/store/user/georgia/results$SUFFIX ; fi
+
 PLOTSDIR=$MAINDIR/plots${SUFFIX}
 PLOTTER=$MAINDIR/plotter${SUFFIX}
  
@@ -80,10 +84,11 @@ fi
 ###  ############################################## STEPS between 1 and 2
 if [[ $step > 0.999 &&  $step < 2 ]]; then
    if [[ $step == 1.0 ]]; then
-       echo "JOB SUBMISSION for Ntuplization"
+       echo "JOB SUBMISSION for Ntuplization using full CMSSW fwk"
        echo "Input: " $JSON
        echo "Output: " $RESULTSDIR
-       runAnalysisOverSamples.py -e runNtuplizer -j $JSON -o $RESULTSDIR  -c $MAINDIR/../runAnalysis_cfg.py.templ -z $STORAGEDIR -p "@data_pileup=datapileup_latest @verbose=False" -s $queue --report True --key haa_test $arguments
+       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_test -s crab
+#       runAnalysisOverSamples.py -e runNtuplizer -j $JSON -o $RESULTSDIR  -c $MAINDIR/../runNtuplizer_cfg.py.templ -p "@data_pileup=datapileup_latest @verbose=False" -s $queue --report True --key haa_test $arguments
    fi    
 
    if [[ $step == 1.1 ]]; then  #submit jobs for h->aa->XXYY analysis
