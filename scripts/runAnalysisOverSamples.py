@@ -196,7 +196,7 @@ parser.add_option('-R', '--R'          ,    dest='requirementtoBatch' , help='re
 parser.add_option('-j', '--json'       ,    dest='samplesDB'          , help='samples json file'                         , default='')
 parser.add_option('-d', '--dir'        ,    dest='indir'              , help='input directory or tag in json file'       , default='aoddir')
 parser.add_option('-o', '--out'        ,    dest='outdir'             , help='output directory'                          , default='')
-parser.add_option('-z', '--zzz'        ,    dest='storagedir'         , help='output T2 storage directory'               , default='')
+parser.add_option('-z', '--store'      ,    dest='storagedir'         , help='output T2 storage directory'               , default='')
 parser.add_option('-t', '--tag'        ,    dest='onlytag'            , help='process only samples matching this tag'    , default='all')
 parser.add_option('-k', '--key'        ,    dest='onlykeyword'        , help='process only samples matching this keyword', default='')
 parser.add_option('-K', '--skipkey'    ,    dest='skipkeyword'        , help='skip process matching this keyword'        , default='')
@@ -205,6 +205,7 @@ parser.add_option('-c', '--cfg'        ,    dest='cfg_file'           , help='ba
 parser.add_option('-r', "--report"     ,    dest='report'             , help='If the report should be sent via email'    , default=False, action="store_true")
 parser.add_option('-D', "--db"         ,    dest='db'                 , help='DB to get file list for a given dset'      , default=DatasetFileDB)
 parser.add_option('-F', "--resubmit"   ,    dest='resubmit'           , help='resubmit jobs that failed'                 , default=False, action="store_true")
+parser.add_option('-w', "--recreate"   ,    dest='recreate'           , help='recreate and resubmit jobs that failed'    , default=False)
 if(commands.getstatusoutput("hostname -f")[1].find("iihe.ac.be")!=-1): parser.add_option('-S', "--NFile"      ,    dest='NFile'              , help='default #Files per job (for autosplit)'    , default=6)
 else: parser.add_option('-S', "--NFile"      ,    dest='NFile'              , help='default #Files per job (for autosplit)'    , default=8)
 parser.add_option('-f', "--localnfiles",    dest='localnfiles'        , help='number of parallel jobs to run locally'    , default=8)
@@ -264,6 +265,7 @@ for procBlock in procList :
         isdata=getByLabelFromKeyword(proc,opt.onlykeyword,'isdata',False)
         isdatadriven=getByLabelFromKeyword(proc,opt.onlykeyword,'isdatadriven',False)       
         mctruthmode=getByLabelFromKeyword(proc,opt.onlykeyword,'mctruthmode',0)
+#        gtag=getByLabel(proc,opt.onlykeyword,'gtag',"")  
         procSuffix=getByLabelFromKeyword(proc,opt.onlykeyword,'suffix' ,"")
         resonance=getByLabelFromKeyword(proc,opt.onlykeyword,'resonance',1);
         data = proc['data']
@@ -286,7 +288,7 @@ for procBlock in procList :
 
             if(opt.resubmit==False):
                FileList = getByLabel(procData,'dset',['"UnknownDataset"'])
-#               if(LaunchOnCondor.subTool!='crab'): DatasetNameForCRAB = FileList[0]
+#               if(LaunchOnCondor.subTool=='crab'): DatasetNameForCRAB = FileList[0]
                LaunchOnCondor.SendCluster_Create(FarmDirectory, JobName + '_' + dtag+filt)
                if(LaunchOnCondor.subTool!='crab'): FileList = getFileList(procData, int(opt.NFile) )
 
@@ -304,33 +306,43 @@ for procBlock in procList :
                       LaunchOnCondor.Jobs_InitCmds.append(result[1])
                       LaunchOnCondor.Jobs_FinalCmds.append(result[2])
 
-                   if(not isLocalSample):
-                       result = CacheInputs(eventsFile) 
-                       eventsFile = result[0]
-                       LaunchOnCondor.Jobs_InitCmds.append(result[1])  
-                       LaunchOnCondor.Jobs_FinalCmds.append(result[2])
-
+                   if(LaunchOnCondor.subTool!='crab'):
+                       if(not isLocalSample):
+                           result = CacheInputs(eventsFile) 
+                           eventsFile = result[0]
+                           LaunchOnCondor.Jobs_InitCmds.append(result[1])  
+                           LaunchOnCondor.Jobs_FinalCmds.append(result[2])
+                          
                    prodfilepath=opt.outdir +'/'+ dtag + suffix + '_' + str(s) + filt
-                   if(opt.storagedir>0):   
+                   if(opt.storagedir!=''):   
                        outfilepath=opt.storagedir+'/'+ dtag + suffix + '_' + str(s) + filt 
                    else: outfilepath=prodfilepath
                	   sedcmd = 'sed \''
                    sedcmd += 's%"@dtag"%"' + dtag +'"%;'
-                   sedcmd += 's%"@input"%' + eventsFile+'%;'
-            	   sedcmd += 's%@outfile%' + outfilepath+'.root%;'
-            	   sedcmd += 's%@isMC%' + str(not (isdata or isdatadriven) )+'%;'
-            	   sedcmd += 's%@mctruthmode%'+str(mctruthmode)+'%;'
-                   sedcmd += 's%@resonance%'+str(resonance)+'%;'
-            	   sedcmd += 's%@xsec%'+str(xsec)+'%;'
-                   sedcmd += 's%@cprime%'+str(getByLabel(procData,'cprime',-1))+'%;'
-                   sedcmd += 's%@brnew%' +str(getByLabel(procData,'brnew' ,-1))+'%;'
-                   sedcmd += 's%@suffix%' +suffix+'%;'
-                   sedcmd += 's%@lumiMask%"' + os.path.expandvars(getByLabel(procData,'lumiMask',''))+'"%;'
+                   if(LaunchOnCondor.subTool!='crab'):
+                       sedcmd += 's%"@input"%' + eventsFile+'%;'
+                       sedcmd += 's%@outfile%' + outfilepath+'.root%;'
+                       sedcmd += 's%@isMC%' + str(not (isdata or isdatadriven) )+'%;'
+                       sedcmd += 's%@mctruthmode%'+str(mctruthmode)+'%;'
+                   #                   sedcmd += 's%@resonance%'+str(resonance)+'%;'
+                       sedcmd += 's%@xsec%'+str(xsec)+'%;'
+                   else:
+                       sedcmd += 's%@gtag%'+ str(getByLabel(procData,'gtag','')) +'%;'
+                       sedcmd += 's%@isMC%' + str(not (isdata or isdatadriven) )+'%;'
+                       sedcmd += 's%@mctruthmode%'+str(mctruthmode)+'%;'
+                       sedcmd += 's%@xsec%'+str(xsec)+'%;'
+                       #sedcmd += 's%"@input"%'+ '""'+ '%;' 
+#                   sedcmd += 's%@cprime%'+str(getByLabel(procData,'cprime',-1))+'%;'
+#                   sedcmd += 's%@brnew%' +str(getByLabel(procData,'brnew' ,-1))+'%;'
+#                   sedcmd += 's%@suffix%' +suffix+'%;'
+#                   sedcmd += 's%@lumiMask%"' + os.path.expandvars(getByLabel(procData,'lumiMask',''))+'"%;'
               	   if(opt.params.find('@useMVA')<0) :          opt.params = '@useMVA=False ' + opt.params
                    if(opt.params.find('@weightsFile')<0) :     opt.params = '@weightsFile= ' + opt.params
                    if(opt.params.find('@puWeightsFile')<0) :     opt.params = '@puWeightsFile= ' + opt.params
                    if(opt.params.find('@evStart')<0) :         opt.params = '@evStart=0 '    + opt.params
                    if(opt.params.find('@evEnd')<0) :           opt.params = '@evEnd=-1 '     + opt.params
+                   if(opt.params.find('@verbose')<0) :          opt.params = '@verbose=False' + opt.params
+                   if(opt.params.find('@data_pileup')<0) :     opt.params = '@data_pileup=datapileup_latest ' + opt.params
             	   if(opt.params.find('@saveSummaryTree')<0) : opt.params = '@saveSummaryTree=False ' + opt.params
             	   if(opt.params.find('@runSystematics')<0) :  opt.params = '@runSystematics=False '  + opt.params
                    if(opt.params.find('@jacknife')<0) :        opt.params = '@jacknife=-1 ' + opt.params
@@ -352,7 +364,7 @@ for procBlock in procList :
                    else:
                        if(LaunchOnCondor.subTool=='crab'):
                           LaunchOnCondor.Jobs_CRABDataset  = FileList[0]
-#                          LaunchOnCondor.Jobs_CRABlumiMask = getByLabel(procData,'lumiMask','')
+                          LaunchOnCondor.Jobs_CRABlumiMask = str(getByLabel(procData,'lumiMask',''))
                           LaunchOnCondor.Jobs_CRABcfgFile  = cfgfile
                           LaunchOnCondor.Jobs_CRABexe      = opt.theExecutable
                           if(commands.getstatusoutput("whoami")[1]=='georgia'):
@@ -374,10 +386,10 @@ for procBlock in procList :
                configList = commands.getstatusoutput('ls ' + opt.outdir +'/'+ dtag + suffix + '*_cfg.py')[1].split('\n')
                failedList = []
                for cfgfile in configList:
-                  if (opt.storagedir>0): 
+                  if (opt.storagedir!=''): 
                       cfgfile = cfgfile.replace(opt.outdir, opt.storagedir) 
                   if( not os.path.isfile( cfgfile.replace('_cfg.py','.root'))):
-                      if (opt.storagedir>0): cfgfile = cfgfile.replace(opt.storagedir, opt.outdir)
+                      if (opt.storagedir!=''): cfgfile = cfgfile.replace(opt.storagedir, opt.outdir)
                       failedList+= [cfgfile]
 
                if(len(failedList)>0):

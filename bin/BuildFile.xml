@@ -2,11 +2,14 @@
 <use name="roottmva"/>
 <use name="roofit"/>
 <use name="roostats"/>
+<use name="FWCore/FWLite"/>
+<use name="DataFormats/FWLite"/>
 <use name="PhysicsTools/FWLite"/>
 <use name="PhysicsTools/UtilAlgos"/>
 <use name="UserCode/bsmhiggs_fwk"/>
 <use name="FWCore/Framework"/>
 <use name="FWCore/ParameterSet"/>
+<use name="FWCore/PythonParameterSet"/>
 <use name="FWCore/Utilities"/>
 
 <use name="FWCore/Services"/> 
@@ -28,7 +31,7 @@
 <!--  <bin name="computeLeptonEfficency"      file="common/computeLeptonEfficency.cc"></bin> --> 
 
 <!-- Analysis specific code (please keep that in subdirectories and refer to test/<subdir> for instructions) -->
-  <bin name="runNtuplizer"                file="common/runNtuplizer.cc"></bin>
+<!--  <bin name="runNtuplizer"                file="common/runNtuplizer.cc"></bin> --> 
   <bin name="runhaaAnalysis"              file="haa4b/runhaaAnalysis.cc"></bin>  
   <bin name="genParticleDump"                file="common/genParticleDump.cc"></bin>
 </environment>

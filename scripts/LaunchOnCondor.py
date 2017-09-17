@@ -34,7 +34,7 @@ Jobs_FinalCmds    = []
 Jobs_RunHere      = 0
 Jobs_EmailReport  = False
 Jobs_CRABDataset  = '""'
-#Jobs_CRABlumiMask = ''
+Jobs_CRABlumiMask = ''
 Jobs_CRABsplitting = ''
 Jobs_CRABcfgFile  = ''
 Jobs_CRABexe      = "runExample"
@@ -213,9 +213,9 @@ def CreateTheShellFile(argv):
     os.system("chmod 777 "+Path_Shell)
 
 
-def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
+def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, fwkPath, cfgPath):
     global Jobs_CRABDataset
-#    global Jobs_CRABlumiMask
+    global Jobs_CRABlumiMask
     global Jobs_CRABcfgFile
     global Jobs_CRABexe
     global Jobs_CRABStorageSite
@@ -238,13 +238,14 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
     config_file.write('\n')
     config_file.write('config.JobType.pluginName = \'Analysis\'\n')
     config_file.write('config.JobType.psetName = "'+Jobs_CRABcfgFile+'"\n')
-    config_file.write('config.JobType.scriptExe = "%s"\n' % exePath)
+#    config_file.write('config.JobType.scriptExe = "%s"\n' % exePath)
     config_file.write('config.JobType.sendPythonFolder = True\n')
-    config_file.write('config.JobType.inputFiles = ["'+os.path.expanduser(Jobs_ProxyDir+"/x509_proxy")+'", os.environ["CMSSW_BASE"]+"/bin/"+os.environ["SCRAM_ARCH"]+"/'+Jobs_CRABexe+'"]\n')
-    config_file.write('config.JobType.outputFiles = ["test.root"]\n')
+    config_file.write('config.JobType.inputFiles = ["'+os.path.expanduser(Jobs_ProxyDir+"/x509_proxy")+'"]\n')
+#, os.environ["CMSSW_BASE"]+"/bin/"+os.environ["SCRAM_ARCH"]+"/'+Jobs_CRABexe+'","'+fwkPath'"]\n')
+    config_file.write('config.JobType.outputFiles = ["analysis.root"]\n')
     config_file.write('\n')
     config_file.write('config.Data.inputDataset = \''+Jobs_CRABDataset+'\'\n')
-#    config_file.write('config.Data.lumiMask = "'+Jobs_CRABlumiMask+'"\n')
+    config_file.write('config.Data.lumiMask = "'+Jobs_CRABlumiMask+'"\n')
 #    config_file.write('config.Data.inputDBS = "%s"\n' % Jobs_CRABInDBS)
     config_file.write('config.Data.splitting = \''+Jobs_CRABsplitting+'\'\n')
     config_file.write('config.Data.unitsPerJob = %d\n' % Jobs_CRABUnitPerJob)
@@ -252,7 +253,7 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
     config_file.write('config.Data.publication = False\n')
     config_file.write('config.Data.ignoreLocality = True\n')
     if Jobs_CRABLFN == '':
-        config_file.write('#config.Data.outLFNDirBase = \'/store/user/<username>/Debug\'\n')
+        config_file.write('#config.Data.outLFNDirBase = \'/store/user/<username>/debug\'\n')
     else:
         config_file.write('config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n')
         print 'config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n'
@@ -265,6 +266,9 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
     exe_file=open(exePath,'w')
     exe_file.write('#!/bin/sh\n')
     exe_file.write('\n')
+    exe_file.write('echo "Here there are all the input arguments"\n')
+    exe_file.write('echo $@\n')
+    exe_file.write('\n')
     exe_file.write('# Copy files to lib and bin dir\n')
     exe_file.write('cp ./lib/$SCRAM_ARCH/* $CMSSW_BASE/lib/$SCRAM_ARCH\n')
     exe_file.write('cp -rd ./src/* $CMSSW_BASE/src/.\n')
@@ -273,12 +277,41 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
     exe_file.write('cp x509_proxy $CMSSW_BASE/\n')
     exe_file.write('export X509_USER_PROXY=$CMSSW_BASE/x509_proxy\n')
     exe_file.write('\n')
-    exe_file.write('#just needed to create the JobRepport\n')
-    exe_file.write('cmsRun -j FrameworkJobReport.xml debug/originalPSet.py\n')
+    exe_file.write('#If you are curious, you can have a look at the tweaked PSet.\n')
+    exe_file.write('echo "================= PSet.py file =================="\n')
+    exe_file.write('cat PSet.py\n')
+    exe_file.write('# This is what you need if you want to look at the tweaked parameter set!!\n')
+    exe_file.write('echo "================= Dumping PSet ===================="\n')
+    exe_file.write('python -c "import PSet; print PSet.process.dumpPython()"\n')
+    exe_file.write('\n') 
+    exe_file.write('#just needed to create the JobReport\n')
+    exe_file.write('cmsRun -j FrameworkJobReport.xml -p PSet.py\n')
     exe_file.write('\n')
-    exe_file.write('#Actually run the script\n')
-    exe_file.write(Jobs_CRABexe + ' debug/originalPSet.py\n')
-    exe_file.close()
+    exe_file.write('echo "================= Dumping Input files ===================="\n')
+    exe_file.write('python -c "import PSet; print '"\n"'.join(list(PSet.process.source.fileNames))"\n')
+    exe_file.write('\n')
+#    exe_file.write('#Actually run the script\n')
+#    exe_file.write(Jobs_CRABexe + ' PSet.py\n')
+#    exe_file.close()
+
+    fwk_file=open(fwkPath,'w')
+    fwk_file.write('<FrameworkJobReport>\n')
+    fwk_file.write('<ReadBranches>\n')
+    fwk_file.write('</ReadBranches>\n')
+    fwk_file.write('<PerformanceReport>\n')
+    fwk_file.write('  <PerformanceSummary Metric="StorageStatistics">\n')
+    fwk_file.write('    <Metric Name="Parameter-untracked-bool-enabled" Value="true"/>\n')
+    fwk_file.write('    <Metric Name="Parameter-untracked-bool-stats" Value="true"/>\n')
+    fwk_file.write('    <Metric Name="Parameter-untracked-string-cacheHint" Value="application-only"/>\n')
+    fwk_file.write('    <Metric Name="Parameter-untracked-string-readHint" Value="auto-detect"/>\n')
+    fwk_file.write('    <Metric Name="ROOT-tfile-read-totalMegabytes" Value="0"/>\n')
+    fwk_file.write('    <Metric Name="ROOT-tfile-write-totalMegabytes" Value="0"/>\n')
+    fwk_file.write('  </PerformanceSummary>\n')
+    fwk_file.write('</PerformanceReport>')
+    fwk_file.write('\n')
+    fwk_file.write('<GeneratorInfo>\n')
+    fwk_file.write('</GeneratorInfo>')
+    fwk_file.write('</FrameworkJobReport>\n')
 
 
 def CreateTheCmdFile():
@@ -338,8 +371,9 @@ def AddJobToCmdFile():
         crabWorkDirPath = Farm_Directories[1]
         crabConfigPath  = Farm_Directories[1]+'crabConfig_'+Jobs_Index+Jobs_Name+'_cfg.py'
         crabExePath     = Farm_Directories[1]+'crabExe.sh'
+        crabFwkPath     = Farm_Directories[1]+'FrameworkJobReport.xml'
         crabParamPath   = Farm_Directories[1]+'crabParam_'+Jobs_Index+Jobs_Name+'_cfg.py'
-        CreateCrabConfig(crabWorkDirPath, crabConfigPath, crabExePath, crabParamPath)
+        CreateCrabConfig(crabWorkDirPath, crabConfigPath, crabExePath, crabFwkPath, crabParamPath)
         cmd_file.write("crab submit -c " + crabConfigPath + "\n")
     elif subTool=='criminal':
         absoluteShellPath = Path_Shell;
