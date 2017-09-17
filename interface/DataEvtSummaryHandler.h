@@ -33,7 +33,7 @@ struct DataEvtSummary_t {
 
     Int_t run,lumi;
     Long64_t event;
-  Float_t puWeight;
+  //  Float_t puWeight;
     Float_t curAvgInstLumi,curIntegLumi;
     Bool_t hasTrigger;
     Int_t triggerType;

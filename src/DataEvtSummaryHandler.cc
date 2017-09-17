@@ -17,7 +17,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("run",        	&evSummary_.run,            "run/I");
     t_->Branch("lumi",       	&evSummary_.lumi,           "lumi/I");
     t_->Branch("event",      	&evSummary_.event,          "event/L");
-    t_->Branch("puWeight",      &evSummary_.puWeight,       "puWeight/F"); 
+    //    t_->Branch("puWeight",      &evSummary_.puWeight,       "puWeight/F"); 
     /* tmp
     t_->Branch("curAvgInstLumi",&evSummary_.curAvgInstLumi, "curAvgInstLumi/F");
     t_->Branch("curIntegLumi", 	&evSummary_.curIntegLumi,   "curIntegLumi/F");
@@ -342,7 +342,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("run",             &evSummary_.run);
     t_->SetBranchAddress("lumi",            &evSummary_.lumi);
     t_->SetBranchAddress("event",           &evSummary_.event);
-    t_->SetBranchAddress("puWeight",           &evSummary_.puWeight);  
+    //    t_->SetBranchAddress("puWeight",           &evSummary_.puWeight);  
     /* tmp
     t_->SetBranchAddress("curAvgInstLumi",  &evSummary_.curAvgInstLumi);
     t_->SetBranchAddress("curIntegLumi", 	&evSummary_.curIntegLumi);
