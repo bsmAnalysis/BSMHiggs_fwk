@@ -28,23 +28,12 @@ process.mainNtuplizer.verbose = cms.bool(@verbose)
 
 
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-    )
+	       	     fileNames = cms.untracked.vstring()
 )
 
-
 process.TFileService = cms.Service("TFileService",
-                                   fileName = cms.string("analysis.root")
-                                  )
-
-
-
-
-
+			fileName = cms.string("analysis.root")
+)
+                     		 				             
 process.p = cms.Path(  process.mainNtuplizer )	
-#process.HBHENoiseFilterResultProducer * #produces HBHE baseline bools
-                        #process.ApplyBaselineHBHENoiseFilter *  #reject events based
-                        #process.ApplyBaselineHBHEIsoNoiseFilter *   #reject events based  < 10e-3 mistake rate
-                        #process.egmGsfElectronIDSequence * 
-#			process.mainNtuplizer
-#)
+
