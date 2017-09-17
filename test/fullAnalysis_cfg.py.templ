@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from UserCode.bsmhiggs_fwk.mainNtuplizer_cfi import *
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 10000
+process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 
 process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
 process.load("Configuration.EventContent.EventContent_cff")

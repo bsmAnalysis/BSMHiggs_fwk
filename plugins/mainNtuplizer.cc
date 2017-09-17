@@ -144,7 +144,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<std::vector<PileupSummaryInfo> > puInfoTag_;
     edm::EDGetTokenT<GenEventInfoProduct> genInfoTag_;
     edm::EDGetTokenT<edm::View<pat::PackedGenParticle> > packedGenTag_;
-    edm::EDGetTokenT<edm::View<reco::GenJet> > genjetTag_;
+  // edm::EDGetTokenT<edm::View<reco::GenJet> > genjetTag_;
   //  edm::InputTag lheRunInfoTag_;
   // edm::EDGetTokenT<LHERunInfoProduct> lheRunInfoToken_;
   edm::EDGetTokenT<double> rhoFastjetAllTag_;
@@ -230,7 +230,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
     puInfoTag_(         consumes<std::vector<PileupSummaryInfo> >(iConfig.getParameter<edm::InputTag>("puInfoTag"))     ),
     genInfoTag_(        consumes<GenEventInfoProduct>(iConfig.getParameter<edm::InputTag>("genInfoTag"))                ),
     packedGenTag_(	consumes<edm::View<pat::PackedGenParticle> >(iConfig.getParameter<edm::InputTag>("packedTag"))	),
-    genjetTag_(		consumes<edm::View<reco::GenJet> >(iConfig.getParameter<edm::InputTag>("genJetsTag"))		),
+  //  genjetTag_(		consumes<edm::View<reco::GenJet> >(iConfig.getParameter<edm::InputTag>("genJetsTag"))		),
   //   lheRunInfoTag_(     iConfig.getParameter<edm::InputTag>("lheInfo")                                                  ),
   // lheRunInfoToken_(   consumes<LHERunInfoProduct,edm::InRun>(lheRunInfoTag_)						),
     rhoFastjetAllTag_(  	consumes<double>(iConfig.getParameter<edm::InputTag>("rhoFastjetAll")) 			),
@@ -299,6 +299,8 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   hm->GetXaxis()->SetBinLabel(9,"BadChargedCandidateFilte");
   hm->GetXaxis()->SetBinLabel(10,"badMuonHIPFilter");
   hm->GetXaxis()->SetBinLabel(11,"duplicateMuonHIPFilter");
+
+  // patUtils::MetFilter metFilter;
   
 //MC normalization (to 1/pb)
   xsecWeight = 1.0;
@@ -471,10 +473,13 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      //
      // gen particles
      //
-     reco::GenParticleCollection gen;
-     edm::Handle< reco::GenParticleCollection > genHandle;
-     event.getByToken(prunedGenTag_,genHandle);
-     if(genHandle.isValid()){ gen = *genHandle;}
+     // reco::GenParticleCollection gen;
+     Handle<edm::View<reco::GenParticle> > pruned;
+     event.getByToken(prunedGenTag_,pruned);
+
+     // edm::Handle< reco::GenParticleCollection > genHandle;
+     // event.getByToken(prunedGenTag_,genHandle);
+     // if(pruned.isValid()){ gen = *genHandle;}
      
      
      std::vector<TLorentzVector> chLeptons;       
@@ -482,10 +487,12 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      if ( verbose_ ) { printf("\n\n Gen particles:\n" ) ; }
      
      //Look for mother particle and Fill gen variables
-     for(unsigned int igen=0; igen<gen.size(); igen++){ 
+     //for(unsigned int igen=0; igen<gen.size(); igen++){
+     int igen(0);
+     for (auto & it : *pruned) {
        
        {
-	 int pdgId = gen[igen].pdgId();
+	 int pdgId = it.pdgId();
 	 if (  abs( pdgId ) == 511
 	       || abs( pdgId ) == 521
 	       || abs( pdgId ) == 531
@@ -496,39 +503,40 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	       || abs( pdgId ) == 5132
 	       || abs( pdgId ) == 5232
 	       || abs( pdgId ) == 5332 ) {
-	   b_hadrons.emplace_back( gen[igen] ) ;
+	   b_hadrons.emplace_back( it ) ;
 	   ev.mcbh_id[ev.mcbh] = pdgId ;
-	   ev.mcbh_px[ev.mcbh] = gen[igen].px() ;
-	   ev.mcbh_py[ev.mcbh] = gen[igen].py() ;
-	   ev.mcbh_pz[ev.mcbh] = gen[igen].pz() ;
-	   ev.mcbh_en[ev.mcbh] = gen[igen].energy() ;
+	   ev.mcbh_px[ev.mcbh] = it.px() ;
+	   ev.mcbh_py[ev.mcbh] = it.py() ;
+	   ev.mcbh_pz[ev.mcbh] = it.pz() ;
+	   ev.mcbh_en[ev.mcbh] = it.energy() ;
 	   ev.mcbh ++ ;
 	 }
        }
        
-       if(!gen[igen].isHardProcess()) continue; 
+       if(!it.isHardProcess()) continue; 
        
        //find the ID of the first mother that has a different ID than the particle itself
-       const reco::Candidate* mom = findFirstMotherWithDifferentID(&gen[igen]);
+       const reco::Candidate* mom = findFirstMotherWithDifferentID(&it);
        
        if (mom) {
-	 int pid = gen[igen].pdgId();
+	 int pid = it.pdgId();
 	 
-	 ev.mc_px[ev.nmcparticles] = gen[igen].px();
-	 ev.mc_py[ev.nmcparticles] = gen[igen].py();
-	 ev.mc_pz[ev.nmcparticles] = gen[igen].pz();
-	 ev.mc_en[ev.nmcparticles] = gen[igen].energy();
-	 ev.mc_id[ev.nmcparticles] = gen[igen].pdgId();
+	 ev.mc_px[ev.nmcparticles] = it.px();
+	 ev.mc_py[ev.nmcparticles] = it.py();
+	 ev.mc_pz[ev.nmcparticles] = it.pz();
+	 ev.mc_en[ev.nmcparticles] = it.energy();
+	 ev.mc_id[ev.nmcparticles] = it.pdgId();
 	 ev.mc_mom[ev.nmcparticles] = mom->pdgId();
 	 
 	 // loop over genParticles to find the mom index
 	 int idx=0; int idxx=0;
-	 for(unsigned int ig=0; ig<gen.size(); ig++){ 
-	   if(!gen[ig].isHardProcess()) continue; 
+	 for (auto & ig : *pruned) {
+	 //	 for(unsigned int ig=0; ig<gen.size(); ig++){ 
+	   if(!ig.isHardProcess()) continue; 
 	   
-	   const reco::Candidate* imom = findFirstMotherWithDifferentID(&gen[ig]);
+	   const reco::Candidate* imom = findFirstMotherWithDifferentID(&ig);
 	   if (imom) {
-	     if ( mom->p4() == gen[ig].p4() && idxx==0) {
+	     if ( mom->p4() == ig.p4() && idxx==0) {
 	       idxx=idx; 
 	     }
 	     idx++;      
@@ -536,9 +544,9 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 }
 	 
 	 ev.mc_momidx[ev.nmcparticles] = idxx; 
-	 ev.mc_status[ev.nmcparticles] = gen[igen].status();
+	 ev.mc_status[ev.nmcparticles] = it.status();
 	 
-	 TLorentzVector p4( gen[igen].px(), gen[igen].py(), gen[igen].pz(), gen[igen].energy() );
+	 TLorentzVector p4( it.px(), it.py(), it.pz(), it.energy() );
 	 if(abs(pid)==11 || abs(pid)==13 || abs(pid)==15) {
 	   chLeptons.push_back(p4);
 	 }
@@ -547,17 +555,17 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 if ( verbose_ ) {
 	   printf("  %3d : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, eta=%7.3f, phi=%7.3f\n",
                   igen,
-                  gen[igen].pdgId(),
-                  gen[igen].mass(),
+                  it.pdgId(),
+                  it.mass(),
                   mom->pdgId(),
-                  gen[igen].pt(),
-                  gen[igen].eta(),
-                  gen[igen].phi()
+                  it.pt(),
+                  it.eta(),
+                  it.phi()
 		  ) ;
 	 }
 	 
        } // has mom?
-       
+       igen++;
      } // igen
      
      if ( verbose_ ) {
@@ -572,43 +580,43 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        printf("\n\n") ;
      }
      
-     //
-     // gen jets
-     //
-     ev.nmcjparticles = 0;  
+     // //
+     // // gen jets
+     // //
+     // ev.nmcjparticles = 0;  
      
-     reco::GenJetCollection genJets;
-     edm::Handle< reco::GenJetCollection > genJetsHandle;
-     event.getByToken(genjetTag_, genJetsHandle);
-     if(genJetsHandle.isValid()){ genJets = *genJetsHandle;}
+     // reco::GenJetCollection genJets;
+     // edm::Handle< reco::GenJetCollection > genJetsHandle;
+     // event.getByToken(genjetTag_, genJetsHandle);
+     // if(genJetsHandle.isValid()){ genJets = *genJetsHandle;}
      
-     std::vector<TLorentzVector> jets;
-     for(size_t j=0; j<genJets.size(); j++) {
+     // std::vector<TLorentzVector> jets;
+     // //   for(size_t j=0; j<genJets.size(); j++) {
+     // for (auto & it : genJets ) {
+     //   const reco::GenJet genJet = it;
        
-       const reco::GenJet genJet = genJets[j];
+     //   TLorentzVector p4( genJet.px(), genJet.py(), genJet.pz(), genJet.energy() );
+     //   if(p4.Pt()<10 || fabs(p4.Eta())>2.5) continue;
        
-       TLorentzVector p4( genJet.px(), genJet.py(), genJet.pz(), genJet.energy() );
-       if(p4.Pt()<10 || fabs(p4.Eta())>2.5) continue;
+     //   bool matchesLepton(false);
+     //   for(size_t i=0; i<chLeptons.size(); i++) {
+     // 	 float dR=p4.DeltaR(chLeptons[i]);
+     // 	 if(dR>0.4) continue;
+     // 	 matchesLepton=true;
+     // 	 break;
+     //   }
+     //   if(matchesLepton) continue;
        
-       bool matchesLepton(false);
-       for(size_t i=0; i<chLeptons.size(); i++) {
-	 float dR=p4.DeltaR(chLeptons[i]);
-	 if(dR>0.4) continue;
-	 matchesLepton=true;
-	 break;
-       }
-       if(matchesLepton) continue;
-       
-       jets.push_back(p4);
-       ev.mcj_px[ev.nmcjparticles]=genJet.px();
-       ev.mcj_py[ev.nmcjparticles]=genJet.py();
-       ev.mcj_pz[ev.nmcjparticles]=genJet.pz();
-       ev.mcj_en[ev.nmcjparticles]=genJet.energy();
-       ev.mcj_status[ev.nmcjparticles]=0; // special for genjet
-       ev.mcj_id[ev.nmcjparticles]=1; // special for genjet
-       ev.mcj_mom[ev.nmcjparticles] = 0;
-       ev.nmcjparticles++;
-     }
+     //   jets.push_back(p4);
+     //   ev.mcj_px[ev.nmcjparticles]=genJet.px();
+     //   ev.mcj_py[ev.nmcjparticles]=genJet.py();
+     //   ev.mcj_pz[ev.nmcjparticles]=genJet.pz();
+     //   ev.mcj_en[ev.nmcjparticles]=genJet.energy();
+     //   ev.mcj_status[ev.nmcjparticles]=0; // special for genjet
+     //   ev.mcj_id[ev.nmcjparticles]=1; // special for genjet
+     //   ev.mcj_mom[ev.nmcjparticles] = 0;
+     //   ev.nmcjparticles++;
+     // }
      
    } // end MC
    
@@ -652,16 +660,6 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    eTrigger           = utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPLoose_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*") ;
    emuTrigger         = utils::passTriggerPatterns(tr, "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*" , "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
    
-   // metFilterValue = metFilter.passMetFilterInt( event );
-   
-   // // Apply Bad Charged Hadron and Bad Muon Filters from MiniAOD (for Run II 2016 only )
-   // filterbadChCandidate = metFilter.passBadChargedCandidateFilter(event); if (!filterbadChCandidate) {  metFilterValue=9; }
-   // filterbadPFMuon = metFilter.passBadPFMuonFilter(event); if (!filterbadPFMuon) { metFilterValue=8; }
-   // //       filterbadMuonHIP = metFilter.BadGlobalMuonTaggerFilter(event,outbadMuon,false); if (!filterbadMuonHIP) { metFilterValue=10; }
-   // // filterduplicateMuonHIP = metFilter.BadGlobalMuonTaggerFilter(event,outduplicateMuon,true); if (!filterduplicateMuonHIP) { metFilterValue=11; }
-   
-   // mon_.fillHisto("metFilter", "all", metFilterValue, 1.0);
-   
    ev.hasTrigger  = ( mumuTrigger||muTrigger||eeTrigger||highPTeeTrigger||eTrigger||emuTrigger );
    //ev.hasTrigger  = ( muTrigger||eTrigger||emuTrigger ); 
    
@@ -684,25 +682,29 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
     for(unsigned int i = 0, n = metFilterBits->size(); i < n; ++i) {
         if(strcmp(metNames.triggerName(i).c_str(), 	 "Flag_goodVertices") == 0){
             passMETFilters &= metFilterBits->accept(i);
-	}else if(strcmp(metNames.triggerName(i).c_str(), "Flag_eeBadScFilter") == 0){
-            passMETFilters &= metFilterBits->accept(i);
+	    //	}else if(strcmp(metNames.triggerName(i).c_str(), "Flag_eeBadScFilter") == 0){
+	    //           passMETFilters &= metFilterBits->accept(i);
 	}else if(strcmp(metNames.triggerName(i).c_str(), "Flag_HBHENoiseFilter") == 0){
             passMETFilters &= metFilterBits->accept(i);
         }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_HBHENoiseIsoFilter") == 0){
             passMETFilters &= metFilterBits->accept(i);
-        }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_CSCTightHalo2015Filter") == 0){
+        }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_globalTightHalo2016Filter") == 0){
             passMETFilters &= metFilterBits->accept(i);
         }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_EcalDeadCellTriggerPrimitiveFilter") == 0){
             passMETFilters &= metFilterBits->accept(i);
+	}else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadChargedCandidateFilter") == 0){
+            passMETFilters &= metFilterBits->accept(i);
+	}else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadPFMuonFilter") == 0){
+            passMETFilters &= metFilterBits->accept(i);
 	}
+	
     }
-
-    // mon_.fillHisto("metFilter", "all", metFilterValue, 1.0);
-   if(!passMETFilters) return;
+  
+    if(!passMETFilters) return;
    //   if( metFilterValue!=0 ) continue;	 //Note this must also be applied on MC
    
    // Apply Bad Charged Hadron and Bad Muon Filters from MiniAOD (for Run II 2016 only )
-   //	  if (!filterbadPFMuon || !filterbadChCandidate) continue;
+    //   if (!filterbadPFMuon || !filterbadChCandidate) return;
    //##############################################   EVENT PASSED MET FILTER   #######################################
    
     //load all the objects we will need to access
@@ -1204,8 +1206,9 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
                 reco::CandidatePtr dau = sec_vert[isv].daughterPtr(id) ;
 
                 //--- find closest match to a charged particle in packedGenParticles
-                pat::PackedGenParticleCollection packed_gen;
-                edm::Handle< pat::PackedGenParticleCollection > packed_genHandle;
+		
+                edm::View<pat::PackedGenParticle> packed_gen;
+                edm::Handle< edm::View<pat::PackedGenParticle> > packed_genHandle;
 		event.getByToken(packedGenTag_,packed_genHandle);
                 if(packed_genHandle.isValid()){ packed_gen = *packed_genHandle; } else { printf("\n\n *** bad handle for pat::PackedGenParticleCollection\n\n") ; gSystem->Exit(-1) ; }
 
