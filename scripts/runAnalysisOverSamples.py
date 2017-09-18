@@ -370,8 +370,12 @@ for procBlock in procList :
                           if(commands.getstatusoutput("whoami")[1]=='georgia'):
                               LaunchOnCondor.Jobs_CRABStorageSite = 'T2_CH_CERN'
                           else: LaunchOnCondor.Jobs_CRABStorageSite = 'T2_US_UCSD'
-                          if(isdata): LaunchOnCondor.Jobs_CRABsplitting = 'LumiBased'
-                          else: LaunchOnCondor.Jobs_CRABsplitting = 'FileBased'
+                          if(isdata): 
+                              LaunchOnCondor.Jobs_CRABsplitting = 'LumiBased'
+                              LaunchOnCondor.Jobs_CRABUnitPerJob = 100 
+                          else: 
+                              LaunchOnCondor.Jobs_CRABsplitting = 'FileBased'
+                              LaunchOnCondor.Jobs_CRABUnitPerJob = 5
                           LaunchOnCondor.Jobs_CRABname     = dtag + '_' + str(s)
                           LaunchOnCondor.Jobs_CRABInDBS    = getByLabel(procData,'dbsURL','global')
 #                          if(split>0):

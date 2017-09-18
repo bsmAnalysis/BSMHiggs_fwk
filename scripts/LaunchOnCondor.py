@@ -213,7 +213,7 @@ def CreateTheShellFile(argv):
     os.system("chmod 777 "+Path_Shell)
 
 
-def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, fwkPath, cfgPath):
+def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
     global Jobs_CRABDataset
     global Jobs_CRABlumiMask
     global Jobs_CRABcfgFile
@@ -234,7 +234,7 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, fwkPath, cfgPath):
     config_file.write('config.General.requestName = "%s"\n' % Jobs_CRABname)
     config_file.write('config.General.workArea = "%s"\n' % crabWorkDir)
 #    config_file.write('config.General.transferOutputs = True\n')
-    config_file.write('config.General.transferLogs = True\n')
+    config_file.write('config.General.transferLogs = False\n')
     config_file.write('\n')
     config_file.write('config.JobType.pluginName = \'Analysis\'\n')
     config_file.write('config.JobType.psetName = "'+Jobs_CRABcfgFile+'"\n')
@@ -294,24 +294,24 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, fwkPath, cfgPath):
     exe_file.write(Jobs_CRABexe + ' PSet.py\n')
     exe_file.close()
 
-    fwk_file=open(fwkPath,'w')
-    fwk_file.write('<FrameworkJobReport>\n')
-    fwk_file.write('<ReadBranches>\n')
-    fwk_file.write('</ReadBranches>\n')
-    fwk_file.write('<PerformanceReport>\n')
-    fwk_file.write('  <PerformanceSummary Metric="StorageStatistics">\n')
-    fwk_file.write('    <Metric Name="Parameter-untracked-bool-enabled" Value="true"/>\n')
-    fwk_file.write('    <Metric Name="Parameter-untracked-bool-stats" Value="true"/>\n')
-    fwk_file.write('    <Metric Name="Parameter-untracked-string-cacheHint" Value="application-only"/>\n')
-    fwk_file.write('    <Metric Name="Parameter-untracked-string-readHint" Value="auto-detect"/>\n')
-    fwk_file.write('    <Metric Name="ROOT-tfile-read-totalMegabytes" Value="0"/>\n')
-    fwk_file.write('    <Metric Name="ROOT-tfile-write-totalMegabytes" Value="0"/>\n')
-    fwk_file.write('  </PerformanceSummary>\n')
-    fwk_file.write('</PerformanceReport>')
-    fwk_file.write('\n')
-    fwk_file.write('<GeneratorInfo>\n')
-    fwk_file.write('</GeneratorInfo>')
-    fwk_file.write('</FrameworkJobReport>\n')
+#    fwk_file=open(fwkPath,'w')
+#    fwk_file.write('<FrameworkJobReport>\n')
+#    fwk_file.write('<ReadBranches>\n')
+#    fwk_file.write('</ReadBranches>\n')
+#    fwk_file.write('<PerformanceReport>\n')
+#    fwk_file.write('  <PerformanceSummary Metric="StorageStatistics">\n')
+#    fwk_file.write('    <Metric Name="Parameter-untracked-bool-enabled" Value="true"/>\n')
+#    fwk_file.write('    <Metric Name="Parameter-untracked-bool-stats" Value="true"/>\n')
+#    fwk_file.write('    <Metric Name="Parameter-untracked-string-cacheHint" Value="application-only"/>\n')
+#    fwk_file.write('    <Metric Name="Parameter-untracked-string-readHint" Value="auto-detect"/>\n')
+#    fwk_file.write('    <Metric Name="ROOT-tfile-read-totalMegabytes" Value="0"/>\n')
+#    fwk_file.write('    <Metric Name="ROOT-tfile-write-totalMegabytes" Value="0"/>\n')
+#    fwk_file.write('  </PerformanceSummary>\n')
+#    fwk_file.write('</PerformanceReport>')
+#    fwk_file.write('\n')
+#    fwk_file.write('<GeneratorInfo>\n')
+#    fwk_file.write('</GeneratorInfo>')
+#    fwk_file.write('</FrameworkJobReport>\n')
 
 
 def CreateTheCmdFile():
@@ -371,9 +371,9 @@ def AddJobToCmdFile():
         crabWorkDirPath = Farm_Directories[1]
         crabConfigPath  = Farm_Directories[1]+'crabConfig_'+Jobs_Index+Jobs_Name+'_cfg.py'
         crabExePath     = Farm_Directories[1]+'crabExe.sh'
-        crabFwkPath     = Farm_Directories[1]+'FrameworkJobReport.xml'
+#        crabFwkPath     = Farm_Directories[1]+'FrameworkJobReport.xml'
         crabParamPath   = Farm_Directories[1]+'crabParam_'+Jobs_Index+Jobs_Name+'_cfg.py'
-        CreateCrabConfig(crabWorkDirPath, crabConfigPath, crabExePath, crabFwkPath, crabParamPath)
+        CreateCrabConfig(crabWorkDirPath, crabConfigPath, crabExePath, crabParamPath)
         cmd_file.write("crab submit -c " + crabConfigPath + "\n")
     elif subTool=='criminal':
         absoluteShellPath = Path_Shell;
