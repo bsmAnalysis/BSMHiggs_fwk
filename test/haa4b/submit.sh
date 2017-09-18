@@ -34,11 +34,11 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 # Global Variables
 #--------------------------------------------------
 
-SUFFIX=_2017_09_17
+SUFFIX=_2017_09_18
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
-JSON=$MAINDIR/samples.json
+JSON=$MAINDIR/samples2016.json
 GOLDENJSON=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/json/
 
 RESULTSDIR=$MAINDIR/results$SUFFIX
@@ -50,12 +50,14 @@ PLOTSDIR=$MAINDIR/plots${SUFFIX}
 PLOTTER=$MAINDIR/plotter${SUFFIX}
  
 ####################### Settings for Ntuple Analysis ##################
-NTPL_INPUT=$MAINDIR/ntuples
-NTPL_JSON=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/samples_haa4b.json
+NTPL_INPUT=/eos/cms/store/user/georgia/results$SUFFIX
+#$MAINDIR/ntuples
+NTPL_JSON=$MAINDIR/samples.json
+#$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/samples_haa4b.json
 NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX
 RUNLOG=$NTPL_OUTDIR/LOGFILES/runSelection.log
 
-queue='cmscaf1nd'
+queue='8nh'
 
 #IF CRAB3 is provided in argument, use crab submission instead of condor/lsf 
 if [[ $arguments == *"crab3"* ]]; then queue='crab3' ;fi  
@@ -87,7 +89,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "JOB SUBMISSION for Ntuplization using full CMSSW fwk"
        echo "Input: " $JSON
        echo "Output: " $RESULTSDIR
-       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_test -s crab
+       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_dataOnly -s crab
 #       runAnalysisOverSamples.py -e runNtuplizer -j $JSON -o $RESULTSDIR  -c $MAINDIR/../runNtuplizer_cfg.py.templ -p "@data_pileup=datapileup_latest @verbose=False" -s $queue --report True --key haa_test $arguments
    fi    
 
@@ -95,7 +97,8 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "JOB SUBMISSION for BSM h->aa Analysis"
        echo "Input: " $NTPL_JSON
        echo "Output: " $NTPL_OUTDIR
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@data_pileup=datapileup_latest @runSystematics=False @usemetNoHF=False @verbose=True" -s $queue -t MC13TeV_Wh_amass20
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@data_pileup=datapileup_latest @runSystematics=False @usemetNoHF=False @verbose=True" -s $queue -t MC13TeV_SingleT_at_2016
+#MC13TeV_Wh_amass20
        #-t MC13TeV_Wh_amass50
        #tag to match sample: "-t MC13TeV_Wh_amass20"
    fi
