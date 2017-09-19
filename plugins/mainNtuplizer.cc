@@ -256,7 +256,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
      printf("  Verbose set to false.  Will be quiet.\n") ;
   }
 
-  printf("Definition of plots");
+  printf("Definition of plots\n");
   mon_.addHistogram(new TH1F("nevents",";nevents; nevents",1,-0.5,0.5));
   mon_.addHistogram(new TH1F("n_negevents",";n_negevents; n_negevents",1,-0.5,0.5));
   mon_.addHistogram(new TH1F("n_posevents",";n_posevents; n_posevents",1,-0.5,0.5));
