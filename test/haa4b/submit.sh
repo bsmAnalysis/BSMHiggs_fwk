@@ -50,14 +50,14 @@ PLOTSDIR=$MAINDIR/plots${SUFFIX}
 PLOTTER=$MAINDIR/plotter${SUFFIX}
  
 ####################### Settings for Ntuple Analysis ##################
-NTPL_INPUT=/eos/cms/store/user/georgia/results$SUFFIX
+NTPL_INPUT=results$SUFFIX
 #$MAINDIR/ntuples
-NTPL_JSON=$MAINDIR/samples.json
+NTPL_JSON=$MAINDIR/samples2016.json
 #$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/samples_haa4b.json
 NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX
 RUNLOG=$NTPL_OUTDIR/LOGFILES/runSelection.log
 
-queue='8nh'
+queue='cmscaf1nd'
 
 #IF CRAB3 is provided in argument, use crab submission instead of condor/lsf 
 if [[ $arguments == *"crab3"* ]]; then queue='crab3' ;fi  
@@ -65,15 +65,17 @@ if [[ $arguments == *"crab3"* ]]; then queue='crab3' ;fi
 ################################################# STEPS between 0 and 1
 if [[ $step == 0 ]]; then   
         #analysis cleanup
-	echo "ALL DATA WILL BE LOST! [N/y]?"
-	read answer
-	if [[ $answer == "y" ]];
-	then
-	    echo "CLEANING UP..."
-	    rm -rdf $RESULTSDIR $PLOTSDIR LSFJOB_* core.* *.sh.e* *.sh.o*
-	fi
+    echo "Really delete directory "$RESULTSDIR" ?" 
+    echo "ALL DATA WILL BE LOST! [N/y]?"
+    read answer
+    if [[ $answer == "y" ]];
+    then
+	echo "CLEANING UP..."
+	rm -rdf $RESULTSDIR $PLOTSDIR LSFJOB_* core.* *.sh.e* *.sh.o*
+    fi
 fi #end of step0
 if [[ $step == 0.1 ]]; then
+    echo "Really delete directory "$NTPL_OUTDIR" ?"
     echo "ALL DATA WILL BE LOST! [N/y]?"
     read answer
     if [[ $answer == "y" ]];
@@ -97,10 +99,9 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "JOB SUBMISSION for BSM h->aa Analysis"
        echo "Input: " $NTPL_JSON
        echo "Output: " $NTPL_OUTDIR
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@data_pileup=datapileup_latest @runSystematics=False @usemetNoHF=False @verbose=True" -s $queue -t MC13TeV_SingleT_at_2016
-#MC13TeV_Wh_amass20
-       #-t MC13TeV_Wh_amass50
-       #tag to match sample: "-t MC13TeV_Wh_amass20"
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@data_pileup=datapileup_latest @runSystematics=False @usemetNoHF=False @verbose=True" -s $queue -t MC13TeV_WWZ_2016
+#MC13TeV_SingleT_at_2016
+       #'dtag' to match sample: "-t MC13TeV_Wh_amass20"
    fi
 fi
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os,sys
+import glob
 import json
 import ROOT
 import getopt
@@ -95,7 +96,6 @@ for proc in procList :
 
         #run over items in process
         isdata=getByLabel(desc,'isdata',False)
-        doWIMPreweighting=getByLabel(desc,'doWIMPreweighting',False)
         mctruthmode=getByLabel(desc,'mctruthmode',0)
 	tag = getByLabel(desc,'tag','') #RJ
 	print tag
@@ -142,63 +142,55 @@ for proc in procList :
             SCRIPT_DTag.writelines('#!bin/sh \n\n')
             SCRIPT_DTag.writelines('cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/; \n\n')
 
+            # Loop over files for given dtag name:
+            ntplpath = '/eos/cms/store/user/'+who+"/"+inputdir + '/*/crab_' + origdtag + '*/*/*/'
+#            FileList = [file for file in glob.glob(ntplpath+'analysis_*.root')] 
 
-	    for segment in range(0,split) :
-                #if(split==1):
-                #    eventsFile=inputdir + '/' + origdtag + '.root'
-                #else:
-                eventsFile=inputdir + '/' + origdtag + '_' + str(segment) + '.root'
-                print eventsFile
-                #if(eventsFile.find('/store/')==0)  : eventsFile = commands.getstatusoutput('/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select find ' + eventsFile)[1]
-		#if(eventsFile.find('?')>=0)  : eventsFile = eventsFile[:eventsFile.find('?')]
-                    
-    #eventsFile = 'root://eoscms//eos/cms'+eventsFile
-    
-            	sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
-                sedcmd += 's%@cprime%'+str(getByLabel(d,'cprime',-1))+'%;'
-                sedcmd += 's%@brnew%' +str(getByLabel(d,'brnew' ,-1))+'%;'
-                sedcmd += 's%@suffix%' +suffix+'%;'
-		sedcmd += 's%@tag%' +str(getByLabel(desc,'tag',-1))+'%;'#RJ
-		sedcmd += 's%@genwimpweights%' +str(getByLabel(d,'genwimpweights',-1))+'%;'#RJ
-		sedcmd += 's%@doWIMPreweighting%' + str(doWIMPreweighting)+'%;'#RJ
-            	if(params.find('@useMVA')<0) :          params = '@useMVA=False ' + params
-                if(params.find('@weightsFile')<0) :     params = '@weightsFile= ' + params
+            segment=0
+            for file in glob.glob(ntplpath+'analysis_*.root'):
+                eventsFile = file
+#            eventsFile = ', \n '.join('"' + item + '"' for item in FileList)
+         
+                sedcmd = 'sed \"s%"@input"%' +eventsFile +'%;'
+                sedcmd += 's%"@outdir"%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
+                sedcmd += 's%"@suffix"%' +suffix+'%;'
+                sedcmd += 's%"@tag"%' +(dtag + suffix + '_' + str(segment))+'%;'#RJ
+#                sedcmd += 's%"@tag"%' +str(getByLabel(desc,'tag',-1))+'%;'#RJ
+                if(params.find('@useMVA')<0) :          params = '@useMVA=False ' + params
                 if(params.find('@evStart')<0) :         params = '@evStart=0 ' + params
                 if(params.find('@evEnd')<0) :           params = '@evEnd=-1 ' + params
-            	if(params.find('@saveSummaryTree')<0) : params = '@saveSummaryTree=False ' + params
-            	if(params.find('@runSystematics')<0) :  params = '@runSystematics=False ' + params
-		if(params.find('@usemetNoHF')<0) :  	params = '@usemetNoHF=False ' + params
-            	if(len(params)>0) :
+                if(params.find('@saveSummaryTree')<0) : params = '@saveSummaryTree=False ' + params
+                if(params.find('@runSystematics')<0) :  params = '@runSystematics=False ' + params
+                if(params.find('@usemetNoHF')<0) :  	params = '@usemetNoHF=False ' + params
+                if(len(params)>0) :
                     extracfgs = params.split(' ')
                     for icfg in extracfgs :
                         varopt=icfg.split('=')
                         if(len(varopt)<2) : continue
                         sedcmd += 's%' + varopt[0] + '%' + varopt[1] + '%;'
-            	sedcmd += '\"'
+                sedcmd += '\"'
 
 
-		if(split==1):
-                    cfgfile=outdir +'/'+ dtag + suffix + '_' + str(segment) + '_cfg.py'
-                    #cfgfile=outdir +'/'+ dtag + suffix + '_cfg.py'
-		else:
-                    cfgfile=outdir +'/'+ dtag + suffix + '_' + str(segment) + '_cfg.py'
+                cfgfile=outdir +'/'+ dtag + suffix + '_' + str(segment) + '_cfg.py'
                 print cfgfile    
-            	os.system('cat ' + cfg_file + ' | ' + sedcmd + ' > ' + cfgfile)
+                os.system('cat ' + cfg_file + ' | ' + sedcmd + ' > ' + cfgfile)
 
-            	if(not subtoBatch) :
-                	os.system(theExecutable + ' ' + cfgfile)
-            	else :
-			os.system('mkdir -p ' + queuelog)
-			print('\033[33m submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile + '\033[0m')
-			SCRIPT.writelines('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile + '\n\n')
-			SCRIPT_L.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+str(segment)+'.log'+' & \n\n')
-			count = count + 1
-			if count % 30 == 0: SCRIPT_L.writelines('sleep 25\n\n')
-
-			SCRIPT_Temp.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' & \n\n')
-			SCRIPT_DTag.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' & \n\n')
+                if(not subtoBatch) :
+                    os.system(theExecutable + ' ' + cfgfile)
+                else :
+                    os.system('mkdir -p ' + queuelog)
+#                    print('\033[33m submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile + '\033[0m')
+                    SCRIPT.writelines('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile + '\n\n')
+                    SCRIPT_L.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+str(segment)+'.log'+' & \n\n')
+                    count = count + 1
+                    if count % 30 == 0: SCRIPT_L.writelines('sleep 25\n\n')
+                
+                    SCRIPT_Temp.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' & \n\n')
+                    SCRIPT_DTag.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' & \n\n')
 			#sys.exit(0)
-			os.system('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
+                    os.system('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
+
+                    segment += 1 #increment counter for job split
 
             SCRIPT_DTag.writelines('cd -;')
             SCRIPT_DTag.close()
