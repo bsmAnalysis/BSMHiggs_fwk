@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
     // configure the process
     const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
 
-    bool isMC       = runProcess.getParameter<bool>("isMC");
+    bool isMC = runProcess.getParameter<bool>("isMC");
     
     int mctruthmode = runProcess.getParameter<int>("mctruthmode");
     double xsec = runProcess.getParameter<double>("xsec");
@@ -117,9 +117,9 @@ int main(int argc, char* argv[])
 
     bool usemetNoHF = runProcess.getParameter<bool>("usemetNoHF");
     
-    TString url=runProcess.getParameter<std::string>("input");
-    TString outFileUrl(gSystem->BaseName(url));
-    outFileUrl.ReplaceAll(".root","");
+    TString url = runProcess.getParameter<std::string>("input");
+    TString outFileUrl( dtag ); //gSystem->BaseName(url));
+    //    outFileUrl.ReplaceAll(".root","");
     if(mctruthmode!=0) {
         outFileUrl += "_filt";
         outFileUrl += mctruthmode;
@@ -434,7 +434,10 @@ int main(int argc, char* argv[])
 
     TFile *file = TFile::Open(url);
     printf("Looping on %s\n",url.Data());
-    if(file==0) return -1;
+    if(file==0) {
+      return -1;
+      printf("file is 0");
+    }
     if(file->IsZombie()) return -1;
     if( !summaryHandler_.attachToTree( (TTree *)file->Get(dirname) ) ) {
         file->Close();
