@@ -455,6 +455,9 @@ int main(int argc, char* argv[])
     }
 
     //MC normalization (to 1/pb)
+    double xsecWeight = 1.0;
+    if (isMC) xsecWeight=xsec/double(totalEntries);
+
     /*
     float cnorm=1.0;
     if(isMC) {
@@ -515,8 +518,10 @@ int main(int argc, char* argv[])
         if(isMC && ev.genWeight<0) genWeight = -1.0;
 
         //systematical weight
-        float weight = 1.0;
-        if(isMC) weight *= genWeight;
+        float weight = xsecWeight;
+	//        if(isMC) weight *= genWeight;
+	
+	
 
 	//pileup re-weighting
 	//	if(isMC) weight *= ev.puWeight;
