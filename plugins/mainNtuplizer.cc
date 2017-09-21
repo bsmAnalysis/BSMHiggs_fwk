@@ -64,7 +64,7 @@
 #include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
 
 #include "UserCode/bsmhiggs_fwk/interface/DataEvtSummaryHandler.h"
-#include "UserCode/bsmhiggs_fwk/interface/SmartSelectionMonitor.h"
+//#include "UserCode/bsmhiggs_fwk/interface/SmartSelectionMonitor.h"
 
 //#include "UserCode/bsmhiggs_fwk/interface/TMVAUtils.h"
 #include "UserCode/bsmhiggs_fwk/interface/LeptonEfficiencySF.h"
@@ -161,10 +161,8 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     bool verbose_;
   
     DataEvtSummaryHandler summaryHandler_;
-    SmartSelectionMonitor mon_;
-
- 
-    double xsecWeight;
+  // SmartSelectionMonitor mon_;
+  //    double xsecWeight;
   
       virtual void beginJob() override;
       virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
@@ -178,6 +176,12 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     int lastPdfWeight;
     int firstAlphasWeight;
     int lastAlphasWeight;
+
+  // Some histograms
+  TH1F * h_nevents, *h_negevents, *h_posevents;
+  TH1F * h_pileup, * h_pileuptrue;
+  TH1F * h_sumWeights, * h_sumScaleWeights , * h_sumPdfWeights ,* h_sumAlphasWeights; 
+  TH1F * h_metFilter;
   
 };
 
@@ -245,7 +249,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
 
   consumesMany<LHEEventProduct>();
 
-  edm::Service<TFileService> fs;// = edm::TFileService("analysis.root");
+  edm::Service<TFileService> fs;
   
   summaryHandler_.initTree(  fs->make<TTree>("data","Event Summary") );
   TFileDirectory baseDir=fs->mkdir(iConfig.getParameter<std::string>("dtag"));
@@ -256,39 +260,40 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
      printf("  Verbose set to false.  Will be quiet.\n") ;
   }
 
+  
   printf("Definition of plots\n");
-  mon_.addHistogram(new TH1F("nevents",";nevents; nevents",1,-0.5,0.5));
-  mon_.addHistogram(new TH1F("n_negevents",";n_negevents; n_negevents",1,-0.5,0.5));
-  mon_.addHistogram(new TH1F("n_posevents",";n_posevents; n_posevents",1,-0.5,0.5));
-  mon_.addHistogram(new TH1F("pileup", ";Pileup; Events",100,-0.5,99.5));
+  h_nevents = fs->make< TH1F>("nevents",";nevents; nevents",1,-0.5,0.5);
+  h_negevents = fs->make< TH1F>("n_negevents",";n_negevents; n_negevents",1,-0.5,0.5);
+  h_posevents = fs->make< TH1F>("n_posevents",";n_posevents; n_posevents",1,-0.5,0.5);
+  h_pileup = fs->make< TH1F>("pileup", ";Pileup; Events",100,-0.5,99.5);
   //mon_.addHistogram(new TH1F("integlumi", ";Integrated luminosity ; Events",100,0,1e5);
   //mon_.addHistogram(new TH1F("instlumi", ";Max average inst. luminosity; Events",100,0,1e5);
-  mon_.addHistogram(new TH1F("pileuptrue", ";True pileup; Events",100,-0.5,99.5));
-
-  mon_.addHistogram(new TH1F("sumWeights",";;sumWeights;",1,-0.5,0.5));
-  mon_.addHistogram(new TH1F("sumScaleWeights",";;sumScaleWeights;",9,-0.5,8.5));
-  mon_.addHistogram(new TH1F("sumPdfWeights",";;sumPdfWeights;",100,-0.5,99.5));
-  mon_.addHistogram(new TH1F("sumAlphasWeights",";;sumAlphasWeights;",2,-0.5,1.5));
-
-  TH1F *hm=(TH1F*) mon_.addHistogram( new TH1F( "metFilter",";metEventflow",20,0,20) );
-  hm->GetXaxis()->SetBinLabel(1,"raw");
-  hm->GetXaxis()->SetBinLabel(2,"globalTightHalo2016Filter");
-  hm->GetXaxis()->SetBinLabel(3,"goodVertices");
-  hm->GetXaxis()->SetBinLabel(4,"eeBadScFilter");
-  hm->GetXaxis()->SetBinLabel(5,"EcalDeadCellTriggerPrimitiveFilter");
-  hm->GetXaxis()->SetBinLabel(6,"HBHENoiseFilter");
-  hm->GetXaxis()->SetBinLabel(7,"HBHENoiseIsoFilter");
-  hm->GetXaxis()->SetBinLabel(8,"BadPFMuonFilter");
-  hm->GetXaxis()->SetBinLabel(9,"BadChargedCandidateFilte");
-  hm->GetXaxis()->SetBinLabel(10,"badMuonHIPFilter");
-  hm->GetXaxis()->SetBinLabel(11,"duplicateMuonHIPFilter");
+  h_pileuptrue = fs->make< TH1F>("pileuptrue", ";True pileup; Events",100,-0.5,99.5);
+  
+  h_sumWeights = fs->make< TH1F>("sumWeights",";;sumWeights;",1,-0.5,0.5);
+  h_sumScaleWeights = fs->make< TH1F>("sumScaleWeights",";;sumScaleWeights;",9,-0.5,8.5);
+  h_sumPdfWeights = fs->make< TH1F>("sumPdfWeights",";;sumPdfWeights;",100,-0.5,99.5);
+  h_sumAlphasWeights = fs->make< TH1F>("sumAlphasWeights",";;sumAlphasWeights;",2,-0.5,1.5);
+  
+  h_metFilter = fs->make<TH1F>( "metFilter",";metEventflow",20,0,20);
+  h_metFilter->GetXaxis()->SetBinLabel(1,"raw");
+  h_metFilter->GetXaxis()->SetBinLabel(2,"globalTightHalo2016Filter");
+  h_metFilter->GetXaxis()->SetBinLabel(3,"goodVertices");
+  h_metFilter->GetXaxis()->SetBinLabel(4,"eeBadScFilter");
+  h_metFilter->GetXaxis()->SetBinLabel(5,"EcalDeadCellTriggerPrimitiveFilter");
+  h_metFilter->GetXaxis()->SetBinLabel(6,"HBHENoiseFilter");
+  h_metFilter->GetXaxis()->SetBinLabel(7,"HBHENoiseIsoFilter");
+  h_metFilter->GetXaxis()->SetBinLabel(8,"BadPFMuonFilter");
+  h_metFilter->GetXaxis()->SetBinLabel(9,"BadChargedCandidateFilte");
+  h_metFilter->GetXaxis()->SetBinLabel(10,"badMuonHIPFilter");
+  h_metFilter->GetXaxis()->SetBinLabel(11,"duplicateMuonHIPFilter");
 
   // patUtils::MetFilter metFilter;
   
 //MC normalization (to 1/pb)
-  xsecWeight = 1.0;
+  // xsecWeight = 1.0;
 
-  usesResource("TFileService");
+  //  usesResource("TFileService");
 
 }
 
@@ -312,8 +317,9 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 {
    using namespace edm;
 
-   mon_.fillHisto("nevents","all",1.,1.); //increment event count
-
+   //   mon_.fillHisto("nevents","all",1.,1.); //increment event count
+   h_nevents->Fill(0.);
+   
    summaryHandler_.resetStruct();
    //event summary to be filled
    DataEvtSummary_t &ev=summaryHandler_.getEvent();
@@ -357,8 +363,10 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      ev.ngenOOTpu=npuOOT;
      ev.ngenOOTpum1=npuOOTm1;
      ev.ngenTruepu=truePU;
-     mon_.fillHisto("pileup","all",ev.ngenITpu,0);
-     mon_.fillHisto("pileuptrue","all",truePU,0);
+     h_pileup->Fill(ev.ngenITpu,1);
+     h_pileuptrue->Fill(truePU);
+     //     mon_.fillHisto("pileup","all",ev.ngenITpu,1);
+     //     mon_.fillHisto("pileuptrue","all",truePU,1);
      
      if ( verbose_ ) { printf("  MC : Npu= %3d, truePU = %5.1f\n", npuIT, truePU ) ; }
      
@@ -371,8 +379,9 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      ev.genWeight = eventInfo.weight();
      float SignGenWeight=1;
      if(ev.genWeight<0) SignGenWeight=-1;
-     
-     mon_.fillHisto("sumWeights","all",0.,SignGenWeight);
+
+     h_sumWeights->Fill(0.,SignGenWeight);
+     //  mon_.fillHisto("sumWeights","all",0.,SignGenWeight);
      ev.qscale = eventInfo.qScale();
      if(eventInfo.pdf()) {
        ev.x1  = eventInfo.pdf()->x.first;
@@ -382,8 +391,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      }
      if(eventInfo.binningValues().size()>0) ev.pthat = eventInfo.binningValues()[0];
      
-     if(ev.genWeight<0) mon_.fillHisto("n_negevents","all",1.0,0); //increment negative event count
-     if(ev.genWeight>0) mon_.fillHisto("n_posevents","all",1.0,0); //increment positive event count
+     if(ev.genWeight<0) h_negevents->Fill(0.); //mon_.fillHisto("n_negevents","all",1.0,1); //increment negative event count
+     if(ev.genWeight>0) h_posevents->Fill(0.); // mon_.fillHisto("n_posevents","all",1.0,1); //increment positive event count
      
      //scale variations
      //https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW
@@ -402,7 +411,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	   //std::array<double, 100> inpdfweights;
 	   for (int iwgt=firstPdfWeight; iwgt<=lastPdfWeight; ++iwgt) {
 	     ev.pdfWeights[ev.npdfs] = SignGenWeight * EvtHandle->weights()[iwgt].wgt/EvtHandle->originalXWGTUP();
-	     mon_.fillHisto("sumPdfWeights","all",double(ev.npdfs), ev.pdfWeights[ev.npdfs]);
+	     h_sumPdfWeights->Fill(double(ev.npdfs), ev.pdfWeights[ev.npdfs]);
+	     // mon_.fillHisto("sumPdfWeights","all",double(ev.npdfs), ev.pdfWeights[ev.npdfs]);
 	     ev.npdfs++;
 	   }
 	   
@@ -410,7 +420,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	   if (firstAlphasWeight>=0 && lastAlphasWeight>=0 && lastAlphasWeight<int(EvtHandle->weights().size())) {
 	     for (int iwgt = firstAlphasWeight; iwgt<=lastAlphasWeight; ++iwgt) {
 	       ev.alphaSWeights[ev.nalphaS] = SignGenWeight * EvtHandle->weights()[iwgt].wgt/EvtHandle->originalXWGTUP();
-	       mon_.fillHisto("sumAlphasWeights","all",double(ev.nalphaS), ev.alphaSWeights[ev.nalphaS]);
+	       h_sumAlphasWeights->Fill(double(ev.nalphaS), ev.alphaSWeights[ev.nalphaS]);
+	       //  mon_.fillHisto("sumAlphasWeights","all",double(ev.nalphaS), ev.alphaSWeights[ev.nalphaS]);
 	       ev.nalphaS++;
 	     }
 	   }
@@ -575,7 +586,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    event.getByToken(triggerObjects_, triggerObjects);
    event.getByToken(triggerPrescales_, triggerPrescales);
 
-   if (verbose_) {
+   bool debug_=false;
+   if (debug_) {
      
      const edm::TriggerNames &names = event.triggerNames(*triggerBits); 
      
