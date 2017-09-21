@@ -550,7 +550,7 @@
             "tag": "Z#rightarrow ll"
         },
         {
-            "color": 693,
+            "color": 12,
             "data": [
                 {
                     "br": [
@@ -739,7 +739,7 @@
             ],
             "fill": 0,
             "isdata": false,
-            "isinvisible": true,
+            "isinvisible": false,
             "issignal": true,
             "keys": [
                 "haa_signal",
@@ -767,7 +767,7 @@
             ],
             "fill": 0,
             "isdata": false,
-            "isinvisible": true,
+            "isinvisible": false,
             "issignal": true,
             "keys": [
                 "haa_signal",

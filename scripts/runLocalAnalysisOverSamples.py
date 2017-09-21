@@ -190,7 +190,7 @@ for proc in procList :
 			#sys.exit(0)
                     os.system('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
 
-                    segment += 1 #increment counter for job split
+                segment += 1 #increment counter for job split
 
             SCRIPT_DTag.writelines('cd -;')
             SCRIPT_DTag.close()
@@ -214,21 +214,3 @@ os.system('mv /tmp/'+who+'/SCRIPT_Local.sh '+queuelog+'/all/')
 os.system('cp $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/scripts/splitlocaljobs.py '+queuelog+'/all/')
 os.system('cp $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/scripts/checkLocaljobs.py '+queuelog+'/all/')
 
-
-##get good script for local run
-#os.system('cp '+queuelog+'/combine/SCRIPT_Local_ZZ*.sh '+queuelog+'/')
-#os.system('cp '+queuelog+'/combine/SCRIPT_Local_WZ*.sh '+queuelog+'/')
-#os.system('cp '+queuelog+'/combine/SCRIPT_Local_Wjets*.sh '+queuelog+'/')
-#os.system('cp '+queuelog+'/combine/SCRIPT_Local_WW*.sh '+queuelog+'/')
-#os.system('cp '+queuelog+'/combine/SCRIPT_Local_Singletop.sh '+queuelog+'/')
-#os.system('cp '+queuelog+'/combine/SCRIPT_Local_tbart.sh '+queuelog+'/')
-#os.system('cp '+queuelog+'/combine/SCRIPT_Local_HZZd*.sh '+queuelog+'/')
-#os.system('cp '+queuelog+'/split/SCRIPT_Local_Data8TeV_*.sh '+queuelog+'/')
-#os.system('cp '+queuelog+'/split/SCRIPT_Local_MC8TeV_DY*.sh '+queuelog+'/')
-
-
-#run plotter over results
-#if(not subtoBatch) :
-#    os.system('mkdir -p ' + outdir + '/plots')
-#    #os.system('runPlotterOverSamples.py -j ' + samplesDB + ' -l ' + str(lumi) + ' -i ' + outdir + ' -o ' + outdir + '/plots -d localAnalysis')
-#    os.system('runPlotter --json ' + samplesDB + ' --iLumi ' + str(lumi) + ' --inDir ' + outdir + ' --outDir ' + outdir + '/plots')
