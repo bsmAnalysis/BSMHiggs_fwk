@@ -24,6 +24,7 @@ runProcess = cms.PSet(
     saveSummaryTree = cms.bool(@saveSummaryTree),
     runSystematics = cms.bool(@runSystematics),
     useMVA = cms.bool(@useMVA),
+    pu_central = cms.string("${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/weights/weight_pu_central_0_100.root"),
     muscleDir =  cms.string('${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/jec/'),
     jecDir = cms.string('${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/jec/25ns/'),
     usemetNoHF = cms.bool(@usemetNoHF),	

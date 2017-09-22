@@ -265,13 +265,13 @@ int main(int argc, char* argv[])
 
     SmartSelectionMonitor mon;
 
-    TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";;Events", 8,0,8) );
+    TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";;Events", 9,0,9) );
     h->GetXaxis()->SetBinLabel(1,"Raw");
     h->GetXaxis()->SetBinLabel(2,"Trigger");
     h->GetXaxis()->SetBinLabel(3,"1 lepton");
     // h->GetXaxis()->SetBinLabel(3,"#Delta#it{#phi}(jet,E_{T}^{miss})>0.5");
     h->GetXaxis()->SetBinLabel(4,"E_{T}^{miss}>25");
-    h->GetXaxis()->SetBinLabel(5,"M_{T}^{W}>0");
+    h->GetXaxis()->SetBinLabel(5,"M_{T}^{W}>50");
     h->GetXaxis()->SetBinLabel(6,">=(2-jets,2b-jets)");
     h->GetXaxis()->SetBinLabel(7,">=3b-tags");
     h->GetXaxis()->SetBinLabel(8,">=4b-tags");
@@ -279,7 +279,7 @@ int main(int argc, char* argv[])
      
      // GEN level kinematics
     mon.addHistogram( new TH1F( "higgsMass",";m_{h} [GeV];Events",200,0.,600.) );
-    mon.addHistogram( new TH1F( "higgsPt",";p_{T}^{h} [GeV];Events",300,0,1500));
+    mon.addHistogram( new TH1F( "higgsPt",";p_{T}^{h} [GeV];Events",100,0,500));
     mon.addHistogram( new TH1F( "higgsEta",";#eta (h);Evenets",100,-5,5) );
     mon.addHistogram( new TH1F( "a1mass",";m_{a1} [GeV];Events",800,0.,200.) );
     mon.addHistogram( new TH1F( "a2mass",";m_{a2} [GeV];Events",800,0.,200.) );
@@ -291,10 +291,10 @@ int main(int argc, char* argv[])
     //   mon.addHistogram( new TH1F( "dphiaa",";#Delta #phi(a1,a2);Events",40, 0, 4) ); 
     mon.addHistogram( new TH1F( "aaDR",";#Delta R(a_{1},a_{2});Events",100,0.,5.)); 
 
-    mon.addHistogram( new TH1F( "b1pt",";p_{T}^{b1};Events",500,0,1000));   
-    mon.addHistogram( new TH1F( "b2pt",";p_{T}^{b2};Events",500,0,1000)); 
-    mon.addHistogram( new TH1F( "b3pt",";p_{T}^{b3};Events",500,0,1000)); 
-    mon.addHistogram( new TH1F( "b4pt",";p_{T}^{b4};Events",500,0,1000)); 
+    mon.addHistogram( new TH1F( "b1pt",";p_{T}^{b1};Events",100,0,200));   
+    mon.addHistogram( new TH1F( "b2pt",";p_{T}^{b2};Events",100,0,200)); 
+    mon.addHistogram( new TH1F( "b3pt",";p_{T}^{b3};Events",100,0,200)); 
+    mon.addHistogram( new TH1F( "b4pt",";p_{T}^{b4};Events",100,0,200)); 
     
     /*
 
@@ -324,27 +324,30 @@ int main(int argc, char* argv[])
 
     mon.addHistogram( new TH1F( "leadlep_pt_raw", ";Leading lepton #it{p}_{T}^{l} [GeV];Events", 200,0,500) );
     mon.addHistogram( new TH1F( "leadlep_eta_raw",";Leading lepton #eta^{l};Events", 52,-2.6,2.6) );
-    mon.addHistogram( new TH1F( "jet_pt_raw", ";#it{p}_{T}^{b} [GeV];Events", 500,0,500) );
+    mon.addHistogram( new TH1F( "jet_pt_raw", ";#it{p}_{T}^{b} [GeV];Events", 500,0,1000) );
     mon.addHistogram( new TH1F( "jet_eta_raw",";#eta;Events", 100,-5,5) );
 
     mon.addHistogram( new TH1F( "b_discrim"," ;b discriminator;",200,0,1.) );
     mon.addHistogram( new TH1F( "db_discrim"," ;double-b discriminator;",100,-1.,1.) );
-    mon.addHistogram( new TH1F( "sd_mass"," ;soft-drop Mass;",100,-5.,295.) );
-    mon.addHistogram( new TH1F( "pruned_mass"," ;pruned Mass;",100,-5.,295.) );
-    mon.addHistogram( new TH1F( "softb_ntrk"," ; SV Ntrks;",11,-0.5,11.5) );
-    mon.addHistogram( new TH1F( "softb_dxy"," ; SV dxy;",1000,0.,10.) );
-    mon.addHistogram( new TH1F( "softb_dxyz_signif"," ; SVSIP3D;",100,1.,20.) );
+    mon.addHistogram( new TH1F( "sd_mass"," ;soft-drop Mass;",150,0.,500.) );
+    mon.addHistogram( new TH1F( "pruned_mass"," ;pruned Mass;",150,0.,500.) );
+    mon.addHistogram( new TH1F( "softb_ntrk"," ; SV Ntrks;",21,-0.5,21.5) );
+    mon.addHistogram( new TH1F( "softb_dxy"," ; SV dxy;",200,0.,20.) );
+    mon.addHistogram( new TH1F( "softb_dxyz_signif"," ; SVSIP3D;",250,1.,50.) );
     mon.addHistogram( new TH1F( "softb_cos"," ; SV cos((PV,SV),p_{SV});",250,-1.,1.) );
 
     mon.addHistogram( new TH1F( "nvtx_raw",	";Vertices;Events",50,0,50) );
     mon.addHistogram( new TH1F( "nvtxwgt_raw",	";Vertices;Events",50,0,50) );
-    mon.addHistogram( new TH1F( "pfmet",    ";E_{T}^{miss} [GeV];Events", 100,0,500) );
+    mon.addHistogram( new TH1F( "pfmet",    ";E_{T}^{miss} [GeV];Events", 100,0,400) );
     mon.addHistogram( new TH1F( "ht",    ";H_{T} [GeV];Events", 100,0,600) );
-    mon.addHistogram( new TH1F( "mtw",       ";#it{m}_{T}^{W} [GeV];Events", 200,0,1000) );
-    mon.addHistogram( new TH1F( "ptw",       ";#it{p}_{T}^{W} [GeV];Events", 200,0,1000) );
+    mon.addHistogram( new TH1F( "mtw",       ";#it{m}_{T}^{W} [GeV];Events", 250,0,400) );
+    mon.addHistogram( new TH1F( "ptw",       ";#it{p}_{T}^{W} [GeV];Events", 100,0,400) );
     mon.addHistogram( new TH1F( "dphiWh", ";#Delta#it{#phi}(#it{W},h);Events", 20,0,TMath::Pi()) );
     mon.addHistogram( new TH1F( "dRave",";#Delta R(b,b)_{ave};Events",100,0.,5.));
     mon.addHistogram( new TH1F( "dphijmet", ";#Delta#it{#phi}(jet,E_{T}^{miss});Events", 20,0,TMath::Pi()) );
+
+    //for MC normalization (to 1/pb)
+    TH1F* Hcutflow = (TH1F*) mon.addHistogram( new TH1F ("cutflow" , "cutflow" ,6,0,6) ) ;
     
     TH1F *h1 = (TH1F*) mon.addHistogram( new TH1F( "nleptons_raw", ";Lepton multiplicity;Events", 4,0,4) );
     for(int ibin=1; ibin<=h1->GetXaxis()->GetNbins(); ibin++) {
@@ -434,10 +437,8 @@ int main(int argc, char* argv[])
 
     TFile *file = TFile::Open(url);
     printf("Looping on %s\n",url.Data());
-    if(file==0) {
-      return -1;
-      printf("file is 0");
-    }
+    if(file==0) { return -1; printf("file is 0"); }
+    
     if(file->IsZombie()) return -1;
     if( !summaryHandler_.attachToTree( (TTree *)file->Get(dirname) ) ) {
         file->Close();
@@ -456,21 +457,29 @@ int main(int argc, char* argv[])
 
     //MC normalization (to 1/pb)
     double xsecWeight = 1.0;
-    if (isMC) xsecWeight=xsec/double(totalEntries);
-
-    /*
     float cnorm=1.0;
-    if(isMC) {
-        //TH1F* cutflowH = (TH1F *) file->Get("mainAnalyzer/llvv/nevents");
-        //if(cutflowH) cnorm=cutflowH->GetBinContent(1);
-        TH1F* posH = (TH1F *) file->Get("mainAnalyzer/llvv/n_posevents");
-        TH1F* negH = (TH1F *) file->Get("mainAnalyzer/llvv/n_negevents");
-        if(posH && negH) cnorm = posH->GetBinContent(1) - negH->GetBinContent(1);
-        if(rescaleFactor>0) cnorm /= rescaleFactor;
-        printf("cnorm = %f\n",cnorm);
+    if (isMC) {
+      double totalNumberofEvents;
+
+      TH1F* nevtH = (TH1F *) file->Get("mainNtuplizer/nevents");
+      totalNumberofEvents = nevtH->GetBinContent(1);
+      TH1F* posH = (TH1F *) file->Get("mainNtuplizer/n_posevents");
+      TH1F* negH = (TH1F *) file->Get("mainNtuplizer/n_negevents");
+      if(posH && negH) cnorm = posH->GetBinContent(1) - negH->GetBinContent(1);
+      if(rescaleFactor>0) cnorm /= rescaleFactor;
+      printf("cnorm = %f\n",cnorm);
+     
+      xsecWeight=xsec/totalNumberofEvents;
     }
     Hcutflow->SetBinContent(1,cnorm);
-    */
+
+    //pileup weighting
+    TString PU_Central = runProcess.getParameter<std::string>("pu_central");
+    gSystem->ExpandPathName(PU_Central);
+    cout << "Loading PU weights Central: " << PU_Central << endl;
+    TFile *PU_Central_File = TFile::Open(PU_Central);
+    TH1F* weight_pileup_Central = (TH1F *) PU_Central_File->Get("pileup");
+    
     // muon trigger efficiency SF
     //Electron ID RECO SF
 
@@ -518,10 +527,8 @@ int main(int argc, char* argv[])
         if(isMC && ev.genWeight<0) genWeight = -1.0;
 
         //systematical weight
-        float weight = xsecWeight;
-	//        if(isMC) weight *= genWeight;
-	
-	
+        float weight = 1.0; //xsecWeight;
+	if(isMC) weight *= xsecWeight; //genWeight;
 
 	//pileup re-weighting
 	//	if(isMC) weight *= ev.puWeight;
@@ -531,18 +538,20 @@ int main(int argc, char* argv[])
         double TotalWeight_minus = 1.0;
 
         if(isMC) mon.fillHisto("pileup", tags, ev.ngenTruepu, 1.0);
-	/*
+
+	//	float puWeight(1.0);
         if(isMC) {
             weight 		*= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Central);
-            TotalWeight_plus 	*= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Up);
-            TotalWeight_minus 	*= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Down);
+	    //  TotalWeight_plus 	*= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Up);
+            //TotalWeight_minus 	*= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Down);
         }
 
         Hcutflow->Fill(1,genWeight);
-        Hcutflow->Fill(2,weight);
-        Hcutflow->Fill(3,weight*TotalWeight_minus);
-        Hcutflow->Fill(4,weight*TotalWeight_plus);
-	*/
+	Hcutflow->Fill(2,xsecWeight);
+        Hcutflow->Fill(3,weight);
+      //  Hcutflow->Fill(3,weight*TotalWeight_minus);
+      //  Hcutflow->Fill(4,weight*TotalWeight_plus);
+	
 
         // add PhysicsEvent_t class, get all tree to physics objects
         PhysicsEvent_t phys=getPhysicsEventFrom(ev);
@@ -1319,7 +1328,7 @@ int main(int argc, char* argv[])
 		
 	// mtW >50 GeV
 	bool passMt(sqrt(tMass)>50);
-	//if (!passMt) continue;
+	if (!passMt) continue;
 	mon.fillHisto("eventflow","all",4,weight); // MT cut
 	
 	// At least 2 jets and 2 b-jets
