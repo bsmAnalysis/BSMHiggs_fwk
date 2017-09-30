@@ -205,7 +205,7 @@
             "marker": 20,
             "msize": 0.7,
             "tag": "data"
-        },
+         },
         {
             "color": 592,
             "data": [
@@ -293,7 +293,7 @@
             "tag": "WW"
         },
         {
-            "color": 594,
+            "color": 592,
             "data": [
                 {
                     "br": [
@@ -324,7 +324,7 @@
             "tag": "WZ"
         },
         {
-            "color": 869,
+            "color": 422,
             "data": [
                 {
                     "br": [
@@ -378,7 +378,7 @@
             "tag": "ZVV"
         },
 	{
-            "color": 7,
+            "color": 831,	
             "data": [
 		{
                     "br": [
@@ -444,7 +444,7 @@
             "tag": "Single Top"
         },
         {
-            "color": 8,
+            "color": 408,
             "data": [
                 {
                     "br": [
@@ -499,35 +499,14 @@
             "tag": "t#bar{t}+jets"
         },
         {
-            "color": 623,
+            "color": 424,
             "data": [
                 {
                     "br": [
                         1.0
                     ],
                     "dset": [
-                        "/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
-                    ],
-		    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_WJets_2016",
-                    "xsec": 61526.7
-                }
-	    ],
-            "isdata": false,
-            "keys": [
-                "haa_mcbased"
-            ],
-            "tag": "W#rightarrow l#nu"
-        },
-        {
-            "color": 831,
-            "data": [
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-		        "/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"  
+		        "/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
                     ],
 		    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_DYJetsToLL_10to50_2016",
@@ -536,7 +515,7 @@
              	{
 	       	"br": [ 1.0 ],
 		"dset": [
-		   "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
+		   "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
 		],
 		    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
 		    "dtag":  "MC13TeV_DYJetsToLL_50toInf_2016",
@@ -545,12 +524,13 @@
             ],
             "isdata": false,
             "keys": [
-                "haa_mcbased"
+                "haa_mcbased",
+		"haa_ztoll"
             ],
             "tag": "Z#rightarrow ll"
         },
         {
-            "color": 12,
+            "color": 624,
             "data": [
                 {
                     "br": [
@@ -614,8 +594,29 @@
             ],
             "tag": "Top+#gamma_Z_W"
         },
-        {
-            "color": 24,
+	{
+            "color": 622,
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                    ],
+		    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_WJets_2016",
+                    "xsec": 61526.7
+                }
+	    ],
+            "isdata": false,
+            "keys": [
+                "haa_mcbased"
+            ],
+            "tag": "W#rightarrow l#nu"
+        },
+	{
+            "color": 17,
             "data": [
                 {
                     "br": [
@@ -722,7 +723,7 @@
                 "haa_mcbased"
             ],
             "tag": "QCD_EMMuEnr"
-        },
+          },
         {
             "data": [
                 {
@@ -745,7 +746,7 @@
                 "haa_signal",
                 "haa_mcbased"
             ],
-            "lcolor": 619,
+            "lcolor": 603,
             "lwidth": 2,
             "resonance": 20,
             "spimpose": true,
@@ -773,7 +774,7 @@
                 "haa_signal",
                 "haa_mcbased"
             ],
-            "lcolor": 620,
+            "lcolor": 603,
             "lwidth": 2,
 	    "lstyle": 2,
             "resonance": 50,
