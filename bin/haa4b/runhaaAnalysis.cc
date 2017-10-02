@@ -73,8 +73,8 @@ const float CSVMediumWP = 0.800;
 const float CSVTightWP = 0.935;
 
 // Physics objects offline thresholds
-const float lep_threshold_=25.;
-const float mu_threshold_=25.;
+//const float lep_threshold_=25.;
+const float mu_threshold_=30.;
 const float ele_threshold_=30.;
 const float jet_threshold_=20.;
 
@@ -231,6 +231,7 @@ int main(int argc, char* argv[])
     int evEnd       = runProcess.getParameter<int>("evEnd");
     TString dirname = runProcess.getParameter<std::string>("dirName");
 
+    
     //jet energy scale uncertainties
     TString jecDir = runProcess.getParameter<std::string>("jecDir");
     //    gSystem->ExpandPathName(uncFile);
@@ -263,45 +264,35 @@ int main(int argc, char* argv[])
     h->GetXaxis()->SetBinLabel(1,"Raw");
     h->GetXaxis()->SetBinLabel(2,"Trigger");
     h->GetXaxis()->SetBinLabel(3,"1 lepton");
-    // h->GetXaxis()->SetBinLabel(3,"#Delta#it{#phi}(jet,E_{T}^{miss})>0.5");
+    // h->GetXaxis()->SetBinLabel(4,"2nd lepton veto");
     h->GetXaxis()->SetBinLabel(4,"E_{T}^{miss}>25");
     h->GetXaxis()->SetBinLabel(5,"M_{T}^{W}>50");
     h->GetXaxis()->SetBinLabel(6,">=(2-jets,2b-jets)");
     h->GetXaxis()->SetBinLabel(7,">=3b-tags");
     h->GetXaxis()->SetBinLabel(8,">=4b-tags");
  
-
-    Double_t ptaxis[]= {0,15,30,45,60,75,90,105,120,135,150,165,180,195,210,225,240,255,270,285,300,315,330,345,360,375,390,405,435,465,495,525,555,585,615,675,735,795,855,975};//,1035};
-    Int_t nptAxis=sizeof(ptaxis)/sizeof(Double_t);
-    
      // generator level plots
     mon.addHistogram( new TH1F( "pileup", ";pileup;Events", 100,-0.5,99.5) );
     
-    mon.addHistogram( new TH1F( "higgsMass",";m_{h} [GeV];Events",100,0.,800.) );
-    mon.addHistogram( new TH1F( "higgsPt",";p_{T}^{h} [GeV];Events",100,0.,800.));
+    mon.addHistogram( new TH1F( "higgsMass",";m_{h} [GeV];Events",60,0.,600.) );
+    mon.addHistogram( new TH1F( "higgsPt",";p_{T}^{h} [GeV];Events",60,0.,600.));
     mon.addHistogram( new TH1F( "higgsEta",";#eta (h);Evenets",100,-5,5) );
-    mon.addHistogram( new TH1F( "a1mass",";m_{a1} [GeV];Events",800,0.,200.) );
-    mon.addHistogram( new TH1F( "a2mass",";m_{a2} [GeV];Events",800,0.,200.) );
-    mon.addHistogram( new TH1F( "a1pt",";p_{T}^{a1};Events",500,0,1000));
-    mon.addHistogram( new TH1F( "a2pt",";p_{T}^{a2};Events",500,0,1000));
+    mon.addHistogram( new TH1F( "a1mass",";m_{a1} [GeV];Events",400,0.,200.) );
+    mon.addHistogram( new TH1F( "a2mass",";m_{a2} [GeV];Events",400,0.,200.) );
+    mon.addHistogram( new TH1F( "a1pt",";p_{T}^{a1};Events",100,0.,600.));
+    mon.addHistogram( new TH1F( "a2pt",";p_{T}^{a2};Events",100,0.,600.));
     mon.addHistogram( new TH1F( "aabalance",";p_{T}^{a1}/p_{T}^{a2};Events",200,0.,10.));
     mon.addHistogram( new TH1F( "a1DR",";#Delta R1(b,#bar{b});Events",100,0.,5.));
     mon.addHistogram( new TH1F( "a2DR",";#Delta R2(b,#bar{b});Events",100,0.,5.)); 
-    //   mon.addHistogram( new TH1F( "dphiaa",";#Delta #phi(a1,a2);Events",40, 0, 4) ); 
     mon.addHistogram( new TH1F( "aaDR",";#Delta R(a_{1},a_{2});Events",100,0.,5.)); 
 
-    mon.addHistogram( new TH1F( "b1pt",";p_{T}^{b1};Events",nptAxis-1,ptaxis));   
-    mon.addHistogram( new TH1F( "b2pt",";p_{T}^{b2};Events",nptAxis-1,ptaxis)); 
-    mon.addHistogram( new TH1F( "b3pt",";p_{T}^{b3};Events",nptAxis-1,ptaxis)); 
-    mon.addHistogram( new TH1F( "b4pt",";p_{T}^{b4};Events",nptAxis-1,ptaxis)); 
+    mon.addHistogram( new TH1F( "b1pt",";p_{T}^{b1};Events",60,0.,600.));   
+    mon.addHistogram( new TH1F( "b2pt",";p_{T}^{b2};Events",60,0.,600.)); 
+    mon.addHistogram( new TH1F( "b3pt",";p_{T}^{b3};Events",60,0.,600.)); 
+    mon.addHistogram( new TH1F( "b4pt",";p_{T}^{b4};Events",60,0.,600.)); 
     
     /*
 
-    //for MC normalization (to 1/pb)
-    TH1F* Hcutflow  = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,6,0,6) ) ;
-
-    mon.addHistogram( new TH1F( "nvtx_raw",	";Vertices;Events",50,0,50) );
-    mon.addHistogram( new TH1F( "nvtxwgt_raw",	";Vertices;Events",50,0,50) );
     mon.addHistogram( new TH1F( "zpt_raw",      ";#it{p}_{T}^{ll} [GeV];Events", 50,0,500) );
     mon.addHistogram( new TH1F( "pfmet_raw",    ";E_{T}^{miss} [GeV];Events", 50,0,500) );
     mon.addHistogram( new TH1F( "mt_raw",       ";#it{m}_{T} [GeV];Events", 100,0,2000) );
@@ -309,46 +300,40 @@ int main(int argc, char* argv[])
     const int nBinsMT = sizeof(MTBins)/sizeof(double) - 1;
     mon.addHistogram( new TH1F( "mt2_raw",       ";#it{m}_{T} [GeV];Events", nBinsMT,MTBins) );
     mon.addHistogram( new TH1F( "zmass_raw",    ";#it{m}_{ll} [GeV];Events", 100,40,250) );
-
-    mon.addHistogram( new TH2F( "ptlep1vs2_raw",";#it{p}_{T}^{l1} [GeV];#it{p}_{T}^{l2} [GeV];Events",250,0,500, 250,0,500) );
-
-    mon.addHistogram( new TH1F( "leadlep_pt_raw", ";Leading lepton #it{p}_{T}^{l};Events", 50,0,500) );
-    mon.addHistogram( new TH1F( "leadlep_eta_raw",";Leading lepton #eta^{l};Events", 52,-2.6,2.6) );
-    mon.addHistogram( new TH1F( "trailep_pt_raw", ";Trailing lepton #it{p}_{T}^{l};Events", 50,0,500) );
-    mon.addHistogram( new TH1F( "trailep_eta_raw",";Trailing lepton #eta^{l};Events", 52,-2.6,2.6) );
     */
 
      // RECO level
     mon.addHistogram( new TH1F( "dR_raw",";#Delta R(SV,b);Events",100,0.,5.));
 
-    mon.addHistogram( new TH1F( "leadlep_pt_raw", ";Leading lepton #it{p}_{T}^{l} [GeV];Events", 100,0.,800.) );
+    mon.addHistogram( new TH1F( "leadlep_pt_raw", ";Leading lepton #it{p}_{T}^{l} [GeV];Events", 60,0.,600.) );
     mon.addHistogram( new TH1F( "leadlep_eta_raw",";Leading lepton #eta^{l};Events", 52,-2.6,2.6) );
-    mon.addHistogram( new TH1F( "jet_pt_raw", ";#it{p}_{T}^{b} [GeV];Events",100,0.,800.) );
-    mon.addHistogram( new TH1F( "jet_eta_raw",";#eta;Events", 100,-5,5) );
+    mon.addHistogram( new TH1F( "jet_pt_raw", ";#it{p}_{T}^{b} [GeV];Events",60,0.,600.) );
+    mon.addHistogram( new TH1F( "jet_eta_raw",";#eta;Events", 70,-3,3) );
 
     mon.addHistogram( new TH1F( "b_discrim"," ;b discriminator;",200,0,1.) );
     mon.addHistogram( new TH1F( "db_discrim"," ;double-b discriminator;",100,-1.,1.) );
-    mon.addHistogram( new TH1F( "sd_mass"," ;soft-drop Mass;",150,0.,500.) );
-    mon.addHistogram( new TH1F( "pruned_mass"," ;pruned Mass;",150,0.,500.) );
+    mon.addHistogram( new TH1F( "sd_mass"," ;soft-drop Mass;",80,0.,300.) );
+    mon.addHistogram( new TH1F( "pruned_mass"," ;pruned Mass;",80,0.,300.) );
     mon.addHistogram( new TH1F( "softb_ntrk"," ; SV Ntrks;",21,-0.5,21.5) );
     mon.addHistogram( new TH1F( "softb_dxy"," ; SV dxy;",100,0.,30.) );
-    mon.addHistogram( new TH1F( "softb_dxyz_signif"," ; SVSIP3D;",200,1.,100.) );
+    mon.addHistogram( new TH1F( "softb_dxyz_signif"," ; SVSIP3D;",100,1.,100.) );
     mon.addHistogram( new TH1F( "softb_cos"," ; SV cos((PV,SV),p_{SV});",100,-1.,1.) );
 
     mon.addHistogram( new TH1F( "nvtx_raw",	";Vertices;Events",100,0,100) );
     mon.addHistogram( new TH1F( "nvtxwgt_raw",	";Vertices;Events",100,0,100) );
-    mon.addHistogram( new TH1F( "pfmet",    ";E_{T}^{miss} [GeV];Events", 100,0.,800.) );
-    mon.addHistogram( new TH1F( "ht",    ";H_{T} [GeV];Events", 100,0.,800.) );
-    mon.addHistogram( new TH1F( "mtw",       ";#it{m}_{T}^{W} [GeV];Events", 100,0.,800.) );
-    mon.addHistogram( new TH1F( "ptw",       ";#it{p}_{T}^{W} [GeV];Events",100,0.,800.) );
+    mon.addHistogram( new TH1F( "pfmet",    ";E_{T}^{miss} [GeV];Events", 60,0.,600.) );
+    mon.addHistogram( new TH1F( "ht",    ";H_{T} [GeV];Events", 60,0.,600.) );
+    mon.addHistogram( new TH1F( "mtw",       ";#it{m}_{T}^{W} [GeV];Events", 60,0.,600.) );
+    mon.addHistogram( new TH1F( "ptw",       ";#it{p}_{T}^{W} [GeV];Events",60,0.,600.) );
     mon.addHistogram( new TH1F( "dphiWh", ";#Delta#it{#phi}(#it{W},h);Events", 20,0,TMath::Pi()) );
     mon.addHistogram( new TH1F( "dRave",";#Delta R(b,b)_{ave};Events",100,0.,5.));
-    mon.addHistogram( new TH1F( "dphijmet", ";#Delta#it{#phi}(jet,E_{T}^{miss});Events", 20,0,TMath::Pi()) );
+    mon.addHistogram( new TH1F( "dphijmet", ";|#Delta#it{#phi}(jet,E_{T}^{miss})|;Events", 20,0,TMath::Pi()) );
+    mon.addHistogram( new TH1F( "dphilepmet", ";|#Delta#it{#phi}(lep,E_{T}^{miss})|;Events", 20,0,TMath::Pi()) );
 
     //for MC normalization (to 1/pb)
     TH1F* Hcutflow = (TH1F*) mon.addHistogram( new TH1F ("cutflow" , "cutflow" ,6,0,6) ) ;
     
-    TH1F *h1 = (TH1F*) mon.addHistogram( new TH1F( "nleptons_raw", ";Lepton multiplicity;Events", 4,0,4) );
+    TH1F *h1 = (TH1F*) mon.addHistogram( new TH1F( "nleptons", ";Lepton multiplicity;Events", 4,0,4) );
     for(int ibin=1; ibin<=h1->GetXaxis()->GetNbins(); ibin++) {
         TString label("");
 	if(ibin==h1->GetXaxis()->GetNbins()) label +="#geq";
@@ -415,6 +400,12 @@ int main(int argc, char* argv[])
     const int xnBinsMT2 = sizeof(MT2Bins)/sizeof(double) - 1;
     */
 
+    //--------------------------------------------------------------------------
+    // some strings for tagging histograms:
+    const char* astr[] = {"_b1","_b2","_b3","_b4"};
+    std::vector<TString> htag(astr, astr+4);
+    //--------------------------------------------------------------------------
+    
     // btaging efficiency
 
     //#################################################
@@ -543,7 +534,6 @@ int main(int argc, char* argv[])
 
 	float puWeight(1.0);
         // if(isMC) {
-
 	//    // Open the pileup true Histogram for PU normalization
 	//   TH1F *h_pileup_true = (TH1F*)file->Get("pileuptrue");
 	  
@@ -754,45 +744,57 @@ int main(int argc, char* argv[])
         //
         // LEPTON ANALYSIS
         //
-        // looping leptons (electrons + muons)
-        int nGoodLeptons(0);
-        std::vector<std::pair<int,LorentzVector> > goodLeptons;
-        for(size_t ilep=0; ilep<phys.leptons.size(); ilep++) {
-            LorentzVector lep=phys.leptons[ilep];
-            int lepid = phys.leptons[ilep].id;
-	    //          if(lep.pt()<lep_threshold_) continue;
-	    if(abs(lepid)==11 && lep.pt()<ele_threshold_) continue;
-	    if(abs(lepid)==13 && lep.pt()<mu_threshold_) continue;
-	    
-            if(abs(lepid)==13 && fabs(lep.eta())> 2.4) continue;
-            if(abs(lepid)==11 && fabs(lep.eta())> 2.5) continue;
-            if(abs(lepid)==11 && fabs(lep.eta()) > 1.442 && fabs(lep.eta()) < 1.556) continue;
+	PhysicsObjectLeptonCollection &leps = phys.leptons;
 
-            bool hasTightIdandIso(true);
-            if(abs(lepid)==13) { //muon
-	      hasTightIdandIso &= (phys.leptons[ilep].passIdMu && phys.leptons[ilep].passIsoMu);
-            } else if(abs(lepid)==11) { //electron
-	      hasTightIdandIso &= (phys.leptons[ilep].passIdEl && phys.leptons[ilep].passIsoEl);
-            } else continue;
-
-
-            if(!hasTightIdandIso) continue;
-            nGoodLeptons++;
-            std::pair <int,LorentzVector> goodlep;
-            goodlep = std::make_pair(lepid,lep);
-            goodLeptons.push_back(goodlep);
-
-        }
-
-	// sort goodLeptons in pT
-	//	sort(goodLeptons.begin(), goodLeptons.end(), ptsort());
-	mon.fillHisto("nleptons_raw","all", goodLeptons.size(),weight);
+	int nGoodLeptons(0);
+	std::vector<std::pair<int,LorentzVector> > goodLeptons;
+	int nExtraLeptons(0);
+	std::vector<LorentzVector> extraLeptons;
 	
-	/*
-        // ID + ISO scale factors 
-        if(isMC) {
-        }
-	*/
+	for (auto &ilep : leps) {
+	  if (ilep.pt()<3. || fabs(ilep.eta())>2.5) continue;
+	  float lep_threshold(25.);
+	  
+	  int lepid = ilep.id;
+	  
+	  bool hasTightIdandIso(true);
+	  if (abs(lepid)==11) {
+	    lep_threshold=ele_threshold_;
+	    hasTightIdandIso &= (ilep.passIdEl && ilep.passIsoEl);
+	  } else if (abs(lepid)==13) {
+	    lep_threshold=mu_threshold_;
+	    hasTightIdandIso &= (ilep.passIdMu && ilep.passIsoMu);
+	  } else continue;
+
+	  bool hasExtraLepton(false);
+	  
+	  if ( hasTightIdandIso && (ilep.pt()>lep_threshold) ) {
+
+	      nGoodLeptons++;
+	      std::pair <int,LorentzVector> goodlep;
+	      goodlep = std::make_pair(lepid,ilep);
+	      goodLeptons.push_back(goodlep);
+	    
+	  } else { // extra loose leptons
+	   
+	    if (abs(lepid)==11) {
+	      hasExtraLepton = (ilep.passIdLooseEl && ilep.passIsoEl && ilep.pt()>10.);
+	    } else if (abs(lepid)==13) {
+	      hasExtraLepton = ( (ilep.passIdLooseMu && ilep.passIsoMu && ilep.pt()>10.) || (ilep.passSoftMuon) );
+	    }
+
+	  }
+
+	  if (hasExtraLepton) {
+	    nExtraLeptons++;
+	    extraLeptons.push_back(ilep);
+	  }
+	} // leptons
+	
+	// sort(goodLeptons.begin(), goodLeptons.end(), ptsort());
+	mon.fillHisto("nleptons","raw", goodLeptons.size(),weight);
+	mon.fillHisto("nleptons","raw_extra", extraLeptons.size(),weight);
+	
 	std::vector<TString> tag_cat;
 	//	TString tag_cat;
         int evcat=-1;
@@ -832,7 +834,7 @@ int main(int argc, char* argv[])
         }
 	*/
 
-		// All: "Raw"
+	// All: "Raw"
 	mon.fillHisto("eventflow","all",0,weight);
 	
         bool hasTrigger(false);
@@ -865,9 +867,10 @@ int main(int argc, char* argv[])
             hasTrigger=true;
 
         } else { // isMC
-	  if(evcat==E   && hasEtrigger ) hasTrigger=true;
-	  if(evcat==MU && hasMtrigger ) hasTrigger=true;
-	  if(evcat==EMU  && ( hasEtrigger || hasMtrigger)) hasTrigger=true;
+	  // if(evcat==E   && hasEtrigger ) hasTrigger=true;
+	  // if(evcat==MU && hasMtrigger ) hasTrigger=true;
+	  // if(evcat==EMU  && ( hasEtrigger || hasMtrigger)) hasTrigger=true;
+	  hasTrigger = (hasEtrigger || hasMtrigger);
 	  if(!hasTrigger) continue;
         }
 	
@@ -882,17 +885,40 @@ int main(int argc, char* argv[])
         mon.fillHisto("nvtx_raw",   tags, phys.nvtx,      1.0);
         mon.fillHisto("nvtxwgt_raw",tags, phys.nvtx,      weight);
 
-        //
-        //apply muon trigger efficiency scale factors
-        //
-	
+    
 	// Trigger
 	mon.fillHisto("eventflow","all",1,weight);
-	
+
+	// -------------------------------------------------------------------------
 	// Exactly 1 good lepton
-	if(goodLeptons.size()!=1) continue; // at least 1 tight leptons
+	bool passOneLepton(goodLeptons.size()==1); 
+	if (!passOneLepton) continue;
+	// -------------------------------------------------------------------------
+	//	if(goodLeptons.size()!=1) continue; // at least 1 tight leptons
+		
+        // lepton ID + ISO scale factors 
+        if(isMC) {
+	  if (evcat==E) {
+	    weight *= lepEff.getRecoEfficiency( goodLeptons[0].second.eta(), 11).first;
+	    weight *= lepEff.getLeptonEfficiency( goodLeptons[0].second.pt(), goodLeptons[0].second.eta(), 11, "tight" ,patUtils::CutVersion::ICHEP16Cut ).first ; //ID
+	    
+	  } else if (evcat==MU) {
+	    weight *= lepEff.getTrackingEfficiency( goodLeptons[0].second.eta(), 13).first; //Tracking eff
+	    weight *= lepEff.getLeptonEfficiency( goodLeptons[0].second.pt(), goodLeptons[0].second.eta(), 13, "tight" ,patUtils::CutVersion::ICHEP16Cut ).first ; //ID
+	    weight *= lepEff.getLeptonEfficiency( goodLeptons[0].second.pt(), goodLeptons[0].second.eta(), 13, "tightiso",patUtils::CutVersion::ICHEP16Cut ).first; //ISO w.r.t ID
+	  }
+        }
+
 	mon.fillHisto("eventflow","all",2,weight);
-	
+
+	// // -------------------------------------------------------------------------
+	// // 2nd lepton veto
+	// // -------------------------------------------------------------------------
+	// bool pass2ndlepVeto(extraLeptons.size()==0);
+	// if (!pass2ndlepVeto) continue;
+	// mon.fillHisto("eventflow","all",3,weight);
+		
+	// Lepton kinematics
 	if (abs(goodLeptons[0].first==11)) {
 	  mon.fillHisto("leadlep_pt_raw","e",goodLeptons[0].second.pt(),weight);
 	  mon.fillHisto("leadlep_eta_raw","e",goodLeptons[0].second.eta(),weight);
@@ -900,8 +926,12 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("leadlep_pt_raw","mu",goodLeptons[0].second.pt(),weight);
 	  mon.fillHisto("leadlep_eta_raw","mu",goodLeptons[0].second.eta(),weight);
 	}
-	
-        //
+
+	// Dphi(lep, MET) ?
+	float dphilepmet=fabs(deltaPhi(goodLeptons[0].second.phi(),metP4.phi()));
+	mon.fillHisto("dphilepmet","raw",dphilepmet,weight);
+
+	//
         //JET AND BTAGGING ANALYSIS
         //
 
@@ -979,36 +1009,21 @@ int main(int argc, char* argv[])
     
 
 	//--------------------------------------------------------------------------
-	// some strings for tagging histograms:
-	const char* astr[] = {"_b1","_b2","_b3","_b4"};
-        std::vector<TString> htag(astr, astr+4);
-
-	//--------------------------------------------------------------------------
 	// AK4 jets:
 	sort(GoodIdJets.begin(), GoodIdJets.end(), ptsort());
 	// Fill Histograms with AK4,AK4 + CVS, AK8 + db basics:
 	mon.fillHisto("njets_raw","nj", GoodIdJets.size(),weight);
 	
-	int is(0);
-	for (auto & jet : GoodIdJets) {
-	   mon.fillHisto("jet_pt_raw", "jet"+htag[is], jet.pt(),weight);
-	   mon.fillHisto("jet_eta_raw", "jet"+htag[is], jet.eta(),weight);
-	   is++;
-	   if (is>3) break; // plot only up to 4 b-jets ?
-	}
 	
 	//--------------------------------------------------------------------------
 	// AK4 + CSV jets:
 	sort(CSVLoosebJets.begin(), CSVLoosebJets.end(), ptsort());
 	mon.fillHisto("nbjets_raw","nb", CSVLoosebJets.size(),weight);
 
-	is=0;
-	for (auto & jet : CSVLoosebJets) {
-	   mon.fillHisto("jet_pt_raw", "csv"+htag[is], jet.pt(),weight);
-	   mon.fillHisto("jet_eta_raw", "csv"+htag[is], jet.eta(),weight);
-	   is++;
-	   if (is>3) break; // plot only up to 4 b-jets ?
-	}
+
+	//--------------------------------------------------------------------------
+	// dphi(jet,MET)
+	mon.fillHisto("dphijmet","raw",mindphijmet,weight);
 	
 	
 	//###########################################################
@@ -1065,8 +1080,50 @@ int main(int argc, char* argv[])
 	  //}
 	  
 	} // AK8 fatJets loop
+
+	//--------------------------------------------------------------------------
+	// AK8 + double-b jets
+	sort(DBfatJets.begin(), DBfatJets.end(), ptsort());
+
+	mon.fillHisto("nbjets_raw","nfatJet", DBfatJets.size(),weight);
+
+	int is(0);
+	for (auto & jet : DBfatJets) {
+	   mon.fillHisto("jet_pt_raw", "fat"+htag[is], jet.pt(),weight);
+	   mon.fillHisto("jet_eta_raw", "fat"+htag[is], jet.eta(),weight);
+	   is++;
+	   if (is>3) break; // plot only up to 4 b-jets ?
+	}
+
+
+	//--------------------------------------------------------------------------
+	//--------------------------------------------------------------------------
+	// minDR between a b-jet and AK8 jet
+
+	int ibs(0);
+	for (auto & ib : CSVLoosebJets) {
+	  
+	  float dRmin(999.);
+	  float dRmin_sub(999.);
+	  
+	  for (auto & it : DBfatJets) {
+	    float dR = deltaR(ib, it);
+	    if (dR<dRmin) dRmin=dR;
+
+	    // loop in subjets
+	    for (auto & isub : it.subjets){
+	      float dRsub = deltaR(ib, isub);
+	      if (dRsub<dRmin_sub) dRmin_sub=dRsub;
+	    }
+	  }
+	  mon.fillHisto("dR_raw","drmin"+htag[ibs],dRmin, weight);
+	  mon.fillHisto("dR_raw","drmin_sub"+htag[ibs],dRmin_sub, weight);
+
+	  ibs++;
+	  if (ibs>3) break; // plot only up to 4 b-jets ?
+	} 
+
 	
-		
 	//###########################################################
 	//  Configure cleaned AK4 and AK4 + CSVloose Jets : 
 	//       Require DR separation with AK8 subjets
@@ -1116,12 +1173,22 @@ int main(int argc, char* argv[])
 	} // CSV b-jet loop
 
 
+	//--------------------------------------------------------------------------
+	// Cross-cleaned AK4 CSV b-jets:
+	//sort(cleanedGoodIdJets.begin(), cleanedGoodIdJets.end(), ptsort());
+	sort(cleanedCSVLoosebJets.begin(), cleanedCSVLoosebJets.end(), ptsort());
+
+	//	mon.fillHisto("njets_raw","cleaned", cleanedGoodIdJets.size(),weight);
+	mon.fillHisto("nbjets_raw","cleaned", cleanedCSVLoosebJets.size(),weight);
+	
+	
 	//###########################################################
 	// Soft b-jets from SVs configuration
 	//###########################################################
 
 	// SVs collection
 	PhysicsObjectSVCollection SVs;
+	PhysicsObjectSVCollection SVs_raw; // non-cross-cleaned secondary vertices
 	
 	for (auto & isv : secVs) {
 
@@ -1155,7 +1222,10 @@ int main(int argc, char* argv[])
 	  if (isv.dxy>3.) continue;
 	  if (isv.dxyz_signif<4.) continue;
 	  if (isv.cos_dxyz_p<0.98) continue;
-	  
+
+	  SVs_raw.push_back(isv);
+
+	  // Cross-cleaned SVs with CSVv2 jets
 	  float dRmin(999.);
 	  for (auto & it : GoodIdJets) {
 	    double dR=deltaR(it, isv);
@@ -1180,47 +1250,12 @@ int main(int argc, char* argv[])
 	}
 
 	//--------------------------------------------------------------------------
-	
-	
-	
-	//--------------------------------------------------------------------------
-
-	//--------------------------------------------------------------------------
-	// AK8 + double-b jets
-	sort(DBfatJets.begin(), DBfatJets.end(), ptsort());
-
-	mon.fillHisto("nbjets_raw","nfatJet", DBfatJets.size(),weight);
-
-	is=0;
-	for (auto & jet : DBfatJets) {
-	   mon.fillHisto("jet_pt_raw", "fat"+htag[is], jet.pt(),weight);
-	   mon.fillHisto("jet_eta_raw", "fat"+htag[is], jet.eta(),weight);
-	   is++;
-	   if (is>3) break; // plot only up to 4 b-jets ?
-	}
-
-	//--------------------------------------------------------------------------
-	// Cross-cleaned AK4 CSV b-jets:
-	//sort(cleanedGoodIdJets.begin(), cleanedGoodIdJets.end(), ptsort());
-	sort(cleanedCSVLoosebJets.begin(), cleanedCSVLoosebJets.end(), ptsort());
-
-	//	mon.fillHisto("njets_raw","cleaned", cleanedGoodIdJets.size(),weight);
-	mon.fillHisto("nbjets_raw","cleaned", cleanedCSVLoosebJets.size(),weight);
-
-	is=0;
-	for (auto & jet : cleanedCSVLoosebJets) {
-	   mon.fillHisto("jet_pt_raw", "cleaned"+htag[is], jet.pt(),weight);
-	   mon.fillHisto("jet_eta_raw", "cleaned"+htag[is], jet.eta(),weight);
-	   is++;
-	   if (is>3) break; // plot only up to 4 b-jets ?
-	}
-	
-	//--------------------------------------------------------------------------
 	// Soft-bs properties
 	//--------------------------------------------------------------------------
 
 	sort(SVs.begin(), SVs.end(), ptsort());
-
+	sort(SVs_raw.begin(), SVs_raw.end(), ptsort());
+	
 	mon.fillHisto("nbjets_raw","nb_soft",SVs.size(),weight);
 
 	is=0;
@@ -1237,34 +1272,7 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("dR_raw","svs",dR,weight);
 	}
 
-		
-	//--------------------------------------------------------------------------
-	//--------------------------------------------------------------------------
-	// minDR between a b-jet and AK8 jet
-
-	int ibs(0);
-	for (auto & ib : CSVLoosebJets) {
-	  
-	  float dRmin(999.);
-	  float dRmin_sub(999.);
-	  
-	  for (auto & it : DBfatJets) {
-	    float dR = deltaR(ib, it);
-	    if (dR<dRmin) dRmin=dR;
-
-	    // loop in subjets
-	    for (auto & isub : it.subjets){
-	      float dRsub = deltaR(ib, isub);
-	      if (dRsub<dRmin_sub) dRmin_sub=dRsub;
-	    }
-	  }
-	  mon.fillHisto("dR_raw","drmin"+htag[ibs],dRmin, weight);
-	  mon.fillHisto("dR_raw","drmin_sub"+htag[ibs],dRmin_sub, weight);
-
-	  ibs++;
-	  if (ibs>3) break; // plot only up to 4 b-jets ?
-	} 
-
+	 
 	//--------------------------------------------------------------------------
 	// First , set all b-jets (x-cleaned) in one vector<LorentzVector>
 	vector<LorentzVector> GoodIdbJets;
@@ -1280,13 +1288,6 @@ int main(int argc, char* argv[])
 	//	mon.fillHisto("nbjets_2D","cat_cleaned_raw",cleanedGoodIdJets.size(),GoodIdbJets.size(),weight);
 	mon.fillHisto("nbjets_raw","merged",GoodIdbJets.size(),weight);
 	
-	is=0;
-	for (auto & jet : GoodIdbJets) {
-	   mon.fillHisto("jet_pt_raw", "merged"+htag[is], jet.pt(),weight);
-	   mon.fillHisto("jet_eta_raw", "merged"+htag[is], jet.eta(),weight);
-	   is++;
-	   if (is>3) break; // plot only up to 4 b-jets ?
-	}
 
 	// Fill true b-jet multiplicity for signal eff
 	mon.fillHisto("nbjets_raw","true",genbs.size(),weight);
@@ -1303,34 +1304,71 @@ int main(int argc, char* argv[])
 	mon.fillHisto("mtw","raw",sqrt(tMass),weight);
 	mon.fillHisto("ptw","raw",wsum.pt(),weight);
 
-
+	//-------------------------------------------------------------------
 	 // MET>25 GeV 
 	bool passMet25(metP4.pt()>25);
 	if (!passMet25) continue;
 	mon.fillHisto("eventflow","all",3,weight); // MEt cut
-		
+	//-------------------------------------------------------------------
+	
 	// mtW >50 GeV
 	bool passMt(sqrt(tMass)>50);
 	if (!passMt) continue;
 	mon.fillHisto("eventflow","all",4,weight); // MT cut
-	
-	// // Define jet categories
-	// int njall = ( cleanedCSVLoosebJets.size() + SVs.size() + DBfatJets.size() );
-	// if (njall==3) {
 
-	// } else if (njall>=4) {
-
-	// }
-
-	
+	//-------------------------------------------------------------------
 	// At least 2 jets and 2 b-jets
 	if (GoodIdJets.size()<2 || CSVLoosebJets.size()<2) continue;
 	mon.fillHisto("eventflow","all",5,weight); 
+	//-------------------------------------------------------------------
 	
+	//-------------------------------------------------------------------
+	// AK4 jets pt
+	is=0;
+	for (auto & jet : GoodIdJets) {
+	   mon.fillHisto("jet_pt_raw", "jet"+htag[is], jet.pt(),weight);
+	   mon.fillHisto("jet_eta_raw", "jet"+htag[is], jet.eta(),weight);
+	   is++;
+	   if (is>3) break; // plot only up to 4 b-jets ?
+	}
+	//-------------------------------------------------------------------
+	// AK4 + CSV jets
+	is=0;
+	for (auto & jet : CSVLoosebJets) {
+	   mon.fillHisto("jet_pt_raw", "csv"+htag[is], jet.pt(),weight);
+	   mon.fillHisto("jet_eta_raw", "csv"+htag[is], jet.eta(),weight);
+	   is++;
+	   if (is>3) break; // plot only up to 4 b-jets ?
+	}
+	//-------------------------------------------------------------------
+	// x-cleaned AK4 + CSV jets
+	is=0;
+	for (auto & jet : cleanedCSVLoosebJets) {
+	   mon.fillHisto("jet_pt_raw", "cleaned"+htag[is], jet.pt(),weight);
+	   mon.fillHisto("jet_eta_raw", "cleaned"+htag[is], jet.eta(),weight);
+	   is++;
+	   if (is>3) break; // plot only up to 4 b-jets ?
+	}
+	//-------------------------------------------------------------------
+	// Merged CSV jets + SV
+	is=0;
+	for (auto & jet : GoodIdbJets) {
+	   mon.fillHisto("jet_pt_raw", "merged"+htag[is], jet.pt(),weight);
+	   mon.fillHisto("jet_eta_raw", "merged"+htag[is], jet.eta(),weight);
+	   is++;
+	   if (is>3) break; // plot only up to 4 b-jets ?
+	}
+
+	
+	//##############################################
+        //########  Main Event Selection        ########
+        //##############################################
+	
+	//-------------------------------------------------------------------
 	// At least 3 b-tags
 	if (GoodIdbJets.size()<3) continue;
 	mon.fillHisto("eventflow","all",6,weight); 
-
+	//-------------------------------------------------------------------
 	// if (GoodIdbJets.size()==1 && DBfatJets.size()==0) continue; // only allow =1b cat. if a fat-jet is present (in 3b cat)
 	// if (GoodIdbJets.size()==2 && DBfatJets.size()==0) continue; // only allow =2b cat. if a fat-jet is present (in 4b cat)
 	
@@ -1393,8 +1431,6 @@ int main(int argc, char* argv[])
 	 //	 LorentzVector wsum=metP4+goodLeptons[0].second;
 	 mon.fillHisto("ptw",tags,wsum.pt(),weight);
 	 // // mtW 
-	 // double tMass = pow(sqrt(pow(goodLeptons[0].second.pt(),2))+sqrt(pow(metP4.pt(),2)+pow(80.,2)),2);
-	 // tMass-=pow(wsum.pt(),2);
 	 mon.fillHisto("mtw",tags,sqrt(tMass),weight);
 	 // Dphi(W,h) instead of DRmin(l,b)
 	 double dphi_Wh=fabs(deltaPhi(allHadronic.phi(),wsum.phi()));
@@ -1416,10 +1452,6 @@ int main(int argc, char* argv[])
 	 }
 	 dRave_/=dRs.size();
 	 mon.fillHisto("dRave",tags,dRave_,weight);
-	 
-        //##############################################
-        //########  Main Event Selection        ########
-        //##############################################
 
 
         //##############################################################################
