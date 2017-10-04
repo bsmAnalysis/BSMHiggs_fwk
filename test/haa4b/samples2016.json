@@ -207,7 +207,7 @@
             "tag": "data"
          },
         {
-            "color": 592,
+            "color": 15,
             "data": [
                 {
                     "br": [
@@ -250,7 +250,7 @@
             "tag": "ZZ"
         },
         {
-            "color": 590,
+            "color": 17,
             "data": [
                 {
                     "br": [
@@ -314,7 +314,7 @@
             "tag": "WV"
         },
         {
-            "color": 422,
+            "color": 14,
             "data": [
                 {
                     "br": [
@@ -368,7 +368,7 @@
             "tag": "ZVV"
         },
 	{
-            "color": 831,	
+            "color": 590,	
             "data": [
 		{
                     "br": [
@@ -434,7 +434,7 @@
             "tag": "Single Top"
         },
         {
-            "color": 408,
+            "color": 592,
             "data": [
                 {
                     "br": [
@@ -489,7 +489,7 @@
             "tag": "t#bar{t}+jets"
         },
         {
-            "color": 624,
+            "color": 595,
             "data": [
                 {
                     "br": [
@@ -554,7 +554,7 @@
             "tag": "t#bar{t}+#gamma,Z,W"
         },
         {
-            "color": 424,
+            "color": 624	,
             "data": [
                 {
                     "br": [
@@ -606,7 +606,7 @@
             "tag": "W#rightarrow l#nu"
         },
 	{
-            "color": 17,
+            "color": 634,
             "data": [
                 {
                     "br": [
