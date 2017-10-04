@@ -74,8 +74,9 @@ const float CSVTightWP = 0.935;
 
 // Physics objects offline thresholds
 //const float lep_threshold_=25.;
-const float mu_threshold_=30.;
+const float mu_threshold_=25.;
 const float ele_threshold_=30.;
+
 const float jet_threshold_=20.;
 
 
@@ -463,13 +464,36 @@ int main(int argc, char* argv[])
     }
     Hcutflow->SetBinContent(1,cnorm);
 
-    // //pileup weighting
-    // TString PU_Central = runProcess.getParameter<std::string>("pu_central");
-    // gSystem->ExpandPathName(PU_Central);
-    // cout << "Loading PU weights Central: " << PU_Central << endl;
-    // TFile *PU_Central_File = TFile::Open(PU_Central);
-    // TH1F* h_pileup_Central = (TH1F *) PU_Central_File->Get("pileup");
+    //pileup weighting
+    TString PU_Central = runProcess.getParameter<std::string>("pu_central");
+    gSystem->ExpandPathName(PU_Central);
+    cout << "Loading PU weights Central: " << PU_Central << endl;
+    TFile *PU_Central_File = TFile::Open(PU_Central);
+    
+    TH1F* PU_intended = (TH1F *) PU_Central_File->Get("pileup"); // Data pileup distribution
+    TH1F* PU_generated=NULL; // MC pileup distribution 
 
+    TH1F* PU_weight=new TH1F("hPUweight","",100,-0.5,99.5);
+    
+    if (isMC) {
+      PU_generated = (TH1F*)file->Get("mainNtuplizer/pileuptrue"); // MC pileup distribution
+
+      PU_intended->Scale(1./PU_intended->Integral());
+      TH1F* PUnorm = PU_intended;
+      PU_generated->Scale(1./PU_generated->Integral());
+      TH1F *PUgen = PU_generated;
+      
+      TH1F* Quotient = PUnorm; //->Clone("quotient");
+      Quotient->Divide(PUgen); 
+
+      for(int ibin=1; ibin<100; ibin++){
+	float x = Quotient->GetBinContent(ibin);
+	PU_weight->SetBinContent(ibin,x);
+	//if ( verbose )
+	printf("pu point= %3d with PUweight= %7.3f \n",ibin-1,x);
+      }
+
+    } // is MC
     
     // muon trigger efficiency SF
     //Electron ID RECO SF
@@ -523,8 +547,6 @@ int main(int argc, char* argv[])
 	  //	  weight *= genWeight;
 	  weight *= xsecWeight; //genWeight;
 	}
-	//pileup re-weighting
-	//	if(isMC) weight *= ev.puWeight;
 	
         //only take up and down from pileup effect
         double TotalWeight_plus = 1.0;
@@ -533,15 +555,11 @@ int main(int argc, char* argv[])
         if(isMC) mon.fillHisto("pileup", tags, ev.ngenTruepu, 1.0);
 
 	float puWeight(1.0);
-        // if(isMC) {
-	//    // Open the pileup true Histogram for PU normalization
-	//   TH1F *h_pileup_true = (TH1F*)file->Get("pileuptrue");
-	  
-	//   // puWeight = getSFfrom1DHist(ev.ngenTruepu, h_pileup_true, h_pileup_Central);
-	//   // weight *= puWeight;
-	//   //  TotalWeight_plus 	*= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Up);
-        //     //TotalWeight_minus 	*= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Down);
-        // }
+        if(isMC) {
+	  weight *= getSFfrom1DHist(ev.ngenTruepu, PU_weight) ;// h_pileup_true, h_pileup_Central);
+	  //  TotalWeight_plus 	*= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Up);
+            //TotalWeight_minus 	*= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Down);
+        }
 
         Hcutflow->Fill(1,genWeight);
 	Hcutflow->Fill(2,xsecWeight);
@@ -579,7 +597,6 @@ int main(int argc, char* argv[])
 	
 	// Fill a PhysicsObjectCollection with GEN particles (from hard process)
 	if (isSignal) {
-
 
 	  if ( verbose ) {
 	    PhysicsObjectCollection &particles = phys.genparticles;
@@ -750,12 +767,16 @@ int main(int argc, char* argv[])
 	std::vector<std::pair<int,LorentzVector> > goodLeptons;
 	int nExtraLeptons(0);
 	std::vector<LorentzVector> extraLeptons;
+
+	float lep_threshold(25.);
+	float eta_threshold=2.5;
 	
 	for (auto &ilep : leps) {
-	  if (ilep.pt()<3. || fabs(ilep.eta())>2.5) continue;
-	  float lep_threshold(25.);
-	  
+	  if ( ilep.pt()<3. ) continue;
+
 	  int lepid = ilep.id;
+	  if (abs(lepid)==13) eta_threshold=2.4;
+	  if (fabs(ilep.eta())>eta_threshold) continue;
 	  
 	  bool hasTightIdandIso(true);
 	  if (abs(lepid)==11) {
@@ -882,7 +903,7 @@ int main(int argc, char* argv[])
 	// }
 	
         // pielup reweightiing
-        mon.fillHisto("nvtx_raw",   tags, phys.nvtx,      1.0);
+        mon.fillHisto("nvtx_raw",   tags, phys.nvtx,      xsecWeight);
         mon.fillHisto("nvtxwgt_raw",tags, phys.nvtx,      weight);
 
     
