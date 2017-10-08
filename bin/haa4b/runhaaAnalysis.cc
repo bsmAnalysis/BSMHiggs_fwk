@@ -72,11 +72,16 @@ const float CSVLooseWP = 0.5426;  // Updated to 80X Moriond17 Loose
 const float CSVMediumWP = 0.800;
 const float CSVTightWP = 0.935;
 
+//https://twiki.cern.ch/twiki/bin/viewauth/CMS/Hbbtagging#8_0_X
+// https://indico.cern.ch/event/543002/contributions/2205058/attachments/1295600/1932387/cv-doubleb-tagging-btv-approval.pdf (definition of WPs: slide 16)
+const float DBLooseWP = 0.300;
+const float DBMediumWP = 0.600;
+const float DBTightWP = 0.900;
+
 // Physics objects offline thresholds
 //const float lep_threshold_=25.;
 const float mu_threshold_=25.;
 const float ele_threshold_=30.;
-
 const float jet_threshold_=20.;
 
 
@@ -134,17 +139,15 @@ int main(int argc, char* argv[])
     if(url.Contains("DoubleEG")) fType=EE;
     if(url.Contains("DoubleMuon"))  fType=MUMU;
     if(url.Contains("MuonEG"))      fType=EMU;
-    if(url.Contains("SingleMuon"))  fType=MUMU;
-    if(url.Contains("SingleElectron")) fType=EE;
+    if(url.Contains("SingleMuon"))  fType=MU;
+    if(url.Contains("SingleElectron")) fType=E;
     bool isSingleMuPD(!isMC && url.Contains("SingleMuon"));
     bool isDoubleMuPD(!isMC && url.Contains("DoubleMuon"));
     bool isSingleElePD(!isMC && url.Contains("SingleElectron"));
     bool isDoubleElePD(!isMC && url.Contains("DoubleEG"));
 
-    bool isMC_ZZ2L2Nu  = isMC && ( string(url.Data()).find("TeV_ZZTo2L2Nu")  != string::npos);
-    bool isMC_ZZTo4L   = isMC && ( string(url.Data()).find("TeV_ZZTo4L")  != string::npos);
-    bool isMC_ZZTo2L2Q = isMC && ( string(url.Data()).find("TeV_ZZTo2L2Q")  != string::npos);
-
+    bool isMC_ZZ  = isMC && ( string(url.Data()).find("TeV_ZZ_")  != string::npos );
+    
     bool isMC_WZ  = isMC && ( string(url.Data()).find("TeV_WZamcatnloFXFX")  != string::npos
                               || string(url.Data()).find("MC13TeV_WZpowheg")  != string::npos );
 
@@ -152,16 +155,19 @@ int main(int argc, char* argv[])
                               || string(url.Data()).find("MC13TeV_WWZ")  != string::npos
                               || string(url.Data()).find("MC13TeV_ZZZ")  != string::npos );
 
-    bool isMCBkg_runPDFQCDscale = (isMC_ZZ2L2Nu || isMC_ZZTo4L || isMC_ZZTo2L2Q ||
-                                   isMC_WZ || isMC_VVV);
+    bool isMCBkg_runPDFQCDscale = (isMC_ZZ || isMC_WZ || isMC_VVV);
 
-    bool isMC_ttbar = isMC && (string(url.Data()).find("TeV_TT")  != string::npos);
+    bool isMC_ttbar = isMC && (string(url.Data()).find("TeV_TTJets")  != string::npos);
     bool isMC_stop  = isMC && (string(url.Data()).find("TeV_SingleT")  != string::npos);
 
+    bool isMC_WJets = isMC && (string(url.Data()).find("MC13TeV_WJets")  != string::npos);
+    bool isMC_DY = isMC && (string(url.Data()).find("MC13TeV_DY")  != string::npos);
+    
     bool isMC_Wh = isMC && (string(url.Data()).find("Wh")  != string::npos); 
     bool isMC_Zh = isMC && (string(url.Data()).find("Zh")  != string::npos); 
     bool isMC_VBF = isMC && (string(url.Data()).find("VBF")  != string::npos); 
 
+    bool isQCD = isMC && (string(url.Data()).find("QCD")  != string::npos);
     bool isSignal = (isMC_Wh || isMC_Zh || isMC_VBF );
     if (isSignal) printf("Signal url = %s\n",url.Data());
 
@@ -215,7 +221,7 @@ int main(int argc, char* argv[])
 //            varNames.push_back("_qcdscaleacceptup");
 //            varNames.push_back("_qcdscaleacceptdown");
         }
-        if(isMC_ZZ2L2Nu) {
+        if(isMC_ZZ) {
             varNames.push_back("_qqZZewkup");
             varNames.push_back("_qqZZewkdown");
         }
@@ -265,9 +271,8 @@ int main(int argc, char* argv[])
     h->GetXaxis()->SetBinLabel(1,"Raw");
     h->GetXaxis()->SetBinLabel(2,"Trigger");
     h->GetXaxis()->SetBinLabel(3,"1 lepton");
-    // h->GetXaxis()->SetBinLabel(4,"2nd lepton veto");
     h->GetXaxis()->SetBinLabel(4,"E_{T}^{miss}>25");
-    h->GetXaxis()->SetBinLabel(5,"M_{T}^{W}>50");
+    h->GetXaxis()->SetBinLabel(5,"50<M_{T}^{W}<250");
     h->GetXaxis()->SetBinLabel(6,">=(2-jets,2b-jets)");
     h->GetXaxis()->SetBinLabel(7,">=3b-tags");
     h->GetXaxis()->SetBinLabel(8,">=4b-tags");
@@ -277,21 +282,22 @@ int main(int argc, char* argv[])
     
     mon.addHistogram( new TH1F( "higgsMass",";m_{h} [GeV];Events",60,0.,600.) );
     mon.addHistogram( new TH1F( "higgsPt",";p_{T}^{h} [GeV];Events",60,0.,600.));
-    mon.addHistogram( new TH1F( "higgsEta",";#eta (h);Evenets",100,-5,5) );
-    mon.addHistogram( new TH1F( "a1mass",";m_{a1} [GeV];Events",400,0.,200.) );
-    mon.addHistogram( new TH1F( "a2mass",";m_{a2} [GeV];Events",400,0.,200.) );
-    mon.addHistogram( new TH1F( "a1pt",";p_{T}^{a1};Events",100,0.,600.));
-    mon.addHistogram( new TH1F( "a2pt",";p_{T}^{a2};Events",100,0.,600.));
-    mon.addHistogram( new TH1F( "aabalance",";p_{T}^{a1}/p_{T}^{a2};Events",200,0.,10.));
-    mon.addHistogram( new TH1F( "a1DR",";#Delta R1(b,#bar{b});Events",100,0.,5.));
-    mon.addHistogram( new TH1F( "a2DR",";#Delta R2(b,#bar{b});Events",100,0.,5.)); 
-    mon.addHistogram( new TH1F( "aaDR",";#Delta R(a_{1},a_{2});Events",100,0.,5.)); 
-
-    mon.addHistogram( new TH1F( "b1pt",";p_{T}^{b1};Events",60,0.,600.));   
-    mon.addHistogram( new TH1F( "b2pt",";p_{T}^{b2};Events",60,0.,600.)); 
-    mon.addHistogram( new TH1F( "b3pt",";p_{T}^{b3};Events",60,0.,600.)); 
-    mon.addHistogram( new TH1F( "b4pt",";p_{T}^{b4};Events",60,0.,600.)); 
-    
+    // mon.addHistogram( new TH1F( "higgsEta",";#eta (h);Evenets",100,-5,5) );
+    // if (dogen) {
+    //   mon.addHistogram( new TH1F( "a1mass",";m_{a1} [GeV];Events",400,0.,200.) );
+    //   mon.addHistogram( new TH1F( "a2mass",";m_{a2} [GeV];Events",400,0.,200.) );
+    //   mon.addHistogram( new TH1F( "a1pt",";p_{T}^{a1};Events",100,0.,600.));
+    //   mon.addHistogram( new TH1F( "a2pt",";p_{T}^{a2};Events",100,0.,600.));
+    //   mon.addHistogram( new TH1F( "aabalance",";p_{T}^{a1}/p_{T}^{a2};Events",200,0.,10.));
+    //   mon.addHistogram( new TH1F( "a1DR",";#Delta R1(b,#bar{b});Events",100,0.,5.));
+    //   mon.addHistogram( new TH1F( "a2DR",";#Delta R2(b,#bar{b});Events",100,0.,5.)); 
+    //   mon.addHistogram( new TH1F( "aaDR",";#Delta R(a_{1},a_{2});Events",100,0.,5.)); 
+      
+    //   mon.addHistogram( new TH1F( "b1pt",";p_{T}^{b1};Events",60,0.,600.));   
+    //   mon.addHistogram( new TH1F( "b2pt",";p_{T}^{b2};Events",60,0.,600.)); 
+    //   mon.addHistogram( new TH1F( "b3pt",";p_{T}^{b3};Events",60,0.,600.)); 
+    //   mon.addHistogram( new TH1F( "b4pt",";p_{T}^{b4};Events",60,0.,600.)); 
+    // }
     /*
 
     mon.addHistogram( new TH1F( "zpt_raw",      ";#it{p}_{T}^{ll} [GeV];Events", 50,0,500) );
@@ -302,13 +308,16 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "mt2_raw",       ";#it{m}_{T} [GeV];Events", nBinsMT,MTBins) );
     mon.addHistogram( new TH1F( "zmass_raw",    ";#it{m}_{ll} [GeV];Events", 100,40,250) );
     */
-
+    
      // RECO level
     mon.addHistogram( new TH1F( "dR_raw",";#Delta R(SV,b);Events",100,0.,5.));
+    mon.addHistogram( new TH1F( "dRlj_raw",";#Delta R(lep,jet);Events",100,0.,5.));
 
     mon.addHistogram( new TH1F( "leadlep_pt_raw", ";Leading lepton #it{p}_{T}^{l} [GeV];Events", 60,0.,600.) );
     mon.addHistogram( new TH1F( "leadlep_eta_raw",";Leading lepton #eta^{l};Events", 52,-2.6,2.6) );
-    mon.addHistogram( new TH1F( "jet_pt_raw", ";#it{p}_{T}^{b} [GeV];Events",60,0.,600.) );
+    
+    mon.addHistogram( new TH1F( "jet_pt_raw", ";#it{p}_{T} [GeV];Events",60,0.,600.) );
+    mon.addHistogram( new TH1F( "softjet_pt_raw", ";#it{p}_{T} [GeV];Events",40,0.,40.) );
     mon.addHistogram( new TH1F( "jet_eta_raw",";#eta;Events", 70,-3,3) );
 
     mon.addHistogram( new TH1F( "b_discrim"," ;b discriminator;",200,0,1.) );
@@ -328,9 +337,9 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "ptw",       ";#it{p}_{T}^{W} [GeV];Events",60,0.,600.) );
     mon.addHistogram( new TH1F( "dphiWh", ";#Delta#it{#phi}(#it{W},h);Events", 20,0,TMath::Pi()) );
     mon.addHistogram( new TH1F( "dRave",";#Delta R(b,b)_{ave};Events",100,0.,5.));
-    mon.addHistogram( new TH1F( "dphijmet", ";|#Delta#it{#phi}(jet,E_{T}^{miss})|;Events", 20,0,TMath::Pi()) );
+    mon.addHistogram( new TH1F( "dphijmet", ";|#Delta#it{#phi}(jet,E_{T}^{miss})|;#jet", 20,0,TMath::Pi()) );
     mon.addHistogram( new TH1F( "dphilepmet", ";|#Delta#it{#phi}(lep,E_{T}^{miss})|;Events", 20,0,TMath::Pi()) );
-
+    
     //for MC normalization (to 1/pb)
     TH1F* Hcutflow = (TH1F*) mon.addHistogram( new TH1F ("cutflow" , "cutflow" ,6,0,6) ) ;
     
@@ -450,7 +459,7 @@ int main(int argc, char* argv[])
     double xsecWeight = 1.0;
     float cnorm=1.0;
     if (isMC) {
-      double totalNumberofEvents;
+      float totalNumberofEvents;
 
       TH1F* nevtH = (TH1F *) file->Get("mainNtuplizer/nevents");
       totalNumberofEvents = nevtH->GetBinContent(1);
@@ -458,9 +467,11 @@ int main(int argc, char* argv[])
       TH1F* negH = (TH1F *) file->Get("mainNtuplizer/n_negevents");
       if(posH && negH) cnorm = posH->GetBinContent(1) - negH->GetBinContent(1);
       if(rescaleFactor>0) cnorm /= rescaleFactor;
-      printf("cnorm = %f\n",cnorm);
-     
-      xsecWeight=xsec/totalNumberofEvents;
+      printf("cnorm = %f and totalNumberOfEvents= %f\n",cnorm, totalNumberofEvents);
+    
+      //	xsecWeight=xsec/totalNumberofEvents;
+      xsecWeight=xsec/cnorm; // effective luminosity
+      
     }
     Hcutflow->SetBinContent(1,cnorm);
 
@@ -476,8 +487,9 @@ int main(int argc, char* argv[])
     TH1F* PU_weight=new TH1F("hPUweight","",100,-0.5,99.5);
     
     if (isMC) {
-      PU_generated = (TH1F*)file->Get("mainNtuplizer/pileuptrue"); // MC pileup distribution
-
+      // PU_generated = (TH1F*)file->Get("mainNtuplizer/pileuptrue"); // MC pileup distribution
+      PU_generated = (TH1F*)file->Get("mainNtuplizer/pileuptrue");
+      
       PU_intended->Scale(1./PU_intended->Integral());
       TH1F* PUnorm = PU_intended;
       PU_generated->Scale(1./PU_generated->Integral());
@@ -486,20 +498,17 @@ int main(int argc, char* argv[])
       TH1F* Quotient = PUnorm; //->Clone("quotient");
       Quotient->Divide(PUgen); 
 
-      for(int ibin=1; ibin<100; ibin++){
+      for(int ibin=0; ibin<100; ibin++){
 	float x = Quotient->GetBinContent(ibin);
 	PU_weight->SetBinContent(ibin,x);
 	//if ( verbose )
-	printf("pu point= %3d with PUweight= %7.3f \n",ibin-1,x);
+	printf("pu = %3d has weight = %7.3f \n",ibin,x);
       }
 
     } // is MC
     
-    // muon trigger efficiency SF
-    //Electron ID RECO SF
-
     // event categorizer
-    //    EventCategory eventCategoryInst(1);   //jet(0,1,>=2) binning
+    //    EventCategory eventCategoryInst(1);   
 
     // Lepton scale factors
     LeptonEfficiencySF lepEff;
@@ -539,13 +548,14 @@ int main(int argc, char* argv[])
 	
         //genWeight
         float genWeight = 1.0;
-        if(isMC && ev.genWeight<0) genWeight = -1.0;
-
+	if (isMC) {
+	  if(ev.genWeight<0) { genWeight = -1.0; }
+	}
         //systematical weight
         float weight = 1.0; //xsecWeight;
 	if(isMC) {
-	  //	  weight *= genWeight;
-	  weight *= xsecWeight; //genWeight;
+	  weight *= genWeight;
+	  weight *= xsecWeight; 
 	}
 	
         //only take up and down from pileup effect
@@ -556,9 +566,11 @@ int main(int argc, char* argv[])
 
 	float puWeight(1.0);
         if(isMC) {
-	  weight *= getSFfrom1DHist(ev.ngenTruepu, PU_weight) ;// h_pileup_true, h_pileup_Central);
+	  puWeight = getSFfrom1DHist(ev.ngenTruepu, PU_weight) ;
+	  if ( verbose ) printf("pu = %3d has weight = %7.3f \n",ev.ngenTruepu,puWeight);
+	  weight *= puWeight;
 	  //  TotalWeight_plus 	*= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Up);
-            //TotalWeight_minus 	*= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Down);
+            //TotalWeight_minus *= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Down);
         }
 
         Hcutflow->Fill(1,genWeight);
@@ -586,159 +598,6 @@ int main(int argc, char* argv[])
         bool hasEtrigger  = (ev.triggerType >> 4 ) & 0x1;
         bool hasEMtrigger = (ev.triggerType >> 5 ) & 0x1;
 
-
-
-	//#########################################################################
-        //#####################      Gen Selection       ##########################
-        //#########################################################################
-	
-	bool iswithinAcceptance(true);
-	PhysicsObjectCollection genbs;
-	
-	// Fill a PhysicsObjectCollection with GEN particles (from hard process)
-	if (isSignal) {
-
-	  if ( verbose ) {
-	    PhysicsObjectCollection &particles = phys.genparticles;
-	    
-	    // dump the MC particle list
-	    printf("\n\n Gen particles:\n" );
-	    int ipar(0);
-	    for (auto & it : particles) {
-
-	        printf("  %3d : ID=%6d, m=%5.1f, momID=%6d , momIndx=%6d : pt=%6.1f, eta=%7.3f, phi=%7.3f\n",
-		       ipar,
-		       it.id,
-		       it.mass(),
-		       it.momid,
-		       it.momidx,
-		       it.pt(),
-		       it.eta(),
-		       it.phi()
-		       ) ;
-		ipar++;
-	    }
-	   
-	  } // verbose
-
-	  //#### Find a1 and a2 positions in mcparticle list
-	  //#### for Wh, Zh : 6 and 7 ####################### 
-	  //#### for VBF: 5 and 6 ###########################
-	  
-	  PhysicsObjectCollection &higgses = phys.genHiggs;
-	  PhysicsObjectCollection &partons = phys.genpartons;
-	  PhysicsObjectCollection &leptons = phys.genleptons;
-	  
-	  const int pos1(6);
-	  const int pos2(7);
-
-	  LorentzVector higgs, a1, a2;
-       
-	  int as(0);
-	  for (auto & par : higgses ) {
-	    // 125 GeV Higgs:
-	    if (par.id==25) {
-	      mon.fillHisto("higgsMass","raw",par.mass(),weight);
-	      mon.fillHisto("higgsPt","raw",par.pt(),weight);
-	      mon.fillHisto("higgsEta","raw",par.eta(), weight);
-	    }
-
-	    // a's from h decay
-	    if (par.id==36) {
-	      if (as==0) { a1 += par; as++; 
-	      } else {	a2 += par; }
-	    }
-	    
-	  } // higgses
-
-	  mon.fillHisto("a1mass","raw",a1.mass(),weight);
-	  mon.fillHisto("a2mass","raw",a2.mass(),weight);
-	  double raw_aaDR=deltaR(a1,a2);
-	  mon.fillHisto("aaDR","raw",raw_aaDR,weight);  
-	  
-	  // h->aa->4b (all)
-	
-	  PhysicsObjectCollection genbFromA1;
-	  PhysicsObjectCollection genbFromA2;
-	  
-	  for (auto & par : partons) {
-	    if (par.momid!=36) continue; // look only b's from a->bb decay
-
-	    // Apply acceptance eta cuts:
-	    if (fabs(par.eta())>2.5) continue;
-	    
-	    if ( abs(par.id)==5 ) { 
-	      genbs.push_back(par);
-	      higgs += par; 
-	    } 
-
-	    if (abs(par.id)==5) {
-	      if (par.momidx==pos1) {
-		genbFromA1.push_back(par);
-	      } else if (par.momidx==pos2) {
-		genbFromA2.push_back(par);
-	      }
-	      
-	    } // b-partons
-	  } // partons
-
-	  //sort gen b's in pt
-	  sort(genbs.begin(), genbs.end(), ptsort());
-
-	  // // Filtering on leptons from the W decay
-	  // bool hasWlep(false);
-	  // for (auto & it : leptons) {
-	  //   hasWlep = (abs(it.momid)==24);
-	  // }
-	  // if (!hasWlep) continue;
-	  
-	  if (genbFromA1.size()==2 && genbFromA2.size()==2) {
-	     // Higgs pT
-	    mon.fillHisto("higgsMass","gen",higgs.mass(),weight);
-	    mon.fillHisto("higgsPt","gen",higgs.pt(),weight);
-
-	    mon.fillHisto("a1mass","gen",(genbFromA1[0]+genbFromA1[1]).mass(),weight);
-	    mon.fillHisto("a2mass","gen",(genbFromA2[0]+genbFromA2[1]).mass(),weight);
-
-	    double aaDR=deltaR( (genbFromA1[0]+genbFromA1[1]),(genbFromA2[0]+genbFromA2[1]) );
-	    mon.fillHisto("aaDR","gen",aaDR,weight);
-
-	    double balance = (genbFromA1[0]+genbFromA1[1]).pt()/(genbFromA2[0]+genbFromA2[1]).pt();
-	    mon.fillHisto("aabalance","gen",balance,weight);
-	    
-	    double pt1,pt2;
-	    double dR1,dR2;
-
-	    pt1=(genbFromA1[0]+genbFromA1[1]).pt();
-	    pt2=(genbFromA2[0]+genbFromA2[1]).pt();
-
-	    dR1=deltaR(genbFromA1[0],genbFromA1[1]);
-	    dR2=deltaR(genbFromA2[0],genbFromA2[1]);
-
-	    mon.fillHisto("a1pt","gen",pt1,weight);
-	    mon.fillHisto("a2pt","gen",pt2,weight);
-	    mon.fillHisto("a1DR","gen",dR1,weight);
-	    mon.fillHisto("a2DR","gen",dR2,weight);
-
-	     // pT of the 4bs
-	    if (genbs.size()>=4) {
-	      mon.fillHisto("b1pt","gen",genbs[0].pt(),weight);
-	      mon.fillHisto("b2pt","gen",genbs[1].pt(),weight);
-	      mon.fillHisto("b3pt","gen",genbs[2].pt(),weight);
-	      mon.fillHisto("b4pt","gen",genbs[3].pt(),weight);
-	    }
-	    
-	  } else {
-	    if ( verbose ) {
-	      printf("Not all 4-bs found in h -> aa decays\n");
-	    }
-	    iswithinAcceptance=false;
-	    //	    continue; // Look at signal events in detector acceptance
-	  }
-
-	  
-	} // isSignal
-	  
 	
         //#########################################################################
         //#####################      Objects Selection       ######################
@@ -903,7 +762,7 @@ int main(int argc, char* argv[])
 	// }
 	
         // pielup reweightiing
-        mon.fillHisto("nvtx_raw",   tags, phys.nvtx,      xsecWeight);
+        mon.fillHisto("nvtx_raw",   tags, phys.nvtx,      xsecWeight*genWeight);
         mon.fillHisto("nvtxwgt_raw",tags, phys.nvtx,      weight);
 
     
@@ -953,6 +812,30 @@ int main(int argc, char* argv[])
 	mon.fillHisto("dphilepmet","raw",dphilepmet,weight);
 
 	//
+        //MET AND MT ANALYSIS
+        //
+	
+	LorentzVector wsum=metP4+goodLeptons[0].second;
+	// mtW
+	double tMass = 2.*goodLeptons[0].second.pt()*metP4.pt()*(1.-TMath::Cos(deltaPhi(goodLeptons[0].second.phi(),metP4.phi())));
+
+	mon.fillHisto("pfmet","raw",metP4.pt(),weight);
+	mon.fillHisto("mtw","raw",sqrt(tMass),weight);
+	mon.fillHisto("ptw","raw",wsum.pt(),weight);
+
+	//-------------------------------------------------------------------
+	 // MET>25 GeV 
+	bool passMet25(metP4.pt()>25);
+	if (!passMet25) continue;
+	mon.fillHisto("eventflow","all",3,weight); // MEt cut
+	//-------------------------------------------------------------------
+	
+	// mtW >50 GeV
+	bool passMt(sqrt(tMass)>50. && sqrt(tMass)<250.);
+	if (!passMt) continue;
+	mon.fillHisto("eventflow","all",4,weight); // MT cut
+	
+	//
         //JET AND BTAGGING ANALYSIS
         //
 
@@ -982,6 +865,8 @@ int main(int argc, char* argv[])
 	  bool hasOverlap(false);
 	  for(size_t ilep=0; ilep<goodLeptons.size(); ilep++) {
 	    double dR = deltaR( corrJets[ijet], goodLeptons[ilep].second );
+	    mon.fillHisto("dRlj_raw","all",dR,weight);
+	    
 	    if (abs(goodLeptons[ilep].first)==11) hasOverlap = (dR<0.2); // within 0.2 for electrons
 	    if (abs(goodLeptons[ilep].first)==13) hasOverlap = (dR<0.4); // within 0.4 for muons
 	  }
@@ -993,6 +878,7 @@ int main(int argc, char* argv[])
 	  // Dphi (j,met)
 	  float dphijmet=fabs(deltaPhi(corrJets[ijet].phi(),metP4.phi()));
 	  if (dphijmet<mindphijmet) mindphijmet=dphijmet;
+
 	  
 	  // B-tagging
 	  
@@ -1060,6 +946,11 @@ int main(int argc, char* argv[])
 	  if(ijet.pt()<jet_threshold_) continue;
 	  if(fabs(ijet.eta())>2.5) continue;
 
+	  double dR = deltaR( ijet, goodLeptons[0].second );
+	  mon.fillHisto("dRlj_raw","all_fjet",dR,weight);
+	    
+	  if (dR<0.4) continue;
+	  
 	  ifjet++;
 
 	  int count_sbj(0);
@@ -1081,8 +972,6 @@ int main(int argc, char* argv[])
 	    printf("\n\n");
 	  } // verbose
 	  
-	  //	  bool hasDBtag(ijet.btag0>DBMediumWP);
-	  
 	  mon.fillHisto("db_discrim","fjet",ijet.btag0,weight);
 	  if (ijet.motherid == 36) mon.fillHisto("db_discrim","fjet_true",ijet.btag0,weight);
 	  mon.fillHisto("nsubjets_raw","fjet",count_sbj,weight);
@@ -1091,14 +980,22 @@ int main(int argc, char* argv[])
 	  if (ijet.motherid == 36) mon.fillHisto("sd_mass","fjet_true",ijet.softdropM,weight);
 	  mon.fillHisto("pruned_mass","fjet",ijet.prunedM,weight);
 	  if (ijet.motherid == 36) mon.fillHisto("pruned_mass","fjet_true",ijet.prunedM,weight);
-	  
-	  // double-b tagger + at least 1 subjet in AK8
-	  //   if (hasDBtag && count_sbj>0) {
-	  //	  if (ijet.prunedM>10 && ijet.prunedM<60) {
-	  if (ijet.softdropM>=7. && ijet.softdropM<=30.) {
-	    DBfatJets.push_back(ijet);
+
+	  if (ijet.softdropM<=40.) {
+	    if (ijet.softdropM>=7.)  {
+	      mon.fillHisto("db_discrim","fjet_lowm",ijet.btag0,weight);
+	      if (ijet.motherid == 36)  mon.fillHisto("db_discrim","fjet_true_lowm",ijet.btag0,weight);
+	    }
+	  } else {
+	    mon.fillHisto("db_discrim","fjet_highm",ijet.btag0,weight);
+	    if (ijet.motherid == 36) mon.fillHisto("db_discrim","fjet_true_highm",ijet.btag0,weight);
 	  }
-	  //}
+
+	  bool hasDBtag(ijet.btag0>DBMediumWP);
+	  
+	  if (ijet.softdropM>=7. && ijet.softdropM<=40.) {
+	    if (hasDBtag) DBfatJets.push_back(ijet);
+	  }
 	  
 	} // AK8 fatJets loop
 
@@ -1281,7 +1178,7 @@ int main(int argc, char* argv[])
 
 	is=0;
 	for (auto & isv : SVs) {
-	   mon.fillHisto("jet_pt_raw", "softb"+htag[is], isv.pt(),weight);
+	   mon.fillHisto("softjet_pt_raw", "softb"+htag[is], isv.pt(),weight);
 	   mon.fillHisto("jet_eta_raw", "softb"+htag[is], isv.eta(),weight);
 	   is++;
 	   if (is>3) break;
@@ -1309,34 +1206,54 @@ int main(int argc, char* argv[])
 	//	mon.fillHisto("nbjets_2D","cat_cleaned_raw",cleanedGoodIdJets.size(),GoodIdbJets.size(),weight);
 	mon.fillHisto("nbjets_raw","merged",GoodIdbJets.size(),weight);
 	
+	//--------------------------------------------------------------------------
+	vector<LorentzVector> cleanedGoodIdbJets;
 
-	// Fill true b-jet multiplicity for signal eff
-	mon.fillHisto("nbjets_raw","true",genbs.size(),weight);
+	for (auto & ib : GoodIdbJets) {
+	  float dRmin(999.);
+	  // Loop over AK8 jets and find subjets
+	  for (auto & ifb : DBfatJets) {
+	    for (auto & it : ifb.subjets) { // subjets loop
+	      //   hasOverlap = (deltaR(ib, it)<0.4);
+	      float dR=deltaR(ib, it);
+	      if (dR<dRmin) dRmin=dR;
+	      
+	    } // subjets loop
+	  } // AK8 loop
+	  
+	  if (dRmin>0.4) {
+	    cleanedGoodIdbJets.push_back(ib);
+	  }
+	}
 	
         //#########################################################
         //####  RUN PRESELECTION AND CONTROL REGION PLOTS  ########
         //#########################################################
 
-	LorentzVector wsum=metP4+goodLeptons[0].second;
-	// mtW
-	double tMass = 2.*goodLeptons[0].second.pt()*metP4.pt()*(1.-TMath::Cos(deltaPhi(goodLeptons[0].second.phi(),metP4.phi())));
+	// LorentzVector wsum=metP4+goodLeptons[0].second;
+	// // mtW
+	// double tMass = 2.*goodLeptons[0].second.pt()*metP4.pt()*(1.-TMath::Cos(deltaPhi(goodLeptons[0].second.phi(),metP4.phi())));
 
-	mon.fillHisto("pfmet","raw",metP4.pt(),weight);
-	mon.fillHisto("mtw","raw",sqrt(tMass),weight);
-	mon.fillHisto("ptw","raw",wsum.pt(),weight);
+	// mon.fillHisto("pfmet","raw",metP4.pt(),weight);
+	// mon.fillHisto("mtw","raw",sqrt(tMass),weight);
+	// mon.fillHisto("ptw","raw",wsum.pt(),weight);
 
-	//-------------------------------------------------------------------
-	 // MET>25 GeV 
-	bool passMet25(metP4.pt()>25);
-	if (!passMet25) continue;
-	mon.fillHisto("eventflow","all",3,weight); // MEt cut
-	//-------------------------------------------------------------------
+	// //-------------------------------------------------------------------
+	//  // MET>25 GeV 
+	// bool passMet25(metP4.pt()>25);
+	// if (!passMet25) continue;
+	// mon.fillHisto("eventflow","all",3,weight); // MEt cut
+	// //-------------------------------------------------------------------
 	
-	// mtW >50 GeV
-	bool passMt(sqrt(tMass)>50);
-	if (!passMt) continue;
-	mon.fillHisto("eventflow","all",4,weight); // MT cut
+	// // mtW >50 GeV
+	// bool passMt(sqrt(tMass)>50. && sqrt(tMass)<200.);
+	// if (!passMt) continue;
+	// mon.fillHisto("eventflow","all",4,weight); // MT cut
 
+	//-------------------------------------------------------------------
+	mon.fillHisto("nbjets_2D","cat2_raw",GoodIdbJets.size(),DBfatJets.size(),weight);
+	mon.fillHisto("nbjets_2D","cat3_raw",cleanedGoodIdbJets.size(),DBfatJets.size(),weight);
+	
 	//-------------------------------------------------------------------
 	// At least 2 jets and 2 b-jets
 	if (GoodIdJets.size()<2 || CSVLoosebJets.size()<2) continue;
