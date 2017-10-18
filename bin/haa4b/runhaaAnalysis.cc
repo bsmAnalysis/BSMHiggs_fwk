@@ -280,8 +280,8 @@ int main(int argc, char* argv[])
      // generator level plots
     mon.addHistogram( new TH1F( "pileup", ";pileup;Events", 100,-0.5,99.5) );
     
-    mon.addHistogram( new TH1F( "higgsMass",";m_{h} [GeV];Events",60,0.,600.) );
-    mon.addHistogram( new TH1F( "higgsPt",";p_{T}^{h} [GeV];Events",60,0.,600.));
+    mon.addHistogram( new TH1F( "higgsMass",";m_{h} [GeV];Events",30,0.,600.) );
+    mon.addHistogram( new TH1F( "higgsPt",";p_{T}^{h} [GeV];Events",30,0.,600.));
     // mon.addHistogram( new TH1F( "higgsEta",";#eta (h);Evenets",100,-5,5) );
     // if (dogen) {
     //   mon.addHistogram( new TH1F( "a1mass",";m_{a1} [GeV];Events",400,0.,200.) );
@@ -310,33 +310,34 @@ int main(int argc, char* argv[])
     */
     
      // RECO level
-    mon.addHistogram( new TH1F( "dR_raw",";#Delta R(SV,b);Events",100,0.,5.));
+    mon.addHistogram( new TH1F( "dR_raw",";#Delta R(SV,b);Events",50,0.,5.));
     mon.addHistogram( new TH1F( "dRlj_raw",";#Delta R(lep,jet);Events",100,0.,5.));
 
-    mon.addHistogram( new TH1F( "leadlep_pt_raw", ";Leading lepton #it{p}_{T}^{l} [GeV];Events", 60,0.,600.) );
+    mon.addHistogram( new TH1F( "leadlep_pt_raw", ";Leading lepton #it{p}_{T}^{l} [GeV];Events", 30,0.,600.) );
     mon.addHistogram( new TH1F( "leadlep_eta_raw",";Leading lepton #eta^{l};Events", 52,-2.6,2.6) );
     
-    mon.addHistogram( new TH1F( "jet_pt_raw", ";#it{p}_{T} [GeV];Events",60,0.,600.) );
-    mon.addHistogram( new TH1F( "softjet_pt_raw", ";#it{p}_{T} [GeV];Events",40,0.,40.) );
+    mon.addHistogram( new TH1F( "jet_pt_raw", ";#it{p}_{T} [GeV];Events",30,0.,600.) );
+    mon.addHistogram( new TH1F( "softjet_pt_raw", ";#it{p}_{T} [GeV];Events",20,0.,40.) );
     mon.addHistogram( new TH1F( "jet_eta_raw",";#eta;Events", 70,-3,3) );
 
-    mon.addHistogram( new TH1F( "b_discrim"," ;b discriminator;",200,0,1.) );
-    mon.addHistogram( new TH1F( "db_discrim"," ;double-b discriminator;",100,-1.,1.) );
-    mon.addHistogram( new TH1F( "sd_mass"," ;soft-drop Mass;",80,0.,300.) );
-    mon.addHistogram( new TH1F( "pruned_mass"," ;pruned Mass;",80,0.,300.) );
+    mon.addHistogram( new TH1F( "b_discrim"," ;b discriminator;",50,0,1.) );
+    mon.addHistogram( new TH1F( "db_discrim"," ;double-b discriminator;",25,-1.,1.) );
+    mon.addHistogram( new TH1F( "sd_mass"," ;soft-drop Mass;",60,0.,300.) );
+    mon.addHistogram( new TH1F( "pruned_mass"," ;pruned Mass;",60,0.,300.) );
     mon.addHistogram( new TH1F( "softb_ntrk"," ; SV Ntrks;",21,-0.5,21.5) );
-    mon.addHistogram( new TH1F( "softb_dxy"," ; SV dxy;",100,0.,30.) );
-    mon.addHistogram( new TH1F( "softb_dxyz_signif"," ; SVSIP3D;",100,1.,100.) );
-    mon.addHistogram( new TH1F( "softb_cos"," ; SV cos((PV,SV),p_{SV});",100,-1.,1.) );
+    mon.addHistogram( new TH1F( "softb_dxy"," ; SV dxy;",50,0.,20.) );
+    mon.addHistogram( new TH1F( "softb_dxyz_signif"," ; SVSIP3D;",50,1.,100.) );
+    mon.addHistogram( new TH1F( "softb_cos"," ; SV cos((PV,SV),p_{SV});",25,-1.,1.) );
 
     mon.addHistogram( new TH1F( "nvtx_raw",	";Vertices;Events",100,0,100) );
     mon.addHistogram( new TH1F( "nvtxwgt_raw",	";Vertices;Events",100,0,100) );
     mon.addHistogram( new TH1F( "pfmet",    ";E_{T}^{miss} [GeV];Events", 60,0.,600.) );
-    mon.addHistogram( new TH1F( "ht",    ";H_{T} [GeV];Events", 60,0.,600.) );
+    mon.addHistogram( new TH1F( "ht",    ";H_{T} [GeV];Events", 30,0.,600.) );
     mon.addHistogram( new TH1F( "mtw",       ";#it{m}_{T}^{W} [GeV];Events", 60,0.,600.) );
-    mon.addHistogram( new TH1F( "ptw",       ";#it{p}_{T}^{W} [GeV];Events",60,0.,600.) );
+    mon.addHistogram( new TH1F( "ptw",       ";#it{p}_{T}^{W} [GeV];Events",30,0.,600.) );
     mon.addHistogram( new TH1F( "dphiWh", ";#Delta#it{#phi}(#it{W},h);Events", 20,0,TMath::Pi()) );
-    mon.addHistogram( new TH1F( "dRave",";#Delta R(b,b)_{ave};Events",100,0.,5.));
+    mon.addHistogram( new TH1F( "dRave",";#Delta R(b,b)_{ave};Events",50,0.,5.));
+    mon.addHistogram( new TH1F( "dmmin",";#Delta m_{b,b}^{min};Events",25,0.,250.));
     mon.addHistogram( new TH1F( "dphijmet", ";|#Delta#it{#phi}(jet,E_{T}^{miss})|;#jet", 20,0,TMath::Pi()) );
     mon.addHistogram( new TH1F( "dphilepmet", ";|#Delta#it{#phi}(lep,E_{T}^{miss})|;Events", 20,0,TMath::Pi()) );
     
@@ -1378,10 +1379,21 @@ int main(int argc, char* argv[])
 	 dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[1]));
 	 dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[2]));
 	 dRs.push_back(deltaR(GoodIdbJets[1],GoodIdbJets[2]));
+
+	 float dm(0.);
+	 	 
 	 if (GoodIdbJets.size()>=4) {
 	   dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[3]));
 	   dRs.push_back(deltaR(GoodIdbJets[1],GoodIdbJets[3]));
 	   dRs.push_back(deltaR(GoodIdbJets[2],GoodIdbJets[3]));
+
+	   float dm1 = fabs( (GoodIdbJets[0]+GoodIdbJets[1]).mass() - (GoodIdbJets[2]+GoodIdbJets[3]).mass() );
+	   float dm2 = fabs( (GoodIdbJets[0]+GoodIdbJets[2]).mass() - (GoodIdbJets[1]+GoodIdbJets[3]).mass() );
+
+	   dm1 = min(dm1, dm2);
+	   dm2 = fabs( (GoodIdbJets[0]+GoodIdbJets[3]).mass() - (GoodIdbJets[1]+GoodIdbJets[2]).mass() );
+
+	   dm = min(dm1, dm2);
 	 }
 
 	 float dRave_(0.);
@@ -1391,6 +1403,7 @@ int main(int argc, char* argv[])
 	 dRave_/=dRs.size();
 	 mon.fillHisto("dRave",tags,dRave_,weight);
 
+	 mon.fillHisto("dmmin",tags,dm, weight);
 
         //##############################################################################
         //### HISTOS FOR STATISTICAL ANALYSIS (include systematic variations)

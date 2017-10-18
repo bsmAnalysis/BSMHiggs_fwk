@@ -207,7 +207,7 @@
             "tag": "data"
          },
        {
-            "color": 15,
+            "color": 18,
             "data": [
                 {
                     "br": [
@@ -230,18 +230,7 @@
 		    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_ZZ_ext1_2016",
                     "xsec": 16.523
-                }
-            ],
-            "isdata": false,
-            "keys": [
-                "haa_mcbased",
-		"haa_prod"
-            ],
-            "tag": "ZZ"
-        },
-        {
-            "color": 16,
-            "data": [
+                },
                 {
                     "br": [
                         1
@@ -274,18 +263,8 @@
 		    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_WWlnu2q_ext1_2016",
                     "xsec": 49.997
-                }
-            ],
-            "isdata": false,
-            "keys": [
-                "haa_mcbased"
-            ],
-            "tag": "WW"
-        },
-	{
-		"color": 17, 
-		 "data": [ 
-                     {
+                },
+                {
 		     "br": [
                         0.25
                     ],
@@ -309,13 +288,12 @@
             ],
             "isdata": false,
             "keys": [
-                "haa_mcbased",
-		"haa_prod"
+                "haa_mcbased"
             ],
-            "tag": "WZ"
+            "tag": "VV"
         },
         {
-            "color": 14,
+            "color": 17,
             "data": [
                 {
                     "br": [
@@ -369,7 +347,7 @@
             "tag": "ZVV"
         },
 	{
-            "color": 590,	
+            "color": 831,	
             "data": [
 		{
                     "br": [
@@ -434,7 +412,7 @@
             "tag": "Single Top"
         },
 	{
-            "color": 592,
+            "color": 408,
 	    "data": [
 	    {
 	       "br": [
@@ -456,7 +434,7 @@
 	     "tag": "t#bar{t}+jets"
 	}, 
         {
-            "color": 595,
+            "color": 424,
             "data": [
                 {
                     "br": [
@@ -521,7 +499,7 @@
             "tag": "t#bar{t}+#gamma,Z,W"
         },
         {
-            "color": 624	,
+            "color": 624,
             "data": [
                 {
                     "br": [
@@ -692,7 +670,7 @@
                     ],
 		    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_Wh_amass20",
-                    "xsec": 1.0
+                    "xsec": 1.37
                 }
             ],
             "fill": 0,
@@ -703,11 +681,11 @@
                 "haa_signal",
                 "haa_mcbased"
             ],
-            "lcolor": 603,
+            "lcolor": 594,
             "lwidth": 2,
             "resonance": 20,
             "spimpose": true,
-            "tag": "Wh(20)"
+            "tag": "Wh (20)"
         },
 	{
             "data": [
@@ -720,7 +698,7 @@
                     ],
 		    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_Wh_amass50",
-                    "xsec": 1.0
+                    "xsec": 1.37
                 }
             ],
             "fill": 0,
@@ -731,12 +709,12 @@
                 "haa_signal",
                 "haa_mcbased"
             ],
-            "lcolor": 603,
-            "lwidth": 2,
+            "lcolor": 594,
+            "lwidth": 3,
 	    "lstyle": 2,
             "resonance": 50,
             "spimpose": true,
-            "tag": "Wh(50)"
+            "tag": "Wh (50)"
         }
     ]
 }
