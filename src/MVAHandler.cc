@@ -104,6 +104,15 @@ void MVAHandler::fillTree()
 }
 
 //
+void MVAHandler::writeTree()
+{
+  TFile *ofile=TFile::Open( outURL.c_str(), "recreate");
+  to3b->Write();
+  to4b->Write();
+  ofile->Close();
+  return ;
+}
+//
 MVAHandler::~MVAHandler()
 {
 }

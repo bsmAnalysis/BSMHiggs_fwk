@@ -3,7 +3,7 @@
 
 #if !defined(__CINT__) || defined(__MAKECINT__)
 
-#include <string.h>
+#include <string>
 #include <iomanip>
 #include <iostream>
 #include <fstream>
@@ -17,6 +17,7 @@
 #include "TTree.h"
 #include "TLorentzVector.h"
 #include "TChain.h"
+#include "TFile.h"
 
 #endif
 
@@ -57,7 +58,8 @@ class MVAHandler
   //write mode, to mva tree
   bool initTree(TTree *t3b, TTree *t4b);
   void fillTree();
-
+  std::string outURL = "root://eosuser.cern.ch//eos/user/h/hua/Haa4b/test.root";
+  void writeTree();
  private:
   //the tree, 2 for 3b 4b separately
   TTree *to3b, *to4b;

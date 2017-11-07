@@ -1459,6 +1459,9 @@ int main(int argc, char* argv[])
     mon.Write();
     ofile->Close();
 
-    if(outTxtFile_final)fclose(outTxtFile_final);
+    if ( outTxtFile_final ) fclose(outTxtFile_final);
+
+    //write MVA files
+    myMVAHandler_.writeTree();
 }
 
