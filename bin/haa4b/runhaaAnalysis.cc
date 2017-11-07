@@ -7,6 +7,7 @@
 #include "UserCode/bsmhiggs_fwk/interface/PatUtils.h"
 #include "UserCode/bsmhiggs_fwk/interface/MacroUtils.h"
 #include "UserCode/bsmhiggs_fwk/interface/DataEvtSummaryHandler.h"
+#include "UserCode/bsmhiggs_fwk/interface/MVAHandler.h"
 #include "UserCode/bsmhiggs_fwk/interface/BSMPhysicsEvent.h"
 #include "UserCode/bsmhiggs_fwk/interface/SmartSelectionMonitor.h"
 #include "UserCode/bsmhiggs_fwk/interface/PDFInfo.h"
@@ -513,6 +514,13 @@ int main(int argc, char* argv[])
 
     // Lepton scale factors
     LeptonEfficiencySF lepEff;
+
+    //####################################################################################################################
+    //###########################################           MVAHandler         ###########################################
+    //####################################################################################################################
+    //
+    MVAHandler myMVAHandler_;
+
 
     //####################################################################################################################
     //###########################################           EVENT LOOP         ###########################################

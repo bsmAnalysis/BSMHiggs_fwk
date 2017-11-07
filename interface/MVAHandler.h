@@ -1,5 +1,7 @@
-#ifndef dataevtsummaryhandler_h
-#define dataevtsummaryhandler_h
+#ifndef mvahandler_h
+#define mvahandler_h
+
+#if !defined(__CINT__) || defined(__MAKECINT__)
 
 #include <string.h>
 #include <iomanip>
@@ -15,6 +17,8 @@
 #include "TTree.h"
 #include "TLorentzVector.h"
 #include "TChain.h"
+
+#endif
 
 struct MVAEvtContainer
 {
