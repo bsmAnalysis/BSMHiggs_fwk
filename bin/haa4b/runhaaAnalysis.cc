@@ -518,9 +518,10 @@ int main(int argc, char* argv[])
     //####################################################################################################################
     //###########################################           MVAHandler         ###########################################
     //####################################################################################################################
-    //
     MVAHandler myMVAHandler_;
-
+    TTree* TribMVATree = new TTree("MVA","MVA");
+    TTree* QuabMVATree = new TTree("MVA","MVA");
+    myMVAHandler_.initTree( TribMVATree, QuabMVATree );
 
     //####################################################################################################################
     //###########################################           EVENT LOOP         ###########################################
@@ -1412,6 +1413,12 @@ int main(int argc, char* argv[])
 	 mon.fillHisto("dRave",tags,dRave_,weight);
 
 	 mon.fillHisto("dmmin",tags,dm, weight);
+
+
+        //############ MVA Handler ############
+        //myMVAHandler_.getEntry(iev);
+        //myMVAHandler_.VecGenerator();
+        myMVAHandler_.fillTree();
 
         //##############################################################################
         //### HISTOS FOR STATISTICAL ANALYSIS (include systematic variations)
