@@ -34,7 +34,8 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 # Global Variables
 #--------------------------------------------------
 
-SUFFIX=_2017_09_18
+#SUFFIX=_2017_09_18
+SUFFIX=_2017_09_21
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
@@ -57,7 +58,8 @@ NTPL_JSON=$MAINDIR/samples2016.json
 NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX
 RUNLOG=$NTPL_OUTDIR/LOGFILES/runSelection.log
 
-queue='cmscaf1nd'
+#queue='cmscaf1nd'
+queue='8nh'
 
 #IF CRAB3 is provided in argument, use crab submission instead of condor/lsf 
 if [[ $arguments == *"crab3"* ]]; then queue='crab3' ;fi  
