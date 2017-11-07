@@ -8,7 +8,7 @@ cmsenv
 git cms-init
 #Checkout Some Packages from Egamma ( https://twiki.cern.ch/twiki/bin/viewauth/CMS/EGMRegression#Consistent_EGMSmearer )
 git cms-merge-topic cms-egamma:EGM_gain_v1
-cd $CMSSW_BASE/src/EgammaAnalysis/ElectronTools/
+cd $CMSSW_BASE/src/EgammaAnalysis/ElectronTools/data
 git clone -b Moriond17_gainSwitch_unc https://github.com/ECALELFS/ScalesSmearings.git
 cd $CMSSW_BASE/src
 scram b -j 8
