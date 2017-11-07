@@ -6,6 +6,12 @@ MVAHandler::MVAHandler()
 }
 
 //
+MVAEvtContainer &MVAHandler::getEvent()
+{
+  return evSummary_;
+}
+
+//
 void MVAHandler::resetStruct()
 {
   //catagory type
@@ -21,6 +27,31 @@ void MVAHandler::resetStruct()
   evSummary_.HHt = -1.0;
   //dr W and Higgs 
   evSummary_.WHdR = -1.0;
+}
+
+//
+void MVAHandler::getEntry( 
+                          bool is3b, bool is4b, 
+                          float Wpt, //W only
+                          float Hmass, float HpT, float bbdRAve, float bbdMMin, float HHt, //Higgs only
+                          float WHdR //W and H
+                         )
+{
+  resetStruct();
+  //catagory type
+  evSummary_.is3b = is3b;
+  evSummary_.is4b = is4b;
+  //W boson related only related var
+  evSummary_.WpT = Wpt;
+  //Higgs boson related only var
+  evSummary_.Hmass = Hmass;
+  evSummary_.HpT = HpT;
+  evSummary_.bbdRAve = bbdRAve;
+  evSummary_.bbdMMin = bbdMMin;
+  evSummary_.HHt = HHt;
+  //dr W and Higgs 
+  evSummary_.WHdR = WHdR;
+  return ;
 }
 
 //

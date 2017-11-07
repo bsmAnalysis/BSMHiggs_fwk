@@ -39,20 +39,16 @@ class MVAHandler
 
   //current event
   MVAEvtContainer evSummary_;
-  MVAEvtContainer &getEvent() 
-  {
-    return evSummary_;
-  }
+  MVAEvtContainer &getEvent();
 
   //read mode, from calculated var
-  void getEntry(int ientry);
-  //{
-    //resetStruct();
-    
-    //if(ti) ti->GetEntry(ientry);
-    //return ;
-  //}
   void resetStruct();
+  void getEntry(
+                bool is3b, bool is4b,
+                float Wpt, //W only
+                float Hmass, float HpT, float bbdRAve, float bbdMMin, float HHt, //Higgs only
+                float WHdR //W and H
+               );
 
   //write mode, to mva tree
   bool initTree(TTree *t3b, TTree *t4b);
