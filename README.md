@@ -8,13 +8,15 @@ cmsenv
 git cms-init
 #Checkout Some Packages from Egamma ( https://twiki.cern.ch/twiki/bin/viewauth/CMS/EGMRegression#Consistent_EGMSmearer )
 git cms-merge-topic cms-egamma:EGM_gain_v1
-cd EgammaAnalysis/ElectronTools/data
+cd $CMSSW_BASE/src/EgammaAnalysis/ElectronTools/
 git clone -b Moriond17_gainSwitch_unc https://github.com/ECALELFS/ScalesSmearings.git
 cd $CMSSW_BASE/src
 scram b -j 8
 
 # Check out packages for Hbb tagging (https://twiki.cern.ch/twiki/bin/viewauth/CMS/Hbbtagging#8_0_X)
 setenv CMSSW_GIT_REFERENCE /cvmfs/cms.cern.ch/cmssw.git.daily
+or
+export CMSSW_GIT_REFERENCE=/cvmfs/cms.cern.ch/cmssw.git.daily
 git cms-init
 git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
 git fetch --tags btv-cmssw
@@ -24,11 +26,12 @@ scram b -j8
 git clone -b svFit_2015Apr03 https://github.com/veelken/SVfit_standalone.git TauAnalysis/SVfitStandalone
 
 git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
-cd UserCode/bsmhiggs_fwk
+cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
 git checkout -b modified #copy the branch to a new one to host future modifications (ease pull request and code merging)
-cd ../..
+cd $CMSSW_BASE/src
 
 #since HiggsAnalysis is broken in 80X, copy one of the missing file to allow compilation and change some paths
+cd $CMSSW_BASE/src
 wget https://raw.githubusercontent.com/cms-analysis/HiggsAnalysis-CombinedLimit/74x-root6/src/th1fmorph.cc -P UserCode/bsmhiggs_fwk/src/
 wget https://raw.githubusercontent.com/cms-analysis/HiggsAnalysis-CombinedLimit/74x-root6/interface/th1fmorph.h -P UserCode/bsmhiggs_fwk/interface/
 find UserCode/bsmhiggs_fwk/ -type f -name '*.cc' -exec sed -i -e 's/HiggsAnalysis\/CombinedLimit\/interface\/th1fmorph.h/UserCode\/bsmhiggs_fwk\/interface\/th1fmorph.h/g' {} \;
