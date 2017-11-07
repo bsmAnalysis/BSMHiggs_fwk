@@ -519,8 +519,8 @@ int main(int argc, char* argv[])
     //###########################################           MVAHandler         ###########################################
     //####################################################################################################################
     MVAHandler myMVAHandler_;
-    TTree* TribMVATree = new TTree("MVA","MVA");
-    TTree* QuabMVATree = new TTree("MVA","MVA");
+    TTree* TribMVATree = new TTree("TribMVA","TribMVA");
+    TTree* QuabMVATree = new TTree("QuabMVA","QuabMVA");
     myMVAHandler_.initTree( TribMVATree, QuabMVATree );
 
     //####################################################################################################################
