@@ -59,7 +59,6 @@ class MVAHandler
   //write mode, to mva tree
   bool initTree(TTree *t3b, TTree *t4b);
   void fillTree();
-  //std::string outURL = "root://eosuser.cern.ch//eos/user/h/hua/Haa4b/test.root";
   void writeTree( TString outURL );
  private:
   //the tree, 2 for 3b 4b separately
