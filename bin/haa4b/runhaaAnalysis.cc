@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
         outFileUrl += "_filt";
         outFileUrl += mctruthmode;
     }
-    TString outdir=runProcess.getParameter<std::string>("outdir");
+    TString outdir = runProcess.getParameter<std::string>("outdir");
     TString outUrl( outdir );
     gSystem->Exec("mkdir -p " + outUrl);
 
@@ -1457,7 +1457,9 @@ int main(int argc, char* argv[])
 
     if ( outTxtFile_final ) fclose(outTxtFile_final);
 
+    //construct MVA out put file name
+    TString mvaout = TString ( runProcess.getParameter<std::string>("outdir") ) + "/mva_" + outFileUrl + ".root";
     //write MVA files
-    myMVAHandler_.writeTree();
+    myMVAHandler_.writeTree( mvaout );
 }
 
