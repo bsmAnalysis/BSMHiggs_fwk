@@ -7,6 +7,7 @@
 #include "UserCode/bsmhiggs_fwk/interface/PatUtils.h"
 #include "UserCode/bsmhiggs_fwk/interface/MacroUtils.h"
 #include "UserCode/bsmhiggs_fwk/interface/DataEvtSummaryHandler.h"
+#include "UserCode/bsmhiggs_fwk/interface/MVAHandler.h"
 #include "UserCode/bsmhiggs_fwk/interface/BSMPhysicsEvent.h"
 #include "UserCode/bsmhiggs_fwk/interface/SmartSelectionMonitor.h"
 #include "UserCode/bsmhiggs_fwk/interface/PDFInfo.h"
@@ -124,7 +125,7 @@ int main(int argc, char* argv[])
         outFileUrl += "_filt";
         outFileUrl += mctruthmode;
     }
-    TString outdir=runProcess.getParameter<std::string>("outdir");
+    TString outdir = runProcess.getParameter<std::string>("outdir");
     TString outUrl( outdir );
     gSystem->Exec("mkdir -p " + outUrl);
 
@@ -500,10 +501,10 @@ int main(int argc, char* argv[])
       Quotient->Divide(PUgen); 
 
       for(int ibin=0; ibin<100; ibin++){
-	float x = Quotient->GetBinContent(ibin);
-	PU_weight->SetBinContent(ibin,x);
-	//if ( verbose )
-	printf("pu = %3d has weight = %7.3f \n",ibin,x);
+        float x = Quotient->GetBinContent(ibin);
+        PU_weight->SetBinContent(ibin,x);
+        //if ( verbose )
+        printf("pu = %3d has weight = %7.3f \n",ibin,x);
       }
 
     } // is MC
@@ -513,6 +514,14 @@ int main(int argc, char* argv[])
 
     // Lepton scale factors
     LeptonEfficiencySF lepEff;
+
+    //####################################################################################################################
+    //###########################################           MVAHandler         ###########################################
+    //####################################################################################################################
+    MVAHandler myMVAHandler_;
+    TTree* TribMVATree = new TTree("TribMVA","TribMVA");
+    TTree* QuabMVATree = new TTree("QuabMVA","QuabMVA");
+    myMVAHandler_.initTree( TribMVATree, QuabMVATree );
 
     //####################################################################################################################
     //###########################################           EVENT LOOP         ###########################################
@@ -529,12 +538,12 @@ int main(int argc, char* argv[])
 
     for( int iev=evStart; iev<evEnd; iev++) {
         if((iev-evStart)%treeStep==0) {
-	  printf("."); fflush(stdout);
+          printf("."); fflush(stdout);
         }
 
-	if ( verbose ) printf("\n\n Event info %3d: \n",iev);
+        if ( verbose ) printf("\n\n Event info %3d: \n",iev);
 
-	
+
         //##############################################   EVENT LOOP STARTS   ##############################################
         //load the event content from tree
         summaryHandler_.getEntry(iev);
@@ -564,23 +573,22 @@ int main(int argc, char* argv[])
         double TotalWeight_minus = 1.0;
 
         if(isMC) mon.fillHisto("pileup", tags, ev.ngenTruepu, 1.0);
-
-	float puWeight(1.0);
+        
+        float puWeight(1.0);
         if(isMC) {
-	  puWeight = getSFfrom1DHist(ev.ngenTruepu, PU_weight) ;
-	  if ( verbose ) printf("pu = %3d has weight = %7.3f \n",ev.ngenTruepu,puWeight);
-	  weight *= puWeight;
-	  //  TotalWeight_plus 	*= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Up);
-            //TotalWeight_minus *= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Down);
+          puWeight = getSFfrom1DHist(ev.ngenTruepu, PU_weight) ;
+          if ( verbose ) printf("pu = %3d has weight = %7.3f \n",ev.ngenTruepu,puWeight);
+          weight *= puWeight;
+          //TotalWeight_plus  *= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Up);
+          //TotalWeight_minus *= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Down);
         }
-
+        
         Hcutflow->Fill(1,genWeight);
-	Hcutflow->Fill(2,xsecWeight);
-	Hcutflow->Fill(3,puWeight);
+        Hcutflow->Fill(2,xsecWeight);
+        Hcutflow->Fill(3,puWeight);
         Hcutflow->Fill(4,weight);
-      //  Hcutflow->Fill(3,weight*TotalWeight_minus);
-      //  Hcutflow->Fill(4,weight*TotalWeight_plus);
-	
+        //Hcutflow->Fill(3,weight*TotalWeight_minus);
+        //Hcutflow->Fill(4,weight*TotalWeight_plus);
 
         // add PhysicsEvent_t class, get all tree to physics objects
         PhysicsEvent_t phys=getPhysicsEventFrom(ev);
@@ -599,7 +607,7 @@ int main(int argc, char* argv[])
         bool hasEtrigger  = (ev.triggerType >> 4 ) & 0x1;
         bool hasEMtrigger = (ev.triggerType >> 5 ) & 0x1;
 
-	
+
         //#########################################################################
         //#####################      Objects Selection       ######################
         //#########################################################################
@@ -611,12 +619,12 @@ int main(int argc, char* argv[])
         //std::vector<PhysicsObjectJetCollection> variedJets;
         //LorentzVectorCollection variedMET;
 
-	//METUtils::computeVariation(phys.jets, phys.leptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, &jecUnc);
+        //METUtils::computeVariation(phys.jets, phys.leptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, &jecUnc);
 
         LorentzVector metP4=phys.met; //variedMET[0];
         PhysicsObjectJetCollection &corrJets = phys.jets; //variedJets[0];
-	PhysicsObjectFatJetCollection &fatJets = phys.fatjets;
-	PhysicsObjectSVCollection &secVs = phys.svs;
+        PhysicsObjectFatJetCollection &fatJets = phys.fatjets;
+        PhysicsObjectSVCollection &secVs = phys.svs;
 
         //
         // LEPTON ANALYSIS
@@ -677,7 +685,7 @@ int main(int argc, char* argv[])
 	mon.fillHisto("nleptons","raw_extra", extraLeptons.size(),weight);
 	
 	std::vector<TString> tag_cat;
-	//	TString tag_cat;
+	//TString tag_cat;
         int evcat=-1;
 	if (goodLeptons.size()==1) evcat = getLeptonId(abs(goodLeptons[0].first));
 	if (goodLeptons.size()>1) evcat = getDileptonId(abs(goodLeptons[0].first),abs(goodLeptons[1].first)); 
@@ -755,7 +763,7 @@ int main(int argc, char* argv[])
 	  if(!hasTrigger) continue;
         }
 	
-	//	tags.push_back(tag_cat); //add ee, mumu, emu category
+	//tags.push_back(tag_cat); //add ee, mumu, emu category
 	
         //prepare the tag's vectors for histo filling
 	// for(size_t ich=0; ich<tag_cat.size(); ich++){
@@ -775,8 +783,8 @@ int main(int argc, char* argv[])
 	bool passOneLepton(goodLeptons.size()==1); 
 	if (!passOneLepton) continue;
 	// -------------------------------------------------------------------------
-	//	if(goodLeptons.size()!=1) continue; // at least 1 tight leptons
-		
+	//if(goodLeptons.size()!=1) continue; // at least 1 tight leptons
+
         // lepton ID + ISO scale factors 
         if(isMC) {
 	  if (evcat==E) {
@@ -798,7 +806,7 @@ int main(int argc, char* argv[])
 	// bool pass2ndlepVeto(extraLeptons.size()==0);
 	// if (!pass2ndlepVeto) continue;
 	// mon.fillHisto("eventflow","all",3,weight);
-		
+
 	// Lepton kinematics
 	if (abs(goodLeptons[0].first==11)) {
 	  mon.fillHisto("leadlep_pt_raw","e",goodLeptons[0].second.pt(),weight);
@@ -912,7 +920,7 @@ int main(int argc, char* argv[])
 	    CSVLoosebJets.push_back(corrJets[ijet]);
 	  }
 	  
-	  //	} // b-jet loop
+	  //} // b-jet loop
 	} // jet loop
     
 
@@ -1097,7 +1105,7 @@ int main(int argc, char* argv[])
 	//sort(cleanedGoodIdJets.begin(), cleanedGoodIdJets.end(), ptsort());
 	sort(cleanedCSVLoosebJets.begin(), cleanedCSVLoosebJets.end(), ptsort());
 
-	//	mon.fillHisto("njets_raw","cleaned", cleanedGoodIdJets.size(),weight);
+	//mon.fillHisto("njets_raw","cleaned", cleanedGoodIdJets.size(),weight);
 	mon.fillHisto("nbjets_raw","cleaned", cleanedCSVLoosebJets.size(),weight);
 	
 	
@@ -1204,7 +1212,7 @@ int main(int argc, char* argv[])
 	} // soft-b from SV
 
 	mon.fillHisto("nbjets_2D","cat_raw",GoodIdJets.size(),GoodIdbJets.size(),weight);
-	//	mon.fillHisto("nbjets_2D","cat_cleaned_raw",cleanedGoodIdJets.size(),GoodIdbJets.size(),weight);
+	//mon.fillHisto("nbjets_2D","cat_cleaned_raw",cleanedGoodIdJets.size(),GoodIdbJets.size(),weight);
 	mon.fillHisto("nbjets_raw","merged",GoodIdbJets.size(),weight);
 	
 	//--------------------------------------------------------------------------
@@ -1316,7 +1324,7 @@ int main(int argc, char* argv[])
 	//----------------------------------------------------------------------------------------------------------//
 
 	 LorentzVector allHadronic;
-	 //	 std::pair <int,LorentzVector> pairHadronic;
+	 //std::pair <int,LorentzVector> pairHadronic;
  
 	 if (GoodIdbJets.size()==3) {// 3b cat.
 	    tags.push_back("3b");
@@ -1367,7 +1375,7 @@ int main(int argc, char* argv[])
 	 // dphi(jet,MET)
 	 mon.fillHisto("dphijmet",tags,mindphijmet,weight);
 	 // pTW
-	 //	 LorentzVector wsum=metP4+goodLeptons[0].second;
+	 //LorentzVector wsum=metP4+goodLeptons[0].second;
 	 mon.fillHisto("ptw",tags,wsum.pt(),weight);
 	 // // mtW 
 	 mon.fillHisto("mtw",tags,sqrt(tMass),weight);
@@ -1381,7 +1389,7 @@ int main(int argc, char* argv[])
 	 dRs.push_back(deltaR(GoodIdbJets[1],GoodIdbJets[2]));
 
 	 float dm(0.);
-	 	 
+	 
 	 if (GoodIdbJets.size()>=4) {
 	   dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[3]));
 	   dRs.push_back(deltaR(GoodIdbJets[1],GoodIdbJets[3]));
@@ -1405,6 +1413,19 @@ int main(int argc, char* argv[])
 
 	 mon.fillHisto("dmmin",tags,dm, weight);
 
+
+        //############ MVA Handler ############
+        //myMVAHandler_.getEntry(iev);
+        myMVAHandler_.getEntry
+        (
+          GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
+          wsum.pt(), //W only, w pt
+          allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
+          dphi_Wh //W and H, dr 
+        );
+        //myMVAHandler_.VecGenerator();
+        myMVAHandler_.fillTree();
+
         //##############################################################################
         //### HISTOS FOR STATISTICAL ANALYSIS (include systematic variations)
         //##############################################################################
@@ -1415,9 +1436,6 @@ int main(int argc, char* argv[])
 	//##############################################
 	//LorentzVector vMET = variedMET[ivar>8 ? 0 : ivar];
 	//PhysicsObjectJetCollection &vJets = ( ivar<=4 ? variedJets[ivar] : variedJets[0] );
-	
-
-
     } // loop on all events END
 
 
@@ -1437,6 +1455,11 @@ int main(int argc, char* argv[])
     mon.Write();
     ofile->Close();
 
-    if(outTxtFile_final)fclose(outTxtFile_final);
+    if ( outTxtFile_final ) fclose(outTxtFile_final);
+
+    //construct MVA out put file name
+    TString mvaout = TString ( runProcess.getParameter<std::string>("outdir") ) + "/mva_" + outFileUrl + ".root";
+    //write MVA files
+    myMVAHandler_.writeTree( mvaout );
 }
 
