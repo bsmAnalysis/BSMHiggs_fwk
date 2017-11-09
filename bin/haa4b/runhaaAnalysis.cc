@@ -1421,7 +1421,8 @@ int main(int argc, char* argv[])
           GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
           wsum.pt(), //W only, w pt
           allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
-          dphi_Wh //W and H, dr 
+          dphi_Wh, //W and H, dr 
+          weight
         );
         //myMVAHandler_.VecGenerator();
         myMVAHandler_.fillTree();
