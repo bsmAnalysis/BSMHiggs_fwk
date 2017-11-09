@@ -27,6 +27,8 @@ void MVAHandler::resetStruct()
   evSummary_.HHt = -1.0;
   //dr W and Higgs 
   evSummary_.WHdR = -1.0;
+  //weight
+  evSummary_.weight = 0.0;
 }
 
 //
@@ -34,7 +36,8 @@ void MVAHandler::getEntry(
                           bool is3b, bool is4b, 
                           float Wpt, //W only
                           float Hmass, float HpT, float bbdRAve, float bbdMMin, float HHt, //Higgs only
-                          float WHdR //W and H
+                          float WHdR, //W and H
+                          float weight
                          )
 {
   resetStruct();
@@ -51,6 +54,8 @@ void MVAHandler::getEntry(
   evSummary_.HHt = HHt;
   //dr W and Higgs 
   evSummary_.WHdR = WHdR;
+  //weight
+  evSummary_.weight = weight;
   return ;
 }
 
@@ -67,6 +72,7 @@ bool MVAHandler::initTree(TTree *t3b, TTree *t4b)
   to3b->Branch("bbdMMin",  &evSummary_.bbdMMin,  "bbdMMin/F");
   to3b->Branch("HHt",  &evSummary_.HHt,  "HHt/F");
   to3b->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F");
+  to3b->Branch("weight",  &evSummary_.weight,  "weight/F");
 
   if ( t4b == 0 ) return false;
   to4b = t4b;
@@ -78,6 +84,7 @@ bool MVAHandler::initTree(TTree *t3b, TTree *t4b)
   to4b->Branch("bbdMMin",  &evSummary_.bbdMMin,  "bbdMMin/F");
   to4b->Branch("HHt",  &evSummary_.HHt,  "HHt/F");
   to4b->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F");
+  to4b->Branch("weight",  &evSummary_.weight,  "weight/F");
 
   return true;
 }
