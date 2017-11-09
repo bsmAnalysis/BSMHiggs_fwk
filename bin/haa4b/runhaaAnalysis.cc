@@ -1424,7 +1424,6 @@ int main(int argc, char* argv[])
           dphi_Wh, //W and H, dr 
           weight
         );
-        //myMVAHandler_.VecGenerator();
         myMVAHandler_.fillTree();
 
         //##############################################################################

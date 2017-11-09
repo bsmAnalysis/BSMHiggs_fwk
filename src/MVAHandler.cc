@@ -84,7 +84,7 @@ bool MVAHandler::initTree(TTree *t3b, TTree *t4b)
   to4b->Branch("bbdMMin",  &evSummary_.bbdMMin,  "bbdMMin/F");
   to4b->Branch("HHt",  &evSummary_.HHt,  "HHt/F");
   to4b->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F");
-  to3b->Branch("weight",  &evSummary_.weight,  "weight/F");
+  to4b->Branch("weight",  &evSummary_.weight,  "weight/F");
 
   return true;
 }
