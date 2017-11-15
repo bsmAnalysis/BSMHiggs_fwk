@@ -666,7 +666,7 @@
                         1.0
                     ],
                     "dset": [
-                        "/MinBias/sghiasis-crab_Wh_m20_MiniAOD-28028af67189b3de7224b79195bd0e1d/USER"
+                        "/MinBias/sghiasis-crab_Private_production_m20_Nov_14_MiniAOD-9fa49160dc28c3dbeac6b80d5ed131ae/USER"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_Wh_amass20",
@@ -694,7 +694,7 @@
                         1.0
                     ],
                     "dset": [
-                        "/MinBias/sghiasis-crab_Wh_m50_MiniAOD-28028af67189b3de7224b79195bd0e1d/USER"
+                        "/MinBias/sghiasis-crab_Private_production_m50_Nov_15_MiniAOD-9fa49160dc28c3dbeac6b80d5ed131ae/USER"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_Wh_amass50",
@@ -774,6 +774,35 @@
             "spimpose": true,
             "tag": "Wh (15)"
         },
+        {   
+            "data": [
+                {   
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MinBias/sghiasis-crab_Private_production_m25_Nov_14_MiniAOD-9fa49160dc28c3dbeac6b80d5ed131ae/USER"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_Wh_amass25",
+                    "xsec": 1.37
+                }
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": false,
+            "issignal": true,
+            "keys": [
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 594,
+            "lwidth": 3,
+            "lstyle": 5, 
+            "resonance": 25,
+            "spimpose": true,
+            "tag": "Wh (25)"
+        },
         {
             "data": [
                 {
@@ -798,10 +827,68 @@
             ],
             "lcolor": 594,
             "lwidth": 3,
-            "lstyle": 5,
+            "lstyle": 6,
             "resonance": 30,
             "spimpose": true,
             "tag": "Wh (30)"
+        },
+        {   
+            "data": [
+                {   
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MinBias/sghiasis-crab_Private_production_m40_Nov_15_MiniAOD-9fa49160dc28c3dbeac6b80d5ed131ae/USER"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_Wh_amass40",
+                    "xsec": 1.37
+                }
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": false,
+            "issignal": true,
+            "keys": [
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 594,
+            "lwidth": 3, 
+            "lstyle": 7, 
+            "resonance": 40,
+            "spimpose": true,
+            "tag": "Wh (40)"
+        },
+        {
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MinBias/sghiasis-crab_Private_production_m60_Nov_14_MiniAOD-9fa49160dc28c3dbeac6b80d5ed131ae/USER"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_Wh_amass60",
+                    "xsec": 1.37
+                }
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": false,
+            "issignal": true,
+            "keys": [
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 594,
+            "lwidth": 3,
+            "lstyle": 8,
+            "resonance": 60,
+            "spimpose": true,
+            "tag": "Wh (60)"
         }
     ]
 }
