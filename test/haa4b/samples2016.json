@@ -715,6 +715,93 @@
             "resonance": 50,
             "spimpose": true,
             "tag": "Wh (50)"
+        },
+        {
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MinBias/sghiasis-crab_Private_production_m12_Nov_13_MiniAOD-9fa49160dc28c3dbeac6b80d5ed131ae/USER"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_Wh_amass12",
+                    "xsec": 1.37
+                }
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": false,
+            "issignal": true,
+            "keys": [
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 594,
+            "lwidth": 3,
+            "lstyle": 3,
+            "resonance": 12,
+            "spimpose": true,
+            "tag": "Wh (12)"
+        },
+        {
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MinBias/sghiasis-crab_Private_production_m15_Nov_13_MiniAOD-9fa49160dc28c3dbeac6b80d5ed131ae/USER"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_Wh_amass15",
+                    "xsec": 1.37
+                }
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": false,
+            "issignal": true,
+            "keys": [
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 594,
+            "lwidth": 3,
+            "lstyle": 4,
+            "resonance": 15,
+            "spimpose": true,
+            "tag": "Wh (15)"
+        },
+        {
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MinBias/sghiasis-crab_Private_production_m30_Nov_13_MiniAOD-9fa49160dc28c3dbeac6b80d5ed131ae/USER"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_Wh_amass30",
+                    "xsec": 1.37
+                }
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": false,
+            "issignal": true,
+            "keys": [
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 594,
+            "lwidth": 3,
+            "lstyle": 5,
+            "resonance": 30,
+            "spimpose": true,
+            "tag": "Wh (30)"
         }
     ]
 }
