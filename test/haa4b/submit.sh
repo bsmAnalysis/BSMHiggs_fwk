@@ -96,7 +96,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "Input: " $JSON
        echo "Output: " $RESULTSDIR
        #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_dataOnly -s crab
-       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_signal -s crab -t MC13TeV_Wh_amass50
+       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_signal -s crab #-t MC13TeV_Wh_amass50
        #runAnalysisOverSamples.py -e runNtuplizer -j $JSON -o $RESULTSDIR  -c $MAINDIR/../runNtuplizer_cfg.py.templ -p "@data_pileup=datapileup_latest @verbose=False" -s $queue --report True --key haa_test $arguments
    fi    
 
