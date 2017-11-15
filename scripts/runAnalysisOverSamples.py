@@ -221,6 +221,7 @@ hostname = commands.getstatusoutput("hostname -f")[1]
 if(hostname.find("ucl.ac.be")!=-1):localTier = "T2_BE_UCL"
 if(hostname.find("iihe.ac.be")!=-1):localTier = "T2_BE_IIHE"
 if(hostname.find("cern.ch")!=-1)  :localTier = "T2_CH_CERN"
+if(hostname.find("fnal.gov")!=-1)  :localTier = "T3_US_FNALLPC"
 
 FarmDirectory                      = opt.outdir+"/FARM"
 PROXYDIR                           = FarmDirectory+"/inputs"
@@ -369,6 +370,8 @@ for procBlock in procList :
                           LaunchOnCondor.Jobs_CRABexe      = opt.theExecutable
                           if(commands.getstatusoutput("whoami")[1]=='georgia'):
                               LaunchOnCondor.Jobs_CRABStorageSite = 'T2_CH_CERN'
+                          elif(commands.getstatusoutput("whoami")[1]=='hwei'):
+                              LaunchOnCondor.Jobs_CRABStorageSite = 'T3_US_FNALLPC'
                           else: LaunchOnCondor.Jobs_CRABStorageSite = 'T2_US_UCSD'
                           if(isdata): 
                               LaunchOnCondor.Jobs_CRABsplitting = 'LumiBased'
@@ -377,7 +380,10 @@ for procBlock in procList :
                               LaunchOnCondor.Jobs_CRABsplitting = 'FileBased'
                               LaunchOnCondor.Jobs_CRABUnitPerJob = 5
                           LaunchOnCondor.Jobs_CRABname     = dtag + '_' + str(s)
-                          LaunchOnCondor.Jobs_CRABInDBS    = getByLabel(procData,'dbsURL','global')
+                          if( 'signal' in opt.onlykeyword):
+                            LaunchOnCondor.Jobs_CRABInDBS    = getByLabel(procData,'dbsURL','phys03')
+                          else:
+                            LaunchOnCondor.Jobs_CRABInDBS    = getByLabel(procData,'dbsURL','global')
 #                          if(split>0):
 #                              LaunchOnCondor.Jobs_CRABUnitPerJob = 100 / split 
 #                          else:
