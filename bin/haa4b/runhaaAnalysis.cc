@@ -521,7 +521,8 @@ int main(int argc, char* argv[])
     MVAHandler myMVAHandler_;
     //construct MVA out put file name
     TString mvaout = TString ( runProcess.getParameter<std::string>("outdir") ) + "/mva_" + outFileUrl + ".root";
-    myMVAHandler_.initFile( mvaout );
+    TFile* mvafout = new TFile( mvaout, "NEW" );
+    myMVAHandler_.initFile( mvafout );
     TTree* TribMVATree = new TTree("TribMVA","TribMVA");
     TTree* QuabMVATree = new TTree("QuabMVA","QuabMVA");
     myMVAHandler_.initTree( TribMVATree, QuabMVATree );
@@ -1414,7 +1415,7 @@ int main(int argc, char* argv[])
 	 dRave_/=dRs.size();
 	 mon.fillHisto("dRave",tags,dRave_,weight);
 
-	 mon.fillHisto("dmmin",tags,dm, weight);
+        mon.fillHisto("dmmin",tags,dm, weight);
 
 
         //############ MVA Handler ############
@@ -1434,11 +1435,11 @@ int main(int argc, char* argv[])
         //##############################################################################
 
 
-	//##############################################
-	// recompute MET/MT if JES/JER was varied
-	//##############################################
-	//LorentzVector vMET = variedMET[ivar>8 ? 0 : ivar];
-	//PhysicsObjectJetCollection &vJets = ( ivar<=4 ? variedJets[ivar] : variedJets[0] );
+        //##############################################
+        // recompute MET/MT if JES/JER was varied
+        //##############################################
+        //LorentzVector vMET = variedMET[ivar>8 ? 0 : ivar];
+        //PhysicsObjectJetCollection &vJets = ( ivar<=4 ? variedJets[ivar] : variedJets[0] );
     } // loop on all events END
 
 

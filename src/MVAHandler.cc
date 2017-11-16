@@ -59,9 +59,9 @@ void MVAHandler::getEntry(
   return ;
 }
 
-bool MVAHandler::initFile( TString outURL )
+bool MVAHandler::initFile( TFile *mvaf )
 {
-  ofile = TFile::Open( outURL, "recreate");
+  mvaofile = mvaf;
   return true;
 }
 
@@ -121,7 +121,7 @@ void MVAHandler::writeTree()
 {
   to3b->Write();
   to4b->Write();
-  ofile->Close();
+  mvaofile->Close();
   return ;
 }
 //
