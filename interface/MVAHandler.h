@@ -60,13 +60,11 @@ class MVAHandler
                );
 
   //write mode, to mva tree
-  bool initFile( TFile *mvaf );
-  TFile *mvaofile;
   bool initTree(TTree *t3b, TTree *t4b);
+  void fillTree();
+  void writeTree( TString outURL );
+ private:
   //the tree, 2 for 3b 4b separately
   TTree *to3b, *to4b;
-  void fillTree();
-  void writeTree();
- private:
 };
 #endif
