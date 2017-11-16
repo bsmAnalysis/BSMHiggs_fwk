@@ -60,10 +60,12 @@ void MVAHandler::getEntry(
 }
 
 //
-bool MVAHandler::initTree(TTree *t3b, TTree *t4b)
+bool MVAHandler::initTree(TString mvaout)
 {
-  if ( t3b == 0 ) return false;
-  to3b = t3b;
+  //write mode, to mva tree
+  MVAofile = TFile::Open( mvaout, "recreate");
+  to3b = new TTree("TribMVA","TribMVA");
+  to4b = new TTree("QuabMVA","QuabMVA");
 
   to3b->Branch("WpT",  &evSummary_.WpT,  "WpT/F");
   to3b->Branch("Hmass",  &evSummary_.Hmass,  "Hmass/F");
@@ -73,9 +75,6 @@ bool MVAHandler::initTree(TTree *t3b, TTree *t4b)
   to3b->Branch("HHt",  &evSummary_.HHt,  "HHt/F");
   to3b->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F");
   to3b->Branch("weight",  &evSummary_.weight,  "weight/F");
-
-  if ( t4b == 0 ) return false;
-  to4b = t4b;
 
   to4b->Branch("WpT",  &evSummary_.WpT,  "WpT/F");
   to4b->Branch("Hmass",  &evSummary_.Hmass,  "Hmass/F");
@@ -111,7 +110,7 @@ void MVAHandler::fillTree()
 }
 
 //
-void MVAHandler::writeTree( TString outURL )
+void MVAHandler::writeTree()
 {
   //TFile *MVAofile=TFile::Open( outURL, "recreate");
   to3b->Write();

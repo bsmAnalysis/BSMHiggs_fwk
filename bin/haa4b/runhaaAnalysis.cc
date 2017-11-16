@@ -519,10 +519,7 @@ int main(int argc, char* argv[])
     //construct MVA out put file name
     TString mvaout = TString ( runProcess.getParameter<std::string>("outdir") ) + "/mva_" + outFileUrl + ".root";
     MVAHandler myMVAHandler_;
-    myMVAHandler_.MVAofile = TFile::Open( mvaout, "recreate");
-    TTree* TribMVATree = new TTree("TribMVA","TribMVA");
-    TTree* QuabMVATree = new TTree("QuabMVA","QuabMVA");
-    myMVAHandler_.initTree( TribMVATree, QuabMVATree );
+    myMVAHandler_.initTree(mvaout);
 
     //####################################################################################################################
     //###########################################           EVENT LOOP         ###########################################
@@ -1441,7 +1438,7 @@ int main(int argc, char* argv[])
     file->Close();
 
     //write MVA files
-    myMVAHandler_.writeTree( mvaout );
+    myMVAHandler_.writeTree();
 
     //##############################################
     //########     SAVING HISTO TO FILE     ########
