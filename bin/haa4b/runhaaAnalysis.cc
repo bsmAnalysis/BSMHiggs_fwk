@@ -505,7 +505,6 @@ int main(int argc, char* argv[])
         //if ( verbose )
         printf("pu = %3d has weight = %7.3f \n",ibin,x);
       }
-
     } // is MC
     
     // event categorizer
@@ -517,7 +516,10 @@ int main(int argc, char* argv[])
     //####################################################################################################################
     //###########################################           MVAHandler         ###########################################
     //####################################################################################################################
+    //construct MVA out put file name
+    TString mvaout = TString ( runProcess.getParameter<std::string>("outdir") ) + "/mva_" + outFileUrl + ".root";
     MVAHandler myMVAHandler_;
+    myMVAHandler_.MVAofile = TFile::Open( mvaout, "recreate");
     TTree* TribMVATree = new TTree("TribMVA","TribMVA");
     TTree* QuabMVATree = new TTree("QuabMVA","QuabMVA");
     myMVAHandler_.initTree( TribMVATree, QuabMVATree );
@@ -1438,6 +1440,9 @@ int main(int argc, char* argv[])
     printf("\n");
     file->Close();
 
+    //write MVA files
+    myMVAHandler_.writeTree( mvaout );
+
     //##############################################
     //########     SAVING HISTO TO FILE     ########
     //##############################################
@@ -1452,9 +1457,4 @@ int main(int argc, char* argv[])
     ofile->Close();
 
     if ( outTxtFile_final ) fclose(outTxtFile_final);
-
-    //construct MVA out put file name
-    TString mvaout = TString ( runProcess.getParameter<std::string>("outdir") ) + "/mva_" + outFileUrl + ".root";
-    //write MVA files
-    myMVAHandler_.writeTree( mvaout );
 }
