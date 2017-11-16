@@ -519,6 +519,9 @@ int main(int argc, char* argv[])
     //###########################################           MVAHandler         ###########################################
     //####################################################################################################################
     MVAHandler myMVAHandler_;
+    //construct MVA out put file name
+    TString mvaout = TString ( runProcess.getParameter<std::string>("outdir") ) + "/mva_" + outFileUrl + ".root";
+    myMVAHandler_.initFile( mvaout );
     TTree* TribMVATree = new TTree("TribMVA","TribMVA");
     TTree* QuabMVATree = new TTree("QuabMVA","QuabMVA");
     myMVAHandler_.initTree( TribMVATree, QuabMVATree );
@@ -1457,9 +1460,7 @@ int main(int argc, char* argv[])
 
     if ( outTxtFile_final ) fclose(outTxtFile_final);
 
-    //construct MVA out put file name
-    TString mvaout = TString ( runProcess.getParameter<std::string>("outdir") ) + "/mva_" + outFileUrl + ".root";
     //write MVA files
-    myMVAHandler_.writeTree( mvaout );
+    myMVAHandler_.writeTree();
 }
 

@@ -13,9 +13,9 @@ datapileup_latest = cms.vdouble(0, 238797, 837543, 2.30843e+06, 3.12475e+06, 4.4
 
 runProcess = cms.PSet(
     #input = cms.string("/afs/cern.ch/work/g/georgia/BSMAnalysis/CMSSW_8_0_26_patch1/src/UserCode/bsmhiggs_fwk/test/haa4b/ntuples/MC13TeV_Wh_amass20_0.root"),
-    input = cms.string("/afs/cern.ch/work/h/hua/Haa4b/signalNtuple/MC13TeV_Wh_amass20_0.root"),
+    input = cms.string("/uscms_data/d3/hwei/Haa4b/signalNtuple/MC13TeV_Wh_amass20_0.root"),
     #outdir = cms.string("/afs/cern.ch/work/g/georgia/BSMAnalysis/CMSSW_8_0_26_patch1/src/UserCode/bsmhiggs_fwk/test/haa4b/results_Ntpl_2017_09_18"),
-    outdir = cms.string("/afs/cern.ch/work/h/hua/Haa4b/STDTest/results_Ntpl_2017_11_09"),
+    outdir = cms.string("/uscms_data/d3/hwei/Haa4b/STDTest/results_Ntpl_2017_11_15"),
     tag = cms.string("MC13TeV_Wh_amass20"),
     dirName = cms.string("mainNtuplizer/data"),
     isMC = cms.bool(True),
