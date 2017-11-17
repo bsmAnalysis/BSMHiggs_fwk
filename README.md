@@ -2,8 +2,8 @@
 
 ```bash
 export SCRAM_ARCH=slc6_amd64_gcc530
-cmsrel CMSSW_8_0_27
-cd CMSSW_8_0_27/src
+cmsrel CMSSW_8_0_26_patch1
+cd CMSSW_8_0_26_patch1/src
 cmsenv
 git cms-init
 #Checkout Some Packages from Egamma ( https://twiki.cern.ch/twiki/bin/viewauth/CMS/EGMRegression#Consistent_EGMSmearer )
