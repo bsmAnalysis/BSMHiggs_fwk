@@ -1419,7 +1419,7 @@ int main(int argc, char* argv[])
             wsum.pt(), //W only, w pt
             allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
             dphi_Wh, //W and H, dr 
-            weight
+            puWeight //note, since weight is not the weight we want, we store all others except xSec weight
           );
           myMVAHandler_.fillTree();
         }
