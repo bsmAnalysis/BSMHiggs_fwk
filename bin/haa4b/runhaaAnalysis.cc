@@ -1411,6 +1411,8 @@ int main(int argc, char* argv[])
 	 mon.fillHisto("dmmin",tags,dm, weight);
 
         //############ MVA Handler ############
+        float mvaweight = 1.0;
+        genWeight > 0 ? mvaweight = puWeight : mvaweight = -puWeight; // absorb the negative sign 
         if ( GoodIdbJets.size() >= 3 )
         {
           myMVAHandler_.getEntry
@@ -1419,7 +1421,7 @@ int main(int argc, char* argv[])
             wsum.pt(), //W only, w pt
             allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
             dphi_Wh, //W and H, dr 
-            puWeight //note, since weight is not the weight we want, we store all others except xSec weight
+            mvaweight //note, since weight is not the weight we want, we store all others except xSec weight
           );
           myMVAHandler_.fillTree();
         }
