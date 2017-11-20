@@ -34,6 +34,8 @@ struct MVAEvtContainer
   float HHt = -1.0;
   //dr W and Higgs 
   float WHdR = -1.0;
+  //weight
+  float weight = -1.0;
 };
 
 class MVAHandler 
@@ -53,15 +55,17 @@ class MVAHandler
                 bool is3b, bool is4b,
                 float Wpt, //W only
                 float Hmass, float HpT, float bbdRAve, float bbdMMin, float HHt, //Higgs only
-                float WHdR //W and H
+                float WHdR, //W and H
+                float weight
                );
 
   //write mode, to mva tree
-  bool initTree(TTree *t3b, TTree *t4b);
-  void fillTree();
-  void writeTree( TString outURL );
- private:
+  TFile* MVAofile;
   //the tree, 2 for 3b 4b separately
   TTree *to3b, *to4b;
+  bool initTree(TString mvaout);
+  void fillTree();
+  void writeTree();
+ private:
 };
 #endif

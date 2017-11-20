@@ -35,7 +35,9 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 #--------------------------------------------------
 
 #SUFFIX=_2017_09_18
-SUFFIX=_2017_09_21
+#SUFFIX=_2017_09_20 #Data
+#SUFFIX=_2017_09_21 #BG MC
+SUFFIX=_2017_11_15 #SG MC
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
@@ -93,15 +95,16 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "JOB SUBMISSION for Ntuplization using full CMSSW fwk"
        echo "Input: " $JSON
        echo "Output: " $RESULTSDIR
-       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_dataOnly -s crab
-#       runAnalysisOverSamples.py -e runNtuplizer -j $JSON -o $RESULTSDIR  -c $MAINDIR/../runNtuplizer_cfg.py.templ -p "@data_pileup=datapileup_latest @verbose=False" -s $queue --report True --key haa_test $arguments
+       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_dataOnly -s crab
+       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_signal -s crab #-t MC13TeV_Wh_amass50
+       #runAnalysisOverSamples.py -e runNtuplizer -j $JSON -o $RESULTSDIR  -c $MAINDIR/../runNtuplizer_cfg.py.templ -p "@data_pileup=datapileup_latest @verbose=False" -s $queue --report True --key haa_test $arguments
    fi    
 
    if [[ $step == 1.1 ]]; then  #submit jobs for h->aa->XXYY analysis
        echo "JOB SUBMISSION for BSM h->aa Analysis"
        echo "Input: " $NTPL_JSON
        echo "Output: " $NTPL_OUTDIR
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@data_pileup=datapileup_latest @runSystematics=False @usemetNoHF=False @verbose=True" -s $queue -t MC13TeV_WWZ_2016
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@data_pileup=datapileup_latest @runSystematics=False @usemetNoHF=False @verbose=True" -s $queue #-t MC13TeV_WWZ_2016
 #MC13TeV_SingleT_at_2016
        #'dtag' to match sample: "-t MC13TeV_Wh_amass20"
    fi
