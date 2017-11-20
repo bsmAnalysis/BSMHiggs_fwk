@@ -85,6 +85,13 @@ const float mu_threshold_=25.;
 const float ele_threshold_=30.;
 const float jet_threshold_=20.;
 
+//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco#Data_MC_Scale_Factors
+
+const float DeepCSVLooseWP = 0.2219;
+const float DeepCSVMediumWP = 0.6324;
+const float DeepCSVTightWP = 0.8958;
+
+bool use_DeepCSV = false;  // This variable will set DeepCSV as the default b-tagger
 
 int main(int argc, char* argv[])
 {
@@ -97,7 +104,7 @@ int main(int argc, char* argv[])
         std::cout << "Usage : " << argv[0] << " parameters_cfg.py" << std::endl;
         exit(0);
     }
-
+   
     // load framework libraries
     gSystem->Load( "libFWCoreFWLite" );
     //AutoLibraryLoader::enable();
@@ -180,7 +187,17 @@ int main(int argc, char* argv[])
     float leff(0.13), sfl(1.05), sflunc(0.12);
 
     // setup calibration readers 80X
-    BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_Moriond17_B_H.csv");
+    std::string b_tagging_name, csv_file_path;
+    if (!use_DeepCSV) 
+    {
+       b_tagging_name = "CSVv2"; 
+       csv_file_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_Moriond17_B_H.csv";
+    }
+    if ( use_DeepCSV) {
+       b_tagging_name = "DeepCSV"; 
+       csv_file_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_Moriond17_B_H.csv";
+    }
+    BTagCalibration btagCalib(b_tagging_name, csv_file_path);
     // setup calibration readers 80X
     BTagCalibrationReader80X btagCal80X   (BTagEntry::OP_LOOSE, "central", {"up", "down"});
     btagCal80X.load(btagCalib, BTagEntry::FLAV_B, "comb");
@@ -887,15 +904,26 @@ int main(int argc, char* argv[])
 
   
 	  // B-tagging
-  
-	  nCSVLtags += (corrJets[ijet].btag0>CSVLooseWP);
-	  nCSVMtags += (corrJets[ijet].btag0>CSVMediumWP);
-	  nCSVTtags += (corrJets[ijet].btag0>CSVTightWP);
-  
-	  mon.fillHisto("b_discrim","csv",corrJets[ijet].btag0,weight);
-	  if (corrJets[ijet].motherid == 36) mon.fillHisto("b_discrim","csv_true",corrJets[ijet].btag0,weight);
-  
-	  bool hasCSVtag(corrJets[ijet].btag0>CSVLooseWP);
+	  bool hasCSVtag;
+          if ( !use_DeepCSV) 
+          {
+  	    nCSVLtags += (corrJets[ijet].btag0>CSVLooseWP);
+	    nCSVMtags += (corrJets[ijet].btag0>CSVMediumWP);
+	    nCSVTtags += (corrJets[ijet].btag0>CSVTightWP);
+            mon.fillHisto("b_discrim","csv",corrJets[ijet].btag0,weight);
+            if (corrJets[ijet].motherid == 36) mon.fillHisto("b_discrim","csv_true",corrJets[ijet].btag0,weight);
+            hasCSVtag = corrJets[ijet].btag0>CSVLooseWP;
+          }//if !use_DeepCSV
+
+          if ( use_DeepCSV)
+          {
+            nCSVLtags += (corrJets[ijet].btag1>DeepCSVLooseWP);
+            nCSVMtags += (corrJets[ijet].btag1>DeepCSVMediumWP);
+            nCSVTtags += (corrJets[ijet].btag1>DeepCSVTightWP);
+            mon.fillHisto("b_discrim","deepcsv",corrJets[ijet].btag1,weight); 
+            if (corrJets[ijet].motherid == 36) mon.fillHisto("b_discrim","deepcsv_true",corrJets[ijet].btag1,weight);
+            hasCSVtag = corrJets[ijet].btag1>DeepCSVLooseWP; 
+          }
 	  if (isMC) {
 	    //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X
 	    btsfutil.SetSeed(ev.event*10 + ijet*10000);
@@ -1279,8 +1307,16 @@ int main(int argc, char* argv[])
 	// AK4 + CSV jets
 	is=0;
 	for (auto & jet : CSVLoosebJets) {
-	   mon.fillHisto("jet_pt_raw", "csv"+htag[is], jet.pt(),weight);
-	   mon.fillHisto("jet_eta_raw", "csv"+htag[is], jet.eta(),weight);
+           if (!use_DeepCSV)
+           {
+	     mon.fillHisto("jet_pt_raw", "csv"+htag[is], jet.pt(),weight);
+	     mon.fillHisto("jet_eta_raw", "csv"+htag[is], jet.eta(),weight);
+           }
+           if (use_DeepCSV)
+           {
+             mon.fillHisto("jet_pt_raw", "deepcsv"+htag[is], jet.pt(),weight);
+             mon.fillHisto("jet_eta_raw", "deepcsv"+htag[is], jet.eta(),weight);
+           }
 	   is++;
 	   if (is>3) break; // plot only up to 4 b-jets ?
 	}
