@@ -824,10 +824,6 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 
 	 ev.jet_btag0[ev.jet] = j.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
          ev.jet_btag1[ev.jet] = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
-
-         //if you have regenerated DeepCSV in MiniAOD, use this line instead:
-         //ev.jet_btag1[ev.jet] = j.bDiscriminator("deepFlavourJetTags:probb"  ) + j.bDiscriminator("deepFlavourJetTags:probbb"  );
-         
 	 // ev.jet_btag1[ev.jet] = j.bDiscriminator("pfJetBProbabilityBJetTags");
 	 // ev.jet_btag2[ev.jet] = j.bDiscriminator("pfJetProbabilityBJetTags");
 	 // ev.jet_btag3[ev.jet] = j.bDiscriminator("pfTrackCountingHighPurBJetTags");
