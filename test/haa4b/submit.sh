@@ -36,8 +36,8 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 
 #SUFFIX=_2017_09_18
 #SUFFIX=_2017_09_20 #Data
-#SUFFIX=_2017_09_21 #BG MC
-SUFFIX=_2017_11_15 #SG MC
+SUFFIX=_2017_09_21 #BG MC
+#SUFFIX=_2017_11_15 #SG MC
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
