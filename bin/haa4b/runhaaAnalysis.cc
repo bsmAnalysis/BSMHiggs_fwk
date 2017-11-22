@@ -85,6 +85,11 @@ const float mu_threshold_=25.;
 const float ele_threshold_=30.;
 const float jet_threshold_=20.;
 
+//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco#Data_MC_Scale_Factors
+
+const float DeepCSVLooseWP = 0.2219;
+const float DeepCSVMediumWP = 0.6324;
+const float DeepCSVTightWP = 0.8958;
 
 int main(int argc, char* argv[])
 {
@@ -97,7 +102,7 @@ int main(int argc, char* argv[])
         std::cout << "Usage : " << argv[0] << " parameters_cfg.py" << std::endl;
         exit(0);
     }
-
+   
     // load framework libraries
     gSystem->Load( "libFWCoreFWLite" );
     //AutoLibraryLoader::enable();
@@ -105,7 +110,7 @@ int main(int argc, char* argv[])
 
     // configure the process
     const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
-
+    bool use_DeepCSV = runProcess.getParameter<bool>("useDeepCSV"); // Will set DeepCSV as the default b-tagger automaticaly
     bool isMC = runProcess.getParameter<bool>("isMC");
     
     int mctruthmode = runProcess.getParameter<int>("mctruthmode");
@@ -180,7 +185,20 @@ int main(int argc, char* argv[])
     float leff(0.13), sfl(1.05), sflunc(0.12);
 
     // setup calibration readers 80X
-    BTagCalibration btagCalib("CSVv2", string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_Moriond17_B_H.csv");
+    std::string b_tagging_name, csv_file_path;
+    float LooseWP = -1, MediumWP = -1, TightWP = -1;
+    if (!use_DeepCSV) 
+    {
+       b_tagging_name = "CSVv2"; 
+       csv_file_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_Moriond17_B_H.csv";
+       LooseWP = CSVLooseWP;     MediumWP = CSVMediumWP;     TightWP = CSVTightWP;
+    }
+    if ( use_DeepCSV) {
+       b_tagging_name = "DeepCSV"; 
+       csv_file_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_Moriond17_B_H.csv";
+       LooseWP = DeepCSVLooseWP; MediumWP = DeepCSVMediumWP; TightWP = DeepCSVTightWP;
+    }
+    BTagCalibration btagCalib(b_tagging_name, csv_file_path);
     // setup calibration readers 80X
     BTagCalibrationReader80X btagCal80X   (BTagEntry::OP_LOOSE, "central", {"up", "down"});
     btagCal80X.load(btagCalib, BTagEntry::FLAV_B, "comb");
@@ -887,15 +905,16 @@ int main(int argc, char* argv[])
 
   
 	  // B-tagging
-  
-	  nCSVLtags += (corrJets[ijet].btag0>CSVLooseWP);
-	  nCSVMtags += (corrJets[ijet].btag0>CSVMediumWP);
-	  nCSVTtags += (corrJets[ijet].btag0>CSVTightWP);
-  
-	  mon.fillHisto("b_discrim","csv",corrJets[ijet].btag0,weight);
-	  if (corrJets[ijet].motherid == 36) mon.fillHisto("b_discrim","csv_true",corrJets[ijet].btag0,weight);
-  
-	  bool hasCSVtag(corrJets[ijet].btag0>CSVLooseWP);
+	  bool hasCSVtag;
+          double btag_dsc = -1;
+          if ( use_DeepCSV ) {btag_dsc = corrJets[ijet].btag1;} else {btag_dsc = corrJets[ijet].btag0;}
+  	  nCSVLtags += (btag_dsc>LooseWP);
+	  nCSVMtags += (btag_dsc>MediumWP);
+          nCSVTtags += (btag_dsc>TightWP);
+          mon.fillHisto("b_discrim",b_tagging_name,btag_dsc,weight);
+          if (corrJets[ijet].motherid == 36) mon.fillHisto("b_discrim",b_tagging_name+"_true",btag_dsc,weight);
+          hasCSVtag = btag_dsc>LooseWP;
+
 	  if (isMC) {
 	    //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X
 	    btsfutil.SetSeed(ev.event*10 + ijet*10000);
@@ -1279,8 +1298,8 @@ int main(int argc, char* argv[])
 	// AK4 + CSV jets
 	is=0;
 	for (auto & jet : CSVLoosebJets) {
-	   mon.fillHisto("jet_pt_raw", "csv"+htag[is], jet.pt(),weight);
-	   mon.fillHisto("jet_eta_raw", "csv"+htag[is], jet.eta(),weight);
+	     mon.fillHisto("jet_pt_raw", b_tagging_name+htag[is], jet.pt(),weight);
+	     mon.fillHisto("jet_eta_raw", b_tagging_name+htag[is], jet.eta(),weight);
 	   is++;
 	   if (is>3) break; // plot only up to 4 b-jets ?
 	}

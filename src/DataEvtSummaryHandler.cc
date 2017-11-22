@@ -218,6 +218,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("jet_pz",                evSummary_.jet_pz,                  "jet_pz[jet]/F");
     t_->Branch("jet_en",                evSummary_.jet_en,                  "jet_en[jet]/F");
     t_->Branch("jet_btag0",             evSummary_.jet_btag0,               "jet_btag0[jet]/F");
+    t_->Branch("jet_btag1",             evSummary_.jet_btag1,               "jet_btag1[jet]/F");
     /*
     t_->Branch("jet_btag1",             evSummary_.jet_btag1,               "jet_btag1[jet]/F");
     t_->Branch("jet_btag2",             evSummary_.jet_btag2,               "jet_btag2[jet]/F");
@@ -532,6 +533,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("jet_pz",                  evSummary_.jet_pz);
     t_->SetBranchAddress("jet_en",                  evSummary_.jet_en);
     t_->SetBranchAddress("jet_btag0",               evSummary_.jet_btag0);
+    t_->SetBranchAddress("jet_btag1",               evSummary_.jet_btag1);
     /*
     t_->SetBranchAddress("jet_btag1",               evSummary_.jet_btag1);
     t_->SetBranchAddress("jet_btag2",               evSummary_.jet_btag2);

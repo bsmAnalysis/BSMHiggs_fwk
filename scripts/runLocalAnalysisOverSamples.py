@@ -162,6 +162,7 @@ for proc in procList :
                 if(params.find('@saveSummaryTree')<0) : params = '@saveSummaryTree=False ' + params
                 if(params.find('@runSystematics')<0) :  params = '@runSystematics=False ' + params
                 if(params.find('@usemetNoHF')<0) :  	params = '@usemetNoHF=False ' + params
+                if(params.find('@useDeepCSV')<0) :      params = '@useDeepCSV=False ' + params
                 if(len(params)>0) :
                     extracfgs = params.split(' ')
                     for icfg in extracfgs :
