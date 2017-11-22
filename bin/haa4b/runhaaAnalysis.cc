@@ -186,7 +186,6 @@ int main(int argc, char* argv[])
 
     // setup calibration readers 80X
     std::string b_tagging_name, csv_file_path;
-    double btag_dsc = -2;
     float LooseWP = -1, MediumWP = -1, TightWP = -1;
     if (!use_DeepCSV) 
     {
@@ -908,7 +907,7 @@ int main(int argc, char* argv[])
 	  // B-tagging
 	  bool hasCSVtag;
           double btag_dsc = -1;
-          if ( use_DeepCSV ) {btag_dsc = btag1;} else {btag_dsc = btag0;}
+          if ( use_DeepCSV ) {btag_dsc = corrJets[ijet].btag1;} else {btag_dsc = corrJets[ijet].btag0;}
   	  nCSVLtags += (btag_dsc>LooseWP);
 	  nCSVMtags += (btag_dsc>MediumWP);
           nCSVTtags += (btag_dsc>TightWP);
