@@ -15,6 +15,11 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.load('Configuration.Geometry.GeometryIdeal_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 
+#------ Declare the correct global tag ------#
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+#process.GlobalTag.globaltag = '80X_dataRun2_2016SeptRepro_v7'
+process.GlobalTag.globaltag = '@gtag'
+
 if @useDeepCSV:
   process.options   = cms.untracked.PSet(
      allowUnscheduled = cms.untracked.bool(True)
@@ -32,11 +37,6 @@ if @useDeepCSV:
       jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
       btagDiscriminators = bTagDiscriminators
   )
-
-#------ Declare the correct global tag ------#
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
-#process.GlobalTag.globaltag = '80X_dataRun2_2016SeptRepro_v7'
-process.GlobalTag.globaltag = '@gtag'
 
 process.mainNtuplizer.isMC = cms.bool(@isMC)
 process.mainNtuplizer.dtag = cms.string("@dtag")

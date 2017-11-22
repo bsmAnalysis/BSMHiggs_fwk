@@ -186,14 +186,18 @@ int main(int argc, char* argv[])
 
     // setup calibration readers 80X
     std::string b_tagging_name, csv_file_path;
+    double btag_dsc = -2;
+    float LooseWP = -1, MediumWP = -1, TightWP = -1;
     if (!use_DeepCSV) 
     {
        b_tagging_name = "CSVv2"; 
        csv_file_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_Moriond17_B_H.csv";
+       LooseWP = CSVLooseWP;     MediumWP = CSVMediumWP;     TightWP = CSVTightWP;
     }
     if ( use_DeepCSV) {
        b_tagging_name = "DeepCSV"; 
        csv_file_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_Moriond17_B_H.csv";
+       LooseWP = DeepCSVLooseWP; MediumWP = DeepCSVMediumWP; TightWP = DeepCSVTightWP;
     }
     BTagCalibration btagCalib(b_tagging_name, csv_file_path);
     // setup calibration readers 80X
@@ -903,25 +907,15 @@ int main(int argc, char* argv[])
   
 	  // B-tagging
 	  bool hasCSVtag;
-          if ( !use_DeepCSV) 
-          {
-  	    nCSVLtags += (corrJets[ijet].btag0>CSVLooseWP);
-	    nCSVMtags += (corrJets[ijet].btag0>CSVMediumWP);
-	    nCSVTtags += (corrJets[ijet].btag0>CSVTightWP);
-            mon.fillHisto("b_discrim","csv",corrJets[ijet].btag0,weight);
-            if (corrJets[ijet].motherid == 36) mon.fillHisto("b_discrim","csv_true",corrJets[ijet].btag0,weight);
-            hasCSVtag = corrJets[ijet].btag0>CSVLooseWP;
-          }//if !use_DeepCSV
+          double btag_dsc = -1;
+          if ( use_DeepCSV ) {btag_dsc = btag1;} else {btag_dsc = btag0;}
+  	  nCSVLtags += (btag_dsc>LooseWP);
+	  nCSVMtags += (btag_dsc>MediumWP);
+          nCSVTtags += (btag_dsc>TightWP);
+          mon.fillHisto("b_discrim",b_tagging_name,btag_dsc,weight);
+          if (corrJets[ijet].motherid == 36) mon.fillHisto("b_discrim",b_tagging_name+"_true",btag_dsc,weight);
+          hasCSVtag = btag_dsc>LooseWP;
 
-          if ( use_DeepCSV)
-          {
-            nCSVLtags += (corrJets[ijet].btag1>DeepCSVLooseWP);
-            nCSVMtags += (corrJets[ijet].btag1>DeepCSVMediumWP);
-            nCSVTtags += (corrJets[ijet].btag1>DeepCSVTightWP);
-            mon.fillHisto("b_discrim","deepcsv",corrJets[ijet].btag1,weight); 
-            if (corrJets[ijet].motherid == 36) mon.fillHisto("b_discrim","deepcsv_true",corrJets[ijet].btag1,weight);
-            hasCSVtag = corrJets[ijet].btag1>DeepCSVLooseWP; 
-          }
 	  if (isMC) {
 	    //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X
 	    btsfutil.SetSeed(ev.event*10 + ijet*10000);
@@ -1305,16 +1299,8 @@ int main(int argc, char* argv[])
 	// AK4 + CSV jets
 	is=0;
 	for (auto & jet : CSVLoosebJets) {
-           if (!use_DeepCSV)
-           {
-	     mon.fillHisto("jet_pt_raw", "csv"+htag[is], jet.pt(),weight);
-	     mon.fillHisto("jet_eta_raw", "csv"+htag[is], jet.eta(),weight);
-           }
-           if (use_DeepCSV)
-           {
-             mon.fillHisto("jet_pt_raw", "deepcsv"+htag[is], jet.pt(),weight);
-             mon.fillHisto("jet_eta_raw", "deepcsv"+htag[is], jet.eta(),weight);
-           }
+	     mon.fillHisto("jet_pt_raw", b_tagging_name+htag[is], jet.pt(),weight);
+	     mon.fillHisto("jet_eta_raw", b_tagging_name+htag[is], jet.eta(),weight);
 	   is++;
 	   if (is>3) break; // plot only up to 4 b-jets ?
 	}
