@@ -91,8 +91,6 @@ const float DeepCSVLooseWP = 0.2219;
 const float DeepCSVMediumWP = 0.6324;
 const float DeepCSVTightWP = 0.8958;
 
-bool use_DeepCSV = false;  // This variable will set DeepCSV as the default b-tagger
-
 int main(int argc, char* argv[])
 {
     //##################################################################################
@@ -112,7 +110,7 @@ int main(int argc, char* argv[])
 
     // configure the process
     const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
-
+    bool use_DeepCSV = runProcess.getParameter<bool>("useDeepCSV"); // Will set DeepCSV as the default b-tagger automaticaly
     bool isMC = runProcess.getParameter<bool>("isMC");
     
     int mctruthmode = runProcess.getParameter<int>("mctruthmode");

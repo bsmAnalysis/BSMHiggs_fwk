@@ -6,6 +6,14 @@ cmsrel CMSSW_8_0_26_patch1
 cd CMSSW_8_0_26_patch1/src
 cmsenv
 git cms-init
+#Only if you need DeepCSV
+git cms-merge-topic -u mverzett:DeepFlavour-from-CMSSW_8_0_21
+mkdir RecoBTag/DeepFlavour/data/
+cd RecoBTag/DeepFlavour/data/ 
+wget http://home.fnal.gov/~verzetti//DeepFlavour/training/DeepFlavourNoSL.json 
+cd -
+scram b
+ 
 #Checkout Some Packages from Egamma ( https://twiki.cern.ch/twiki/bin/viewauth/CMS/EGMRegression#Consistent_EGMSmearer )
 git cms-merge-topic cms-egamma:EGM_gain_v1
 cd $CMSSW_BASE/src/EgammaAnalysis/ElectronTools/data

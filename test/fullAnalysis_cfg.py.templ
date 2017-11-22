@@ -15,6 +15,24 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.load('Configuration.Geometry.GeometryIdeal_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 
+if @useDeepCSV:
+  process.options   = cms.untracked.PSet(
+     allowUnscheduled = cms.untracked.bool(True)
+  )
+  ## b-tag discriminators
+  bTagDiscriminators = [
+    'deepFlavourJetTags:probb',
+    'deepFlavourJetTags:probbb',
+  ]
+  from PhysicsTools.PatAlgos.tools.jetTools import *
+  ## Update the slimmedJets in miniAOD: corrections from the chosen Global Tag are applied and the b-tag discriminators are re-evaluated
+  updateJetCollection(
+      process,
+      jetSource = cms.InputTag('slimmedJets'),
+      jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
+      btagDiscriminators = bTagDiscriminators
+  )
+
 #------ Declare the correct global tag ------#
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 #process.GlobalTag.globaltag = '80X_dataRun2_2016SeptRepro_v7'
@@ -25,7 +43,8 @@ process.mainNtuplizer.dtag = cms.string("@dtag")
 process.mainNtuplizer.xsec = cms.double(@xsec)
 process.mainNtuplizer.mctruthmode = cms.int32(@mctruthmode)
 process.mainNtuplizer.verbose = cms.bool(@verbose)
-
+if @useDeepCSV:
+  process.mainNtuplizer.jetsTag = cms.InputTag('selectedUpdatedPatJets')
 
 process.source = cms.Source("PoolSource",
 	       	     fileNames = cms.untracked.vstring()
