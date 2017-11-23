@@ -206,6 +206,8 @@ parser.add_option('-r', "--report"     ,    dest='report'             , help='If
 parser.add_option('-D', "--db"         ,    dest='db'                 , help='DB to get file list for a given dset'      , default=DatasetFileDB)
 parser.add_option('-F', "--resubmit"   ,    dest='resubmit'           , help='resubmit jobs that failed'                 , default=False, action="store_true")
 parser.add_option('-w', "--recreate"   ,    dest='recreate'           , help='recreate and resubmit jobs that failed'    , default=False)
+parser.add_option('-b', "--useDeepCSV" ,    dest='useDeepCSV'         , help='Whether or not to use DeepCSV'             , default=False)
+
 if(commands.getstatusoutput("hostname -f")[1].find("iihe.ac.be")!=-1): parser.add_option('-S', "--NFile"      ,    dest='NFile'              , help='default #Files per job (for autosplit)'    , default=6)
 else: parser.add_option('-S', "--NFile"      ,    dest='NFile'              , help='default #Files per job (for autosplit)'    , default=8)
 parser.add_option('-f', "--localnfiles",    dest='localnfiles'        , help='number of parallel jobs to run locally'    , default=8)
@@ -327,11 +329,13 @@ for procBlock in procList :
                        sedcmd += 's%@mctruthmode%'+str(mctruthmode)+'%;'
                    #                   sedcmd += 's%@resonance%'+str(resonance)+'%;'
                        sedcmd += 's%@xsec%'+str(xsec)+'%;'
+                       sedcmd += 's%@useDeepCSV'+str(opt.useDeepCSV)+'%;'
                    else:
                        sedcmd += 's%@gtag%'+ str(getByLabel(procData,'gtag','')) +'%;'
                        sedcmd += 's%@isMC%' + str(not (isdata or isdatadriven) )+'%;'
                        sedcmd += 's%@mctruthmode%'+str(mctruthmode)+'%;'
                        sedcmd += 's%@xsec%'+str(xsec)+'%;'
+                       sedcmd += 's%@useDeepCSV'+str(opt.useDeepCSV)+'%;'
                        #sedcmd += 's%"@input"%'+ '""'+ '%;' 
 #                   sedcmd += 's%@cprime%'+str(getByLabel(procData,'cprime',-1))+'%;'
 #                   sedcmd += 's%@brnew%' +str(getByLabel(procData,'brnew' ,-1))+'%;'
