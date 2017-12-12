@@ -666,7 +666,7 @@
                         1.0
                     ],
                     "dset": [
-                        "/MinBias/sghiasis-crab_Private_production_m20_Nov_14_MiniAOD-9fa49160dc28c3dbeac6b80d5ed131ae/USER"
+                        "/MinBias/sghiasis-crab_Wh_production_m20_Dec4_CMSSW8021-28028af67189b3de7224b79195bd0e1d/USER"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_Wh_amass20",
@@ -694,7 +694,7 @@
                         1.0
                     ],
                     "dset": [
-                        "/MinBias/sghiasis-crab_Private_production_m50_Nov_15_MiniAOD-9fa49160dc28c3dbeac6b80d5ed131ae/USER"
+                        "/MinBias/sghiasis-crab_Wh_production_m50_Dec4_CMSSW8021-28028af67189b3de7224b79195bd0e1d/USER"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_Wh_amass50",
@@ -723,7 +723,7 @@
                         1.0
                     ],
                     "dset": [
-                        "/MinBias/sghiasis-crab_Private_production_m12_Nov_13_MiniAOD-9fa49160dc28c3dbeac6b80d5ed131ae/USER"
+                        "/MinBias/sghiasis-crab_Wh_production_m12_Dec4_CMSSW8021-28028af67189b3de7224b79195bd0e1d/USER"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_Wh_amass12",
@@ -752,7 +752,7 @@
                         1.0
                     ],
                     "dset": [
-                        "/MinBias/sghiasis-crab_Private_production_m15_Nov_13_MiniAOD-9fa49160dc28c3dbeac6b80d5ed131ae/USER"
+                        "/MinBias/sghiasis-crab_Wh_production_m15_Dec4_CMSSW8021-28028af67189b3de7224b79195bd0e1d/USER"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_Wh_amass15",
@@ -781,7 +781,7 @@
                         1.0
                     ],
                     "dset": [
-                        "/MinBias/sghiasis-crab_Private_production_m25_Nov_14_MiniAOD-9fa49160dc28c3dbeac6b80d5ed131ae/USER"
+                        "/MinBias/sghiasis-crab_Wh_production_m25_Dec4_CMSSW8021-28028af67189b3de7224b79195bd0e1d/USER"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_Wh_amass25",
@@ -810,7 +810,7 @@
                         1.0
                     ],
                     "dset": [
-                        "/MinBias/sghiasis-crab_Private_production_m30_Nov_13_MiniAOD-9fa49160dc28c3dbeac6b80d5ed131ae/USER"
+                        "/MinBias/sghiasis-crab_Wh_production_m30_Dec4_CMSSW8021-28028af67189b3de7224b79195bd0e1d/USER"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_Wh_amass30",
@@ -839,7 +839,7 @@
                         1.0
                     ],
                     "dset": [
-                        "/MinBias/sghiasis-crab_Private_production_m40_Nov_15_MiniAOD-9fa49160dc28c3dbeac6b80d5ed131ae/USER"
+                        "/MinBias/sghiasis-crab_Wh_production_m40_Dec4_CMSSW8021-28028af67189b3de7224b79195bd0e1d/USER"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_Wh_amass40",
@@ -868,7 +868,7 @@
                         1.0
                     ],
                     "dset": [
-                        "/MinBias/sghiasis-crab_Private_production_m60_Nov_14_MiniAOD-9fa49160dc28c3dbeac6b80d5ed131ae/USER"
+                        "/MinBias/sghiasis-crab_Wh_production_m60_Dec4_CMSSW8021-28028af67189b3de7224b79195bd0e1d/USER"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_Wh_amass60",
