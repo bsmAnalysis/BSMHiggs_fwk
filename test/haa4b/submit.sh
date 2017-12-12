@@ -36,8 +36,10 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 
 #SUFFIX=_2017_09_18
 #SUFFIX=_2017_09_20 #Data
-SUFFIX=_2017_09_21 #BG MC
-#SUFFIX=_2017_11_15 #SG MC
+#SUFFIX=_2017_09_21 #BG MC
+#SUFFIX=_2017_11_15 #SG MC, but deepcsv in 8027
+#SUFFIX=_2017_12_11 #New SG MC from Amin, deepcsv rework, functional in 8026_patch1
+SUFFIX=_2017_12_12 #LO WJets test
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
@@ -96,7 +98,8 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "Input: " $JSON
        echo "Output: " $RESULTSDIR
        #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_dataOnly -s crab
-       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_signal -s crab #-t MC13TeV_Wh_amass50
+       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_signal -s crab #-t MC13TeV_Wh_amass50
+       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -s crab -t MC13TeV_WJets_ext2_2016
        #runAnalysisOverSamples.py -e runNtuplizer -j $JSON -o $RESULTSDIR  -c $MAINDIR/../runNtuplizer_cfg.py.templ -p "@data_pileup=datapileup_latest @verbose=False" -s $queue --report True --key haa_test $arguments
    fi    
 
