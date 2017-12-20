@@ -107,7 +107,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "JOB SUBMISSION for BSM h->aa Analysis"
        echo "Input: " $NTPL_JSON
        echo "Output: " $NTPL_OUTDIR
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@data_pileup=datapileup_latest @runSystematics=False @usemetNoHF=False @verbose=True @useDeepCSV=False" -s $queue -t MC13TeV_SingleT_at_2016
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@data_pileup=datapileup_latest @runSystematics=False @usemetNoHF=False @verbose=True @useDeepCSV=False" -s $queue -t MC13TeV_DYJetsToLL_50toInf_2016
 #MC13TeV_SingleT_at_2016
        #'dtag' to match sample: "-t MC13TeV_Wh_amass20"
    fi
