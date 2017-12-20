@@ -8,6 +8,7 @@
 #include "UserCode/bsmhiggs_fwk/interface/MacroUtils.h"
 #include "UserCode/bsmhiggs_fwk/interface/DataEvtSummaryHandler.h"
 #include "UserCode/bsmhiggs_fwk/interface/MVAHandler.h"
+#include "UserCode/bsmhiggs_fwk/interface/TMVAReader.h"
 #include "UserCode/bsmhiggs_fwk/interface/BSMPhysicsEvent.h"
 #include "UserCode/bsmhiggs_fwk/interface/SmartSelectionMonitor.h"
 #include "UserCode/bsmhiggs_fwk/interface/PDFInfo.h"
