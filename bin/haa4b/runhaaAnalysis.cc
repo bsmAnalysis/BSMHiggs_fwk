@@ -741,7 +741,7 @@ int main(int argc, char* argv[])
 	    //    default   :
 	    // continue;
         }
-	/*
+        /*
         //split inclusive DY sample into DYToLL and DYToTauTau
         if(isMC && mctruthmode==1) {
             //if(phys.genleptons.size()!=2) continue;
@@ -752,7 +752,7 @@ int main(int argc, char* argv[])
             if(phys.genleptons.size()!=2) continue;
             if(!isDYToTauTau(phys.genleptons[0].id, phys.genleptons[1].id) ) continue;
         }
-	*/
+        */
 
 	// All: "Raw"
 	mon.fillHisto("eventflow","all",0,weight);
@@ -1453,6 +1453,29 @@ int main(int argc, char* argv[])
         dRave_/=dRs.size();
         mon.fillHisto("dRave",tags,dRave_,weight);
         mon.fillHisto("dmmin",tags,dm, weight);
+
+        float mvaBDT(-10.0);
+        if (GoodIdbJets.size() == 3)
+        {
+            mvaBDT = myTribTMVAReader.GenReMVAReader
+                     (
+                      wsum.pt(),
+                      allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht,
+                      dphi_Wh,
+                      "Haa4bSBClassificationTribMVA"
+                     );
+        }
+        else if (GoodIdbJets.size() >= 4)
+        {
+            mvaBDT = myQuabTMVAReader.GenReMVAReader
+                     (
+                      wsum.pt(),
+                      allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht,
+                      dphi_Wh,                                                                                                                                                                              
+                      "Haa4bSBClassificationQuabMVA"
+                     );
+        }
+        else continue;
 
         //############ MVA Handler ############
         float mvaweight = 1.0;
