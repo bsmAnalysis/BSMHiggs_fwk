@@ -550,12 +550,12 @@ int main(int argc, char* argv[])
 
     TMVAReader myTribTMVAReader;
     myTribTMVAReader.InitTMVAReader();
-    std::string TribMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/Haa4bSBClassificationTribMVA_BDT.weights.xml";
+    std::string TribMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/Haa4bSBClassificationTribMVA_BDT.weights.xml";
     myTribTMVAReader.SetupMVAReader( "Haa4bSBClassificationTribMVA", TribMVA_xml_path );
 
     TMVAReader myQuabTMVAReader;
     myQuabTMVAReader.InitTMVAReader();
-    std::string QuabMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/Haa4bSBClassificationQuabMVA_BDT.weights.xml";
+    std::string QuabMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/Haa4bSBClassificationQuabMVA_BDT.weights.xml";
     myQuabTMVAReader.SetupMVAReader( "Haa4bSBClassificationQuabMVA", QuabMVA_xml_path );
     
     //####################################################################################################################
