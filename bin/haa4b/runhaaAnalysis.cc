@@ -360,7 +360,11 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "dmmin",";#Delta m_{b,b}^{min};Events",25,0.,250.));
     mon.addHistogram( new TH1F( "dphijmet", ";|#Delta#it{#phi}(jet,E_{T}^{miss})|;#jet", 20,0,TMath::Pi()) );
     mon.addHistogram( new TH1F( "dphilepmet", ";|#Delta#it{#phi}(lep,E_{T}^{miss})|;Events", 20,0,TMath::Pi()) );
-    
+
+    //MVA
+    mon.addHistogram( new TH1F( "TribMVABDT", "BDT", 100, -0.5, 0.5) );
+    mon.addHistogram( new TH1F( "QuabMVABDT", "BDT", 100, -0.5, 0.5) );
+
     //for MC normalization (to 1/pb)
     TH1F* Hcutflow = (TH1F*) mon.addHistogram( new TH1F ("cutflow" , "cutflow" ,6,0,6) ) ;
     
@@ -1382,7 +1386,7 @@ int main(int argc, char* argv[])
         else 
         {
             tags.push_back("UNKNOWN");
-           printf("\n Unknown category, please check \n");
+            printf("\n Unknown category, please check \n");
         }
  
         //-----------------------------------------------------------
@@ -1464,6 +1468,7 @@ int main(int argc, char* argv[])
                       dphi_Wh,
                       "Haa4bSBClassificationTribMVA"
                      );
+            mon.fillHisto("TribMVABDT", tags, mvaBDT, weight);
         }
         else if (GoodIdbJets.size() >= 4)
         {
@@ -1474,6 +1479,7 @@ int main(int argc, char* argv[])
                       dphi_Wh,                                                                                                                                                                              
                       "Haa4bSBClassificationQuabMVA"
                      );
+            mon.fillHisto("QuabMVABDT", tags, mvaBDT, weight);
         }
         else continue;
 
