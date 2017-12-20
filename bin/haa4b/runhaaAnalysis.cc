@@ -541,6 +541,20 @@ int main(int argc, char* argv[])
     myMVAHandler_.initTree(mvaout);
 
     //####################################################################################################################
+    //###########################################           TMVAReader         ###########################################
+    //####################################################################################################################
+
+    TMVAReader myTribTMVAReader;
+    myTribTMVAReader.InitTMVAReader();
+    std::string TribMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/Haa4bSBClassificationTribMVA_BDT.weights.xml";
+    myTribTMVAReader.SetupMVAReader( "Haa4bSBClassificationTribMVA", TribMVA_xml_path );
+
+    TMVAReader myQuabTMVAReader;
+    myQuabTMVAReader.InitTMVAReader();
+    std::string QuabMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/Haa4bSBClassificationQuabMVA_BDT.weights.xml";
+    myQuabTMVAReader.SetupMVAReader( "Haa4bSBClassificationQuabMVA", QuabMVA_xml_path );
+    
+    //####################################################################################################################
     //###########################################           EVENT LOOP         ###########################################
     //####################################################################################################################
 
@@ -553,7 +567,8 @@ int main(int argc, char* argv[])
     printf("Progressing Bar     :0%%       20%%       40%%       60%%       80%%       100%%\n");
     printf("Scanning the ntuple :");
 
-    for( int iev=evStart; iev<evEnd; iev++) {
+    for( int iev=evStart; iev<evEnd; iev++) 
+    {
         if((iev-evStart)%treeStep==0) {
           printf("."); fflush(stdout);
         }
@@ -864,10 +879,10 @@ int main(int argc, char* argv[])
         //JET AND BTAGGING ANALYSIS
         //
 
-	//###########################################################
-	//  AK4 jets ,
-	// AK4 jets + CSVloose b-tagged configuration
-	//###########################################################
+        //###########################################################
+        //  AK4 jets ,
+        // AK4 jets + CSVloose b-tagged configuration
+        //###########################################################
 
         PhysicsObjectJetCollection GoodIdJets;
         PhysicsObjectJetCollection CSVLoosebJets;
@@ -1328,107 +1343,116 @@ int main(int argc, char* argv[])
         //########  Main Event Selection        ########
         //##############################################
 
-	//-------------------------------------------------------------------
-	// At least 3 b-tags
-	if (GoodIdbJets.size()<3) continue;
-	mon.fillHisto("eventflow","all",6,weight); 
-	//-------------------------------------------------------------------
-	// if (GoodIdbJets.size()==1 && DBfatJets.size()==0) continue; // only allow =1b cat. if a fat-jet is present (in 3b cat)
-	// if (GoodIdbJets.size()==2 && DBfatJets.size()==0) continue; // only allow =2b cat. if a fat-jet is present (in 4b cat)
+        //-------------------------------------------------------------------
+        // At least 3 b-tags
+        if (GoodIdbJets.size()<3) continue;
+        mon.fillHisto("eventflow","all",6,weight); 
+        //-------------------------------------------------------------------
+        // if (GoodIdbJets.size()==1 && DBfatJets.size()==0) continue; // only allow =1b cat. if a fat-jet is present (in 3b cat)
+        // if (GoodIdbJets.size()==2 && DBfatJets.size()==0) continue; // only allow =2b cat. if a fat-jet is present (in 4b cat)
 
-	//----------------------------------------------------------------------------------------------------------//
-	// Event categories according to (n-j, m-b, k-fat) jet multiplicities [nj>=2, (nb==1 + kf=1), nb>=2, kf>=0 ]
-	//----------------------------------------------------------------------------------------------------------//
+        //----------------------------------------------------------------------------------------------------------//
+        // Event categories according to (n-j, m-b, k-fat) jet multiplicities [nj>=2, (nb==1 + kf=1), nb>=2, kf>=0 ]
+        //----------------------------------------------------------------------------------------------------------//
 
-	 LorentzVector allHadronic;
-	 //std::pair <int,LorentzVector> pairHadronic;
+        LorentzVector allHadronic;
+        //std::pair <int,LorentzVector> pairHadronic;
  
-	 if (GoodIdbJets.size()==3) {// 3b cat.
-	    tags.push_back("3b");
-	   for (auto & thisb : GoodIdbJets) {
-	     allHadronic+=thisb;
-	   }
-	   //  mon.fillHisto("eventflow",tags,4,weight);
-	 } else if (GoodIdbJets.size()>=4) {// 4b cat.
-	   tags.push_back("4b");
-	   int countb(0);
-	   for (auto & thisb : GoodIdbJets) {
-	     allHadronic+=thisb;
-	     countb++;
-	     if (countb>3) break;
-	   }
-	   mon.fillHisto("eventflow","all",7,weight);
-	 } else {
-	   tags.push_back("UNKNOWN");
-	   printf("\n Unknown category, please check \n");
-	 }
-	 
-	 //-----------------------------------------------------------
-	 // Control plots
-	 // ----------------------------------------------------------
-
-	 // 3,4 b's pT
-	 mon.fillHisto("nbjets_raw",tags,GoodIdbJets.size(),weight);
-	 is=0;
-	 for (auto & jet : GoodIdbJets) {
-	   mon.fillHisto("jet_pt_raw", "merged_final"+htag[is], jet.pt(),weight);
-	   mon.fillHisto("jet_eta_raw", "merged_final"+htag[is], jet.eta(),weight);
-	   is++;
-	   if (is>3) break; // plot only up to 4 b-jets ?
-	}
+        if (GoodIdbJets.size()==3) 
+        {// 3b cat.
+            tags.push_back("3b");
+            for (auto & thisb : GoodIdbJets) 
+            {
+                allHadronic+=thisb;
+            }
+           //mon.fillHisto("eventflow",tags,4,weight);
+        } 
+        else if (GoodIdbJets.size()>=4) 
+        {// 4b cat.
+            tags.push_back("4b");
+            int countb(0);
+            for (auto & thisb : GoodIdbJets) 
+            {
+                allHadronic+=thisb;
+                countb++;
+                if (countb>3) break;
+            }
+            mon.fillHisto("eventflow","all",7,weight);
+        } 
+        else 
+        {
+            tags.push_back("UNKNOWN");
+           printf("\n Unknown category, please check \n");
+        }
  
-	 // higgs mass
-	 mon.fillHisto("higgsMass",tags,allHadronic.mass(),weight);
-	 // higgs pT
-	 mon.fillHisto("higgsPt",tags,allHadronic.pt(),weight);
-	 // HT from all CSV + soft b's
-	 float ht(0.);
-	 for (auto & thisb : GoodIdbJets) {
-	   ht+=thisb.pt();
-	 }
-	 mon.fillHisto("ht",tags,ht,weight);
-	 // MET
-	 mon.fillHisto("pfmet",tags,metP4.pt(),weight);
-	 // dphi(jet,MET)
-	 mon.fillHisto("dphijmet",tags,mindphijmet,weight);
-	 // pTW
-	 //LorentzVector wsum=metP4+goodLeptons[0].second;
-	 mon.fillHisto("ptw",tags,wsum.pt(),weight);
-	 // // mtW 
-	 mon.fillHisto("mtw",tags,sqrt(tMass),weight);
-	 // Dphi(W,h) instead of DRmin(l,b)
-	 double dphi_Wh=fabs(deltaPhi(allHadronic.phi(),wsum.phi()));
-	 mon.fillHisto("dphiWh",tags,dphi_Wh,weight);
-	 // DR(bb)_average
-	 vector<float> dRs;
-	 dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[1]));
-	 dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[2]));
-	 dRs.push_back(deltaR(GoodIdbJets[1],GoodIdbJets[2]));
+        //-----------------------------------------------------------
+        // Control plots
+        // ----------------------------------------------------------
 
-	 float dm(0.);
+        // 3,4 b's pT
+        mon.fillHisto("nbjets_raw",tags,GoodIdbJets.size(),weight);
+        is=0;
+        for (auto & jet : GoodIdbJets) 
+        {
+            mon.fillHisto("jet_pt_raw", "merged_final"+htag[is], jet.pt(),weight);
+            mon.fillHisto("jet_eta_raw", "merged_final"+htag[is], jet.eta(),weight);
+            is++;
+            if (is>3) break; // plot only up to 4 b-jets ?
+        }
  
-	 if (GoodIdbJets.size()>=4) {
-	   dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[3]));
-	   dRs.push_back(deltaR(GoodIdbJets[1],GoodIdbJets[3]));
-	   dRs.push_back(deltaR(GoodIdbJets[2],GoodIdbJets[3]));
+        // higgs mass
+        mon.fillHisto("higgsMass",tags,allHadronic.mass(),weight);
+        // higgs pT
+        mon.fillHisto("higgsPt",tags,allHadronic.pt(),weight);
+        // HT from all CSV + soft b's
+        float ht(0.);
+        for (auto & thisb : GoodIdbJets) 
+        {
+            ht+=thisb.pt();
+        }
+        mon.fillHisto("ht",tags,ht,weight);
+        // MET
+        mon.fillHisto("pfmet",tags,metP4.pt(),weight);
+        // dphi(jet,MET)
+        mon.fillHisto("dphijmet",tags,mindphijmet,weight);
+        // pTW
+        //LorentzVector wsum=metP4+goodLeptons[0].second;
+        mon.fillHisto("ptw",tags,wsum.pt(),weight);
+        // mtW 
+        mon.fillHisto("mtw",tags,sqrt(tMass),weight);
+        // Dphi(W,h) instead of DRmin(l,b)
+        double dphi_Wh=fabs(deltaPhi(allHadronic.phi(),wsum.phi()));
+        mon.fillHisto("dphiWh",tags,dphi_Wh,weight);
+        // DR(bb)_average
+        vector<float> dRs;
+        dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[1]));
+        dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[2]));
+        dRs.push_back(deltaR(GoodIdbJets[1],GoodIdbJets[2]));
 
-	   float dm1 = fabs( (GoodIdbJets[0]+GoodIdbJets[1]).mass() - (GoodIdbJets[2]+GoodIdbJets[3]).mass() );
-	   float dm2 = fabs( (GoodIdbJets[0]+GoodIdbJets[2]).mass() - (GoodIdbJets[1]+GoodIdbJets[3]).mass() );
+        float dm(0.);
+ 
+        if (GoodIdbJets.size()>=4) 
+        {
+            dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[3]));
+            dRs.push_back(deltaR(GoodIdbJets[1],GoodIdbJets[3]));
+            dRs.push_back(deltaR(GoodIdbJets[2],GoodIdbJets[3]));
 
-	   dm1 = min(dm1, dm2);
-	   dm2 = fabs( (GoodIdbJets[0]+GoodIdbJets[3]).mass() - (GoodIdbJets[1]+GoodIdbJets[2]).mass() );
+            float dm1 = fabs( (GoodIdbJets[0]+GoodIdbJets[1]).mass() - (GoodIdbJets[2]+GoodIdbJets[3]).mass() );
+            float dm2 = fabs( (GoodIdbJets[0]+GoodIdbJets[2]).mass() - (GoodIdbJets[1]+GoodIdbJets[3]).mass() );
 
-	   dm = min(dm1, dm2);
-	 }
+            dm1 = min(dm1, dm2);
+            dm2 = fabs( (GoodIdbJets[0]+GoodIdbJets[3]).mass() - (GoodIdbJets[1]+GoodIdbJets[2]).mass() );
+            dm = min(dm1, dm2);
+        }
 
-	 float dRave_(0.);
-	 for (auto & it : dRs) {
-	   dRave_+=it;
-	 }
-	 dRave_/=dRs.size();
-	 mon.fillHisto("dRave",tags,dRave_,weight);
-
-	 mon.fillHisto("dmmin",tags,dm, weight);
+        float dRave_(0.);
+        for (auto & it : dRs)
+        {
+            dRave_+=it;
+        }
+        dRave_/=dRs.size();
+        mon.fillHisto("dRave",tags,dRave_,weight);
+        mon.fillHisto("dmmin",tags,dm, weight);
 
         //############ MVA Handler ############
         float mvaweight = 1.0;
