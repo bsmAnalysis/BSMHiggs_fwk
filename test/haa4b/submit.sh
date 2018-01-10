@@ -34,12 +34,9 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 # Global Variables
 #--------------------------------------------------
 
-#SUFFIX=_2018_01_05
+SUFFIX=_2018_01_05
 #SUFFIX=_2017_09_20 #Data
-SUFFIX=_2017_09_21 #BG MC
-#SUFFIX=_2017_11_15 #SG MC, but deepcsv in 8027
-#SUFFIX=_2017_12_11 #New SG MC from Amin, deepcsv rework, functional in 8026_patch1
-#SUFFIX=_2017_12_12 #LO Samples test
+#SUFFIX=_2017_09_21 #BG MC
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
@@ -58,12 +55,10 @@ PLOTTER=$MAINDIR/plotter${SUFFIX}
 NTPL_INPUT=results$SUFFIX
 #$MAINDIR/ntuples
 NTPL_JSON=$MAINDIR/samples2016.json
-#$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/samples_haa4b.json
 NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX
-#NTPL_OUTDIR=/eos/cms/store/user/georgia/results_Ntpl$SUFFIX 
 RUNLOG=$NTPL_OUTDIR/LOGFILES/runSelection.log
 
-queue='cmscaf1nd'
+queue='8nh'
 
 #IF CRAB3 is provided in argument, use crab submission instead of condor/lsf 
 if [[ $arguments == *"crab3"* ]]; then queue='crab3' ;fi  
@@ -106,7 +101,6 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "Output: " $NTPL_OUTDIR
        runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@data_pileup=datapileup_latest @runSystematics=False @usemetNoHF=False @verbose=False @useDeepCSV=False" -s $queue 
 #-t MC13TeV_Wh_amass
-#-t MC13TeV_DYJetsToLL_50toInf_2016
    fi
 fi
 
