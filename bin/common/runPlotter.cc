@@ -582,7 +582,8 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, TFile* OutputF
       std::vector<JSONWrapper::Object> Samples = (Process[i])["data"].daughters();
       for(unsigned int j=0;j<Samples.size();j++){
          std::vector<string>& fileList = DSetFiles[(Samples[j])["dtag"].toString()+filtExt];
-         if(!Process[i].getBoolFromKeyword(matchingKeyword, "isdata", false) && !Process[i].getBoolFromKeyword(matchingKeyword, "isdatadriven", false)){Weight= iLumi/fileList.size();}else{Weight=1.0;}
+         if(!Process[i].getBoolFromKeyword(matchingKeyword, "isdata", false) && !Process[i].getBoolFromKeyword(matchingKeyword, "isdatadriven", false)){Weight=iLumi;}else{Weight=1.0;}  
+	   //	   {Weight= iLumi/fileList.size();}else{Weight=1.0;}
 
          for(int f=0;f<fileList.size();f++){
            if(IndexFiles%NFilesStep==0){printf(".");fflush(stdout);} IndexFiles++;
@@ -761,7 +762,10 @@ void addShapeUnc(TFile* File, string& dirName, NameAndType& HistoProperties, TH1
          TH1* hist = (TH1*)utils::root::GetObjectFromPath(File,dirName + "/" + HistoProperties.name + syst->GetXaxis()->GetBinLabel(ivar) );        
 //         if(!hist){printf("histo for %s is not found\n", (dirName + "/" + HistoProperties.name + syst->GetXaxis()->GetBinLabel(ivar)).c_str() );}
          if(!hist){continue;}
-         if(abs(rebin)>0){hist = hist->Rebin(abs(rebin)); hist->Scale(1.0/abs(rebin), rebin<0?"width":""); }
+         if(abs(rebin)>0){
+	   //printf(" Will rebin histogram by %3d",rebin); 
+	   hist = hist->Rebin(abs(rebin)); hist->Scale(1.0/abs(rebin), rebin<0?"width":""); 
+	 }
          for(int ibin=1; ibin<=systHist->GetXaxis()->GetNbins(); ibin++){
             systHist->SetBinError(ibin, sqrt(pow(systHist->GetBinError(ibin),2)+pow(systHist->GetBinContent(ibin) - hist->GetBinContent(ibin),2)));
          }
@@ -898,7 +902,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, TFile* File, NameAndType& HistoP
             mcPlusSyst->Add(histPlusSyst);
          }
       }
-   }
+   } // end for loop
 
    //fill the legend in reverse order
    while(!legEntries.empty()){
@@ -917,92 +921,93 @@ void Draw1DHistogram(JSONWrapper::Object& Root, TFile* File, NameAndType& HistoP
       TH1* dummy = NULL;
       if(!dummy && data)dummy=(TH1*)data->Clone("dummy");
       if(!dummy && spimpose.size()>0)dummy=(TH1*)spimpose[0]->Clone("dummy");
+      
       if(!dummy) printf("Error the frame is still empty\n");
-      dummy->Reset();
+      //dummy->Reset();
       stack->Add(dummy);
       ObjectToDelete.push_back(dummy);
-   }
+   } else {
 
-   //draw the stack which will serve as frame
-   stack->Draw("");
-   stack->SetTitle("");
-   stack->GetXaxis()->SetTitle(((TH1*)stack->GetStack()->At(0))->GetXaxis()->GetTitle());
-   stack->GetYaxis()->SetTitle(((TH1*)stack->GetStack()->At(0))->GetYaxis()->GetTitle()); 
-   stack->GetXaxis()->SetLabelOffset(0.007);
-   stack->GetXaxis()->SetLabelSize(0.03);
-   stack->GetXaxis()->SetTitleOffset(1.0);
-   stack->GetXaxis()->SetTitleFont(42);
-   stack->GetXaxis()->SetTitleSize(0.035);
-   stack->GetYaxis()->SetLabelFont(42);
-   stack->GetYaxis()->SetLabelOffset(0.007);
-   stack->GetYaxis()->SetLabelSize(0.03);
-   stack->GetYaxis()->SetTitleOffset(1.3);
-   stack->GetYaxis()->SetTitleFont(42);
-   stack->GetYaxis()->SetTitleSize(0.035);
-   stack->GetYaxis()->SetRangeUser(Minimum, Maximum);
-   stack->SetMinimum(Minimum);
-   stack->SetMaximum(Maximum);
-   
-   t1->Update();
+     //draw the stack which will serve as frame
+     stack->Draw("");
+     stack->SetTitle("");
+     stack->GetXaxis()->SetTitle(((TH1*)stack->GetStack()->At(0))->GetXaxis()->GetTitle());
+     stack->GetYaxis()->SetTitle(((TH1*)stack->GetStack()->At(0))->GetYaxis()->GetTitle()); 
+     stack->GetXaxis()->SetLabelOffset(0.007);
+     stack->GetXaxis()->SetLabelSize(0.04);
+     stack->GetXaxis()->SetTitleOffset(1.2);
+     stack->GetXaxis()->SetTitleFont(42);
+     stack->GetXaxis()->SetTitleSize(0.04);
+     stack->GetYaxis()->SetLabelFont(42);
+     stack->GetYaxis()->SetLabelOffset(0.007);
+     stack->GetYaxis()->SetLabelSize(0.04);
+     stack->GetYaxis()->SetTitleOffset(1.35);
+     stack->GetYaxis()->SetTitleFont(42);
+     stack->GetYaxis()->SetTitleSize(0.04);
+     stack->GetYaxis()->SetRangeUser(Minimum, Maximum);
+     stack->SetMinimum(Minimum);
+     stack->SetMaximum(Maximum);
+     
+     t1->Update();
 
-   if(showUnc && mc){
-      TGraphErrors* systBand = new TGraphErrors(mc->GetNbinsX()); int IPoint=0;
-      for(int ibin=1; ibin<=mcPlusSyst->GetXaxis()->GetNbins(); ibin++){
+     if(showUnc && mc){
+       TGraphErrors* systBand = new TGraphErrors(mc->GetNbinsX()); int IPoint=0;
+       for(int ibin=1; ibin<=mcPlusSyst->GetXaxis()->GetNbins(); ibin++){
          systBand->SetPoint     (IPoint, mcPlusSyst->GetBinCenter(ibin), mcPlusSyst->GetBinContent(ibin) );
          systBand->SetPointError(IPoint, mcPlusSyst->GetBinWidth(ibin)/2, mcPlusSyst->GetBinError(ibin) );
          IPoint++;
-      }systBand->Set(IPoint);
-      mcPlusSyst->SetFillStyle(3004);
-      mcPlusSyst->SetFillColor(kGray+2);
-      mcPlusSyst->SetMarkerStyle(1);
-
-      systBand->SetFillStyle(3004);
-      systBand->SetFillColor(kGray+2);
-      systBand->SetMarkerStyle(1);
-      systBand->Draw("same 2 0");
-
-      TGraphErrors* errBand = new TGraphErrors(mc->GetNbinsX()); IPoint=0;
-      mcPlusRelUnc = (TH1 *) mc->Clone("totalmcwithunc");utils::root::checkSumw2(mcPlusRelUnc); mcPlusRelUnc->SetDirectory(0);        
-      for(int ibin=1; ibin<=mcPlusRelUnc->GetXaxis()->GetNbins(); ibin++){
+       }systBand->Set(IPoint);
+       mcPlusSyst->SetFillStyle(3004);
+       mcPlusSyst->SetFillColor(kGray+2);
+       mcPlusSyst->SetMarkerStyle(1);
+       
+       systBand->SetFillStyle(3004);
+       systBand->SetFillColor(kGray+2);
+       systBand->SetMarkerStyle(1);
+       systBand->Draw("same 2 0");
+       
+       TGraphErrors* errBand = new TGraphErrors(mc->GetNbinsX()); IPoint=0;
+       mcPlusRelUnc = (TH1 *) mc->Clone("totalmcwithunc");utils::root::checkSumw2(mcPlusRelUnc); mcPlusRelUnc->SetDirectory(0);        
+       for(int ibin=1; ibin<=mcPlusRelUnc->GetXaxis()->GetNbins(); ibin++){
          errBand->SetPoint     (IPoint, mcPlusRelUnc->GetBinCenter(ibin), mcPlusRelUnc->GetBinContent(ibin) );
          errBand->SetPointError(IPoint, mcPlusRelUnc->GetBinWidth(ibin)/2, mcPlusRelUnc->GetBinError(ibin) );
          IPoint++;
-      }errBand->Set(IPoint);
-      mcPlusRelUnc->SetFillStyle(3005); //3427
-      mcPlusRelUnc->SetFillColor(kGray+3); //Gray+1
-      mcPlusRelUnc->SetMarkerStyle(1);
+       }errBand->Set(IPoint);
+       mcPlusRelUnc->SetFillStyle(3005); //3427
+       mcPlusRelUnc->SetFillColor(kGray+3); //Gray+1
+       mcPlusRelUnc->SetMarkerStyle(1);
+       
+       errBand->SetFillStyle(3005);
+       errBand->SetFillColor(kGray+3);
+       errBand->SetMarkerStyle(1);
+       errBand->Draw("same 2 0");
+       legA->AddEntry(errBand, "Stat. Unc.", "F");
+       legA->AddEntry(systBand, "Syst + Stat.", "F");
+     }
 
-      errBand->SetFillStyle(3005);
-      errBand->SetFillColor(kGray+3);
-      errBand->SetMarkerStyle(1);
-      errBand->Draw("same 2 0");
-      legA->AddEntry(errBand, "Stat. Unc.", "F");
-      legA->AddEntry(systBand, "Syst + Stat.", "F");
-   }
-
-   if(data){
-      if(blind>-1E99){
+     if(data){
+       if(blind>-1E99){
          if(data->GetBinLowEdge(data->FindBin(blind)) != blind){printf("Warning blinding changed from %f to %f for %s inorder to stay on bin edges\n", blind, data->GetBinLowEdge(data->FindBin(blind)),  HistoProperties.name.c_str() );}
          for(unsigned int i=data->FindBin(blind);i<=data->GetNbinsX()+1; i++){   
-            data->SetBinContent(i, 0); data->SetBinError(i, 0);
+	   data->SetBinContent(i, 0); data->SetBinError(i, 0);
          }
          TH1 *hist=(TH1*)stack->GetHistogram();
-
+	 
          TPave* blinding_box = new TPave(data->GetBinLowEdge(data->FindBin(blind)),  hist->GetMinimum(), data->GetXaxis()->GetXmax(), hist->GetMaximum(), 0, "NB" );  
          blinding_box->SetFillColor(15);         blinding_box->SetFillStyle(3013);         blinding_box->Draw("same F");
          legA->AddEntry(blinding_box, "blinded area" , "F");
          ObjectToDelete.push_back(blinding_box);
-      }
-      data->Draw("E1 same");
-   }
-
-   for(size_t ip=0; ip<spimpose.size(); ip++){
-     TString opt=spimposeOpts[ip];
-     spimpose[ip]->Draw(opt + "same");
-   }
-
-   //compare data and MC
-   if(showChi2){
+       }
+       data->Draw("E1 same");
+     }
+     
+     for(size_t ip=0; ip<spimpose.size(); ip++){
+       TString opt=spimposeOpts[ip];
+       spimpose[ip]->Draw(opt + "same");
+     }
+     
+     //compare data and MC
+     if(showChi2){
        TPaveText *pave = new TPaveText(0.6,0.85,0.8,0.9,"NDC");
        pave->SetBorderSize(0);
        pave->SetFillStyle(0);
@@ -1010,32 +1015,32 @@ void Draw1DHistogram(JSONWrapper::Object& Root, TFile* File, NameAndType& HistoP
        pave->SetTextFont(42);
        char buf[100];
        if(data && mc && data->Integral()>0 && mc->Integral()>0){
-	   sprintf(buf,"#chi^{2}/ndof : %3.2f", data->Chi2Test(mc,"WWCHI2/NDF") );
+	 sprintf(buf,"#chi^{2}/ndof : %3.2f", data->Chi2Test(mc,"WWCHI2/NDF") );
+	 pave->AddText(buf);
+	 sprintf(buf,"K-S prob: %3.2f", data->KolmogorovTest(mc));
+	 pave->AddText(buf);
+	 
+       }else if(mc && spimpose.size()>0 && mc->Integral()>0){
+	 for(size_t ip=0; ip<spimpose.size(); ip++){
+	   if(spimpose[ip]->Integral()<=0) continue;
+	   sprintf(buf,"#chi^{2}/ndof : %3.2f, K-S prob: %3.2f", spimpose[ip]->Chi2Test(mc,"WWCHI2/NDF"), spimpose[ip]->KolmogorovTest(mc) );
 	   pave->AddText(buf);
-	   sprintf(buf,"K-S prob: %3.2f", data->KolmogorovTest(mc));
-	   pave->AddText(buf);
-
-        }else if(mc && spimpose.size()>0 && mc->Integral()>0){
-	   for(size_t ip=0; ip<spimpose.size(); ip++){
-	       if(spimpose[ip]->Integral()<=0) continue;
-	       sprintf(buf,"#chi^{2}/ndof : %3.2f, K-S prob: %3.2f", spimpose[ip]->Chi2Test(mc,"WWCHI2/NDF"), spimpose[ip]->KolmogorovTest(mc) );
-	       pave->AddText(buf);
-	   }
-	}
+	 }
+       }
        pave->Draw();
-   }
-
-   
-   legA->Draw("same");
-
-
-   std::vector<TH1 *> compDists;
-   if(data)                   compDists.push_back(data);
-   else if(spimpose.size()>0) compDists=spimpose;
-   
-   if( !(mc && compDists.size() && showRatioBox) ){
+     }
+     
+     
+     legA->Draw("same");
+     
+     
+     std::vector<TH1 *> compDists;
+     if(data)                   compDists.push_back(data);
+     else if(spimpose.size()>0) compDists=spimpose;
+     
+     if( !(mc && compDists.size() && showRatioBox) ){
        t1->SetPad(0,0,1,1);
-   }else{
+     }else{
        c1->cd();
        TPad *t2 = new TPad("t2", "t2",0.0,0.0, 1.0,0.2);
        t2->SetFillColor(0);
@@ -1097,7 +1102,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, TFile* File, NameAndType& HistoP
 
        denSystUncH->GetXaxis()->SetLabelFont(42);
        denSystUncH->GetXaxis()->SetLabelOffset(0.007);
-       denSystUncH->GetXaxis()->SetLabelSize(0.03 * yscale);
+       denSystUncH->GetXaxis()->SetLabelSize(0.04 * yscale);
        denSystUncH->GetXaxis()->SetTitleFont(42);
        denSystUncH->GetXaxis()->SetTitleSize(0.035 * yscale);
        denSystUncH->GetXaxis()->SetTitleOffset(0.8);
@@ -1107,7 +1112,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, TFile* File, NameAndType& HistoP
        denSystUncH->GetYaxis()->SetTitleFont(42);
        denSystUncH->GetYaxis()->SetTitleSize(0.035 * yscale);
        denSystUncH->GetYaxis()->SetTitleOffset(0.3);
- 
+       
 
 
 
@@ -1197,8 +1202,8 @@ void Draw1DHistogram(JSONWrapper::Object& Root, TFile* File, NameAndType& HistoP
 
 
 
-   }
-
+     }
+   } // end my if test
    t1->cd();
    c1->cd();
    utils::root::DrawPreliminary(iLumi, iEcm, t1);

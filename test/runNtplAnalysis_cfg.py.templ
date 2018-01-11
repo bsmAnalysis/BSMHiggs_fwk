@@ -14,6 +14,7 @@ datapileup_latest = cms.vdouble(0, 238797, 837543, 2.30843e+06, 3.12475e+06, 4.4
 runProcess = cms.PSet(
     input = cms.string("@input"),
     outdir = cms.string("@outdir"),	
+    proc = cms.string("@proc"),
     tag = cms.string("@tag"),
     dirName = cms.string("mainNtuplizer/data"),
     isMC = cms.bool(@isMC),
@@ -28,11 +29,11 @@ runProcess = cms.PSet(
     muscleDir =  cms.string('${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/jec/'),
     jecDir = cms.string('${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/jec/25ns/'),
     usemetNoHF = cms.bool(@usemetNoHF),	
+    useDeepCSV = cms.bool(False),  
     datapileup = @data_pileup, 
     debug = cms.bool(False),
     evStart = cms.int32(0),
-    evEnd = cms.int32(-1),
-    useDeepCSV = cms.bool(False)
+    evEnd = cms.int32(-1)
 )
 
 try:

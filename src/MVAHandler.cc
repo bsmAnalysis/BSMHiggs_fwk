@@ -15,6 +15,7 @@ MVAEvtContainer &MVAHandler::getEvent()
 void MVAHandler::resetStruct()
 {
   //catagory type
+  evSummary_.is2b = false; // CR
   evSummary_.is3b = false;
   evSummary_.is4b = false; 
   //W boson related only related var
@@ -33,6 +34,7 @@ void MVAHandler::resetStruct()
 
 //
 void MVAHandler::getEntry( 
+			  bool is2b,
                           bool is3b, bool is4b, 
                           float Wpt, //W only
                           float Hmass, float HpT, float bbdRAve, float bbdMMin, float HHt, //Higgs only
@@ -42,6 +44,7 @@ void MVAHandler::getEntry(
 {
   resetStruct();
   //catagory type
+  evSummary_.is2b = is2b; // CR
   evSummary_.is3b = is3b;
   evSummary_.is4b = is4b;
   //W boson related only related var
@@ -64,8 +67,18 @@ bool MVAHandler::initTree(TString mvaout)
 {
   //write mode, to mva tree
   MVAofile = TFile::Open( mvaout, "recreate");
+  to2b = new TTree("DibMVA","DibMVA");  
   to3b = new TTree("TribMVA","TribMVA");
   to4b = new TTree("QuabMVA","QuabMVA");
+
+  to2b->Branch("WpT",  &evSummary_.WpT,  "WpT/F"); 
+  to2b->Branch("Hmass",  &evSummary_.Hmass,  "Hmass/F"); 
+  to2b->Branch("HpT",  &evSummary_.HpT,  "HpT/F"); 
+  to2b->Branch("bbdRAve",  &evSummary_.bbdRAve,  "bbdRAve/F"); 
+  to2b->Branch("bbdMMin",  &evSummary_.bbdMMin,  "bbdMMin/F"); 
+  to2b->Branch("HHt",  &evSummary_.HHt,  "HHt/F"); 
+  to2b->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F"); 
+  to2b->Branch("weight",  &evSummary_.weight,  "weight/F"); 
 
   to3b->Branch("WpT",  &evSummary_.WpT,  "WpT/F");
   to3b->Branch("Hmass",  &evSummary_.Hmass,  "Hmass/F");
@@ -91,10 +104,22 @@ bool MVAHandler::initTree(TString mvaout)
 //
 void MVAHandler::fillTree()
 {
+  if ( evSummary_.is2b ) 
+    {
+      if (!evSummary_.is3b && !evSummary_.is4b ) 
+	{
+	  if ( to2b ) to2b->Fill();  
+	}
+      else 
+	{
+	  std::cout << "One event can not be both in 2 b and (3 or 4 b ) cat! Please check!" << std::endl;  
+	}
+    }
+
   if ( evSummary_.is3b && evSummary_.is4b )
-  {
-    std::cout << "One event can not be both in 3 and 4 b cat! Please check!" << std::endl;
-  }
+    {
+      std::cout << "One event can not be both in 3 and 4 b cat! Please check!" << std::endl;
+    }
   else if ( evSummary_.is3b && !evSummary_.is4b )
   {
     if ( to3b ) to3b->Fill();
@@ -113,6 +138,7 @@ void MVAHandler::fillTree()
 void MVAHandler::writeTree()
 {
   //TFile *MVAofile=TFile::Open( outURL, "recreate");
+  to2b->Write();
   to3b->Write();
   to4b->Write();
   MVAofile->Close();

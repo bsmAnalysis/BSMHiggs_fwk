@@ -1,4 +1,5 @@
 #include <iostream>
+#include <map>
 
 #include "FWCore/FWLite/interface/FWLiteEnabler.h"
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
@@ -20,6 +21,7 @@
 //#include "UserCode/bsmhiggs_fwk/interface/METUtils.h"
 //#include "UserCode/bsmhiggs_fwk/interface/BTagUtils.h"
 //#include "UserCode/bsmhiggs_fwk/interface/EventCategory.h"
+#include "UserCode/bsmhiggs_fwk/interface/statWgt.h"
 
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -69,6 +71,12 @@ struct stPDFval {
     int id2;
 };
 
+// Physics objects offline thresholds
+//const float lep_threshold_=25.; 
+const float mu_threshold_=25.; 
+const float ele_threshold_=30.; 
+const float jet_threshold_=20.; 
+
 //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X
 const float CSVLooseWP = 0.5426;  // Updated to 80X Moriond17 Loose
 const float CSVMediumWP = 0.800;
@@ -80,14 +88,7 @@ const float DBLooseWP = 0.300;
 const float DBMediumWP = 0.600;
 const float DBTightWP = 0.900;
 
-// Physics objects offline thresholds
-//const float lep_threshold_=25.;
-const float mu_threshold_=25.;
-const float ele_threshold_=30.;
-const float jet_threshold_=20.;
-
 //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco#Data_MC_Scale_Factors
-
 const float DeepCSVLooseWP = 0.2219;
 const float DeepCSVMediumWP = 0.6324;
 const float DeepCSVTightWP = 0.8958;
@@ -111,17 +112,19 @@ int main(int argc, char* argv[])
 
     // configure the process
     const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
-    bool use_DeepCSV = runProcess.getParameter<bool>("useDeepCSV"); // Will set DeepCSV as the default b-tagger automaticaly
+  
     bool isMC = runProcess.getParameter<bool>("isMC");
-    
     int mctruthmode = runProcess.getParameter<int>("mctruthmode");
+
     double xsec = runProcess.getParameter<double>("xsec");
-   
+
+    TString proc=runProcess.getParameter<std::string>("proc");
     TString dtag=runProcess.getParameter<std::string>("tag");
     TString suffix=runProcess.getParameter<std::string>("suffix");
 
     bool verbose = runProcess.getParameter<bool>("verbose");
 
+    bool use_DeepCSV = runProcess.getParameter<bool>("useDeepCSV"); // Will set DeepCSV as the default b-tagger automaticaly
     bool usemetNoHF = runProcess.getParameter<bool>("usemetNoHF");
     
     TString url = runProcess.getParameter<std::string>("input");
@@ -190,15 +193,26 @@ int main(int argc, char* argv[])
     float LooseWP = -1, MediumWP = -1, TightWP = -1;
     if (!use_DeepCSV) 
     {
-       b_tagging_name = "CSVv2"; 
-       csv_file_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_Moriond17_B_H.csv";
-       LooseWP = CSVLooseWP;     MediumWP = CSVMediumWP;     TightWP = CSVTightWP;
+       b_tagging_name = "CSVv2";
+       
+       csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
+	 "/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_Moriond17_B_H.csv";
+       
+       LooseWP = CSVLooseWP;
+       MediumWP = CSVMediumWP;
+       TightWP = CSVTightWP;
     }
     if ( use_DeepCSV) {
-       b_tagging_name = "DeepCSV"; 
-       csv_file_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_Moriond17_B_H.csv";
-       LooseWP = DeepCSVLooseWP; MediumWP = DeepCSVMediumWP; TightWP = DeepCSVTightWP;
+       b_tagging_name = "DeepCSV";
+       
+       csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
+	 "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_Moriond17_B_H.csv";
+       
+       LooseWP = DeepCSVLooseWP;
+       MediumWP = DeepCSVMediumWP;
+       TightWP = DeepCSVTightWP;
     }
+    
     BTagCalibration btagCalib(b_tagging_name, csv_file_path);
     // setup calibration readers 80X
     BTagCalibrationReader80X btagCal80X   (BTagEntry::OP_LOOSE, "central", {"up", "down"});
@@ -236,10 +250,6 @@ int main(int argc, char* argv[])
             varNames.push_back("_pdfdown");
             varNames.push_back("_qcdscaleup");
             varNames.push_back("_qcdscaledown");
-//            varNames.push_back("_pdfacceptup");
-//            varNames.push_back("_pdfacceptdown");
-//            varNames.push_back("_qcdscaleacceptup");
-//            varNames.push_back("_qcdscaleacceptdown");
         }
         if(isMC_ZZ) {
             varNames.push_back("_qqZZewkup");
@@ -480,11 +490,12 @@ int main(int argc, char* argv[])
     }
 
     //MC normalization (to 1/pb)
-    double xsecWeight = 1.0;
-    float cnorm=1.0;
+    float xsecWeight = 1.0;
+    //float cnorm=1.0;
     if (isMC) {
-      float totalNumberofEvents;
-
+      xsecWeight = 0.;
+      //      int totalNumberofEvents(0);
+      /*
       TH1F* nevtH = (TH1F *) file->Get("mainNtuplizer/nevents");
       totalNumberofEvents = nevtH->GetBinContent(1);
       TH1F* posH = (TH1F *) file->Get("mainNtuplizer/n_posevents");
@@ -495,8 +506,28 @@ int main(int argc, char* argv[])
     
       //xsecWeight=xsec/totalNumberofEvents;
       xsecWeight=xsec/cnorm; // effective luminosity
+      */
+      std::map<std::string, float> xsec_map = mStat;
+
+      // std::string myproc = proc.Data();
+      //   std::cout << "Runnin process " << myproc << std::endl;
+      std::map<std::string, float>::iterator it;
+      for ( it = xsec_map.begin(); it != xsec_map.end(); it++ ) {
+	if (it->first == proc.Data()) {
+	  xsecWeight = it->second;
+	  //	  totalNumberofEvents = it->second;
+	  if (verbose) std::cout << "Nstat = " << it->second << std::endl;
+	}
+      }
+      /*
+      if (totalNumberofEvents==0) { xsecWeight=0.; }
+      else { xsecWeight=(xsec/(float)totalNumberofEvents); }// effective luminosity
+      */
+      //      float pereventwgt=(xsecWeight*35866.9);
+      // printf("\n Running process with xSec = %f , and totalNumEvents = %d  . Per event weight is (L=35.9 fb-1): %f \n\n",
+      //	     xsec, totalNumberofEvents, pereventwgt );
     }
-    Hcutflow->SetBinContent(1,cnorm);
+    //  Hcutflow->SetBinContent(1,cnorm);
 
     //pileup weighting
     TString PU_Central = runProcess.getParameter<std::string>("pu_central");
@@ -524,8 +555,7 @@ int main(int argc, char* argv[])
       for(int ibin=0; ibin<100; ibin++){
         float x = Quotient->GetBinContent(ibin);
         PU_weight->SetBinContent(ibin,x);
-        //if ( verbose )
-        printf("pu = %3d has weight = %7.3f \n",ibin,x);
+        if ( verbose ) printf("pu = %3d has weight = %7.3f \n",ibin,x);
       }
     } // is MC
     
@@ -557,10 +587,10 @@ int main(int argc, char* argv[])
     std::string QuabMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/Haa4bSBClassificationQuabMVA_BDT.weights.xml";
     myQuabTMVAReader.SetupMVAReader( "Haa4bSBClassificationQuabMVA", QuabMVA_xml_path );
     
+    
     //####################################################################################################################
     //###########################################           EVENT LOOP         ###########################################
     //####################################################################################################################
-
 
     // loop on all the events
     int treeStep = (evEnd-evStart)/50;
@@ -579,7 +609,7 @@ int main(int argc, char* argv[])
         if ( verbose ) printf("\n\n Event info %3d: \n",iev);
 
 
-        //##############################################   EVENT LOOP STARTS   ##############################################
+        //##############################################   EVENT LOOP STARTS   ###########################################
         //load the event content from tree
         summaryHandler_.getEntry(iev);
         DataEvtSummary_t &ev=summaryHandler_.getEvent();
@@ -598,8 +628,8 @@ int main(int argc, char* argv[])
         //systematical weight
         float weight = 1.0; //xsecWeight;
         if(isMC) {
-            weight *= genWeight;
-            weight *= xsecWeight; 
+	  weight *= genWeight;
+	  weight *= xsecWeight; 
         }
 
         //only take up and down from pileup effect
@@ -888,7 +918,8 @@ int main(int argc, char* argv[])
         //###########################################################
 
         PhysicsObjectJetCollection GoodIdJets;
-        PhysicsObjectJetCollection CSVLoosebJets;
+        PhysicsObjectJetCollection CSVLoosebJets; // used to define the SRs
+	PhysicsObjectJetCollection pseudoCSVLoosebJets; // used to define the CRs
 
         int nJetsGood30(0);
         int nCSVLtags(0),nCSVMtags(0),nCSVTtags(0);
@@ -940,13 +971,16 @@ int main(int argc, char* argv[])
     
 	    if(abs(corrJets[ijet].flavid)==5) {
 	      //  80X recommendation
-	      btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_B , corrJets[ijet].eta(), corrJets[ijet].pt()), beff);
+	      btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_B ,
+										 corrJets[ijet].eta(), corrJets[ijet].pt()), beff);
 	    } else if(abs(corrJets[ijet].flavid)==4) {
 	      //  80X recommendation
-	      btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_C , corrJets[ijet].eta(), corrJets[ijet].pt()), beff);
+	      btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_C ,
+										 corrJets[ijet].eta(), corrJets[ijet].pt()), beff);
 	    } else {
 	      //  80X recommendation
-	      btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_UDSG , corrJets[ijet].eta(), corrJets[ijet].pt()), leff);
+	      btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_UDSG ,
+										 corrJets[ijet].eta(), corrJets[ijet].pt()), leff);
 	    }
 	  } // isMC
   
@@ -954,7 +988,9 @@ int main(int argc, char* argv[])
 	  if (hasCSVtag) {
 	    CSVLoosebJets.push_back(corrJets[ijet]);
 	  }
-  
+	  // To start with, simply use all AK4 jets in the pseudo b-jet collection:
+	  pseudoCSVLoosebJets.push_back(corrJets[ijet]);
+
 	  //} // b-jet loop
 	} // jet loop
     
@@ -971,6 +1007,9 @@ int main(int argc, char* argv[])
 	sort(CSVLoosebJets.begin(), CSVLoosebJets.end(), ptsort());
 	mon.fillHisto("nbjets_raw","nb", CSVLoosebJets.size(),weight);
 
+	// pseudo: AK4 + CSV jets:
+	sort(pseudoCSVLoosebJets.begin(), pseudoCSVLoosebJets.end(), ptsort());
+	mon.fillHisto("nbjets_raw","nb_pseudo", pseudoCSVLoosebJets.size(),weight);
 
 	//--------------------------------------------------------------------------
 	// dphi(jet,MET)
@@ -1151,7 +1190,8 @@ int main(int argc, char* argv[])
 	// SVs collection
 	PhysicsObjectSVCollection SVs;
 	PhysicsObjectSVCollection SVs_raw; // non-cross-cleaned secondary vertices
-
+	
+	
 	for (auto & isv : secVs) {
 
 	  if (isv.pt()>=jet_threshold_) continue; // SV pT>20 GeV
@@ -1185,15 +1225,21 @@ int main(int argc, char* argv[])
 	  if (isv.dxyz_signif<4.) continue;
 	  if (isv.cos_dxyz_p<0.98) continue;
 
-	  SVs_raw.push_back(isv);
+	  // SVs_raw.push_back(isv);
 
 	  // Cross-cleaned SVs with CSVv2 jets
 	  float dRmin(999.);
-	  for (auto & it : GoodIdJets) {
+	  for (auto & it : pseudoCSVLoosebJets) {
 	    double dR=deltaR(it, isv);
 	    if (dR<dRmin) dRmin=dR;
 	  }
 	  mon.fillHisto("dR_raw","sv_jet",dRmin,weight);
+
+	  hasOverlap=(dRmin<0.4);
+	  if (!hasOverlap) {// continue;
+	  // Fill final soft-bs from SVs
+	    SVs_raw.push_back(isv);
+	  }
 	  
 	  // plot minDR(SV,b)
 	  float dRmin_csv(999.);
@@ -1204,12 +1250,12 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("dR_raw","sv_b",dRmin_csv,weight);
   
 	  hasOverlap=(dRmin_csv<0.4);
-	  if (hasOverlap) continue;
-	  
+	  if (!hasOverlap) {// continue;
 	  // Fill final soft-bs from SVs
-	  SVs.push_back(isv);
-	  
-	}
+	    SVs.push_back(isv);
+	  }
+
+ 	}
 
 	//--------------------------------------------------------------------------
 	// Soft-bs properties
@@ -1250,6 +1296,16 @@ int main(int argc, char* argv[])
 	//mon.fillHisto("nbjets_2D","cat_cleaned_raw",cleanedGoodIdJets.size(),GoodIdbJets.size(),weight);
 	mon.fillHisto("nbjets_raw","merged",GoodIdbJets.size(),weight);
 
+	vector<LorentzVector> pseudoGoodIdbJets;
+
+	for (auto & i : pseudoCSVLoosebJets) {
+	  pseudoGoodIdbJets.push_back(i);
+	} // AK4 + CSV
+	for (auto & i : SVs_raw) {
+	  pseudoGoodIdbJets.push_back(i);
+	} // soft-b from SV
+	
+	
 	//--------------------------------------------------------------------------
 	vector<LorentzVector> cleanedGoodIdbJets;
 
@@ -1300,7 +1356,8 @@ int main(int argc, char* argv[])
 
 	//-------------------------------------------------------------------
 	// At least 2 jets and 2 b-jets
-	if (GoodIdJets.size()<2 || CSVLoosebJets.size()<2) continue;
+	if (GoodIdJets.size()<2 || GoodIdbJets.size()<2) continue;
+	//	if (GoodIdJets.size()<2 || CSVLoosebJets.size()<2) continue;
 	mon.fillHisto("eventflow","all",5,weight); 
 	//-------------------------------------------------------------------
 
@@ -1348,8 +1405,8 @@ int main(int argc, char* argv[])
 
         //-------------------------------------------------------------------
         // At least 3 b-tags
-        if (GoodIdbJets.size()<3) continue;
-        mon.fillHisto("eventflow","all",6,weight); 
+	//   if (GoodIdbJets.size()<3) continue;
+	// mon.fillHisto("eventflow","all",6,weight); 
         //-------------------------------------------------------------------
         // if (GoodIdbJets.size()==1 && DBfatJets.size()==0) continue; // only allow =1b cat. if a fat-jet is present (in 3b cat)
         // if (GoodIdbJets.size()==2 && DBfatJets.size()==0) continue; // only allow =2b cat. if a fat-jet is present (in 4b cat)
@@ -1358,29 +1415,61 @@ int main(int argc, char* argv[])
         // Event categories according to (n-j, m-b, k-fat) jet multiplicities [nj>=2, (nb==1 + kf=1), nb>=2, kf>=0 ]
         //----------------------------------------------------------------------------------------------------------//
 
+	// Here define all variables 
         LorentzVector allHadronic;
         //std::pair <int,LorentzVector> pairHadronic;
- 
-        if (GoodIdbJets.size()==3) 
+
+	// HT from all CSV + soft b's
+	float ht(0.);
+	
+	if (GoodIdbJets.size()==2) { // Control Region (CR)
+	  if (pseudoGoodIdbJets.size()>=3) {
+	    tags.push_back("CR");
+
+	    int countb(0);
+	    for (auto & thisb : pseudoGoodIdbJets) 
+	      {
+		allHadronic+=thisb;
+		countb++; if (countb>3) break;
+	      }
+	    for (auto & thisb : pseudoGoodIdbJets) 
+	      {
+		ht+=thisb.pt();
+	      }
+	  } else { continue; }
+	}
+        else if (GoodIdbJets.size()==3) // 3b category
         {// 3b cat.
-            tags.push_back("3b");
-            for (auto & thisb : GoodIdbJets) 
-            {
-                allHadronic+=thisb;
-            }
-           //mon.fillHisto("eventflow",tags,4,weight);
+            tags.push_back("SR_3b");
+	    // Hadronic vector sum:
+	    for (auto & thisb : GoodIdbJets) 
+	      {
+		allHadronic+=thisb;
+	      }
+	    // Hadronic scalar sum (HT):
+	    for (auto & thisb : GoodIdbJets) 
+	      {
+		ht+=thisb.pt();
+	      }
+	    mon.fillHisto("eventflow","all",6,weight); 
         } 
-        else if (GoodIdbJets.size()>=4) 
+        else if (GoodIdbJets.size()>=4) // 4b category
         {// 4b cat.
-            tags.push_back("4b");
-            int countb(0);
-            for (auto & thisb : GoodIdbJets) 
-            {
-                allHadronic+=thisb;
-                countb++;
-                if (countb>3) break;
-            }
-            mon.fillHisto("eventflow","all",7,weight);
+	  tags.push_back("SR_4b");
+	  // Hadronic vector sum:
+	  int countb(0);
+	  for (auto & thisb : GoodIdbJets) 
+	    {
+	      allHadronic+=thisb;
+	      countb++; if (countb>3) break;
+	    }
+	  // Hadronic scalar sum (HT):
+	  for (auto & thisb : GoodIdbJets) 
+	    {
+	      ht+=thisb.pt();
+	    }
+	  
+	  mon.fillHisto("eventflow","all",7,weight);
         } 
         else 
         {
@@ -1407,12 +1496,7 @@ int main(int argc, char* argv[])
         mon.fillHisto("higgsMass",tags,allHadronic.mass(),weight);
         // higgs pT
         mon.fillHisto("higgsPt",tags,allHadronic.pt(),weight);
-        // HT from all CSV + soft b's
-        float ht(0.);
-        for (auto & thisb : GoodIdbJets) 
-        {
-            ht+=thisb.pt();
-        }
+        // // HT from all CSV + soft b's
         mon.fillHisto("ht",tags,ht,weight);
         // MET
         mon.fillHisto("pfmet",tags,metP4.pt(),weight);
@@ -1426,15 +1510,35 @@ int main(int argc, char* argv[])
         // Dphi(W,h) instead of DRmin(l,b)
         double dphi_Wh=fabs(deltaPhi(allHadronic.phi(),wsum.phi()));
         mon.fillHisto("dphiWh",tags,dphi_Wh,weight);
+	
         // DR(bb)_average
         vector<float> dRs;
-        dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[1]));
-        dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[2]));
-        dRs.push_back(deltaR(GoodIdbJets[1],GoodIdbJets[2]));
-
         float dm(0.);
- 
-        if (GoodIdbJets.size()>=4) 
+
+	if (GoodIdbJets.size()==2) {
+	  if (pseudoGoodIdbJets.size()==3) {
+	    dRs.push_back(deltaR(pseudoGoodIdbJets[0],pseudoGoodIdbJets[1]));
+	    dRs.push_back(deltaR(pseudoGoodIdbJets[0],pseudoGoodIdbJets[2]));
+	    dRs.push_back(deltaR(pseudoGoodIdbJets[1],pseudoGoodIdbJets[2]));
+	  } else if (pseudoGoodIdbJets.size()>=4) {
+	    dRs.push_back(deltaR(pseudoGoodIdbJets[0],pseudoGoodIdbJets[3]));
+            dRs.push_back(deltaR(pseudoGoodIdbJets[1],pseudoGoodIdbJets[3]));
+            dRs.push_back(deltaR(pseudoGoodIdbJets[2],pseudoGoodIdbJets[3]));
+
+            float dm1 = fabs( (pseudoGoodIdbJets[0]+pseudoGoodIdbJets[1]).mass() - (pseudoGoodIdbJets[2]+pseudoGoodIdbJets[3]).mass() );
+            float dm2 = fabs( (pseudoGoodIdbJets[0]+pseudoGoodIdbJets[2]).mass() - (pseudoGoodIdbJets[1]+pseudoGoodIdbJets[3]).mass() );
+
+            dm1 = min(dm1, dm2);
+            dm2 = fabs( (pseudoGoodIdbJets[0]+pseudoGoodIdbJets[3]).mass() - (pseudoGoodIdbJets[1]+pseudoGoodIdbJets[2]).mass() );
+            dm = min(dm1, dm2);
+	  }
+	}
+	else if (GoodIdbJets.size()==3) {
+	  dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[1]));
+	  dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[2]));
+	  dRs.push_back(deltaR(GoodIdbJets[1],GoodIdbJets[2]));
+	}
+        else if (GoodIdbJets.size()>=4) 
         {
             dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[3]));
             dRs.push_back(deltaR(GoodIdbJets[1],GoodIdbJets[3]));
@@ -1456,7 +1560,11 @@ int main(int argc, char* argv[])
         dRave_/=dRs.size();
         mon.fillHisto("dRave",tags,dRave_,weight);
         mon.fillHisto("dmmin",tags,dm, weight);
-
+	
+	//##############################################################################
+        //############ MVA Reader #####################################################
+	//##############################################################################
+	
         float mvaBDT(-10.0);
         if (GoodIdbJets.size() == 3)
         {
@@ -1474,28 +1582,33 @@ int main(int argc, char* argv[])
                      (
                       wsum.pt(),
                       allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht,
-                      dphi_Wh,                                                                                                                                                                              
+                      dphi_Wh,
                       "Haa4bSBClassificationQuabMVA"
                      );
         }
         //else continue;
         mon.fillHisto("MVABDT", tags, mvaBDT, weight);
 
-        //############ MVA Handler ############
+	//##############################################################################
+        //############ MVA Handler ####################################################
+	//##############################################################################
+	
         float mvaweight = 1.0;
         genWeight > 0 ? mvaweight = puWeight : mvaweight = -puWeight; // absorb the negative sign 
         if ( GoodIdbJets.size() >= 3 )
         {
           myMVAHandler_.getEntry
           (
-            GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
-            wsum.pt(), //W only, w pt
+	   GoodIdbJets.size() == 2, 
+	   GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
+	   wsum.pt(), //W only, w pt
             allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
-            dphi_Wh, //W and H, dr 
-            mvaweight //note, since weight is not the weight we want, we store all others except xSec weight
-          );
+	   dphi_Wh, //W and H, dr 
+	   mvaweight //note, since weight is not the weight we want, we store all others except xSec weight
+	   );
           myMVAHandler_.fillTree();
         }
+	
         //##############################################################################
         //### HISTOS FOR STATISTICAL ANALYSIS (include systematic variations)
         //##############################################################################
@@ -1505,6 +1618,7 @@ int main(int argc, char* argv[])
         //##############################################
         //LorentzVector vMET = variedMET[ivar>8 ? 0 : ivar];
         //PhysicsObjectJetCollection &vJets = ( ivar<=4 ? variedJets[ivar] : variedJets[0] );
+	
     } // loop on all events END
 
     printf("\n");
