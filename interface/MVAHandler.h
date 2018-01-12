@@ -25,7 +25,6 @@
 struct MVAEvtContainer
 {
   //catagory type
-  bool is2b = false;
   bool is3b = false, is4b = false; 
   //W boson related only related var
   float WpT = -1.0;
@@ -53,7 +52,6 @@ class MVAHandler
   //read mode, from calculated var
   void resetStruct();
   void getEntry(
-		bool is2b, // CR
                 bool is3b, bool is4b,
                 float Wpt, //W only
                 float Hmass, float HpT, float bbdRAve, float bbdMMin, float HHt, //Higgs only
@@ -64,7 +62,7 @@ class MVAHandler
   //write mode, to mva tree
   TFile* MVAofile;
   //the tree, 2 for 3b 4b separately
-  TTree *to2b, *to3b, *to4b;
+  TTree *to3b, *to4b;
   bool initTree(TString mvaout);
   void fillTree();
   void writeTree();

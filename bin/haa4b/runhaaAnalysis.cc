@@ -124,6 +124,8 @@ int main(int argc, char* argv[])
 
     bool verbose = runProcess.getParameter<bool>("verbose");
 
+    bool runCR = runProcess.getParameter<bool>("runControl");
+    
     bool use_DeepCSV = runProcess.getParameter<bool>("useDeepCSV"); // Will set DeepCSV as the default b-tagger automaticaly
     bool usemetNoHF = runProcess.getParameter<bool>("usemetNoHF");
     
@@ -490,11 +492,11 @@ int main(int argc, char* argv[])
     }
 
     //MC normalization (to 1/pb)
-    float xsecWeight = 1.0;
-    //float cnorm=1.0;
+    double xsecWeight = 1.0;
+    float cnorm=1.0;
     if (isMC) {
-      xsecWeight = 0.;
-      //      int totalNumberofEvents(0);
+      xsecWeight = 0.; // disable MC sample if not present in the map
+      //double totalNumberofEvents(0.);
       /*
       TH1F* nevtH = (TH1F *) file->Get("mainNtuplizer/nevents");
       totalNumberofEvents = nevtH->GetBinContent(1);
@@ -503,26 +505,23 @@ int main(int argc, char* argv[])
       if(posH && negH) cnorm = posH->GetBinContent(1) - negH->GetBinContent(1);
       if(rescaleFactor>0) cnorm /= rescaleFactor;
       printf("cnorm = %f and totalNumberOfEvents= %f\n",cnorm, totalNumberofEvents);
-    
-      //xsecWeight=xsec/totalNumberofEvents;
-      xsecWeight=xsec/cnorm; // effective luminosity
       */
-      std::map<std::string, float> xsec_map = mStat;
+      //xsecWeight=xsec/totalNumberofEvents;
+      // xsecWeight=xsec/cnorm; // effective luminosity
+      
+      std::map<std::string, int> xsec_map = mStat;
 
       // std::string myproc = proc.Data();
       //   std::cout << "Runnin process " << myproc << std::endl;
-      std::map<std::string, float>::iterator it;
+      std::map<std::string, int>::iterator it;
       for ( it = xsec_map.begin(); it != xsec_map.end(); it++ ) {
 	if (it->first == proc.Data()) {
-	  xsecWeight = it->second;
+	  xsecWeight = (xsec/(float)it->second);
 	  //	  totalNumberofEvents = it->second;
 	  if (verbose) std::cout << "Nstat = " << it->second << std::endl;
 	}
       }
-      /*
-      if (totalNumberofEvents==0) { xsecWeight=0.; }
-      else { xsecWeight=(xsec/(float)totalNumberofEvents); }// effective luminosity
-      */
+
       //      float pereventwgt=(xsecWeight*35866.9);
       // printf("\n Running process with xSec = %f , and totalNumEvents = %d  . Per event weight is (L=35.9 fb-1): %f \n\n",
       //	     xsec, totalNumberofEvents, pereventwgt );
@@ -919,7 +918,6 @@ int main(int argc, char* argv[])
 
         PhysicsObjectJetCollection GoodIdJets;
         PhysicsObjectJetCollection CSVLoosebJets; // used to define the SRs
-	PhysicsObjectJetCollection pseudoCSVLoosebJets; // used to define the CRs
 
         int nJetsGood30(0);
         int nCSVLtags(0),nCSVMtags(0),nCSVTtags(0);
@@ -985,11 +983,14 @@ int main(int argc, char* argv[])
 	  } // isMC
   
 	    // Fill b-jet vector:
-	  if (hasCSVtag) {
+	  if (runCR) {
+	    // To start with, simply use all AK4 jets in the pseudo b-jet collection:
 	    CSVLoosebJets.push_back(corrJets[ijet]);
+	  } else {
+	    if (hasCSVtag) {
+	      CSVLoosebJets.push_back(corrJets[ijet]);
+	    }
 	  }
-	  // To start with, simply use all AK4 jets in the pseudo b-jet collection:
-	  pseudoCSVLoosebJets.push_back(corrJets[ijet]);
 
 	  //} // b-jet loop
 	} // jet loop
@@ -1006,10 +1007,6 @@ int main(int argc, char* argv[])
 	// AK4 + CSV jets:
 	sort(CSVLoosebJets.begin(), CSVLoosebJets.end(), ptsort());
 	mon.fillHisto("nbjets_raw","nb", CSVLoosebJets.size(),weight);
-
-	// pseudo: AK4 + CSV jets:
-	sort(pseudoCSVLoosebJets.begin(), pseudoCSVLoosebJets.end(), ptsort());
-	mon.fillHisto("nbjets_raw","nb_pseudo", pseudoCSVLoosebJets.size(),weight);
 
 	//--------------------------------------------------------------------------
 	// dphi(jet,MET)
@@ -1225,21 +1222,7 @@ int main(int argc, char* argv[])
 	  if (isv.dxyz_signif<4.) continue;
 	  if (isv.cos_dxyz_p<0.98) continue;
 
-	  // SVs_raw.push_back(isv);
-
-	  // Cross-cleaned SVs with CSVv2 jets
-	  float dRmin(999.);
-	  for (auto & it : pseudoCSVLoosebJets) {
-	    double dR=deltaR(it, isv);
-	    if (dR<dRmin) dRmin=dR;
-	  }
-	  mon.fillHisto("dR_raw","sv_jet",dRmin,weight);
-
-	  hasOverlap=(dRmin<0.4);
-	  if (!hasOverlap) {// continue;
-	  // Fill final soft-bs from SVs
-	    SVs_raw.push_back(isv);
-	  }
+	  SVs_raw.push_back(isv);
 	  
 	  // plot minDR(SV,b)
 	  float dRmin_csv(999.);
@@ -1296,15 +1279,6 @@ int main(int argc, char* argv[])
 	//mon.fillHisto("nbjets_2D","cat_cleaned_raw",cleanedGoodIdJets.size(),GoodIdbJets.size(),weight);
 	mon.fillHisto("nbjets_raw","merged",GoodIdbJets.size(),weight);
 
-	vector<LorentzVector> pseudoGoodIdbJets;
-
-	for (auto & i : pseudoCSVLoosebJets) {
-	  pseudoGoodIdbJets.push_back(i);
-	} // AK4 + CSV
-	for (auto & i : SVs_raw) {
-	  pseudoGoodIdbJets.push_back(i);
-	} // soft-b from SV
-	
 	
 	//--------------------------------------------------------------------------
 	vector<LorentzVector> cleanedGoodIdbJets;
@@ -1356,8 +1330,7 @@ int main(int argc, char* argv[])
 
 	//-------------------------------------------------------------------
 	// At least 2 jets and 2 b-jets
-	if (GoodIdJets.size()<2 || GoodIdbJets.size()<2) continue;
-	//	if (GoodIdJets.size()<2 || CSVLoosebJets.size()<2) continue;
+	if (GoodIdJets.size()<2 || CSVLoosebJets.size()<2) continue;
 	mon.fillHisto("eventflow","all",5,weight); 
 	//-------------------------------------------------------------------
 
@@ -1405,8 +1378,8 @@ int main(int argc, char* argv[])
 
         //-------------------------------------------------------------------
         // At least 3 b-tags
-	//   if (GoodIdbJets.size()<3) continue;
-	// mon.fillHisto("eventflow","all",6,weight); 
+	if (GoodIdbJets.size()<3) continue;
+	mon.fillHisto("eventflow","all",6,weight); 
         //-------------------------------------------------------------------
         // if (GoodIdbJets.size()==1 && DBfatJets.size()==0) continue; // only allow =1b cat. if a fat-jet is present (in 3b cat)
         // if (GoodIdbJets.size()==2 && DBfatJets.size()==0) continue; // only allow =2b cat. if a fat-jet is present (in 4b cat)
@@ -1421,24 +1394,8 @@ int main(int argc, char* argv[])
 
 	// HT from all CSV + soft b's
 	float ht(0.);
-	
-	if (GoodIdbJets.size()==2) { // Control Region (CR)
-	  if (pseudoGoodIdbJets.size()>=3) {
-	    tags.push_back("CR");
 
-	    int countb(0);
-	    for (auto & thisb : pseudoGoodIdbJets) 
-	      {
-		allHadronic+=thisb;
-		countb++; if (countb>3) break;
-	      }
-	    for (auto & thisb : pseudoGoodIdbJets) 
-	      {
-		ht+=thisb.pt();
-	      }
-	  } else { continue; }
-	}
-        else if (GoodIdbJets.size()==3) // 3b category
+	if (GoodIdbJets.size()==3) // 3b category
         {// 3b cat.
             tags.push_back("SR_3b");
 	    // Hadronic vector sum:
@@ -1451,7 +1408,7 @@ int main(int argc, char* argv[])
 	      {
 		ht+=thisb.pt();
 	      }
-	    mon.fillHisto("eventflow","all",6,weight); 
+	    //mon.fillHisto("eventflow","all",6,weight); 
         } 
         else if (GoodIdbJets.size()>=4) // 4b category
         {// 4b cat.
@@ -1515,25 +1472,7 @@ int main(int argc, char* argv[])
         vector<float> dRs;
         float dm(0.);
 
-	if (GoodIdbJets.size()==2) {
-	  if (pseudoGoodIdbJets.size()==3) {
-	    dRs.push_back(deltaR(pseudoGoodIdbJets[0],pseudoGoodIdbJets[1]));
-	    dRs.push_back(deltaR(pseudoGoodIdbJets[0],pseudoGoodIdbJets[2]));
-	    dRs.push_back(deltaR(pseudoGoodIdbJets[1],pseudoGoodIdbJets[2]));
-	  } else if (pseudoGoodIdbJets.size()>=4) {
-	    dRs.push_back(deltaR(pseudoGoodIdbJets[0],pseudoGoodIdbJets[3]));
-            dRs.push_back(deltaR(pseudoGoodIdbJets[1],pseudoGoodIdbJets[3]));
-            dRs.push_back(deltaR(pseudoGoodIdbJets[2],pseudoGoodIdbJets[3]));
-
-            float dm1 = fabs( (pseudoGoodIdbJets[0]+pseudoGoodIdbJets[1]).mass() - (pseudoGoodIdbJets[2]+pseudoGoodIdbJets[3]).mass() );
-            float dm2 = fabs( (pseudoGoodIdbJets[0]+pseudoGoodIdbJets[2]).mass() - (pseudoGoodIdbJets[1]+pseudoGoodIdbJets[3]).mass() );
-
-            dm1 = min(dm1, dm2);
-            dm2 = fabs( (pseudoGoodIdbJets[0]+pseudoGoodIdbJets[3]).mass() - (pseudoGoodIdbJets[1]+pseudoGoodIdbJets[2]).mass() );
-            dm = min(dm1, dm2);
-	  }
-	}
-	else if (GoodIdbJets.size()==3) {
+	if (GoodIdbJets.size()==3) {
 	  dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[1]));
 	  dRs.push_back(deltaR(GoodIdbJets[0],GoodIdbJets[2]));
 	  dRs.push_back(deltaR(GoodIdbJets[1],GoodIdbJets[2]));
@@ -1599,7 +1538,6 @@ int main(int argc, char* argv[])
         {
           myMVAHandler_.getEntry
           (
-	   GoodIdbJets.size() == 2, 
 	   GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
 	   wsum.pt(), //W only, w pt
             allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
