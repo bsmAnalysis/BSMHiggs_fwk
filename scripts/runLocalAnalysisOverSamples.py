@@ -160,6 +160,7 @@ for proc in procList :
                 if(params.find('@useMVA')<0) :          params = '@useMVA=False ' + params
                 if(params.find('@evStart')<0) :         params = '@evStart=0 ' + params
                 if(params.find('@evEnd')<0) :           params = '@evEnd=-1 ' + params
+                if(params.find('@runControl')<0) :      params = '@runControl=False' + params
                 if(params.find('@saveSummaryTree')<0) : params = '@saveSummaryTree=False ' + params
                 if(params.find('@runSystematics')<0) :  params = '@runSystematics=False ' + params
                 if(params.find('@usemetNoHF')<0) :  	params = '@usemetNoHF=False ' + params
