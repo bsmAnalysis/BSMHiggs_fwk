@@ -59,7 +59,7 @@ const std::map<std::string, int> mStat =
     { "MC13TeV_QCD_Pt80To120_EMEnr_2016", 35841783 }, // 350.246 },
     { "MC13TeV_QCD_Pt120To170_EMEnr_2016", 35817281 }, //63.0513 },
     { "MC13TeV_QCD_Pt170To300_EMEnr_2016", 11540163 }, //58.4617 },
-    { "MC13TeV_QCD_Pt300ToInf_EMEnr_2016", (9000*0.15)/7373633 }, //6.56669 },
+    { "MC13TeV_QCD_Pt300ToInf_EMEnr_2016", 7373633 }, //6.56669 },
     { "MC13TeV_QCD_Pt20ToInf_MuEnr_2016", 22094081 } //491.35 }
 
   };
