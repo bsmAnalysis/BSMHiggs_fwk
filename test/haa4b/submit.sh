@@ -34,10 +34,9 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 # Global Variables
 #--------------------------------------------------
 
-#SUFFIX=_2017_09_18
+SUFFIX=_2018_01_05
 #SUFFIX=_2017_09_20 #Data
-SUFFIX=_2017_09_21 #BG MC
-#SUFFIX=_2017_11_15 #SG MC
+#SUFFIX=_2017_09_21 #BG MC
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
@@ -56,11 +55,9 @@ PLOTTER=$MAINDIR/plotter${SUFFIX}
 NTPL_INPUT=results$SUFFIX
 #$MAINDIR/ntuples
 NTPL_JSON=$MAINDIR/samples2016.json
-#$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/samples_haa4b.json
 NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX
 RUNLOG=$NTPL_OUTDIR/LOGFILES/runSelection.log
 
-#queue='cmscaf1nd'
 queue='8nh'
 
 #IF CRAB3 is provided in argument, use crab submission instead of condor/lsf 
@@ -95,18 +92,15 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "JOB SUBMISSION for Ntuplization using full CMSSW fwk"
        echo "Input: " $JSON
        echo "Output: " $RESULTSDIR
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_dataOnly -s crab
-       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_signal -s crab #-t MC13TeV_Wh_amass50
-       #runAnalysisOverSamples.py -e runNtuplizer -j $JSON -o $RESULTSDIR  -c $MAINDIR/../runNtuplizer_cfg.py.templ -p "@data_pileup=datapileup_latest @verbose=False" -s $queue --report True --key haa_test $arguments
+       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_DYJetsToLL_10to50_ext1_2016 -s crab 
    fi    
 
    if [[ $step == 1.1 ]]; then  #submit jobs for h->aa->XXYY analysis
        echo "JOB SUBMISSION for BSM h->aa Analysis"
        echo "Input: " $NTPL_JSON
        echo "Output: " $NTPL_OUTDIR
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@data_pileup=datapileup_latest @runSystematics=False @usemetNoHF=False @verbose=True @useDeepCSV=False" -s $queue #-t MC13TeV_WWZ_2016
-#MC13TeV_SingleT_at_2016
-       #'dtag' to match sample: "-t MC13TeV_Wh_amass20"
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@data_pileup=datapileup_latest @runSystematics=False @usemetNoHF=False @verbose=False @useDeepCSV=False" -s $queue 
+#-t MC13TeV_Wh_amass
    fi
 fi
 
@@ -148,10 +142,10 @@ if [[ $step > 1.999 && $step < 3 ]]; then
 
 ###  ############################################## STEPS between 3 and 4
 if [[ $step > 2.999 && $step < 4 ]]; then
-    if [ -f $RESULTSDIR/LUMI.txt ]; then
+    if [ -f $NTPL_OUTDIR/LUMI.txt ]; then
       INTLUMI=`tail -n 3 $RESULTSDIR/LUMI.txt | cut -d ',' -f 6`
     else
-	if [[ $JSON =~ "full2016" ]]; then  
+	if [[ $JSON =~ "2016" ]]; then  
 	    INTLUMI=35866.932
             echo "Please run step==2 above to calculate int. luminosity for 2016 data!" 
         else
@@ -163,7 +157,8 @@ if [[ $step > 2.999 && $step < 4 ]]; then
     
     if [[ $step == 3 || $step == 3.0 ]]; then  # make plots and combined root files
 	echo "MAKE SUMMARY ROOT FILE, BASED ON AN INTEGRATED LUMINOSITY OF $INTLUMI"
-        runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $RESULTSDIR/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased $arguments        
+	echo "Input DIR = "$NTPL_OUTDIR
+        runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased $arguments        
 #        runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $RESULTSDIR/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption UPDATE   --key haa_mcbased --doInterpollation  $arguments       
 #        cp  ${PLOTTER}.root  ${PLOTTER}_MCOnly.root
 #        runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $RESULTSDIR/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption UPDATE   --key haa_datadriven                  $arguments 
@@ -171,8 +166,8 @@ if [[ $step > 2.999 && $step < 4 ]]; then
     fi        
 
     if [[ $step == 3 || $step == 3.1 ]]; then  # make plots and combine root files for mcbased study    
-	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $RESULTSDIR/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased $arguments 
-        runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $RESULTSDIR/ --outDir $PLOTSDIR/mcbased/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf  --key haa_mcbased --fileOption READ $arguments
+#	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased $arguments 
+        runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outDir $PLOTSDIR/mcbased/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf  --key haa_mcbased --fileOption READ --noLog --signalScale 100 $arguments
     fi
 
     if [[ $step == 3 || $step == 3.2 ]]; then # make plots and combine root files for photon + jet study   

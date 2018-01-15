@@ -92,9 +92,9 @@ bool MVAHandler::initTree(TString mvaout)
 void MVAHandler::fillTree()
 {
   if ( evSummary_.is3b && evSummary_.is4b )
-  {
-    std::cout << "One event can not be both in 3 and 4 b cat! Please check!" << std::endl;
-  }
+    {
+      std::cout << "One event can not be both in 3 and 4 b cat! Please check!" << std::endl;
+    }
   else if ( evSummary_.is3b && !evSummary_.is4b )
   {
     if ( to3b ) to3b->Fill();

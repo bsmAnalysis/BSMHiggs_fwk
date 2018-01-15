@@ -144,7 +144,7 @@ for proc in procList :
 
             # Loop over files for given dtag name:
             ntplpath = '/eos/cms/store/user/georgia/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
-#            FileList = [file for file in glob.glob(ntplpath+'analysis_*.root')] 
+            # FileList = [file for file in glob.glob(ntplpath+'analysis_*.root')] 
 
             segment=0
             for file in glob.glob(ntplpath+'analysis_*.root'):
@@ -153,12 +153,14 @@ for proc in procList :
          
                 sedcmd = 'sed \"s%"@input"%' +eventsFile +'%;'
                 sedcmd += 's%"@outdir"%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
-                sedcmd += 's%"@suffix"%' +suffix+'%;'
+                sedcmd += 's%"@suffix"%' + suffix + '%;'
+                sedcmd += 's%"@proc"%' + dtag + '%;'
                 sedcmd += 's%"@tag"%' +(dtag + suffix + '_' + str(segment))+'%;'#RJ
 #                sedcmd += 's%"@tag"%' +str(getByLabel(desc,'tag',-1))+'%;'#RJ
                 if(params.find('@useMVA')<0) :          params = '@useMVA=False ' + params
                 if(params.find('@evStart')<0) :         params = '@evStart=0 ' + params
                 if(params.find('@evEnd')<0) :           params = '@evEnd=-1 ' + params
+                if(params.find('@runControl')<0) :      params = '@runControl=False' + params
                 if(params.find('@saveSummaryTree')<0) : params = '@saveSummaryTree=False ' + params
                 if(params.find('@runSystematics')<0) :  params = '@runSystematics=False ' + params
                 if(params.find('@usemetNoHF')<0) :  	params = '@usemetNoHF=False ' + params

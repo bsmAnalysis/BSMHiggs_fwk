@@ -8,11 +8,11 @@ cmsenv
 git cms-init
 #Only if you need DeepCSV
 git cms-merge-topic -u mverzett:DeepFlavour-from-CMSSW_8_0_21
-mkdir RecoBTag/DeepFlavour/data/
-cd RecoBTag/DeepFlavour/data/ 
+mkdir $CMSSW_BASE/src/RecoBTag/DeepFlavour/data/
+cd $CMSSW_BASE/src/RecoBTag/DeepFlavour/data/ 
 wget http://home.fnal.gov/~verzetti//DeepFlavour/training/DeepFlavourNoSL.json 
-cd -
-scram b
+cd $CMSSW_BASE/src/
+scram b -j 8
  
 #Checkout Some Packages from Egamma ( https://twiki.cern.ch/twiki/bin/viewauth/CMS/EGMRegression#Consistent_EGMSmearer )
 git cms-merge-topic cms-egamma:EGM_gain_v1
@@ -29,7 +29,7 @@ git cms-init
 git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
 git fetch --tags btv-cmssw
 git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_8_0_21
-scram b -j8
+scram b -j 8
 
 git clone -b svFit_2015Apr03 https://github.com/veelken/SVfit_standalone.git TauAnalysis/SVfitStandalone
 
