@@ -20,8 +20,8 @@ const std::map<std::string, int> mStat =
     { "MC13TeV_SingleT_s_2016", 622990 }, //0.193558 },
     { "MC13TeV_SingleT_atW_2016", 6933094 }, //0.184169 },
     { "MC13TeV_SingleT_tW_2016", 6952830 }, //0.183646 },
-    { "MC13TeV_SingleT_at_2016", 67240808 }, //0.0765989 },
-    { "MC13TeV_SingleT_t_2016", 37904304 }, //0.0725545 },
+    { "MC13TeV_SingleT_at_2016", 37904304 }, //67240808 }, //0.0765989 },
+    { "MC13TeV_SingleT_t_2016", 67240808 }, //37904304 }, //0.0725545 },
     //TTJets
     { "MC13TeV_TTJets_slt_2016", 61973977 }, //0.105736*0.1929 },
     { "MC13TeV_TTJets_slt_ext1_2016", 61973977 }, //0.105736*0.8071 },
@@ -56,6 +56,7 @@ const std::map<std::string, int> mStat =
     { "MC13TeV_WWZ_2016", 221468 }, //0.00922509 },
     { "MC13TeV_WWW_4F_2016", 210538 }, //0.00235191 },
     //QCD
+    { "MC13TeV_QCD_Pt50To80_EMEnr_2016", 23474171 },
     { "MC13TeV_QCD_Pt80To120_EMEnr_2016", 35841783 }, // 350.246 },
     { "MC13TeV_QCD_Pt120To170_EMEnr_2016", 35817281 }, //63.0513 },
     { "MC13TeV_QCD_Pt170To300_EMEnr_2016", 11540163 }, //58.4617 },
