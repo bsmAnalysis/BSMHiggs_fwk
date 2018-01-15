@@ -34,9 +34,9 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 # Global Variables
 #--------------------------------------------------
 
-SUFFIX=_2018_01_05
+#SUFFIX=_2018_01_05
 #SUFFIX=_2017_09_20 #Data
-#SUFFIX=_2017_09_21 #BG MC
+SUFFIX=_2017_09_21 #BG MC
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
@@ -53,12 +53,13 @@ PLOTTER=$MAINDIR/plotter${SUFFIX}
  
 ####################### Settings for Ntuple Analysis ##################
 NTPL_INPUT=results$SUFFIX
-#$MAINDIR/ntuples
+
 NTPL_JSON=$MAINDIR/samples2016.json
 NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX
+#NTPL_OUTDIR=/eos/cms/store/user/georgia/results_Ntpl$SUFFIX #only for Data
 RUNLOG=$NTPL_OUTDIR/LOGFILES/runSelection.log
 
-queue='8nh'
+queue='8nh'   
 
 #IF CRAB3 is provided in argument, use crab submission instead of condor/lsf 
 if [[ $arguments == *"crab3"* ]]; then queue='crab3' ;fi  
@@ -99,8 +100,8 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "JOB SUBMISSION for BSM h->aa Analysis"
        echo "Input: " $NTPL_JSON
        echo "Output: " $NTPL_OUTDIR
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@data_pileup=datapileup_latest @runSystematics=False @usemetNoHF=False @verbose=False @useDeepCSV=False" -s $queue 
-#-t MC13TeV_Wh_amass
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@runControl=False @runSystematics=False @usemetNoHF=False @verbose=False @useDeepCSV=False" -s $queue 
+#MC13TeV_Wh_amass
    fi
 fi
 
@@ -167,7 +168,7 @@ if [[ $step > 2.999 && $step < 4 ]]; then
 
     if [[ $step == 3 || $step == 3.1 ]]; then  # make plots and combine root files for mcbased study    
 #	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased $arguments 
-        runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outDir $PLOTSDIR/mcbased/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf  --key haa_mcbased --fileOption READ --noLog --signalScale 100 $arguments
+        runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outDir $PLOTSDIR/mcbased/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf  --key haa_mcbased --fileOption READ --noLog --signalScale 1000 $arguments
     fi
 
     if [[ $step == 3 || $step == 3.2 ]]; then # make plots and combine root files for photon + jet study   
