@@ -71,6 +71,12 @@ struct stPDFval {
     int id2;
 };
 
+struct btagsort: public std::binary_function<PhysicsObject_Jet, PhysicsObject_Jet, float> 
+{
+  bool operator () (const PhysicsObject_Jet & x, PhysicsObject_Jet & y) 
+  { return  ( x.btag0 > y.btag0 ) ; }
+}; 
+
 // Physics objects offline thresholds
 //const float lep_threshold_=25.; 
 const float mu_threshold_=25.; 
@@ -496,8 +502,9 @@ int main(int argc, char* argv[])
     float cnorm=1.0;
     if (isMC) {
       xsecWeight = 0.; // disable MC sample if not present in the map
-      //double totalNumberofEvents(0.);
       /*
+      double totalNumberofEvents(0.);
+      
       TH1F* nevtH = (TH1F *) file->Get("mainNtuplizer/nevents");
       totalNumberofEvents = nevtH->GetBinContent(1);
       TH1F* posH = (TH1F *) file->Get("mainNtuplizer/n_posevents");
@@ -505,9 +512,10 @@ int main(int argc, char* argv[])
       if(posH && negH) cnorm = posH->GetBinContent(1) - negH->GetBinContent(1);
       if(rescaleFactor>0) cnorm /= rescaleFactor;
       printf("cnorm = %f and totalNumberOfEvents= %f\n",cnorm, totalNumberofEvents);
-      */
+      
       //xsecWeight=xsec/totalNumberofEvents;
-      // xsecWeight=xsec/cnorm; // effective luminosity
+      xsecWeight=xsec/cnorm; // effective luminosity
+      */
       
       std::map<std::string, int> xsec_map = mStat;
 
@@ -521,7 +529,7 @@ int main(int argc, char* argv[])
 	  if (verbose) std::cout << "Nstat = " << it->second << std::endl;
 	}
       }
-
+      
       //      float pereventwgt=(xsecWeight*35866.9);
       // printf("\n Running process with xSec = %f , and totalNumEvents = %d  . Per event weight is (L=35.9 fb-1): %f \n\n",
       //	     xsec, totalNumberofEvents, pereventwgt );
@@ -583,7 +591,7 @@ int main(int argc, char* argv[])
 
     TMVAReader myQuabTMVAReader;
     myQuabTMVAReader.InitTMVAReader();
-    std::string QuabMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/Haa4bSBClassificationQuabMVA_BDT.weights.xml";
+    std::string QuabMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/Haa4bSBClassificationQuabMVA_BDT.weights.xml"; 
     myQuabTMVAReader.SetupMVAReader( "Haa4bSBClassificationQuabMVA", QuabMVA_xml_path );
     
     
@@ -1007,6 +1015,11 @@ int main(int argc, char* argv[])
 	// AK4 + CSV jets:
 	sort(CSVLoosebJets.begin(), CSVLoosebJets.end(), ptsort());
 	mon.fillHisto("nbjets_raw","nb", CSVLoosebJets.size(),weight);
+
+	if (runCR) {
+	  // CR: Fake b-jets are sorted in b-tag discriminator rather than pt
+	  sort(CSVLoosebJets.begin(), CSVLoosebJets.end(), btagsort());
+	}
 
 	//--------------------------------------------------------------------------
 	// dphi(jet,MET)
