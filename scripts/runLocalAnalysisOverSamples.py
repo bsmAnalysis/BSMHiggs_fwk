@@ -125,7 +125,7 @@ for proc in procList :
             if(mctruthmode!=0) : dtag+='_filt'+str(mctruthmode)
 
             if(xsec>0 and not isdata) :
-                for ibr in br :  xsec = xsec*ibr
+                for ibr in br :  xsec = xsec #*ibr
             split=getByLabel(d,'split',1)
 
 
