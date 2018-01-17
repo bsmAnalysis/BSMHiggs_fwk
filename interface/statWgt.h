@@ -23,6 +23,7 @@ const std::map<std::string, int> mStat =
     { "MC13TeV_SingleT_at_2016", 37904304 }, //67240808 }, //0.0765989 },
     { "MC13TeV_SingleT_t_2016", 67240808 }, //37904304 }, //0.0725545 },
     //TTJets
+    //    { "MC13TeV_TTJets_2016", 77081156 }, // Powheg sample
     { "MC13TeV_TTJets_slt_2016", 61973977 }, //0.105736*0.1929 },
     { "MC13TeV_TTJets_slt_ext1_2016", 61973977 }, //0.105736*0.8071 },
     { "MC13TeV_TTJets_slat_2016", 60210394 }, // 0.108833*0.1984 },
@@ -35,12 +36,12 @@ const std::map<std::string, int> mStat =
     //DY
     { "MC13TeV_DYJetsToLL_10to50_2016", 51433009 }, //12.9777*0.434 },
     { "MC13TeV_DYJetsToLL_10to50_ext1_2016", 51433009 }, // 12.9777*0.566 },
-    { "MC13TeV_DYJetsToLL_50toInf_ext1_2016", 232851034 }, //81781064 }, //2.52854 },
-    { "MC13TeV_DYJetsToLL_50toInf_ext2_2016", 232851034 },
-    { "MC13TeV_DYJetsToLL_50toInf_ext3_2016", 232851034 },
-    { "MC13TeV_DYJetsToLL_50toInf_ext4_2016", 232851034 },
-    { "MC13TeV_DYJetsToLL_50toInf_ext5_2016", 232851034 },
-    { "MC13TeV_DYJetsToLL_50toInf_ext6_2016", 232851034 },
+    { "MC13TeV_DYJetsToLL_50toInf_ext1_2016", 238454920 }, //81781064 }, //2.52854 },
+    { "MC13TeV_DYJetsToLL_50toInf_ext2_2016", 238454920 },
+    { "MC13TeV_DYJetsToLL_50toInf_ext3_2016", 238454920 },
+    { "MC13TeV_DYJetsToLL_50toInf_ext4_2016", 238454920 },
+    { "MC13TeV_DYJetsToLL_50toInf_ext5_2016", 238454920 },
+    { "MC13TeV_DYJetsToLL_50toInf_ext6_2016", 238454920 },
     //TG, TTG, TTW, TTZ
     { "MC13TeV_TGJets_2016", 368562 }, //0.288736*0.25 },
     { "MC13TeV_TGJets_ext1_2016", 368562 }, //0.288736*0.75 },
