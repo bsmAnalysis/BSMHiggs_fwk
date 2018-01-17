@@ -35,7 +35,12 @@ const std::map<std::string, int> mStat =
     //DY
     { "MC13TeV_DYJetsToLL_10to50_2016", 51433009 }, //12.9777*0.434 },
     { "MC13TeV_DYJetsToLL_10to50_ext1_2016", 51433009 }, // 12.9777*0.566 },
-    { "MC13TeV_DYJetsToLL_50toInf_2016", 81781064 }, //2.52854 },
+    { "MC13TeV_DYJetsToLL_50toInf_ext1_2016", 232851034 }, //81781064 }, //2.52854 },
+    { "MC13TeV_DYJetsToLL_50toInf_ext2_2016", 232851034 },
+    { "MC13TeV_DYJetsToLL_50toInf_ext3_2016", 232851034 },
+    { "MC13TeV_DYJetsToLL_50toInf_ext4_2016", 232851034 },
+    { "MC13TeV_DYJetsToLL_50toInf_ext5_2016", 232851034 },
+    { "MC13TeV_DYJetsToLL_50toInf_ext6_2016", 232851034 },
     //TG, TTG, TTW, TTZ
     { "MC13TeV_TGJets_2016", 368562 }, //0.288736*0.25 },
     { "MC13TeV_TGJets_ext1_2016", 368562 }, //0.288736*0.75 },
