@@ -526,7 +526,7 @@ int main(int argc, char* argv[])
 	if (it->first == proc.Data()) {
 	  xsecWeight = (xsec/(float)it->second);
 	  //	  totalNumberofEvents = it->second;
-	  if (verbose) std::cout << "Nstat = " << it->second << std::endl;
+	  std::cout << "weight = " << (xsecWeight*35866.9) << std::endl;
 	}
       }
       
@@ -796,6 +796,7 @@ int main(int argc, char* argv[])
 
 	// All: "Raw"
 	mon.fillHisto("eventflow","all",0,weight);
+	mon.fillHisto("eventflow","bdt",0,weight);      
 
         bool hasTrigger(false);
 
@@ -848,6 +849,7 @@ int main(int argc, char* argv[])
     
 	// Trigger
 	mon.fillHisto("eventflow","all",1,weight);
+	mon.fillHisto("eventflow","bdt",1,weight); 
 
 	// -------------------------------------------------------------------------
 	// Exactly 1 good lepton
@@ -870,7 +872,7 @@ int main(int argc, char* argv[])
         }
 
 	mon.fillHisto("eventflow","all",2,weight);
-
+	mon.fillHisto("eventflow","bdt",2,weight); 
 	// // -------------------------------------------------------------------------
 	// // 2nd lepton veto
 	// // -------------------------------------------------------------------------
@@ -908,13 +910,14 @@ int main(int argc, char* argv[])
 	bool passMet25(metP4.pt()>25);
 	if (!passMet25) continue;
 	mon.fillHisto("eventflow","all",3,weight); // MEt cut
+	mon.fillHisto("eventflow","bdt",3,weight);
 	//-------------------------------------------------------------------
 
 	// mtW >50 GeV
 	bool passMt(sqrt(tMass)>50. && sqrt(tMass)<250.);
 	if (!passMt) continue;
 	mon.fillHisto("eventflow","all",4,weight); // MT cut
-
+	mon.fillHisto("eventflow","bdt",4,weight); 
         //
         //JET AND BTAGGING ANALYSIS
         //
@@ -1281,13 +1284,16 @@ int main(int argc, char* argv[])
 	// First , set all b-jets (x-cleaned) in one vector<LorentzVector>
 	vector<LorentzVector> GoodIdbJets;
 
-	for (auto & i : CSVLoosebJets) {
-	  GoodIdbJets.push_back(i);
-	} // AK4 + CSV
-	for (auto & i : SVs) {
-	  GoodIdbJets.push_back(i);
-	} // soft-b from SV
-
+	for (auto & i : CSVLoosebJets) 
+	  {
+	    GoodIdbJets.push_back(i);
+	  } // AK4 + CSV
+	if (!runCR) 
+	  { // disable soft b's in the CR for the moment
+	    for (auto & i : SVs) {
+	      GoodIdbJets.push_back(i);
+	    } // soft-b from SV
+	  }
 	mon.fillHisto("nbjets_2D","cat_raw",GoodIdJets.size(),GoodIdbJets.size(),weight);
 	//mon.fillHisto("nbjets_2D","cat_cleaned_raw",cleanedGoodIdJets.size(),GoodIdbJets.size(),weight);
 	mon.fillHisto("nbjets_raw","merged",GoodIdbJets.size(),weight);
@@ -1340,11 +1346,13 @@ int main(int argc, char* argv[])
 	//-------------------------------------------------------------------
 	mon.fillHisto("nbjets_2D","cat2_raw",GoodIdbJets.size(),DBfatJets.size(),weight);
 	mon.fillHisto("nbjets_2D","cat3_raw",cleanedGoodIdbJets.size(),DBfatJets.size(),weight);
+	mon.fillHisto("nbjets_2D","cats_raw",CSVLoosebJets.size(),SVs.size(),weight);
 
 	//-------------------------------------------------------------------
 	// At least 2 jets and 2 b-jets
 	if (GoodIdJets.size()<2 || CSVLoosebJets.size()<2) continue;
 	mon.fillHisto("eventflow","all",5,weight); 
+	mon.fillHisto("eventflow","bdt",5,weight);
 	//-------------------------------------------------------------------
 
 	//-------------------------------------------------------------------
@@ -1391,8 +1399,17 @@ int main(int argc, char* argv[])
 
         //-------------------------------------------------------------------
         // At least 3 b-tags
+	if (runCR) 
+	  {
+	    if (CSVLoosebJets[1].btag0<CSVLooseWP) continue;
+	    if (CSVLoosebJets.size()>=3) 
+	      {
+		if (CSVLoosebJets[2].btag0>CSVLooseWP) continue;    
+	      }
+	  }
 	if (GoodIdbJets.size()<3) continue;
 	mon.fillHisto("eventflow","all",6,weight); 
+	
         //-------------------------------------------------------------------
         // if (GoodIdbJets.size()==1 && DBfatJets.size()==0) continue; // only allow =1b cat. if a fat-jet is present (in 3b cat)
         // if (GoodIdbJets.size()==2 && DBfatJets.size()==0) continue; // only allow =2b cat. if a fat-jet is present (in 4b cat)
@@ -1425,7 +1442,16 @@ int main(int argc, char* argv[])
         } 
         else if (GoodIdbJets.size()>=4) // 4b category
         {// 4b cat.
-	  tags.push_back("SR_4b");
+	  tags.push_back("SR_geq4b"); 
+
+	  if (GoodIdbJets.size()==4) 
+	    { 
+	      tags.push_back("SR_4b"); 
+	    }
+	  else
+	    {
+	      tags.push_back("SR_geq5b");
+	    }
 	  // Hadronic vector sum:
 	  int countb(0);
 	  for (auto & thisb : GoodIdbJets) 
@@ -1541,6 +1567,14 @@ int main(int argc, char* argv[])
         //else continue;
         mon.fillHisto("MVABDT", tags, mvaBDT, weight);
 
+	if (GoodIdbJets.size() == 3) 
+	  {
+	    if (mvaBDT>0.19) mon.fillHisto("eventflow","bdt",6,weight);  
+	  }
+	else if (GoodIdbJets.size() >= 4) 
+	  {
+	    if (mvaBDT>0.14) mon.fillHisto("eventflow","bdt",7,weight);  
+	  }
 	//##############################################################################
         //############ MVA Handler ####################################################
 	//##############################################################################
