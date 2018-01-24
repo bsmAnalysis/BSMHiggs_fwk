@@ -87,7 +87,7 @@ struct btagsort: public std::binary_function<PhysicsObject_Jet, PhysicsObject_Je
 //const float lep_threshold_=25.; 
 const float mu_threshold_=25.; 
 const float ele_threshold_=30.; 
-const float jet_threshold_=30.; 
+const float jet_threshold_=20.; 
 
 //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X
 const float CSVLooseWP = 0.5426;  // Updated to 80X Moriond17 Loose
@@ -1253,13 +1253,13 @@ int main(int argc, char* argv[])
 	    if (dR<dRmin_csv) dRmin_csv=dR;
 	  }
 	  mon.fillHisto("dR_raw","sv_b",dRmin_csv,weight);
-	  /*
+	  
 	  hasOverlap=(dRmin_csv<0.4);
 	  if (!hasOverlap) {// continue;
 	  // Fill final soft-bs from SVs
 	    SVs.push_back(isv);
 	  }
-	  */
+	  
  	}
 
 	//--------------------------------------------------------------------------
