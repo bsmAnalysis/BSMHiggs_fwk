@@ -71,6 +71,12 @@ struct stPDFval {
     int id2;
 };
 
+struct ptsort: public std::binary_function<LorentzVector, LorentzVector, bool> 
+{
+  bool operator () (const LorentzVector & x, const LorentzVector & y) 
+  { return  ( x.pt() > y.pt() ) ; }
+};
+
 struct btagsort: public std::binary_function<PhysicsObject_Jet, PhysicsObject_Jet, float> 
 {
   bool operator () (const PhysicsObject_Jet & x, PhysicsObject_Jet & y) 
@@ -81,7 +87,7 @@ struct btagsort: public std::binary_function<PhysicsObject_Jet, PhysicsObject_Je
 //const float lep_threshold_=25.; 
 const float mu_threshold_=25.; 
 const float ele_threshold_=30.; 
-const float jet_threshold_=20.; 
+const float jet_threshold_=30.; 
 
 //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X
 const float CSVLooseWP = 0.5426;  // Updated to 80X Moriond17 Loose
@@ -380,7 +386,7 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "dphilepmet", ";|#Delta#it{#phi}(lep,E_{T}^{miss})|;Events", 20,0,TMath::Pi()) );
 
     //MVA
-    mon.addHistogram( new TH1F( "MVABDT", "BDT", 100, -0.5, 0.5) );
+    mon.addHistogram( new TH1F( "mvabdt", ";BDT;Events", 100, -0.5, 0.5) );
 
     //for MC normalization (to 1/pb)
     TH1F* Hcutflow = (TH1F*) mon.addHistogram( new TH1F ("cutflow" , "cutflow" ,6,0,6) ) ;
@@ -1247,13 +1253,13 @@ int main(int argc, char* argv[])
 	    if (dR<dRmin_csv) dRmin_csv=dR;
 	  }
 	  mon.fillHisto("dR_raw","sv_b",dRmin_csv,weight);
-  
+	  /*
 	  hasOverlap=(dRmin_csv<0.4);
 	  if (!hasOverlap) {// continue;
 	  // Fill final soft-bs from SVs
 	    SVs.push_back(isv);
 	  }
-
+	  */
  	}
 
 	//--------------------------------------------------------------------------
@@ -1565,7 +1571,7 @@ int main(int argc, char* argv[])
                      );
         }
         //else continue;
-        mon.fillHisto("MVABDT", tags, mvaBDT, weight);
+        mon.fillHisto("mvabdt", tags, mvaBDT, weight);
 
 	if (GoodIdbJets.size() == 3) 
 	  {
