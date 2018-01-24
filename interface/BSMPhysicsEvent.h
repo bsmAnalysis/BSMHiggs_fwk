@@ -15,16 +15,6 @@
 enum PhysicsObjects   { MET=0,JET=1,TOP=6,ELECTRON=11, MUON=13, TAU=15, GLUON=21, PHOTON=22, Z=23, W=24};
 enum LeptonChannels { UNKNOWN=0,MUMU=1,MU=2,EE=3,E=4,EMU=5,ETAU=6,MUTAU=7, GAMMA=22};
 
-
-struct ptsort: public std::binary_function<LorentzVector, LorentzVector, bool> 
-{
-  bool operator () (const LorentzVector & x, const LorentzVector & y) 
-  { 
-    return  ( x.pt() > y.pt() ) ; 
-  }
-}; 
-
-
 class PhysicsObject : public LorentzVector {
 public :
  PhysicsObject(LorentzVector vec, Int_t id_, Int_t momid_, Int_t momidx_):
