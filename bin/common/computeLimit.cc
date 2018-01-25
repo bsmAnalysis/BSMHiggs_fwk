@@ -297,7 +297,7 @@ class ShapeData_t
      	return Total>0?sqrt(Total):-1;
   	}
 
-		double getBinShapeUncertainty(string name, int bin, string upORdown){
+              double getBinShapeUncertainty(string name, int bin, string upORdown){
      	double Total=0;
      	//this = ch->second.shapes[histoName.Data()]
      	for(std::map<string, TH1*>::iterator var = uncShape.begin(); var!=uncShape.end(); var++){
@@ -412,30 +412,8 @@ class AllInfo_t
     // Load histograms from root file and json to memory
     void getShapeFromFile(TFile* inF, std::vector<string> channelsAndShapes, int cutBin, JSONWrapper::Object &Root,  double minCut=0, double maxCut=9999, bool onlyData=false);
 
-    // replace MC NonResonnant Backgrounds by DataDriven estimate
-    void doBackgroundSubtraction(FILE* pFile, std::vector<TString>& selCh,TString ctrlCh,TString mainHisto, TString sideBandHisto);
-
-    //add syst uncertainty to the instr. met background if it already exist in the file
-    void addInstrMetSyst(FILE* pFile, std::vector<TString>& selCh,TString ctrlCh,TString mainHisto);
-    void addInstrMetSyst_2017(std::vector<TString>& selCh,TString mainHisto); //with the method used in 2017
-
-    // replace MC Z+Jets Backgrounds by DataDriven Gamma+Jets estimate
-    void doDYReplacement(FILE* pFile, std::vector<TString>& selCh,TString ctrlCh,TString mainHisto);
-
-    // replace MC Backgrounds with FakeLeptons by DataDriven estimate
-    void doFakeLeptonEstimation(FILE* pFile, std::vector<TString>& selCh,TString ctrlCh,TString mainHisto, bool isCutAndCount);
-
     // Rebin histograms to make sure that high mt/met region have no empty bins
     void rebinMainHisto(string histoName);
-
-    // Interpollate the signal sample between two mass points 
-    void SignalInterpolation(string histoName);
-
-    // scale VBF production to VBF/GGF SM prediction;
-    void scaleVBF(string histoName);          
-
-    // Rescale signal sample for the effect of the interference and propagate the uncertainty 
-    void RescaleForInterference(string histoName);
 
     //Merge bins together
     void mergeBins(std::vector<string>& binsToMerge, string NewName);
@@ -666,48 +644,16 @@ int main(int argc, char* argv[])
 
   //define vector for search
   std::vector<TString>& selCh = Channels;
-  //remove the non-resonant background from data
-  if(subNRB){
-  	pFile = fopen("NonResonnant.tex","w");
-  	allInfo.doBackgroundSubtraction(pFile, selCh,"emu",histo,histo+"_NRBctrl");
-  	fclose(pFile);
-  }
 
-
-
-
-
-  //replace Z+Jet background by Gamma+Jet estimates
-  if(subDY){//Hugo: This is something completely outdated... the way to choose for datadriven DY or mc-based, is just by giving the good key
-  	pFile = fopen("GammaJets.tex","w");
-  	allInfo.doDYReplacement(pFile, selCh,"gamma",histo);
-  	fclose(pFile);
-  }
-
-
-  //replace Z+Jet background by Gamma+Jet estimates
-  if(subFake){
-  	pFile = fopen("FakeRateEstimate.tex","w");
-  	allInfo.doFakeLeptonEstimation(pFile, selCh,"gamma",histo, !shape);
-  	fclose(pFile);
-  }
 
   //replace data by total MC background
   if(blindData)allInfo.blind();
-
-  //interpollate signal sample if desired mass point is not available
-  allInfo.SignalInterpolation(histo.Data());
-
-  if(scaleVBF)  allInfo.scaleVBF(histo.Data());
 
   //rescale for interference
   //if(doInterf || signalSufix!="")allInfo.RescaleForInterference(histo.Data());  //disabled as the logic is moved to runXXXAnalysis code
 
   //extrapolate backgrounds toward higher mt/met region to make sure that there is no empty bins
   if(shape && BackExtrapol)allInfo.rebinMainHisto(histo.Data());
-
-  // add the syst. on the Instr MET 
-  allInfo.addInstrMetSyst_2017(selCh,histo);
 
   //drop backgrounds with rate<1%
   allInfo.dropSmallBckgProc(selCh, histo.Data(), dropBckgBelow);
@@ -1561,7 +1507,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         axis->Reset();      
         axis->GetXaxis()->SetRangeUser(axis->GetXaxis()->GetXmin(), axis->GetXaxis()->GetXmax());
         axis->GetYaxis()->SetRangeUser(0.5, 1.5); //100% uncertainty
-        if(it->second.shortName == "instrmet") axis->GetYaxis()->SetRangeUser(-5, 5);
         if((I-1)%NBins!=0)axis->GetYaxis()->SetTitle("");
         axis->Draw();
         toDelete.push_back(axis);
@@ -2082,14 +2027,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       }
 
       double procMass=0;  char procMassStr[128] = "";
-      if(isSignal &&  mass>0 && (proc.Contains("H(") || proc.Contains("h(") || proc.Contains("A(") || proc.Contains("Rad(") || proc.Contains("RsGrav(") || proc.Contains("BulkGrav(") )){
+      if(isSignal &&  mass>0 && (proc.Contains("Wh(") )){
+	//|| proc.Contains("h(") || proc.Contains("A(") || proc.Contains("Rad(") || proc.Contains("RsGrav(") || proc.Contains("BulkGrav(") )){
         if(proc.Contains("H(") && proc.Contains("A(")){sscanf(proc.Data()+proc.First("A")+2,"%lf",&procMass);
         }else if(proc.Contains("H(")){sscanf(proc.Data()+proc.First("H")+2,"%lf",&procMass);
         }else if(proc.Contains("A(")){sscanf(proc.Data()+proc.First("A")+2,"%lf",&procMass);
         }else if(proc.Contains("h(")){sscanf(proc.Data()+proc.First("(")+1,"%lf",&procMass);
-        }else if(proc.Contains("Rad(")){sscanf(proc.Data()+proc.First("(")+1,"%lf",&procMass);
-		  	}else if(proc.Contains("RsGrav(")){sscanf(proc.Data()+proc.First("(")+1,"%lf",&procMass);
-        }else if(proc.Contains("BulkGrav(")){sscanf(proc.Data()+proc.First("(")+1,"%lf",&procMass);}
 
         //printf("%s --> %f\n",  proc.Data(), procMass);
 
@@ -2109,14 +2052,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       }
 
       TString procSave = proc;
-      if(isSignal && mass>0 && proc.Contains("ggH") && proc.Contains("ZZ"))proc = TString("ggH")  +procMassStr;
-      else if(isSignal && mass>0 && proc.Contains("qqH") && proc.Contains("ZZ"))proc = TString("qqH")  +procMassStr;
-      else if(isSignal && mass>0 && proc.Contains("ggH") && proc.Contains("WW"))proc = TString("ggHWW")+procMassStr;
-      else if(isSignal && mass>0 && proc.Contains("qqH") && proc.Contains("WW"))proc = TString("qqHWW")+procMassStr;
-
-      if(procSave.Contains("SandBandInterf"))proc+="_SBI";
-      else if(procSave.Contains("SOnly"))         proc+="_S";
-      else if(procSave.Contains("BOnly"))         proc+="_B";
+      //      if(isSignal && mass>0 && proc.Contains("ggH") && proc.Contains("ZZ"))proc = TString("ggH")  +procMassStr;
+      if(isSignal && mass>0 && proc.Contains("Wh")) proc = TString("Wh")  +procMassStr;
+      //      else if(isSignal && mass>0 && proc.Contains("qqH") && proc.Contains("ZZ"))proc = TString("qqH")  +procMassStr;
 
       if(skipGGH && isSignal && mass>0 && proc.Contains("ggH") )continue;
       if(skipQQH && isSignal && mass>0 && (proc.Contains("qqH") || proc.Contains("VBF")) )continue;
@@ -2202,7 +2140,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if(isnan((float)hshape->Integral())){hshape->Reset();}
           hshape->SetDirectory(0);
           hshape->SetTitle(proc);
-          utils::root::fixExtremities(hshape,false,true);
+	  utils::root::fixExtremities(hshape,false,true);
           hshape->SetFillColor(color); hshape->SetLineColor(lcolor); hshape->SetMarkerColor(mcolor);
           hshape->SetFillStyle(fill);  hshape->SetLineWidth(lwidth); hshape->SetMarkerStyle(marker); hshape->SetLineStyle(lstyle);
 
@@ -2250,537 +2188,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         }
         }
       }
-    }
-  }
-
-  //
-  // replace MC NonResonnant Backgrounds by DataDriven estimate
-  //
-  void AllInfo_t::doBackgroundSubtraction(FILE* pFile, std::vector<TString>& selCh,TString ctrlCh,TString mainHisto, TString sideBandHisto)
-  {
-    char Lcol     [1024] = "";
-    char Lchan    [1024] = "";
-    char Lalph1   [1024] = "";
-    char Lalph2   [1024] = "";
-    char Lyield   [1024] = "";
-    char LyieldMC [1024] = "";
-
-    //check that the data proc exist
-    std::map<string, ProcessInfo_t>::iterator dataProcIt=procs.find("data");             
-    if(dataProcIt==procs.end()){printf("The process 'data' was not found... can not do non-resonnant background prediction\n"); return;}
-
-    //create a new proc for NRB backgrounds
-    TString NRBProcName = "Top/W/WW";
-    for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==NRBProcName.Data()){sorted_procs.erase(p);break;}}           
-    sorted_procs.push_back(NRBProcName.Data());
-    procs[NRBProcName.Data()] = ProcessInfo_t(); //reset
-    ProcessInfo_t& procInfo_NRB = procs[NRBProcName.Data()];
-    procInfo_NRB.shortName = "topwww";
-    procInfo_NRB.isData = true;
-    procInfo_NRB.isSign = false;
-    procInfo_NRB.isBckg = true;
-    procInfo_NRB.xsec   = 0.0;
-    procInfo_NRB.br     = 1.0;
-
-
-
-    //create an histogram containing all the MC backgrounds
-    std::vector<string> toBeDelete;
-    for(std::map<string, ProcessInfo_t>::iterator it=procs.begin(); it!=procs.end();it++){
-      if(!it->second.isBckg || it->second.isData)continue;
-      TString procName = it->first.c_str();
-      if(!( procName.Contains("t#bar{t}") || procName.Contains("Single top") || procName.Contains("Top") || procName.Contains("WWW") || procName.Contains("WW") || procName.Contains("WW#rightarrow 2l2#nu") ||  procName.Contains("WW#rightarrow lnu2q") || procName.Contains("W#rightarrow l#nu") || procName.Contains("W,multijets") || procName.Contains("Z#rightarrow #tau#tau") || procName.Contains("ZZ#rightarrow Z#tau#tau") ||procName.Contains("Top/W/WW") ))continue;
-      addProc(procInfo_NRB, it->second);
-      for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==it->first){sorted_procs.erase(p);break;}}
-      toBeDelete.push_back(it->first);
-    }
-    for(std::vector<string>::iterator p=toBeDelete.begin();p!=toBeDelete.end();p++){procs.erase(procs.find((*p)));}
-
-
-    for(std::map<string, ChannelInfo_t>::iterator chData = dataProcIt->second.channels.begin(); chData!=dataProcIt->second.channels.end(); chData++){
-      if(std::find(selCh.begin(), selCh.end(), chData->second.channel)==selCh.end())continue;
-
-      std::map<string, ChannelInfo_t>::iterator chNRB  = procInfo_NRB.channels.find(chData->first);  
-      if(chNRB==procInfo_NRB.channels.end()){  //this channel does not exist, create it
-        procInfo_NRB.channels[chData->first] = ChannelInfo_t();     
-        chNRB                = procInfo_NRB.channels.find(chData->first);
-        chNRB->second.bin     = chData->second.bin;
-        chNRB->second.channel = chData->second.channel;
-      }
-
-      //load data histogram in the control channel
-      TH1* hCtrl_SB = dataProcIt->second.channels[(ctrlCh+chData->second.bin.c_str()).Data()].shapes[sideBandHisto.Data()].histo();
-      TH1* hCtrl_SI = dataProcIt->second.channels[(ctrlCh+chData->second.bin.c_str()).Data()].shapes[mainHisto    .Data()].histo();
-      TH1* hChan_SB =                    chData->second                                      .shapes[sideBandHisto.Data()].histo();
-      TH1* hNRB     =                    chNRB ->second                                      .shapes[mainHisto    .Data()].histo();
-
-      //compute alpha
-      double alpha=0 ,alpha_err=0;
-      double alphaUsed=0 ,alphaUsed_err=0;
-		 	int bin = 6; //bin = 5 => AllSide Region; bin = 6 => UpSide Region
-      if(hCtrl_SB->GetBinContent(bin)>0){
-        alpha     = hChan_SB->GetBinContent(bin) / hCtrl_SB->GetBinContent(bin);
-        alpha_err = ( fabs( hChan_SB->GetBinContent(bin) * hCtrl_SB->GetBinError(bin) ) + fabs(hChan_SB->GetBinError(bin) * hCtrl_SB->GetBinContent(bin) )  ) / pow(hCtrl_SB->GetBinContent(bin), 2);        
-      }
-			//                 if(chData->second.channel.find("ee"  )==0){alphaUsed = 0.44; alphaUsed_err=0.03;}
-			//                 if(chData->second.channel.find("mumu")==0){alphaUsed = 0.71; alphaUsed_err=0.04;}
-			//                 if(chData->second.channel.find("ee"  )==0){alphaUsed = 0.47; alphaUsed_err=0.03;} //25/01/2014
-			//                 if(chData->second.channel.find("mumu")==0){alphaUsed = 0.61; alphaUsed_err=0.04;}
-      //if(chData->second.channel.find("ee"  )==0){alphaUsed = 0.36; alphaUsed_err=0.02;} //26/01/2016
-      //if(chData->second.channel.find("mumu")==0){alphaUsed = 0.77; alphaUsed_err=0.04;}
-
-      //if(chData->second.channel.find("ee"  )==0){alphaUsed = 0.384583; alphaUsed_err = 0.00600805;} //06/04/2017
-      //if(chData->second.channel.find("mumu")==0){alphaUsed = 0.674941; alphaUsed_err = 0.00874789;}
-
-      //if(chData->second.channel.find("ee"  )==0){alphaUsed = 0.375; alphaUsed_err = 0.006;} //09/05/2017
-      //if(chData->second.channel.find("mumu")==0){alphaUsed = 0.684; alphaUsed_err = 0.005;}
-
-      if(chData->second.channel.find("ee"  )==0){alphaUsed = 0.369; alphaUsed_err = 0.006;} //09/05/2017
-      if(chData->second.channel.find("mumu")==0){alphaUsed = 0.683; alphaUsed_err = 0.0095;}
-      double valDD, valDD_err;
-      double valMC, valMC_err;
-      valMC = hNRB->IntegralAndError(1,hNRB->GetXaxis()->GetNbins(),valMC_err);  if(valMC<1E-6){valMC=0.0; valMC_err=0.0;}
-
-      if(hCtrl_SI->Integral(1, hCtrl_SI->GetXaxis()->GetNbins()+1)<=0){ //if no data in emu: take the shape from MC and fix integral of upper stat uncertainty to 1.8events
-        double ErrInt = 0;
-        for(int bi=1;bi<=hNRB->GetXaxis()->GetNbins()+1;bi++){                       
-          double val = hNRB->GetBinContent(bi);
-          double err = hNRB->GetBinError(bi);
-          double ratio = 1.8/valMC;
-          double newval = 1E-7;
-          double newerr = sqrt(pow(val*ratio,2) + pow(err*ratio,2));
-          hNRB->SetBinContent(bi, newval );
-          hNRB->SetBinError  (bi, newerr );
-          ErrInt += newerr;
-        }
-        printf("err Int = %f\n", ErrInt);
-      }else if(chData->second.bin.find("vbf")==0){                   //for VBF stat in emu is too low, so take the shape from MC and scale it to the expected yield
-        hNRB->Scale(hCtrl_SI->Integral(1, hCtrl_SI->GetXaxis()->GetNbins()+1) / hNRB->Integral(1,hNRB->GetXaxis()->GetNbins()+1));
-      }else{
-        hNRB->Reset();
-        hNRB->Add(hCtrl_SI , 1.0);
-      }
-      for(int bi=1;bi<=hNRB->GetXaxis()->GetNbins()+1;bi++){
-        double val = hNRB->GetBinContent(bi);
-        double err = hNRB->GetBinError(bi);
-        double newval = val*alphaUsed;
-        double newerr = sqrt(pow(err*alphaUsed,2) + pow(val*alphaUsed_err,2));
-        hNRB->SetBinContent(bi, newval );
-        hNRB->SetBinError  (bi, newerr );
-      }
-      hNRB->Scale(DDRescale);
-      hNRB->SetTitle(NRBProcName.Data());
-			//                 hNRB->SetFillStyle(1001);
-			//                 hNRB->SetFillColor(592);
-
-      //save values for printout
-      valDD = hNRB->IntegralAndError(1,hNRB->GetXaxis()->GetNbins()+1,valDD_err); if(valDD<1E-6){valDD=0.0; valDD_err=0.0;}
-
-      //remove all syst uncertainty
-      chNRB->second.shapes[mainHisto.Data()].clearSyst();
-      //add syst uncertainty                 
-      chNRB->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_topwww") + systpostfix.Data()] =valDD>=1E-4?valDD*NonResonnantSyst:1.8*valDD;
-
-      //printout
-      sprintf(Lcol    , "%s%s"  ,Lcol,    "|c");
-      sprintf(Lchan   , "%s%25s",Lchan,   (string(" &") + chData->second.channel+string(" - ")+chData->second.bin).c_str());
-      sprintf(Lalph1  , "%s%25s",Lalph1,  (string(" &") + utils::toLatexRounded(alpha,alpha_err)).c_str());
-      sprintf(Lalph2  , "%s%25s",Lalph2,  (string(" &") + utils::toLatexRounded(alphaUsed,alphaUsed_err)).c_str());
-      sprintf(Lyield  , "%s%25s",Lyield,  (string(" &") + utils::toLatexRounded(valDD,valDD_err,valDD*NonResonnantSyst)).c_str());
-      sprintf(LyieldMC, "%s%25s",LyieldMC,(string(" &") + utils::toLatexRounded(valMC,valMC_err)).c_str());
-    }
-
-    //recompute total background
-    computeTotalBackground();
-
-    if(pFile){
-      fprintf(pFile,"\\begin{table}[htp]\n\\begin{center}\n\\caption{Non resonant background estimation.}\n\\label{tab:table}\n");
-      fprintf(pFile,"\\begin{tabular}{%s|}\\hline\n", Lcol);
-      fprintf(pFile,"channel               %s\\\\\n", Lchan);
-      fprintf(pFile,"$\\alpha$ measured    %s\\\\\n", Lalph1);
-      fprintf(pFile,"$\\alpha$ used        %s\\\\\n", Lalph2);
-      fprintf(pFile,"yield data            %s\\\\\n", Lyield);
-      fprintf(pFile,"yield mc              %s\\\\\n", LyieldMC);
-      fprintf(pFile,"\\hline\n");
-      fprintf(pFile,"\\end{tabular}\n\\end{center}\n\\end{table}\n");
-    }
-  }
-
-
-  //
-  // properly assign syst uncertainty to the instr Met Background 
-  //
-  void AllInfo_t::addInstrMetSyst(FILE* pFile, std::vector<TString>& selCh,TString ctrlCh,TString mainHisto){
-    //check that the z+jets proc exist
-    std::map<string, ProcessInfo_t>::iterator instrMetIt=procs.find("");
-    for(std::map<string, ProcessInfo_t>::iterator it=procs.begin(); it!=procs.end();it++){
-      if(!it->second.isBckg || it->second.isData)continue;
-      TString procName = it->first.c_str();
-      if(!( procName.Contains("Instr.") ))continue;
-
-      it->second.isData = true;
-      it->second.isSign = false;
-      it->second.isBckg = true;
-
-
-      for(std::map<string, ChannelInfo_t>::iterator chMC = it->second.channels.begin(); chMC!=it->second.channels.end(); chMC++){
-        if(std::find(selCh.begin(), selCh.end(), chMC->second.channel)==selCh.end())continue;
-
-        TH1* histo = chMC ->second.shapes[mainHisto.Data()].histo();
-        double val_err; double val = histo->IntegralAndError(1,histo->GetXaxis()->GetNbins()+1,val_err); if(val<1E-6){val=0.0; val_err=0.0;}
-
-        //remove all syst uncertainty
-        chMC->second.shapes[mainHisto.Data()].clearSyst();
-        //add syst uncertainty                 
-        chMC->second.shapes[mainHisto.Data()].uncScale[string("_CMS_haa4b_sys_zll") + systpostfix.Data()] = val*GammaJetSyst;
       }
     }
   }
-
-  //
-  // properly assign syst uncertainty to the instr Met Background (2017 method) 
-  //
-  void AllInfo_t::addInstrMetSyst_2017(std::vector<TString>& selCh,TString mainHisto){
-		//check that the z+jets proc exist
-    std::map<string, ProcessInfo_t>::iterator instrMetIt=procs.find("");
-    for(std::map<string, ProcessInfo_t>::iterator it=procs.begin(); it!=procs.end();it++){
-      if(!it->second.isBckg || it->second.isData)continue;
-      TString procName = it->first.c_str();
-      if(!( procName.Contains("Instr.") ))continue;
-
-      it->second.isData = true;
-      it->second.isSign = false;
-      it->second.isBckg = true;
-
-			TString InstrMET_allExceptGammaStats_Url(string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/InstrMET_systematics/InstrMET_systematics_ALL_EXCEPT_GAMMASTATS.root");
-			TFile* f_InstrMET_allExceptGammaStats = TFile::Open(InstrMET_allExceptGammaStats_Url);
-			if(!f_InstrMET_allExceptGammaStats ){
-			  std::cout<< "Missing InstrMET syst files! No syst for InstrMET!'" << std::endl;
-				continue; 
-			}
-
-
-      for(std::map<string, ChannelInfo_t>::iterator chMC = it->second.channels.begin(); chMC!=it->second.channels.end(); chMC++){
-        if(std::find(selCh.begin(), selCh.end(), chMC->second.channel)==selCh.end())continue;
-				TH1* h_InstrMET_Up_allExceptGammaStats = (TH1*)utils::root::GetObjectFromPath(f_InstrMET_allExceptGammaStats, (chMC->second.channel+chMC->second.bin +"_mt_InstrMET_absolute_shape_up").c_str() );
-        TH1* h_InstrMET_Down_allExceptGammaStats = (TH1*)utils::root::GetObjectFromPath(f_InstrMET_allExceptGammaStats, (chMC->second.channel+chMC->second.bin +"_mt_InstrMET_absolute_shape_down").c_str() );
-        if(!h_InstrMET_Up_allExceptGammaStats || !h_InstrMET_Down_allExceptGammaStats){continue;}
-  			//Careful about (re)binning...
-
-        TH1* histo = chMC ->second.shapes[mainHisto.Data()].histo();
-
-        //remove all syst uncertainty
-        chMC->second.shapes[mainHisto.Data()].clearSyst();
-        //add syst uncertainty                 
-        chMC->second.shapes[mainHisto.Data()].uncShape[string("_CMS_haa4b_sys_"+chMC->second.bin+"_zll") + it->second.shortName+systpostfix.Data()+"Up"] = h_InstrMET_Up_allExceptGammaStats;
-        chMC->second.shapes[mainHisto.Data()].uncShape[string("_CMS_haa4b_sys_"+chMC->second.bin+"_zll") + it->second.shortName+systpostfix.Data()+"Down"] =h_InstrMET_Down_allExceptGammaStats; 
-     }
-    }
-    //Recompute the total background with correct uncertainties
-    computeTotalBackground();
-  }
-
-
-
-  //
-  // replace MC Z+Jets Backgrounds by DataDriven Gamma+Jets estimate
-  //
-  void AllInfo_t::doDYReplacement(FILE* pFile, std::vector<TString>& selCh,TString ctrlCh,TString mainHisto){
-    TString DYProcName = "Z#rightarrow ll";
-    TString GammaJetProcName = "Instr. background (data)";
-    std::map<TString, double> LowMetIntegral;
-    std::vector<string> lineprintouts;
-
-    //open gamma+jet file
-    TFile* inF = TFile::Open(DYFile);
-    if( !inF || inF->IsZombie() ){ cout << "Invalid file name : " << DYFile << endl; return; }           
-    TDirectory* pdir = (TDirectory *)inF->Get(GammaJetProcName);
-    if(!pdir){ printf("Skip Z+Jet estimation because %s directory is missing in Gamma+Jet file\n", GammaJetProcName.Data()); return;}
-    gROOT->cd(); //make sure that all histograms that will be created will be in memory and not in file
-
-    //check that the z+jets proc exist
-    std::map<string, ProcessInfo_t>::iterator mcZJetIt=procs.find(DYProcName.Data());
-    if(mcZJetIt==procs.end()){printf("The process '%s' was not found... can not do DY background prediction\n",DYProcName.Data()); return;}
-
-    //create a new proc for Z+Jets datadriven backgrounds as a copy of the MC one
-    TString ZJetProcName = "Z+Jets";
-    for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==ZJetProcName.Data()){sorted_procs.erase(p);break;}}
-    sorted_procs.push_back(ZJetProcName.Data());
-    procs[ZJetProcName.Data()] = ProcessInfo_t(); //reset
-    ProcessInfo_t& procInfo_dataZJets = procs[ZJetProcName.Data()];
-    procInfo_dataZJets.shortName = "zll";
-    procInfo_dataZJets.isData = true;
-    procInfo_dataZJets.isSign = false;
-    procInfo_dataZJets.isBckg = true;
-    procInfo_dataZJets.xsec   = mcZJetIt->second.xsec;
-    procInfo_dataZJets.br     = mcZJetIt->second.br;
-    addProc(procInfo_dataZJets, mcZJetIt->second);
-
-    for(std::map<string, ChannelInfo_t>::iterator chMC = mcZJetIt->second.channels.begin(); chMC!=mcZJetIt->second.channels.end(); chMC++){
-      if(std::find(selCh.begin(), selCh.end(), chMC->second.channel)==selCh.end())continue;
-
-      std::map<string, ChannelInfo_t>::iterator chData  = procInfo_dataZJets.channels.find(chMC->first);
-      if(chData==procInfo_dataZJets.channels.end()){  //this channel does not exist, create it
-        procInfo_dataZJets.channels[chMC->first] = ChannelInfo_t();
-        chData                 = procInfo_dataZJets.channels.find(chMC->first);
-        chData->second.bin     = chMC->second.bin;
-        chData->second.channel = chMC->second.channel;
-      }
-
-      //load G+Jets data
-      double cutMin=shapeMin; double cutMax=shapeMax;
-      if((shapeMinVBF!=shapeMin || shapeMaxVBF!=shapeMax) && chMC->second.bin.find("vbf")!=string::npos){cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
-
-			//              int indexcut_ = indexcut;
-			//              if(indexvbf>=0 && chMC->second.bin.find("vbf")!=string::npos){indexcut_ = indexvbf;}
-      int indexcut_ = indexcutM[chMC->second.bin];
-
-      TH2* gjets2Dshape = NULL;
-      if(mainHisto==histo && histoVBF!="" && chMC->second.bin.find("vbf")!=string::npos){
-        gjets2Dshape  = (TH2*)pdir->Get(((chMC->second.channel+chMC->second.bin+"_")+histoVBF.Data()).c_str());
-      }else{
-        gjets2Dshape  = (TH2*)pdir->Get(((chMC->second.channel+chMC->second.bin+"_")+mainHisto.Data()).c_str());
-      }
-      if(!gjets2Dshape)printf("Can't find histo: %s in g+jets template\n",((chMC->second.channel+chMC->second.bin+"_")+mainHisto.Data()).c_str());
-
-      TH1* hMC = chMC->second.shapes[mainHisto.Data()].histo();
-      TH1* hDD = gjets2Dshape->ProjectionY("tmpName",indexcut_,indexcut_);
-      filterBinContent(hDD);
-      utils::root::fixExtremities(hDD, false, true);
-      if(!(mainHisto==histo && histoVBF!="" && chMC->second.bin.find("vbf")!=string::npos)){
-        for(int x=0;x<=hDD->GetXaxis()->GetNbins()+1;x++){
-          if(hDD->GetXaxis()->GetBinCenter(x)<=cutMin || hDD->GetXaxis()->GetBinCenter(x)>=cutMax){hDD->SetBinContent(x,0); hDD->SetBinError(x,0);}
-        }
-      }
-
-      //Check the binning!!!
-      if(hDD->GetXaxis()->GetXmin()!=hMC->GetXaxis()->GetXmin()){printf("Gamma+Jet templates have a different XAxis range\nStop the script here\n"); exit(0);}
-      if(hDD->GetXaxis()->GetBinWidth(1)!=hMC->GetXaxis()->GetBinWidth(1)){
-        double dywidth = hDD->GetXaxis()->GetBinWidth(1);
-        printf("Gamma+Jet templates have a different bin width in %s channel:", chMC->first.c_str());
-        double mcwidth = hMC->GetXaxis()->GetBinWidth(1);
-        if(dywidth>mcwidth){
-          printf("bin width in Gamma+Jet templates is larger than in MC samples (%f vs %f) --> can not rebin!\nStop the script here\n", dywidth,mcwidth); 
-          exit(0);
-        }else{
-          int rebinfactor = (int)(mcwidth/dywidth);
-          if(((int)mcwidth)%((int)dywidth)!=0){printf("bin width in Gamma+Jet templates are not multiple of the mc histograms bin width\n"); exit(0);}
-          printf("Rebinning by %i --> ", rebinfactor);
-          hDD->Rebin(rebinfactor);
-          printf("Binning DataDriven ZJets Min=%7.2f  Max=%7.2f Width=%7.2f compared to MC ZJets Min=%7.2f  Max=%7.2f Width=%7.2f\n", hDD->GetXaxis()->GetXmin(), hDD->GetXaxis()->GetXmax(), hDD->GetXaxis()->GetBinWidth(1), hMC->GetXaxis()->GetXmin(), hMC->GetXaxis()->GetXmax(), hMC->GetXaxis()->GetBinWidth(1));
-        }
-      }
-
-      //save histogram to the structure
-      hDD->Scale(DDRescale);
-      chData->second.shapes[mainHisto.Data()].histo()->Reset();
-      chData->second.shapes[mainHisto.Data()].histo()->Add(hDD);
-
-      //printouts
-      char printout[2048];
-      double valMC_err, valMC = hMC->IntegralAndError(1,hMC->GetXaxis()->GetNbins()+1,valMC_err); if(valMC<1E-6){valMC=0.0; valMC_err=0.0;}
-      double valDD_err, valDD = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins()+1,valDD_err); if(valDD<1E-6){valDD=0.0; valDD_err=0.0;}
-      sprintf(printout,"%20s & %30s & %30s\\\\", chMC->first.c_str(), utils::toLatexRounded(valDD,valDD_err,valDD*GammaJetSyst).c_str(), utils::toLatexRounded(valMC,valMC_err).c_str() );
-      lineprintouts.push_back(printout);
-
-      //add syst uncertainty
-      //chData->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_zll") + systpostfix.Data()] = valDD*GammaJetSyst;
- 			//Hugo: We don't use this way anymore
-
-      //clean
-      delete hDD;
-      delete gjets2Dshape;
-    }
-
-    //all done with gamma+jet file
-    inF->Close();
-
-    //delete MC Z+Jets proc
-    for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==mcZJetIt->first){sorted_procs.erase(p);break;}}
-    procs.erase(mcZJetIt);
-
-    //recompute total background
-    computeTotalBackground();
-
-    //printouts 
-    if(pFile){
-      fprintf(pFile,"\\begin{table}[htp]\n\\begin{center}\n\\caption{Instrumental background estimation.}\n\\label{tab:table}\n");
-      fprintf(pFile,"\\begin{tabular}{|l|c|c|c|}\\hline\n");
-      fprintf(pFile,"channel & rescale & yield data & yield mc\\\\\\hline\n");
-      for(unsigned int i=0;i<lineprintouts.size();i++){fprintf(pFile,"%s\n",lineprintouts[i].c_str()); }
-      fprintf(pFile,"\\hline\n");
-      fprintf(pFile,"\\end{tabular}\n\\end{center}\n\\end{table}\n");
-      fprintf(pFile,"\n\n\n\n");
-    }      
-  }
-
-
-
-
-  //
-  // replace MC Backgrounds with FakeLeptons by DataDriven estimate
-  //
-  void AllInfo_t::doFakeLeptonEstimation(FILE* pFile, std::vector<TString>& selCh,TString ctrlCh,TString mainHisto, bool isCutAndCount){
-    TString DYProcName = "Z#rightarrow ll";
-		//           TString GammaJetProcName = "Instr. background (data)";
-    std::map<TString, double> LowMetIntegral;
-    std::vector<string> lineprintouts;
-
-    //open gamma+jet file
-    TFile* inF = TFile::Open(FREFile);
-    if( !inF || inF->IsZombie() ){ cout << "Invalid file name : " << FREFile << endl; return; }           
-    TDirectory* pdir = (TDirectory *)inF;
-		//           TDirectory* pdir = (TDirectory *)inF->Get(GammaJetProcName);
-		//           if(!pdir){ printf("Skip Z+Jet estimation because %s directory is missing in Gamma+Jet file\n", GammaJetProcName.Data()); return;}
-    gROOT->cd(); //make sure that all histograms that will be created will be in memory and not in file
-
-
-    //check that the data proc exist
-    std::map<string, ProcessInfo_t>::iterator dataProcIt=procs.find("data");             
-    if(dataProcIt==procs.end()){printf("The process 'data' was not found... can not do non-resonnant background prediction\n"); return;}
-
-    //create a new proc for Z+Jets datadriven backgrounds as a copy of the MC one
-    TString DDProcName = "FakeLep";
-    for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==DDProcName.Data()){sorted_procs.erase(p);break;}}           
-    sorted_procs.push_back(DDProcName.Data());
-    procs[DDProcName.Data()] = ProcessInfo_t(); //reset
-    ProcessInfo_t& procInfo_DD = procs[DDProcName.Data()];
-    procInfo_DD.shortName = "fakelep";
-    procInfo_DD.isData = true;
-    procInfo_DD.isSign = false;
-    procInfo_DD.isBckg = true;
-    procInfo_DD.xsec   = 0.0;
-    procInfo_DD.br     = 1.0;
-
-    //create an histogram containing all the MC backgrounds
-    std::vector<string> toBeDelete;
-    for(std::map<string, ProcessInfo_t>::iterator it=procs.begin(); it!=procs.end();it++){
-      if(!it->second.isBckg || it->second.isData)continue;
-      TString procName = it->first.c_str();
-      if(!( procName.Contains("WZ") || procName.Contains("WW") || procName.Contains("V#gamma") || procName.Contains("tT,tTV,t,T") || procName.Contains("QCD") ||  procName.Contains("W+jets") ||  procName.Contains("Z#rightarrow ll") ) )continue;
-      if(procName.Contains("ZZ#rightarrow ll#tau#tau"))continue; //do not supress ZZ to 2l2tau
-      addProc(procInfo_DD, it->second);
-      for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==it->first){sorted_procs.erase(p);break;}}
-      toBeDelete.push_back(it->first);
-    }
-    for(std::vector<string>::iterator p=toBeDelete.begin();p!=toBeDelete.end();p++){procs.erase(procs.find((*p)));}
-
-
-    for(std::map<string, ChannelInfo_t>::iterator chData = dataProcIt->second.channels.begin(); chData!=dataProcIt->second.channels.end(); chData++){            
-      if(std::find(selCh.begin(), selCh.end(), chData->second.channel)==selCh.end())continue;
-
-      std::map<string, ChannelInfo_t>::iterator chDD  = procInfo_DD.channels.find(chData->first);  
-      if(chDD==procInfo_DD.channels.end()){  //this channel does not exist, create it
-        procInfo_DD.channels[chData->first] = ChannelInfo_t();     
-        chDD                = procInfo_DD.channels.find(chData->first);
-        chDD->second.bin     = chData->second.bin;
-        chDD->second.channel = chData->second.channel;
-      }
-
-      //load template data
-      double cutMin=shapeMin; double cutMax=shapeMax;
-      if((shapeMinVBF!=shapeMin || shapeMaxVBF!=shapeMax) && chData->second.bin.find("vbf")!=string::npos){cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
-
-			//              int indexcut_ = indexcut;
-			//              if(indexvbf>=0 && chData->second.bin.find("vbf")!=string::npos){indexcut_ = indexvbf;}
-      int indexcut_ = indexcutM[chData->second.bin];
-
-      TH2* h2Dshape = NULL;
-      if(mainHisto==histo && histoVBF!="" && chData->second.bin.find("vbf")!=string::npos){
-        h2Dshape  = (TH2*)pdir->Get(((chData->second.channel+chData->second.bin+"_")+histoVBF.Data()).c_str());
-      }else{
-        h2Dshape  = (TH2*)pdir->Get(((chData->second.channel+chData->second.bin+"_")+mainHisto.Data()).c_str());
-      }
-      if(!h2Dshape)printf("Can't find histo: %s in fake rate estimate template\n",((chData->second.channel+chData->second.bin+"_")+mainHisto.Data()).c_str());
-
-      TH1* hMC = chData->second.shapes[mainHisto.Data()].histo();
-      TH1* hDD = h2Dshape->ProjectionY("tmpName",indexcut_,indexcut_);
-      double OSIntegral = hDD->GetBinContent(0); double OSIntegralError =  hDD->GetBinError(0);   hDD->SetBinContent(0, 0.0);  hDD->SetBinError(0, 0.0);  //get values from OS only
-      filterBinContent(hDD);
-      utils::root::fixExtremities(hDD, false, true);
-      if(!(mainHisto==histo && histoVBF!="" && chData->second.bin.find("vbf")!=string::npos)){
-        for(int x=0;x<=hDD->GetXaxis()->GetNbins()+1;x++){
-          if(hDD->GetXaxis()->GetBinCenter(x)<=cutMin || hDD->GetXaxis()->GetBinCenter(x)>=cutMax){hDD->SetBinContent(x,0); hDD->SetBinError(x,0);}
-					//                     if(hDD->GetBinContent(x)<0){hDD->SetBinContent(x,0); hDD->SetBinError(x,0);} //make sure that all bins have positive content  //DONT DO THIS AT THIS STEP, we have a dedicated function that check for negative bins
-        }
-      }
-
-      //Check the binning!!!
-      if(hDD->GetXaxis()->GetXmin()!=hMC->GetXaxis()->GetXmin()){printf("fake rate templates have a different XAxis range\nStop the script here\n"); exit(0);}
-      if(hDD->GetXaxis()->GetBinWidth(1)!=hMC->GetXaxis()->GetBinWidth(1)){
-        double dywidth = hDD->GetXaxis()->GetBinWidth(1);
-        printf("fake rate templates have a different bin width in %s channel:", chData->first.c_str());
-        double mcwidth = hMC->GetXaxis()->GetBinWidth(1);
-        if(dywidth>mcwidth){
-          printf("bin width in fake rate templates is larger than in MC samples (%f vs %f) --> can not rebin!\nStop the script here\n", dywidth,mcwidth); 
-          exit(0);
-        }else{
-          int rebinfactor = (int)(mcwidth/dywidth);
-          if(((int)mcwidth)%((int)dywidth)!=0){printf("bin width in fake rate templates are not multiple of the mc histograms bin width\n"); exit(0);}
-          printf("Rebinning by %i --> ", rebinfactor);
-          hDD->Rebin(rebinfactor);
-          printf("Binning DataDriven fake rate Min=%7.2f  Max=%7.2f Width=%7.2f compared to MC ZJets Min=%7.2f  Max=%7.2f Width=%7.2f\n", hDD->GetXaxis()->GetXmin(), hDD->GetXaxis()->GetXmax(), hDD->GetXaxis()->GetBinWidth(1), hMC->GetXaxis()->GetXmin(), hMC->GetXaxis()->GetXmax(), hMC->GetXaxis()->GetBinWidth(1));
-        }
-      }
-
-      if(isCutAndCount){  //This is ugly, but it's the best thing I've found out right now.  The integral of this thing should be the one from OS only
-        hDD->SetBinContent(0, 0.0); hDD->SetBinError(0, 0.0);
-        hDD->SetBinContent(hDD->GetXaxis()->GetNbins()+1, 0.0); hDD->SetBinError(hDD->GetXaxis()->GetNbins()+1, 0.0);
-        for(int x=1;x<=hDD->GetXaxis()->GetNbins();x++){
-          hDD->SetBinContent(x, OSIntegral/hDD->GetXaxis()->GetNbins()); hDD->SetBinError(x, OSIntegralError/sqrt(hDD->GetXaxis()->GetNbins()));
-        }
-      }
-
-      //save histogram to the structure
-      hDD->Scale(DDRescale);
-	    //for(int x=0;x<=hDD->GetXaxis()->GetNbins()+1;x++){
-	    //      cout << "DD: " << hDD->GetBinContent(x) << " in bin x " << x << endl; 
-	    //      cout << "MC: " << hMC->GetBinContent(x) << " in bin x " << x << endl; 
-      //      if(hDD->GetBinContent(x)==0 && hMC->GetBinContent(x)==0){
-			//	      hDD->SetBinContent(x,2E-6);
-			//	      hMC->SetBinContent(x,2E-6);
-      //      }
-		  //if(hMC->GetBinContent(x)<=1E-6) hMC->SetBinContent(x,2E-6);
-	    //}
-      chDD->second.shapes[mainHisto.Data()].histo()->Reset();
-      chDD->second.shapes[mainHisto.Data()].histo()->Add(hDD);
-      //printouts
-      char printout[2048];
-      double valMC_err, valMC = hMC->IntegralAndError(1,hMC->GetXaxis()->GetNbins()+1,valMC_err); if(fabs(valMC)<1E-6){valMC=0.0; valMC_err=0.0;}
-      double valDD_err, valDD = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins()+1,valDD_err); if(fabs(valDD)<1E-6){valDD=0.0; valDD_err=0.0;}
-      sprintf(printout,"%20s & %30s & %30s\\\\", chData->first.c_str(), utils::toLatexRounded(valDD,valDD_err,valDD*GammaJetSyst).c_str(), utils::toLatexRounded(valMC,valMC_err).c_str() );
-      lineprintouts.push_back(printout);
-
-      //add syst uncertainty
-      chDD->second.shapes[mainHisto.Data()].clearSyst();
-      chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_DD") + systpostfix.Data()] = valDD!=0?valDD*FakeLeptonDDSyst:FakeLeptonDDSyst;
-
-      //clean
-      delete hDD;
-      delete h2Dshape;
-    }
-
-    //all done with template file
-    inF->Close();
-
-    //recompute total background
-    computeTotalBackground();
-
-    //printouts 
-    if(pFile){
-      fprintf(pFile,"\\begin{table}[htp]\n\\begin{center}\n\\caption{fake lepton background estimation.}\n\\label{tab:table}\n");
-      fprintf(pFile,"\\begin{tabular}{|l|c|c|c|}\\hline\n");
-      fprintf(pFile,"channel & rescale & yield data & yield mc\\\\\\hline\n");
-      for(unsigned int i=0;i<lineprintouts.size();i++){fprintf(pFile,"%s\n",lineprintouts[i].c_str()); }
-      fprintf(pFile,"\\hline\n");
-      fprintf(pFile,"\\end{tabular}\n\\end{center}\n\\end{table}\n");
-      fprintf(pFile,"\n\n\n\n");
-    }      
-  }
-
-
-
-
   //
   // Rebin histograms to make sure that high mt/met region have no empty bins
   //
@@ -2821,201 +2231,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       }
     }
   }
-
-  //
-  // Interpollate the signal sample between two mass points 
-  //
-  void AllInfo_t::SignalInterpolation(string histoName){
-    if(massL<0 || massR<0 || massL==massR)return;
-
-    //Loop on processes and identify what is available
-    std::map<string, std::pair<string, string> > procLeftRight;
-    for(unsigned int p=0;p<sorted_procs.size();p++){
-      string procName = sorted_procs[p];
-      std::map<string, ProcessInfo_t>::iterator it=procs.find(procName);
-      if(it==procs.end() || !it->second.isSign || it->second.mass<=0)continue;
-
-      TString massStr = ""; massStr+=(int)it->second.mass;
-      TString procNameWithoutMass = it->first;
-      procNameWithoutMass.ReplaceAll(massStr,"");
-      if(it->second.mass == massL)procLeftRight[procNameWithoutMass.Data()].first  = it->first;
-      if(it->second.mass == massR)procLeftRight[procNameWithoutMass.Data()].second = it->first;
-    }
-
-    double Ratio = ((double)mass - massL); Ratio/=(massR - massL); 
-    for(std::map<string, std::pair<string, string> >::iterator procLR = procLeftRight.begin(); procLR!=procLeftRight.end();procLR++){
-      TString signProcName =  procLR->first;
-      signProcName.ReplaceAll("()","(");              
-      signProcName+=(int)mass; signProcName+=")";
-      printf("Interpolate %s  based on %s and %s\n", signProcName.Data(), procLR->second.first.c_str(), procLR->second.second.c_str());
-
-      ProcessInfo_t& procL = procs[ procLR->second.first ];
-      ProcessInfo_t& procR = procs[ procLR->second.second];
-
-      //create a new proc as a copy of the Left signal proc
-      for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==signProcName.Data()){sorted_procs.erase(p);break;}}
-      sorted_procs.push_back(signProcName.Data());
-      procs[signProcName.Data()] = ProcessInfo_t(); //reset
-      ProcessInfo_t& proc = procs[signProcName.Data()];
-      addProc(proc, procL);
-      proc.shortName = procL.shortName;
-      proc.isData    = procL.isData;
-      proc.isSign    = procL.isSign;
-      proc.isBckg    = procL.isBckg;
-      proc.mass      = mass;
-      proc.xsec      = procL.xsec + (Ratio * (procR.xsec - procL.xsec)); 
-      proc.br        = procL.br   + (Ratio * (procR.br   - procL.br));
-
-      for(std::map<string, ChannelInfo_t>::iterator ch  = proc .channels.begin(); ch !=proc.channels.end(); ch++){
-        std::map<string, ChannelInfo_t>::iterator chL = procL.channels.find(ch->first);
-        std::map<string, ChannelInfo_t>::iterator chR = procR.channels.find(ch->first);
-        if(chL==procL.channels.end())continue; 
-        if(chR==procR.channels.end())continue;
-        if(ch ->second.shapes.find(histoName)==(ch ->second.shapes).end())continue;
-        if(chL->second.shapes.find(histoName)==(chL->second.shapes).end())continue;
-        if(chR->second.shapes.find(histoName)==(chR->second.shapes).end())continue;
-        ShapeData_t& shapeInfo  = ch ->second.shapes[histoName];
-        ShapeData_t& shapeInfoL = chL->second.shapes[histoName];
-        ShapeData_t& shapeInfoR = chR->second.shapes[histoName];
-
-        //morphing ignore stat unc, so add it as an uncertainty to morph it separately
-        shapeInfo .makeStatUnc("", "", "", true );
-        shapeInfoL.makeStatUnc("", "", "", true );
-        shapeInfoR.makeStatUnc("", "", "", true );
-
-        for(std::map<string, TH1*  >::iterator unc=shapeInfoL.uncShape.begin();unc!=shapeInfoL.uncShape.end();unc++){
-          if(shapeInfo.uncShape.find(unc->first)==shapeInfo.uncShape.end())shapeInfo.uncShape[unc->first] = (TH1*)shapeInfoL.uncShape[unc->first]->Clone(signProcName+ch->first+unc->first+"tmp");
-          TH1D* hL = (TH1D*)shapeInfoL.uncShape[unc->first];
-          TH1D* hR = (TH1D*)shapeInfoR.uncShape[unc->first];
-          TH1D* h  = (TH1D*)shapeInfo .uncShape[unc->first];
-          if(!hL || !hR || !h)continue;
-          hL->Scale(1.0/(procL.xsec*procL.br));
-          hR->Scale(1.0/(procR.xsec*procR.br));
-          h->Reset();
-          if(hL->Integral()>0 && hR->Integral()>0){//interpolate only if the histograms are not null
-            h->Add(th1fmorph(signProcName+ch->first+unc->first,signProcName+ch->first+unc->first, hL, hR, procL.mass, procR.mass, proc.mass, (1-Ratio)*hL->Integral() + Ratio*hR->Integral(), 0), 1);
-          }
-          //printf("EFF : syst%25s %f - %f -%f\n", unc->first.c_str(), hL->Integral(), h->Integral(), hR->Integral());
-          h->Scale(proc.xsec*proc.br);
-        }
-
-        //incorporate back stat uncertainty into the main histo, and delete it from the list of uncertainty (will be readded later)
-        TH1D* h = (TH1D*)shapeInfo.uncShape[""];  TH1D* hUp = (TH1D*)shapeInfo.uncShape["statUp"];
-
-        if(h && hUp){
-          for(unsigned int x=0;x<h->GetNbinsX();x++){
-            h->SetBinError(x, fabs(hUp->GetBinContent(x)-h->GetBinContent(x)));
-          }
-        }
-        shapeInfo.removeStatUnc();
-      }
-
-      //erase sideband procs
-      for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==procLR->second.first ){sorted_procs.erase(p);break;}}              
-      for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==procLR->second.second){sorted_procs.erase(p);break;}}       
-      procs.erase(procs.find(procLR->second.first ));
-      procs.erase(procs.find(procLR->second.second ));
-    }
-  }
-
-
-  //
-  // Rescale VBF events to match SM ggF/VBF production 
-  //
-  void AllInfo_t::scaleVBF(string histoName){
-    if(mass<=0)return;
-
-    //Loop on processes and channels
-    for(unsigned int p=0;p<sorted_procs.size();p++){
-      string procName = sorted_procs[p];
-      std::map<string, ProcessInfo_t>::iterator it=procs.find(procName);
-      if(it==procs.end() || !it->second.isSign)continue;              
-      if(procName.find("qqH")==string::npos)continue;
-
-      double scale = Hxswg::utils::getVBFoverGGF(systpostfix.Data())->Eval(mass);
-      it->second.xsec*=scale;
-
-      printf("scale VBF signal by %f\n", scale);
-      for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
-        if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
-        ShapeData_t& shapeInfo = ch->second.shapes[histoName];
-        for(std::map<string, TH1*  >::iterator unc=shapeInfo.uncShape.begin();unc!=shapeInfo.uncShape.end();unc++){
-          if(unc->second)unc->second->Scale(scale);
-        }
-      }
-    }
-  }
-
-
-
-  //
-  // Rescale signal sample for the effect of the interference and propagate the uncertainty 
-  //
-  void AllInfo_t::RescaleForInterference(string histoName){
-    if(mass<=0)return;
-
-    //Loop on processes and channels
-    for(unsigned int p=0;p<sorted_procs.size();p++){
-      string procName = sorted_procs[p];
-      std::map<string, ProcessInfo_t>::iterator it=procs.find(procName);
-      if(it==procs.end() || !it->second.isSign)continue;
-
-      double sF   = 1.0;
-      double sFDn = 1.0;
-      double sFUp = 1.0;
-
-      double cprime=1.0; double  brnew=0.0;
-      if(signalSufix!="" && signalSufix.Contains("_cpsq")){sscanf(signalSufix.Data(), "_cpsq%lf_brn%lf", &cprime, &brnew); cprime=sqrt(cprime);}
-      else if(signalSufix!="" && signalSufix.Contains("_cp  ")){sscanf(signalSufix.Data(), "_cp%lf_brn%lf", &cprime, &brnew); }
-
-      if(doInterf && it->second.mass>400){// && it->first.find("ggH")!=string::npos){
-				//                 value used at run1
-				//                 sF   = 0.897-0.000152*it->second.mass+7.69e-07*pow(it->second.mass,2);
-				//                 sFDn = 0.907-2.08e-05*it->second.mass+4.63e-07*pow(it->second.mass,2);
-				//                 sFUp = 0.889-0.000357*it->second.mass+1.21e-06*pow(it->second.mass,2);
-
-        //value for run2
-        sF   = 1.316-0.000068*it->second.mass+3.32e-06*pow(it->second.mass,2);
-        sFDn = 1.590-0.000193*it->second.mass+2.26e-06*pow(it->second.mass,2);
-        sFUp = 0.906+0.000162*it->second.mass+4.35e-06*pow(it->second.mass,2);
-
-
-        if(it->second.mass>=400 && signalSufix!=""){ //scale factor for Narrow Resonnance
-					//                    sF=1 + (sF-1)/pow(cprime,2);   sFDn = 1.0;  sFUp = 1 + (sF-1)*2;        //100% Uncertainty
-          sF=1 + (sF-1)/(cprime* sqrt(1-brnew));   sFDn = 1.0;  sFUp = 1 + (sF-1)*2;        //100% Uncertainty
-          if(sF<1){sF=1.0;  sFUp = 1 + (sF-1)*2;}
-          printf("Scale Factor for Narrow Resonnance : %f [%f,%f] applied on %s\n", sF, sFDn, sFUp, it->first.c_str());                  
-        }else{
-          printf("Scale Factor for Interference : %f [%f,%f] applied on %s\n",sF, sFDn, sFUp, it->first.c_str());
-        }
-        if(sFDn>sFUp){double tmp = sFUp; sFUp = sFDn; sFDn = tmp;}
-      }
-      printf("Total Scale Factor : %f [%f,%f] applied on %s\n",sF, sFDn, sFUp, it->first.c_str());
-
-      //rescale xsection for Narrow Resonnances
-      if(signalSufix!=""){
-        double xsecScale = pow(cprime,2) * (1-brnew);
-        printf("Scale Factor to the narrow resonnance xsection is : %f\n", xsecScale);
-        sF *= xsecScale;  sFUp *= xsecScale;  sFDn *= xsecScale;
-      }
-      it->second.xsec *= sF;
-      fflush(stdout);
-
-      for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
-        if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
-        ShapeData_t& shapeInfo = ch->second.shapes[histoName];
-        for(std::map<string, TH1*  >::iterator unc=shapeInfo.uncShape.begin();unc!=shapeInfo.uncShape.end();unc++){
-          unc->second->Scale(sF);
-        }
-        TH1* histo = (TH1*)shapeInfo.histo();
-        if(!histo){printf("Histo does not exit... skip it \n"); fflush(stdout); continue;}
-        if(sF<=0){printf("sF has weird values : %f, set it back to one\n", sF); sF=1.0; fflush(stdout);}
-        TH1* tmp;
-        tmp = (TH1*)histo->Clone(TString("interf_ggH_") + histo->GetName() + "Down"); tmp->Scale(sFDn/sF); shapeInfo.uncShape[string("_CMS_haa4b_interf_") + it->second.shortName+"Down"] = tmp;
-        tmp = (TH1*)histo->Clone(TString("interf_ggH_") + histo->GetName() + "Up"  ); tmp->Scale(sFUp/sF); shapeInfo.uncShape[string("_CMS_haa4b_interf_") + it->second.shortName+"Up"  ] = tmp;
-      }
-      }
-    }
 
     //
     // merge histograms from different bins together... but keep the channel separated 
@@ -3074,10 +2289,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           for(std::map<string, TH1*  >::iterator unc=shapeInfo.uncShape.begin();unc!=shapeInfo.uncShape.end();unc++){
             for(int binx=1;binx<=unc->second->GetNbinsX();binx++){
               if(unc->second->GetBinContent(binx)<=0){unc->second->SetBinContent(binx, 1E-6); }; //histo->SetBinError(binx, 1.8);  }
-          }
-        }
+	    }
+	  }
+	}
       }
-    }
 
     //recompute total background
     computeTotalBackground();

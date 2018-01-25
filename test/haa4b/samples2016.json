@@ -207,7 +207,7 @@
             "tag": "data"
         },
         {
-            "color": 592,
+            "color": 590,
             "data": [
                 {
                     "br": [
@@ -575,15 +575,23 @@
                     "xsec": 18610
                 },
                 {
-                    "br": [ 1.0 ],
+                    "br": [ 0.35 ],
                     "dset": [
-                        "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
+		       "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_DYJetsToLL_50toInf_2016",
+                    "dtag": "MC13TeV_DYJetsToLL_50toInf_ext1_2016",
+                    "xsec": 5765.4
+                },
+		{
+                    "br": [ 0.65 ],
+                    "dset": [
+			"/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_DYJetsToLL_50toInf_ext2_2016",
                     "xsec": 5765.4
                 }
-
             ],
             "isdata": false,
             "keys": [
@@ -597,7 +605,7 @@
             "data": [
                 {
                     "br": [
-                        0.3425
+                       0.3425
                     ],
                     "dset": [
                         "/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
@@ -625,7 +633,7 @@
             "tag": "W#rightarrow l#nu"
         },
         {
-            "color": 390,
+            "color": 634,
             "data": [
                 {
                     "br": [
@@ -755,8 +763,8 @@
                 "haa_signal",
                 "haa_mcbased"
             ],
-            "lcolor": 634,
-            "lwidth": 2,
+            "lcolor": 1,
+            "lwidth": 3,
             "resonance": 20,
             "spimpose": true,
             "tag": "Wh (20)"
@@ -777,17 +785,17 @@
             ],
             "fill": 0,
             "isdata": false,
-            "isinvisible": false,
+            "isinvisible": true,
             "issignal": true,
             "keys": [
                 "haa_signal",
                 "haa_mcbased"
             ],
-            "lcolor": 634,
+            "lcolor": 1,
             "lwidth": 3,
             "lstyle": 2,
             "resonance": 50,
-            "spimpose": true,
+            "spimpose": false,
             "tag": "Wh (50)"
         },
         {
@@ -806,17 +814,17 @@
             ],
             "fill": 0,
             "isdata": false,
-            "isinvisible": false,
+            "isinvisible": true,
             "issignal": true,
             "keys": [
                 "haa_signal",
                 "haa_mcbased"
             ],
-            "lcolor": 634,
+            "lcolor": 1,
             "lwidth": 3,
             "lstyle": 3,
             "resonance": 12,
-            "spimpose": true,
+            "spimpose": false,
             "tag": "Wh (12)"
         },
         {
@@ -835,17 +843,17 @@
             ],
             "fill": 0,
             "isdata": false,
-            "isinvisible": false,
+            "isinvisible": true,
             "issignal": true,
             "keys": [
                 "haa_signal",
                 "haa_mcbased"
             ],
-            "lcolor": 634,
+            "lcolor": 1,
             "lwidth": 3,
             "lstyle": 4,
             "resonance": 15,
-            "spimpose": true,
+            "spimpose": false,
             "tag": "Wh (15)"
         },
         {   
@@ -864,17 +872,17 @@
             ],
             "fill": 0,
             "isdata": false,
-            "isinvisible": false,
+            "isinvisible": true,
             "issignal": true,
             "keys": [
                 "haa_signal",
                 "haa_mcbased"
             ],
-            "lcolor": 634,
+            "lcolor": 1,
             "lwidth": 3,
             "lstyle": 5, 
             "resonance": 25,
-            "spimpose": true,
+            "spimpose": false,
             "tag": "Wh (25)"
         },
         {
@@ -893,17 +901,17 @@
             ],
             "fill": 0,
             "isdata": false,
-            "isinvisible": false,
+            "isinvisible": true,
             "issignal": true,
             "keys": [
                 "haa_signal",
                 "haa_mcbased"
             ],
-            "lcolor": 634,
+            "lcolor": 1,
             "lwidth": 3,
             "lstyle": 6,
             "resonance": 30,
-            "spimpose": true,
+            "spimpose": false,
             "tag": "Wh (30)"
         },
         {   
@@ -922,17 +930,17 @@
             ],
             "fill": 0,
             "isdata": false,
-            "isinvisible": false,
+            "isinvisible": true,
             "issignal": true,
             "keys": [
                 "haa_signal",
                 "haa_mcbased"
             ],
-            "lcolor": 634,
+            "lcolor": 1,
             "lwidth": 3, 
             "lstyle": 7, 
             "resonance": 40,
-            "spimpose": true,
+            "spimpose": false,
             "tag": "Wh (40)"
         },
         {
@@ -957,7 +965,7 @@
                 "haa_signal",
                 "haa_mcbased"
             ],
-            "lcolor": 634,
+            "lcolor": 1,
             "lwidth": 3,
             "lstyle": 8,
             "resonance": 60,

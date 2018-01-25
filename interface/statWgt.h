@@ -23,6 +23,7 @@ const std::map<std::string, int> mStat =
     { "MC13TeV_SingleT_at_2016", 37904304 }, //67240808 }, //0.0765989 },
     { "MC13TeV_SingleT_t_2016", 67240808 }, //37904304 }, //0.0725545 },
     //TTJets
+    //    { "MC13TeV_TTJets_2016", 77081156 }, // Powheg sample
     { "MC13TeV_TTJets_slt_2016", 61973977 }, //0.105736*0.1929 },
     { "MC13TeV_TTJets_slt_ext1_2016", 61973977 }, //0.105736*0.8071 },
     { "MC13TeV_TTJets_slat_2016", 60210394 }, // 0.108833*0.1984 },
@@ -30,12 +31,27 @@ const std::map<std::string, int> mStat =
     { "MC13TeV_TTJets_dl_2016", 30444678 }, //0.104012*0.2002 },
     { "MC13TeV_TTJets_dl_ext1_2016", 30444678 }, // 0.104012*0.7998 },
     //WJets
-    { "MC13TeV_WJets_2016", 86731806 }, //30.7868*0.3425 },
-    { "MC13TeV_WJets_ext2_2016", 86731806 }, // 30.7868*0.6575 },
+    { "MC13TeV_WJets_2016", 86731806}, //280929804 }, //30.7868*0.3425 },
+    { "MC13TeV_WJets_ext2_2016", 86731806}, //280929804 }, // 30.7868*0.6575 },
+    /*
+    { "MC13TeV_WJets_ext3_2016", 280929804 },
+    { "MC13TeV_WJets_ext4_2016", 280929804 },
+    { "MC13TeV_WJets_ext5_2016", 280929804 },
+    { "MC13TeV_WJets_ext6_2016", 280929804 },
+    { "MC13TeV_WJets_ext7_2016", 280929804 },
+    { "MC13TeV_WJets_ext8_2016", 280929804 },
+    { "MC13TeV_WJets_ext9_2016", 280929804 },
+    { "MC13TeV_WJets_ext10_2016", 280929804 },
+    */
     //DY
     { "MC13TeV_DYJetsToLL_10to50_2016", 51433009 }, //12.9777*0.434 },
     { "MC13TeV_DYJetsToLL_10to50_ext1_2016", 51433009 }, // 12.9777*0.566 },
-    { "MC13TeV_DYJetsToLL_50toInf_2016", 81781064 }, //2.52854 },
+    { "MC13TeV_DYJetsToLL_50toInf_ext1_2016", 145803217 }, //81781064 }, //2.52854 },
+    { "MC13TeV_DYJetsToLL_50toInf_ext2_2016", 145803217 },
+    //    { "MC13TeV_DYJetsToLL_50toInf_ext3_2016", 238454920 },
+    //    { "MC13TeV_DYJetsToLL_50toInf_ext4_2016", 238454920 },
+    //    { "MC13TeV_DYJetsToLL_50toInf_ext5_2016", 238454920 },
+    //    { "MC13TeV_DYJetsToLL_50toInf_ext6_2016", 238454920 },
     //TG, TTG, TTW, TTZ
     { "MC13TeV_TGJets_2016", 368562 }, //0.288736*0.25 },
     { "MC13TeV_TGJets_ext1_2016", 368562 }, //0.288736*0.75 },
