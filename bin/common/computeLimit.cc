@@ -280,7 +280,7 @@ class ShapeData_t
      	return Total>0?sqrt(Total):-1;
   	}
 
-		double getIntegratedShapeUncertainty(string name, string upORdown){
+        double getIntegratedShapeUncertainty(string name, string upORdown){
      	double Total=0;
      	//this = ch->second.shapes[histoName.Data()]
      	for(std::map<string, TH1*>::iterator var = uncShape.begin(); var!=uncShape.end(); var++){
@@ -289,28 +289,27 @@ class ShapeData_t
        	if(!systName.Contains(upORdown))continue; //only look for syst up or down at a time (upORdown should be either "Up" or "Down"
        	TH1* hvar = (TH1*)(var->second->Clone((name+var->first).c_str()));
 
- 			 	double varYield = hvar->Integral();
-			 	TH1* h = (TH1*)(this->histo()->Clone((name+"Nominal").c_str()));
-		   	double yield = h->Integral();
+	double varYield = hvar->Integral();
+	TH1* h = (TH1*)(this->histo()->Clone((name+"Nominal").c_str()));
+	double yield = h->Integral();
        	Total+=pow(varYield-yield,2); //the total shape unc is the sqrt of the quadratical sum of the difference between the nominal and the variated yields.
      	}     
      	return Total>0?sqrt(Total):-1;
   	}
 
-              double getBinShapeUncertainty(string name, int bin, string upORdown){
+        double getBinShapeUncertainty(string name, int bin, string upORdown){
      	double Total=0;
      	//this = ch->second.shapes[histoName.Data()]
      	for(std::map<string, TH1*>::iterator var = uncShape.begin(); var!=uncShape.end(); var++){
        	TString systName = var->first.c_str();
-       	//if(var->first==""){
-       	//}
+
        	if(var->first=="")continue; //Skip Nominal shape
        	if(!systName.Contains(upORdown))continue; //only look for syst up or down at a time (upORdown should be either "Up" or "Down"
        	TH1* hvar = (TH1*)(var->second->Clone((name+var->first).c_str()));
 
- 			 	double varYield = hvar->GetBinContent(bin);
-			 	TH1* h = (TH1*)(this->histo()->Clone((name+"Nominal").c_str()));
-		   	double yield = h->GetBinContent(bin);
+	double varYield = hvar->GetBinContent(bin);
+	TH1* h = (TH1*)(this->histo()->Clone((name+"Nominal").c_str()));
+	double yield = h->GetBinContent(bin);
        	Total+=pow(varYield-yield,2); //the total shape unc is the sqrt of the quadratical sum of the difference between the nominal and the variated yields.
      	}     
      	return Total>0?sqrt(Total):-1;
@@ -332,10 +331,11 @@ class ChannelInfo_t
   public:
     string bin;
     string channel;
-		std::map<string, ShapeData_t> shapes;
 
-		ChannelInfo_t(){}
-		~ChannelInfo_t(){}
+  std::map<string, ShapeData_t> shapes;
+
+  ChannelInfo_t(){}
+  ~ChannelInfo_t(){}
 };
 
 class ProcessInfo_t
@@ -358,7 +358,8 @@ class ProcessInfo_t
 class AllInfo_t
 {
   public:
-		std::map<string, ProcessInfo_t> procs;
+  
+    std::map<string, ProcessInfo_t> procs;
     std::vector<string> sorted_procs;
 
 		AllInfo_t(){};
@@ -548,7 +549,8 @@ int main(int argc, char* argv[])
   if(mass==-1)          { printf("No massPoint provided\nrun with '--help' for more details\n"); return -1; }
   if(indexcutV.size()<=0){printf("INDEX CUT SIZE IS NULL\n"); printHelp(); return -1; }
   if(AnalysisBins.size()==0)AnalysisBins.push_back("all");
-  if(Channels.size()==0){Channels.push_back("ee");Channels.push_back("mumu");}
+  if(Channels.size()==0){Channels.push_back("SR");}
+    //Channels.push_back("ee");Channels.push_back("mumu");}
 
   //make sure that the index vector are well filled
   if(indexcutVL.size()==0) indexcutVL.push_back(indexcutV [0]);
@@ -588,7 +590,7 @@ int main(int argc, char* argv[])
   for(unsigned int i=0;i<AnalysisBins.size();i++){indexcutM[AnalysisBins[i]] = indexcutV[i]; indexcutML[AnalysisBins[i]] = indexcutVL[i]; indexcutMR[AnalysisBins[i]] = indexcutVR[i];}
 
 
-	///////////////////////////////////////////////
+  ///////////////////////////////////////////////
 
 
   //init the json wrapper
@@ -600,7 +602,7 @@ int main(int argc, char* argv[])
   std::vector<TString> allCh,allProcs;
 
 
-  TString ch[]={"mumu","ee","emu"};
+  TString ch[]={"SR"}; //"mumu","ee","emu"};
   const size_t nch=sizeof(ch)/sizeof(TString);
   std::vector<TString> sh;
   sh.push_back(histo);
@@ -608,8 +610,6 @@ int main(int argc, char* argv[])
   if(subWZ)sh.push_back(histo+"_3rdLepton");
 
   AllInfo_t allInfo;
-
-
 
   //open input file
   TFile* inF = TFile::Open(inFileUrl);
@@ -623,12 +623,13 @@ int main(int argc, char* argv[])
     std::vector<string> channelsAndShapes;
     for(size_t i=0; i<nch; i++){
       for(size_t j=0; j<nsh; j++){
-        channelsAndShapes.push_back((ch[i]+TString(";")+AnalysisBins[b]+TString(";")+sh[j]).Data());
+	channelsAndShapes.push_back((ch[i]+TString(";")+AnalysisBins[b]+TString(";")+sh[j]).Data());
+	printf("Adding shape %s\n",(ch[i]+TString(";")+AnalysisBins[b]+TString(";")+sh[j]).Data());
       }
     }
     double cutMin=shapeMin; double cutMax=shapeMax;
-    if((shapeMinVBF!=shapeMin || shapeMaxVBF!=shapeMax) && AnalysisBins[b].find("vbf")!=string::npos){cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
-    allInfo.getShapeFromFile(inF,    channelsAndShapes, indexcutM[AnalysisBins[b]], Root, cutMin, cutMax   );     
+    //    if((shapeMinVBF!=shapeMin || shapeMaxVBF!=shapeMax) && AnalysisBins[b].find("vbf")!=string::npos){cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
+    allInfo.getShapeFromFile(inF, channelsAndShapes, indexcutM[AnalysisBins[b]], Root, cutMin, cutMax   );     
   }
 
 
@@ -675,7 +676,7 @@ int main(int argc, char* argv[])
 
   if(blindData)allInfo.blind();
 
-  //print event yields from the mt shapes
+  //print event yields from the histo shapes
   pFile = fopen("Yields.tex","w");  FILE* pFileInc = fopen("YieldsInc.tex","w");
   allInfo.getYieldsFromShape(pFile, selCh, histo.Data(), pFileInc);
   fclose(pFile); fclose(pFileInc);
@@ -686,13 +687,13 @@ int main(int argc, char* argv[])
   fclose(pFile);
 
   //add by hand the hard coded uncertainties
-  allInfo.addHardCodedUncertainties(histo.Data());
+  //  allInfo.addHardCodedUncertainties(histo.Data());
 
   //produce a plot
   allInfo.showShape(selCh,histo,"plot"); //this produce the final global shape
 
   //produce a plot
-  allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst
+  if(runSystematics) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst
 
   //prepare the output
   string limitFile=("haa4b_"+massStr+systpostfix+".root").Data();
@@ -736,53 +737,47 @@ void AllInfo_t::addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool compute
   std::map<string, ShapeData_t>& shapesInfoDest = dest.shapes;
   std::map<string, ShapeData_t>& shapesInfoSrc  = src.shapes;
 
-	if(!computeSyst){
-	for(std::map<string, ShapeData_t>::iterator sh = shapesInfoSrc.begin(); sh!=shapesInfoSrc.end(); sh++){
-    if(shapesInfoDest.find(sh->first)==shapesInfoDest.end())shapesInfoDest[sh->first] = ShapeData_t();
-
-    //Loop on all shape systematics (including also the central value shape)
-    for(std::map<string, TH1*>::iterator uncS = sh->second.uncShape.begin();uncS!= sh->second.uncShape.end();uncS++){
-      if(uncS->first!="") continue; //We only take nominal shapes
-      if(shapesInfoDest[sh->first].uncShape.find(uncS->first)==shapesInfoDest[sh->first].uncShape.end()){
-        shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) uncS->second->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
-      }else{
-        shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second);
+  if(!computeSyst){
+    for(std::map<string, ShapeData_t>::iterator sh = shapesInfoSrc.begin(); sh!=shapesInfoSrc.end(); sh++){
+      if(shapesInfoDest.find(sh->first)==shapesInfoDest.end())shapesInfoDest[sh->first] = ShapeData_t();
+      
+      //Loop on all shape systematics (including also the central value shape)
+      for(std::map<string, TH1*>::iterator uncS = sh->second.uncShape.begin();uncS!= sh->second.uncShape.end();uncS++){
+	if(uncS->first!="") continue; //We only take nominal shapes
+	if(shapesInfoDest[sh->first].uncShape.find(uncS->first)==shapesInfoDest[sh->first].uncShape.end()){
+	  shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) uncS->second->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
+	}else{
+	  shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second);
+	}
       }
-    }
-
-    //take care of the scale uncertainty 
-    for(std::map<string, double>::iterator unc = sh->second.uncScale.begin();unc!= sh->second.uncScale.end();unc++){
-      if(shapesInfoDest[sh->first].uncScale.find(unc->first)==shapesInfoDest[sh->first].uncScale.end()){
-        shapesInfoDest[sh->first].uncScale[unc->first] = unc->second;
-      }else{
-        shapesInfoDest[sh->first].uncScale[unc->first] = sqrt( pow(shapesInfoDest[sh->first].uncScale[unc->first],2) + pow(unc->second,2) );
+      
+      //take care of the scale uncertainty 
+      for(std::map<string, double>::iterator unc = sh->second.uncScale.begin();unc!= sh->second.uncScale.end();unc++){
+	if(shapesInfoDest[sh->first].uncScale.find(unc->first)==shapesInfoDest[sh->first].uncScale.end()){
+	  shapesInfoDest[sh->first].uncScale[unc->first] = unc->second;
+	}else{
+	  shapesInfoDest[sh->first].uncScale[unc->first] = sqrt( pow(shapesInfoDest[sh->first].uncScale[unc->first],2) + pow(unc->second,2) );
+	}
       }
-    }
-  }  
+    }  
   }
-  else{
+  else {
 
-
-
- for(std::map<string, ShapeData_t>::iterator sh = shapesInfoSrc.begin(); sh!=shapesInfoSrc.end(); sh++){
-    if(shapesInfoDest.find(sh->first)==shapesInfoDest.end())shapesInfoDest[sh->first] = ShapeData_t();
+    for(std::map<string, ShapeData_t>::iterator sh = shapesInfoSrc.begin(); sh!=shapesInfoSrc.end(); sh++){
+      if(shapesInfoDest.find(sh->first)==shapesInfoDest.end())shapesInfoDest[sh->first] = ShapeData_t();
  		//Loop on all shape systematics (including also the central value shape)
-    for(std::map<string, TH1*>::iterator uncS = sh->second.uncShape.begin();uncS!= sh->second.uncShape.end();uncS++){
-      if(uncS->first=="") continue; //We only take systematic (i.e non-nominal) shapes
-      if(shapesInfoSrc[sh->first].uncShape.find("")==shapesInfoSrc[sh->first].uncShape.end()) continue;
-      //1. Copy the nominal shape
-      shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) shapesInfoDest[sh->first].uncShape[""]->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
-      //2. we remove the nominal value of the process we are running on
-      shapesInfoDest[sh->first].uncShape[uncS->first]->Add(shapesInfoSrc[sh->first].uncShape[""], -1);
-      //3. and add the variation up/down
-			shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second); 
-		}
+      for(std::map<string, TH1*>::iterator uncS = sh->second.uncShape.begin();uncS!= sh->second.uncShape.end();uncS++){
+	if(uncS->first=="") continue; //We only take systematic (i.e non-nominal) shapes
+	if(shapesInfoSrc[sh->first].uncShape.find("")==shapesInfoSrc[sh->first].uncShape.end()) continue;
+	//1. Copy the nominal shape
+	shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) shapesInfoDest[sh->first].uncShape[""]->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
+	//2. we remove the nominal value of the process we are running on
+	shapesInfoDest[sh->first].uncShape[uncS->first]->Add(shapesInfoSrc[sh->first].uncShape[""], -1);
+	//3. and add the variation up/down
+	shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second); 
+      }
+    }
   }
-
-
-
-  }
-
 
 }
 
@@ -1207,12 +1202,21 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     for(unsigned int p=0;p<sorted_procs.size();p++){
       string procName = sorted_procs[p];
       std::map<string, ProcessInfo_t>::iterator it=procs.find(procName);
-	    TString process(procName.c_str());
-      if( process.Contains("BOnly_B") || process.Contains("SandBandInterf_SBI") ) continue;
-	    if(it==procs.end())continue;
+      TString process(procName.c_str());
+      //      if( process.Contains("BOnly_B") || process.Contains("SandBandInterf_SBI") ) continue;
+      printf("Goind through process %s , which has number of channels %d (and nselCh = %d) \n",process.Data(),(int)it->second.channels.size(), (int)selCh.size());
+
+      if(it==procs.end())continue;
+      //loop on channels for each process
       for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
-        if(std::find(selCh.begin(), selCh.end(), ch->second.channel)==selCh.end())continue;
+	if(std::find(selCh.begin(), selCh.end(), ch->second.channel)==selCh.end())continue;
+
+	printf("Channel is : %s\n",ch->second.channel.c_str());  
+
         if(ch->second.shapes.find(histoName.Data())==(ch->second.shapes).end())continue;
+	
+	printf("Processing histo = %s\n",histoName.Data());
+
         TH1* h = ch->second.shapes[histoName.Data()].histo();
         //if(process.Contains("SOnly_S") ) h->Scale(10);  
         if(it->first=="total"){
@@ -1238,16 +1242,16 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             //This is the part where we define which errors will be shown on the shape plot
             double syst_shape_binUp = std::max(0.0, ch->second.shapes[histoName.Data()].getBinShapeUncertainty((it->first+ch->first).c_str(), ibin, "Up"));
             double syst_shape_binDown = std::max(0.0, ch->second.shapes[histoName.Data()].getBinShapeUncertainty((it->first+ch->first).c_str(), ibin, "Down"));
-		        double syst_binUp = sqrt(pow(Uncertainty_scale*h->GetBinContent(ibin), 2) + pow(syst_shape_binUp,2));
-		        double syst_binDown = sqrt(pow(Uncertainty_scale*h->GetBinContent(ibin), 2) + pow(syst_shape_binDown,2));
-		        double Uncertainty_binUp = syst_binUp / h->GetBinContent(ibin);
-		        double Uncertainty_binDown = syst_binDown / h->GetBinContent(ibin);
-
+	    double syst_binUp = sqrt(pow(Uncertainty_scale*h->GetBinContent(ibin), 2) + pow(syst_shape_binUp,2));
+	    double syst_binDown = sqrt(pow(Uncertainty_scale*h->GetBinContent(ibin), 2) + pow(syst_shape_binDown,2));
+	    double Uncertainty_binUp = syst_binUp / h->GetBinContent(ibin);
+	    double Uncertainty_binDown = syst_binDown / h->GetBinContent(ibin);
+	    
 
             //errors->SetPointError(icutg,h->GetXaxis()->GetBinWidth(ibin)/2.0, sqrt(pow(h->GetBinContent(ibin)*Uncertainty_bin,2) + pow(h->GetBinError(ibin),2) ) );
             errors->SetPointError(icutg,h->GetXaxis()->GetBinWidth(ibin)/2.0,h->GetXaxis()->GetBinWidth(ibin)/2.0, sqrt(pow(h->GetBinContent(ibin)*Uncertainty_binDown,2) + pow(h->GetBinError(ibin),2) ), sqrt(pow(h->GetBinContent(ibin)*Uncertainty_binUp,2) + pow(h->GetBinError(ibin),2) ) );
-						//                        printf("Unc=%6.2f  X=%6.2f Y=%6.2f+-%6.2f+-%6.2f=%6.2f\n", Uncertainty, h->GetXaxis()->GetBinCenter(ibin), h->GetBinContent(ibin), h->GetBinContent(ibin)*Uncertainty, h->GetBinError(ibin), sqrt(pow(h->GetBinContent(ibin)*Uncertainty,2) + pow(h->GetBinError(ibin),2) ) );
-						//                        errors->SetPointError(icutg,h->GetXaxis()->GetBinWidth(ibin)/2.0, 0 );
+	    //                        printf("Unc=%6.2f  X=%6.2f Y=%6.2f+-%6.2f+-%6.2f=%6.2f\n", Uncertainty, h->GetXaxis()->GetBinCenter(ibin), h->GetBinContent(ibin), h->GetBinContent(ibin)*Uncertainty, h->GetBinError(ibin), sqrt(pow(h->GetBinContent(ibin)*Uncertainty,2) + pow(h->GetBinError(ibin),2) ) );
+	    //                        errors->SetPointError(icutg,h->GetXaxis()->GetBinWidth(ibin)/2.0, 0 );
             Maximum =  std::max(Maximum , h->GetBinContent(ibin) + errors->GetErrorYhigh(icutg));
             icutg++;
           }errors->Set(icutg);
@@ -1310,13 +1314,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 
     int NBins = map_data.size()/selCh.size();
-    TCanvas* c1 = new TCanvas("c1","c1",300*NBins,300*selCh.size());
+    TCanvas* c1 = new TCanvas("c1","c1",300*NBins,300); //*selCh.size());
     c1->SetTopMargin(0.00); c1->SetRightMargin(0.00); c1->SetBottomMargin(0.00);  c1->SetLeftMargin(0.00);
     TPad* t2 = new TPad("t2","t2", 0.03, 0.90, 1.00, 1.00, -1, 1);  t2->Draw();  c1->cd();
     t2->SetTopMargin(0.00); t2->SetRightMargin(0.00); t2->SetBottomMargin(0.00);  t2->SetLeftMargin(0.00);
     TPad* t1 = new TPad("t1","t1", 0.03, 0.03, 1.00, 0.90, 4, 1);  t1->Draw();  t1->cd();
     t1->SetTopMargin(0.00); t1->SetRightMargin(0.00); t1->SetBottomMargin(0.00);  t1->SetLeftMargin(0.00);
     t1->Divide(NBins, selCh.size(), 0, 0);
+    //t1->Divide(NBins, 1, 0, 0);  
 
     int I=1;
     for(std::map<string, THStack*>::iterator p = map_stack.begin(); p!=map_stack.end(); p++){
@@ -1997,6 +2002,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       TString procCtr(""); procCtr+=i;
       TString proc=Process[i].getString("tag", "noTagFound");
 
+      printf("PRocess (get shape from file) = %s\n",proc.Data());
+      printf("1:channelsANdShapes size= %d\n",(int)channelsAndShapes.size());    
+
       string dirName = proc.Data(); 
 	    //std::<TString> keys = Process[i].getString("keys", "noKeysFound");
       if(Process[i].isTagFromKeyword(matchingKeyword, "mctruthmode") ) { char buf[255]; sprintf(buf,"_filt%d",(int)Process[i].getIntFromKeyword(matchingKeyword, "mctruthmode", 0)); dirName += buf; }
@@ -2008,11 +2016,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       if(!pdir){printf("Directory (%s) for proc=%s is not in the file!\n", dirName.c_str(), proc.Data()); continue;}
 
       bool isData = Process[i].getBool("isdata", false);
-      if(onlyData && !isData)continue; //just here to speedup the NRB prediction
-      if(proc.Contains(")cp0"))continue; // skip those samples
+      if(onlyData && !isData) { continue; }//just here to speedup the NRB prediction     
+      //      if(proc.Contains(")cp0"))continue; // skip those samples
 
       bool isSignal = Process[i].getBool("issignal", false);
-      if(Process[i].getBool("spimpose", false) && (proc.Contains("ggH") || proc.Contains("qqH")))isSignal=true;
+      if(Process[i].getBool("spimpose", false) && (proc.Contains("ggH") || proc.Contains("qqH") || proc.Contains("Wh") ))isSignal=true;
       //LQ bool isInSignal = Process[i].getBool("isinsignal", false);
       int color = Process[i].getInt("color", 1);
       int lcolor = Process[i].getInt("lcolor", 1);
@@ -2021,56 +2029,58 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       int lstyle = Process[i].getInt("lstyle", 1);
       int fill   = Process[i].getInt("fill"  , 1001);
       int marker = Process[i].getInt("marker", 20);
-
+      /*
       if(isSignal && signalTag!=""){
         if(!proc.Contains(signalTag.c_str()) )continue;
       }
+      */
 
       double procMass=0;  char procMassStr[128] = "";
-      if(isSignal &&  mass>0 && (proc.Contains("Wh(") )){
+      if(isSignal &&  mass>0 && (proc.Contains("Wh (")) ){
 	//|| proc.Contains("h(") || proc.Contains("A(") || proc.Contains("Rad(") || proc.Contains("RsGrav(") || proc.Contains("BulkGrav(") )){
         if(proc.Contains("H(") && proc.Contains("A(")){sscanf(proc.Data()+proc.First("A")+2,"%lf",&procMass);
         }else if(proc.Contains("H(")){sscanf(proc.Data()+proc.First("H")+2,"%lf",&procMass);
         }else if(proc.Contains("A(")){sscanf(proc.Data()+proc.First("A")+2,"%lf",&procMass);
-        }else if(proc.Contains("h(")){sscanf(proc.Data()+proc.First("(")+1,"%lf",&procMass);
-
-        //printf("%s --> %f\n",  proc.Data(), procMass);
-
-        //skip signal sample not needed
-        if(massL!=-1 && massR!=-1){
-          if(procMass!=massL && procMass!=massR)continue; 
-        }else{
-          if(procMass!=mass)continue;
-        }
-        sprintf(procMassStr,"%i",(int)procMass);
-        //printf("found signal to be %s\n",  proc.Data());
+        }else if(proc.Contains("h(")){sscanf(proc.Data()+proc.First("(")+1,"%lf",&procMass);}
+	  
+	printf("%s --> %f\n",  proc.Data(), procMass);
+	
+	//skip signal sample not needed
+	if(massL!=-1 && massR!=-1){
+	  if(procMass!=massL && procMass!=massR)continue; 
+	}else{
+	  if(procMass!=mass)continue;
+	}
+	sprintf(procMassStr,"%i",(int)procMass);
+	//printf("found signal to be %s\n",  proc.Data());
       }
-
+      
+      /*
       if(!isSignal &&  mass>0 && proc.Contains("XH(") && proc.Contains(")#rightarrow WW")){
         sscanf(proc.Data()+proc.First("H(")+2,"%lf",&procMass);
         if(!(procMass==mass || procMass==massL || procMass==massR))continue; //skip XH-->WW background sample not concerned
       }
+	*/
 
       TString procSave = proc;
       //      if(isSignal && mass>0 && proc.Contains("ggH") && proc.Contains("ZZ"))proc = TString("ggH")  +procMassStr;
       if(isSignal && mass>0 && proc.Contains("Wh")) proc = TString("Wh")  +procMassStr;
       //      else if(isSignal && mass>0 && proc.Contains("qqH") && proc.Contains("ZZ"))proc = TString("qqH")  +procMassStr;
 
-      if(skipGGH && isSignal && mass>0 && proc.Contains("ggH") )continue;
-      if(skipQQH && isSignal && mass>0 && (proc.Contains("qqH") || proc.Contains("VBF")) )continue;
+      //      if(skipGGH && isSignal && mass>0 && proc.Contains("ggH") )continue;
+      ///      if(skipQQH && isSignal && mass>0 && (proc.Contains("qqH") || proc.Contains("VBF")) )continue;
 
       TString shortName = proc;
       shortName.ToLower();
       shortName.ReplaceAll(procMassStr,"");
       shortName.ReplaceAll("#bar{t}","tbar");
-      shortName.ReplaceAll("z-#gamma^{*}+jets#rightarrow ll","dy");
+      shortName.ReplaceAll("Z#rightarrow ll","dy");
       shortName.ReplaceAll("#rightarrow","");
       shortName.ReplaceAll("(",""); shortName.ReplaceAll(")","");    shortName.ReplaceAll("+","");    shortName.ReplaceAll(" ","");   shortName.ReplaceAll("/","");  shortName.ReplaceAll("#",""); 
       shortName.ReplaceAll("=",""); shortName.ReplaceAll(".","");    shortName.ReplaceAll("^","");    shortName.ReplaceAll("}","");   shortName.ReplaceAll("{","");  shortName.ReplaceAll(",","");
       shortName.ReplaceAll("ggh", "ggH");
       shortName.ReplaceAll("qqh", "qqH");
       if(shortName.Length()>8)shortName.Resize(8);
-
 
       if(procs.find(proc.Data())==procs.end()){sorted_procs.push_back(proc.Data());}
       ProcessInfo_t& procInfo = procs[proc.Data()];
@@ -2092,39 +2102,46 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       //Loop on all channels, bins and shape to load and store them in memory structure
       TH1* syst = (TH1*)pdir->Get("all_optim_systs");
-      if(syst==NULL){syst=new TH1F("all_optim_systs","all_optim_systs",1,0,1);syst->GetXaxis()->SetBinLabel(1,"");}
+      if(syst==NULL){
+	printf("Please check all_optim_systs histo is missing!\n\n");
+	syst=new TH1F("all_optim_systs","all_optim_systs",1,0,1);syst->GetXaxis()->SetBinLabel(1,"");
+      }
+
       for(unsigned int c=0;c<channelsAndShapes.size();c++){
-        TString chName    = (channelsAndShapes[c].substr(0,channelsAndShapes[c].find(";"))).c_str();
+	TString chName    = (channelsAndShapes[c].substr(0,channelsAndShapes[c].find(";"))).c_str();
         TString binName   = (channelsAndShapes[c].substr(channelsAndShapes[c].find(";")+1, channelsAndShapes[c].rfind(";")-channelsAndShapes[c].find(";")-1)).c_str();
         TString shapeName = (channelsAndShapes[c].substr(channelsAndShapes[c].rfind(";")+1)).c_str();
-        TString ch        = chName+binName;
+        TString ch        = chName+TString("_")+binName;
+
+	printf("channel= %s, bin= %s, shape name= %s, ch name= %s\n",chName.Data(), binName.Data(), shapeName.Data(), ch.Data());
 
         ChannelInfo_t& channelInfo = procInfo.channels[ch.Data()];
         channelInfo.bin        = binName.Data();
         channelInfo.channel    = chName.Data();
         ShapeData_t& shapeInfo = channelInfo.shapes[shapeName.Data()];
 
-        //printf("%s SYST SIZE=%i\n", (ch+"_"+shapeName).Data(), syst->GetNbinsX() );
+        printf("%s SYST SIZE=%i\n", (ch+"_"+shapeName).Data(), syst->GetNbinsX() );
         for(int ivar = 1; ivar<=syst->GetNbinsX();ivar++){                
           TH1D* hshape   = NULL;
           TString varName   = syst->GetXaxis()->GetBinLabel(ivar);
           TString histoName = ch+"_"+shapeName+(isSignal?signalSufix:"")+varName ;
-          if(shapeName==histo && histoVBF!="" && ch.Contains("vbf"))histoName = ch+"_"+histoVBF+(isSignal?signalSufix:"")+varName ;
+	  //  if(shapeName==histo && histoVBF!="" && ch.Contains("vbf"))histoName = ch+"_"+histoVBF+(isSignal?signalSufix:"")+varName ;
           //if(isSignal && ivar==1)printf("Syst %i = %s\n", ivar, varName.Data()); 
 
           TH2* hshape2D = (TH2*)pdir->Get(histoName );
           if(!hshape2D){
+	    printf("Histo %s is NULL for syst:%s\n", histoName.Data(), varName.Data());   
             if(shapeName==histo && histoVBF!="" && ch.Contains("vbf")){   hshape2D = (TH2*)pdir->Get(TString("all_")+histoVBF+(isSignal?signalSufix:"")+varName);
             }else{                                                        hshape2D = (TH2*)pdir->Get(TString("all_")+shapeName+varName);
             }
-
+	  
             if(hshape2D){
               hshape2D->Reset();
             }else{  //if still no histo, skip this proc...
-              //printf("Histo %s does not exist for syst:%s\n", histoName.Data(), varName.Data());
+              printf("Histo %s does not exist for syst:%s\n", histoName.Data(), varName.Data());
               continue;
             }
-          }
+          } 
 
           //special treatment for side mass points
           int cutBinUsed = cutBin;
@@ -2132,9 +2149,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if(shapeName == histo && !ch.Contains("vbf") && procMass==massR)cutBinUsed = indexcutMR[channelInfo.bin];
 
           histoName.ReplaceAll(ch,ch+"_proj"+procCtr);
+	  printf("histoName= %s, cutBinUsed= %d\n",histoName.Data(), cutBinUsed);
           hshape   = hshape2D->ProjectionY(histoName,cutBinUsed,cutBinUsed);
           filterBinContent(hshape);
-          //printf("%s %s %s Integral = %f\n", ch.Data(), shortName.Data(), varName.Data(), hshape->Integral() );
+          printf("%s %s %s Integral = %f\n\n", ch.Data(), shortName.Data(), varName.Data(), hshape->Integral() );
           //if(hshape->Integral()<=0 && varName=="" && !isData){hshape->Reset(); hshape->SetBinContent(1, 1E-10);} //TEST FOR HIGGS WIDTH MEASUREMENTS, MUST BE UNCOMMENTED ASAP
 
           if(isnan((float)hshape->Integral())){hshape->Reset();}
@@ -2188,9 +2206,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         }
         }
       }
-      }
     }
   }
+
   //
   // Rebin histograms to make sure that high mt/met region have no empty bins
   //

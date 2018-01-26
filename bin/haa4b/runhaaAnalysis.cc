@@ -34,6 +34,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TProfile.h"
+#include "TProfile2D.h"
 #include "TEventList.h"
 #include "TROOT.h"
 #include "TMath.h"
@@ -386,7 +387,7 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "dphilepmet", ";|#Delta#it{#phi}(lep,E_{T}^{miss})|;Events", 20,0,TMath::Pi()) );
 
     //MVA
-    mon.addHistogram( new TH1F( "mvabdt", ";BDT;Events", 100, -0.5, 0.5) );
+    mon.addHistogram( new TH1F( "bdt", ";BDT;Events", 80, -0.4, 0.4) );
 
     //for MC normalization (to 1/pb)
     TH1F* Hcutflow = (TH1F*) mon.addHistogram( new TH1F ("cutflow" , "cutflow" ,6,0,6) ) ;
@@ -474,6 +475,23 @@ int main(int argc, char* argv[])
     //##################################################################################
     //########################## STUFF FOR CUTS OPTIMIZATION  ##########################
     //##################################################################################
+
+    TH1F* Hoptim_systs     =  (TH1F*) mon.addHistogram( new TH1F ("optim_systs"    , ";syst;;", nvarsToInclude,0,nvarsToInclude) ) ;
+    for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
+      Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
+    }
+
+    std::vector<double> optim_Cuts1_bdt;
+    optim_Cuts1_bdt.push_back(-0.4); //add a bin in the shapes with a BDT cut of -0.4
+    for(double bdt=-0.2;bdt<0.2;bdt+=0.05) { optim_Cuts1_bdt.push_back(bdt); }
+
+    TH2F* Hoptim_cuts =(TH2F*)mon.addHistogram(new TProfile2D("optim_cut", ";cut index;variable", optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 1, 0, 1)) ;
+    Hoptim_cuts->GetYaxis()->SetBinLabel(1, "BDT>");
+    for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){ Hoptim_cuts->Fill(index, 0.0, optim_Cuts1_bdt[index]); }
+    for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
+      mon.addHistogram( new TH2F (TString("bdt_shapes")+varNames[ivar],";cut index;BDT;Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 80,-0.4,0.4) );
+    }
+
 
 
     //##################################################################################
@@ -1253,13 +1271,13 @@ int main(int argc, char* argv[])
 	    if (dR<dRmin_csv) dRmin_csv=dR;
 	  }
 	  mon.fillHisto("dR_raw","sv_b",dRmin_csv,weight);
-	  
+
 	  hasOverlap=(dRmin_csv<0.4);
 	  if (!hasOverlap) {// continue;
 	  // Fill final soft-bs from SVs
 	    SVs.push_back(isv);
 	  }
-	  
+
  	}
 
 	//--------------------------------------------------------------------------
@@ -1571,7 +1589,7 @@ int main(int argc, char* argv[])
                      );
         }
         //else continue;
-        mon.fillHisto("mvabdt", tags, mvaBDT, weight);
+        mon.fillHisto("bdt", tags, mvaBDT, weight);
 
 	if (GoodIdbJets.size() == 3) 
 	  {
@@ -1603,6 +1621,20 @@ int main(int argc, char* argv[])
         //##############################################################################
         //### HISTOS FOR STATISTICAL ANALYSIS (include systematic variations)
         //##############################################################################
+
+	// LOOP ON SYSTEMATIC VARIATION FOR THE STATISTICAL ANALYSIS
+	for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
+	  if(!isMC && ivar>0 ) continue; //loop on variation only for MC samples
+
+	  //scan the BDT cut and fill the shapes
+	  for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){
+	    if(mvaBDT>optim_Cuts1_bdt[index]){
+	      
+	      mon.fillHisto(TString("bdt_shapes")+varNames[ivar],tags,index, mvaBDT,weight);
+	    }
+	  }
+
+	}
 
         //##############################################
         // recompute MET/MT if JES/JER was varied
