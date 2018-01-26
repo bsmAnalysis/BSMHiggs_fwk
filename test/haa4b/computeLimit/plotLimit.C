@@ -1,4 +1,3 @@
-
 #include <string>
 #include <vector>
 
@@ -141,16 +140,16 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   if(file->IsZombie()) return;
   
   tree = (TTree*)file->Get("limit");
+  tree->GetBranch("limit")->SetAddress(&Tlimit   );
   
-  tree->GetBranch("limit"           )->SetAddress(&Tlimit   );
-  
-  TGraph* pValue     = getLimitGraph(tree,-1);
+  TGraph* pValue = getLimitGraph(tree,-1);
   
   file->Close();
 
   
   //make TH Cross-sections
    string suffix = outputDir;
+   /*
    TGraph* THXSec   = Hxswg::utils::getXSec(outputDir); 
    scaleGraph(THXSec, 1000);  //convert cross-section to fb
    double cprime=1.0; double  brnew=0.0;
@@ -161,7 +160,7 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
    }
   //XSecScaleFactor = 0.001; //pb to fb
   scaleGraph(THXSec, XSecScaleFactor);
-
+   */
 
   string prod = "pp";
   if(outputDir.find("GGF")!=std::string::npos)prod="gg";
@@ -179,7 +178,7 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   //Hxswg::utils::multiplyGraph(   ExpLimit, XSecMELA);
   //Hxswg::utils::multiplyGraph( ExpLimitp1, XSecMELA);
   //Hxswg::utils::multiplyGraph( ExpLimitp2, XSecMELA);
- 
+  /*
   //Scale exclusion XSec in fb
   scaleGraph(ObsLimit  , 0.001); //pb to fb
   scaleGraph(ExpLimitm2, 0.001); //pb to fb
@@ -199,23 +198,23 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
      Hxswg::utils::divideGraph(ExpLimitp2 , THXSec);
      Hxswg::utils::divideGraph(THXSec     , THXSec);
   }
-
+  */
 
   //limits in terms of signal strength
   TCanvas* c = new TCanvas("c", "c",800,800);
   c->SetGridx();
   c->SetGridy();
-  TH1F* framework = new TH1F("Graph","Graph",1,strengthLimit?199:199,2500); //3000);
+  TH1F* framework = new TH1F("Graph","Graph",1,10,60); //3000);
   framework->SetStats(false);
   framework->SetTitle("");
-  framework->GetXaxis()->SetTitle("M_{H} [GeV]");
+  framework->GetXaxis()->SetTitle("M_{a} [GeV]");
   framework->GetYaxis()->SetTitleOffset(1.70);
   if(strengthLimit){
   framework->GetYaxis()->SetTitle("#mu = #sigma_{95%} / #sigma_{th}");
   framework->GetYaxis()->SetRangeUser(1E-4,1E3);
   c->SetLogy(true);
   }else{
-  framework->GetYaxis()->SetTitle((string("#sigma_{95%} (") + prod +" #rightarrow H #rightarrow ZZ) (pb)").c_str());
+  framework->GetYaxis()->SetTitle((string("#sigma_{95%} (") + prod +" Wh) x BR (pb)").c_str());
   framework->GetYaxis()->SetRangeUser(1E-3,1E3);
   c->SetLogy(true);
   }
@@ -237,7 +236,7 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   TGraph* TGExpLimit   = ExpLimit;  TGExpLimit->SetLineWidth(2); TGExpLimit->SetLineStyle(2);
   TCutG* TGExpLimit1S  = GetErrorBand("1S", ExpLimitm1, ExpLimitp1);  
   TCutG* TGExpLimit2S  = GetErrorBand("2S", ExpLimitm2, ExpLimitp2);  TGExpLimit2S->SetFillColor(5);
-  THXSec->SetLineWidth(2); THXSec->SetLineStyle(1); THXSec->SetLineColor(4);
+  //  THXSec->SetLineWidth(2); THXSec->SetLineStyle(1); THXSec->SetLineColor(4);
 
   TGExpLimit->SetLineColor(1);  TGExpLimit->SetLineStyle(2);
   TGObsLimit->SetLineWidth(2);  TGObsLimit->SetMarkerStyle(20);
@@ -280,7 +279,7 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   FILE* pFileSum = fopen((outputDir+"LimitSummary").c_str(),"w");
   for(int i=0;i<TGExpLimit->GetN();i++){
      double M = ExpLimit->GetX()[i];
-     fprintf(pFileSum, "$%8.6E$ & $%8.6E$ & $[%8.6E,%8.6E]$ & $[%8.6E,%8.6E]$ & $%8.6E$ & Th=$%8.6E$ & pValue=$%8.6E$\\\\\\hline\n",M, ExpLimit->Eval(M), ExpLimitm1->Eval(M), ExpLimitp1->Eval(M), ExpLimitm2->Eval(M),  ExpLimitp2->Eval(M), ObsLimit->Eval(M), (THXSec!=NULL)?THXSec->Eval(M):-1, pValue->Eval(M));
+     //     fprintf(pFileSum, "$%8.6E$ & $%8.6E$ & $[%8.6E,%8.6E]$ & $[%8.6E,%8.6E]$ & $%8.6E$ & Th=$%8.6E$ & pValue=$%8.6E$\\\\\\hline\n",M, ExpLimit->Eval(M), ExpLimitm1->Eval(M), ExpLimitp1->Eval(M), ExpLimitm2->Eval(M),  ExpLimitp2->Eval(M), ObsLimit->Eval(M), (THXSec!=NULL)?THXSec->Eval(M):-1, pValue->Eval(M));
     if(int(ExpLimit->GetX()[i])%50!=0)continue; printf("%f ",ObsLimit->Eval(M));
   }printf("\n");
   fclose(pFileSum);
