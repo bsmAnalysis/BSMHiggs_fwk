@@ -211,7 +211,7 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   framework->GetYaxis()->SetTitleOffset(1.70);
   if(strengthLimit){
   framework->GetYaxis()->SetTitle("#mu = #sigma_{95%} / #sigma_{th}");
-  framework->GetYaxis()->SetRangeUser(1E-4,1E3);
+  framework->GetYaxis()->SetRangeUser(1E-2,1E3);
   c->SetLogy(true);
   }else{
   framework->GetYaxis()->SetTitle((string("#sigma_{95%} (") + prod +" Wh) x BR (pb)").c_str());
