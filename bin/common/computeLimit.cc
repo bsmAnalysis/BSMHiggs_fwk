@@ -1901,7 +1901,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       string procName = sorted_procs[p];
       std::map<string, ProcessInfo_t>::iterator it=procs.find(procName);
       if(it==procs.end() || it->first=="total")continue;
-      if(it->second.isSign)sign_procs.push_back(procName);
+      if(it->second.isSign) {
+	sign_procs.push_back(procName);
+      }
       if(it->second.isBckg)clean_procs.push_back(procName);
       for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
         TString chbin = ch->first;
@@ -1916,6 +1918,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     }
     clean_procs.insert(clean_procs.begin(), sign_procs.begin(), sign_procs.end());
     int nsign = sign_procs.size();
+    printf("\n\n Now building the datacards . We have %d signal points available \n",nsign);
 
     TString eecard = "";
     TString mumucard = "";
@@ -1944,13 +1947,17 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         fprintf(pFile, "-------------------------------\n");
       }
       //observations
-      fprintf(pFile, "bin 1\n");
+      fprintf(pFile, "bin bin1\n");
       fprintf(pFile, "Observation %f\n", procs["data"].channels[C->first].shapes[histoName].histo()->Integral());
       fprintf(pFile, "-------------------------------\n");
 
       //yields
-      fprintf(pFile,"%55s  ", "bin");     for(unsigned int j=0; j<clean_procs.size(); j++){ fprintf(pFile,"%8i ", 1)                     ;}  fprintf(pFile,"\n");
-      fprintf(pFile,"%55s  ", "process"); for(unsigned int j=0; j<clean_procs.size(); j++){ fprintf(pFile,"%8s ", procs[clean_procs[j]].shortName.c_str());}  fprintf(pFile,"\n");
+      fprintf(pFile,"%55s  ", "bin");     for(unsigned int j=0; j<clean_procs.size(); j++){ fprintf(pFile,"%8s ", "bin1")                     ;}  fprintf(pFile,"\n");
+      fprintf(pFile,"%55s  ", "process"); for(unsigned int j=0; j<clean_procs.size(); j++){ 
+	//	printf("");
+	fprintf(pFile,"%8s ", procs[clean_procs[j]].shortName.c_str());
+      }  
+      fprintf(pFile,"\n");
       fprintf(pFile,"%55s  ", "process"); for(unsigned int j=0; j<clean_procs.size(); j++){ fprintf(pFile,"%8i ", ((int)j)-(nsign-1)    );}  fprintf(pFile,"\n");
       fprintf(pFile,"%55s  ", "rate");    for(unsigned int j=0; j<clean_procs.size(); j++){ fprintf(pFile,"%8f ", procs[clean_procs[j]].channels[C->first].shapes[histoName].histo()->Integral() );}  fprintf(pFile,"\n");
       fprintf(pFile, "-------------------------------\n");
@@ -1979,8 +1986,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
     FILE* pFile = fopen("combineCards.sh","w");
     fprintf(pFile,"%s;\n",(TString("combineCards.py ") + combinedcard + " > " + "card_combined.dat").Data());
-    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + eecard       + " > " + "card_ee.dat").Data());
-    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mumucard     + " > " + "card_mumu.dat").Data());
+    //    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + eecard       + " > " + "card_ee.dat").Data());
+    //    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mumucard     + " > " + "card_mumu.dat").Data());
     fclose(pFile);         
 
   }
@@ -2037,11 +2044,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       double procMass=0;  char procMassStr[128] = "";
       if(isSignal &&  mass>0 && (proc.Contains("Wh (")) ){
-	//|| proc.Contains("h(") || proc.Contains("A(") || proc.Contains("Rad(") || proc.Contains("RsGrav(") || proc.Contains("BulkGrav(") )){
         if(proc.Contains("H(") && proc.Contains("A(")){sscanf(proc.Data()+proc.First("A")+2,"%lf",&procMass);
         }else if(proc.Contains("H(")){sscanf(proc.Data()+proc.First("H")+2,"%lf",&procMass);
         }else if(proc.Contains("A(")){sscanf(proc.Data()+proc.First("A")+2,"%lf",&procMass);
-        }else if(proc.Contains("h(")){sscanf(proc.Data()+proc.First("(")+1,"%lf",&procMass);}
+        }else if(proc.Contains("Wh (")){sscanf(proc.Data()+proc.First("(")+1,"%lf",&procMass);}
 	  
 	printf("%s --> %f\n",  proc.Data(), procMass);
 	
@@ -2092,6 +2098,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       procInfo.shortName = shortName.Data();
 
       if(procInfo.isSign){
+	printf("and this process isSign=true\n");
         procInfo.xsec = procInfo.jsonObj["data"].daughters()[0].getDouble("xsec", 1);
         if(procInfo.jsonObj["data"].daughters()[0].isTag("br")){
           std::vector<JSONWrapper::Object> BRs = procInfo.jsonObj["data"].daughters()[0]["br"].daughters();
@@ -2165,17 +2172,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           //if current shape is the one to cut on, then apply the cuts
           if(shapeName == histo){
             //if(ivar==1 && isSignal)printf("A %s %s Integral = %f\n", ch.Data(), shortName.Data(), hshape->Integral() );
-
             for(int x=0;x<=hshape->GetXaxis()->GetNbins()+1;x++){
               if(hshape->GetXaxis()->GetBinCenter(x)<=minCut || hshape->GetXaxis()->GetBinCenter(x)>=maxCut){ hshape->SetBinContent(x,0); hshape->SetBinError(x,0); }
             }
 
             if(rebinVal>1){ hshape->Rebin(rebinVal); }
-						//                     if(histoVBF!="" && ch.Contains("vbf")){    hshape->Rebin(30);
-						//                     }else{                                     hshape->Rebin(rebinVal);
-						//                     }
             hshape->GetYaxis()->SetTitle("Entries");// (/25GeV)");
-
           }
           hshape->Scale(MCRescale);
           if(isSignal)hshape->Scale(SignalRescale);
@@ -2195,15 +2197,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           }else if(varName.BeginsWith("_ren"   )){continue;   //already accounted for in QCD scales
           }else if(varName.BeginsWith("_fact"  )){continue; //skip this one
             //}else if(varName.BeginsWith("_interf")){varName="_CMS_haa4b"+varName;  //commented out for the HighMass paper
-        }else{                               varName="_CMS_haa4b"+varName;
-        }
+	  }else{ varName="_CMS_haa4b"+varName;}
 
-        hshape->SetTitle(proc+varName);
-        if(shapeInfo.uncShape.find(varName.Data())==shapeInfo.uncShape.end()){
-          shapeInfo.uncShape[varName.Data()] = hshape;
-        }else{
-          shapeInfo.uncShape[varName.Data()]->Add(hshape);
-        }
+	  hshape->SetTitle(proc+varName);
+	  if(shapeInfo.uncShape.find(varName.Data())==shapeInfo.uncShape.end()){
+	    shapeInfo.uncShape[varName.Data()] = hshape;
+	  }else{
+	    shapeInfo.uncShape[varName.Data()]->Add(hshape);
+	  }
         }
       }
     }
