@@ -1,0 +1,12 @@
+## Test limit for one A mass point
+> source TestLimit.sh
+
+where :
+* m = A mass point
+* histo = 2D histo in shape variable vs cut index
+* index = cut index for BDT cut value (cuts on 2D bdt_shapes histo)
+* bins = 3b, 4b etc bins to consider
+
+## Run the limit scan in all A mass points
+> python optimize_haa.py -p 4 (wait for the jobs to finish)
+> python optimize_haa.py -p 5 
