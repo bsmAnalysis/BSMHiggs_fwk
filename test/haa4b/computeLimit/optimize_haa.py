@@ -32,10 +32,9 @@ MODELS=["SM"] #,"RsGrav","BulkGrav","Rad"] #Models which can be used are: "RsGra
 based_key="haa_mcbased" #mcbased_" #to run limits on MC use: 2l2v_mcbased_, to use data driven obj use: 2l2v_datadriven_
 jsonPath='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples2016.json' 
 inUrl='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2017_09_21_forLimits.root' #plotter_2017_05_05_forLimits.root'
-BESTDISCOVERYOPTIM=True #Set to True for best discovery optimization, Set to False for best limit optimization
+BESTDISCOVERYOPTIM=False #Set to True for best discovery optimization, Set to False for best limit optimization
 ASYMTOTICLIMIT=True #Set to True to compute asymptotic limits (faster) instead of toy based hybrid-new limits
-BINS = ["3b","4b","3b,4b"]
-#"eq0jets","geq1jets","vbf","eq0jets,geq1jets,vbf"] # list individual analysis bins to consider as well as combined bins (separated with a coma but without space)
+BINS = ["3b","4b","3b,4b"] # list individual analysis bins to consider as well as combined bins (separated with a coma but without space)
 
 MASS = [12, 15, 20, 25, 30, 40, 50, 60]
 SUBMASS = [12, 15, 20, 25, 30, 40, 50, 60]
@@ -43,23 +42,10 @@ SUBMASS = [12, 15, 20, 25, 30, 40, 50, 60]
 LandSArgCommonOptions="  --BackExtrapol --statBinByBin 0.00001 --dropBckgBelow 0.00001 --blind"
 
 for model in MODELS:
-   for shape in ["bdt_shapes"]:# --histoVBF met_shapes"]:  #here run all the shapes you want to test.  '"mt_shapes --histoVBF met_shapes"' is a very particular case since we change the shape for VBF
+   for shape in ["bdt_shapes"]:# --histoVBF met_shapes"]:  #here run all the shapes you want to test.
       for bin in BINS:
          if(model=="SM"):
             suffix = "" 
-                   #Run limit for ShapeBased GG+VBF
-                   #signalSuffixVec += [ suffix ]
-                   #OUTName         += ["SB13TeV_SM"]
-                   #LandSArgOptions += [" --histo " + shape + " --histoVBF " + shape + " --systpostfix _13TeV --shape "]  #as this combine ggF and VBF, we need to scale VBF to the SM ratio expectation
-                   #BIN             += [bin]
-                   #MODEL           += [model]
-
-                   #signalSuffixVec += [ suffix ]
-                   #OUTName         += ["SB13TeV_SM_GGF"]
-                   #LandSArgOptions += [" --histo " + shape + " --histoVBF " + shape + "  --systpostfix _13TeV --shape --skipQQH "]
-                   #BIN             += [bin]
-                   #MODEL          += [model]
-
             signalSuffixVec += [ suffix ]
             OUTName         += ["SB13TeV_SM_Wh"]
             LandSArgOptions += [" --histo " + shape + "  --systpostfix _13TeV --shape "]
@@ -178,7 +164,8 @@ for signalSuffix in signalSuffixVec :
              for m in MASS:
                 cardsdir = 'H'+ str(m) + '_' + OUTName[iConf] + '_' + str(i);
                 SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
-                SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " --syst " + " --index " + str(i)     + " --json " + jsonUrl + " --shapeMin " + str(shapeCutMin_) + " --shapeMax " + str(shapeCutMax_) + " " + LandSArg + " --bins " + BIN[iConf] + " ;\n")
+                SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " --index " + str(i)     + " --json " + jsonUrl + " --shapeMin " + str(shapeCutMin_) + " --shapeMax " + str(shapeCutMax_) + " " + LandSArg + " --bins " + BIN[iConf] + " ;\n")
+#                SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " --syst " + " --index " + str(i)     + " --json " + jsonUrl + " --shapeMin " + str(shapeCutMin_) + " --shapeMax " + str(shapeCutMax_) + " " + LandSArg + " --bins " + BIN[iConf] + " ;\n")
                 SCRIPT.writelines("sh combineCards.sh;\n")
                 SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " --run expected card_combined.dat > LIMIT.log;\n") #limit computation
                 SCRIPT.writelines("combine -M ProfileLikelihood  -m " +  str(m) + " --significance -t -1 --expectSignal=1 card_combined.dat  > SIGN.log;\n") #apriori significance computation
@@ -186,7 +173,7 @@ for signalSuffix in signalSuffixVec :
                 SCRIPT.writelines('tail -n 100 SIGN.log >> ' +OUT+str(m)+'_'+str(i)+'_'+str(shapeCutMin_)+'_'+str(shapeCutMax_)+'.log;\n')
                 SCRIPT.writelines('cat LIMIT.log; cat SIGN.log\n')
                 SCRIPT.writelines('cd ..;\n')
-                #SCRIPT.writelines('mv ' + cardsdir + ' ' + OUT + '/.\n')
+                SCRIPT.writelines('mv ' + cardsdir + ' ' + OUT + '/.\n')
                 SCRIPT.writelines('rm -rd ' + cardsdir+';\n')            
           SCRIPT.close()
           LaunchOnCondor.SendCluster_Push(["BASH", 'sh ' + OUT+'script_'+str(i)+'_'+str(shapeCutMin_)+'_'+str(shapeCutMax_)+'.sh'])
@@ -271,7 +258,7 @@ for signalSuffix in signalSuffixVec :
             ictr+=1
          print "Which option you want to keep?"
          #opt = int(raw_input(">"))-1   # remove prompting
-         opt = 0 #always take the best cut
+         opt = 7 #always take the best cut
 
          #save cut chosen
          cutString = ''
@@ -440,7 +427,7 @@ for signalSuffix in signalSuffixVec :
       else:
          os.system("hadd -f "+DataCardsDir+"/LimitTree.root "+DataCardsDir+"/*/higgsCombineTest.HybridNewMerged.*.root > /dev/null")
 
-      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Stength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 35914.143 )'")
+      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 35914.143 )'")
 
    ######################################################################
 
