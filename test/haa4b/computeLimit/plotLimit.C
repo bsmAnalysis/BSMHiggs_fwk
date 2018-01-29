@@ -32,6 +32,8 @@
 //tree variables
 double Tmh, Tlimit, TlimitErr; float TquantExp;
 
+TGraph* multiplyGraph(TGraph* A, TGraph* B){   double x, y;   for(int i=0;i<A->GetN();i++){A->GetPoint(i, x, y); A->SetPoint(i, x, y*B->Eval(x));}    return A;   }
+TGraph* divideGraph (TGraph* A, TGraph* B){ double x, y; for(int i=0;i<A->GetN();i++){A->GetPoint(i, x, y); A->SetPoint(i, x, y/B->Eval(x));} return A; } 
 
 TGraph* getLimitGraph(TTree* tree, float Quantil){
   TGraph* toReturn = new TGraph(999);
@@ -72,7 +74,7 @@ void scaleGraph(TGraph* Limit, double scale){
    }   
 }
 
-void printLimits(FILE* pFile, TGraph* graph, double Mmin=200, double Mmax=600){
+void printLimits(FILE* pFile, TGraph* graph, double Mmin=12, double Mmax=60){
    double previous = graph->Eval(Mmin);
    fprintf(pFile, "Exclude ");
    bool opened = false;
@@ -149,15 +151,20 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   
   //make TH Cross-sections
    string suffix = outputDir;
+
+   Double_t mA[8]={12.,15.,20.,25.,30.,40.,50.,60.};
+
+   TGraph* THXSec = new TGraph(999); int N=8;
+   for (int i=0; i<N; i++) {
+     THXSec->SetPoint(i,mA[i],1.37);
+   }
+   
    /*
    TGraph* THXSec   = Hxswg::utils::getXSec(outputDir); 
    scaleGraph(THXSec, 1000);  //convert cross-section to fb
    double cprime=1.0; double  brnew=0.0;
    double XSecScaleFactor = 1.0;
-   if(suffix.find("_cp")!=string::npos){
-     sscanf(suffix.c_str()+suffix.find("_cp"), "_cp%lf_brn%lf", &cprime, &brnew);
-     XSecScaleFactor = pow(cprime,2) * (1-brnew);
-   }
+
   //XSecScaleFactor = 0.001; //pb to fb
   scaleGraph(THXSec, XSecScaleFactor);
    */
@@ -165,19 +172,19 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   string prod = "pp";
   if(outputDir.find("GGF")!=std::string::npos)prod="gg";
   if(outputDir.find("VBF")!=std::string::npos)prod="qq";
-
+  //  if(outputDir.find("Wh")!=std::string::npos)prod="Wh";
   
   strengthLimit = false;
   if(prod=="pp")strengthLimit=true;
  
-  //TGraph *XSecMELA = Hxswg::utils::getXSecMELA(cprime);
-
-  //Hxswg::utils::multiplyGraph(   ObsLimit, XSecMELA);
-  //Hxswg::utils::multiplyGraph( ExpLimitm2, XSecMELA);
-  //Hxswg::utils::multiplyGraph( ExpLimitm1, XSecMELA);
-  //Hxswg::utils::multiplyGraph(   ExpLimit, XSecMELA);
-  //Hxswg::utils::multiplyGraph( ExpLimitp1, XSecMELA);
-  //Hxswg::utils::multiplyGraph( ExpLimitp2, XSecMELA);
+  if (!strengthLimit) {
+    multiplyGraph(   ObsLimit, THXSec);
+    multiplyGraph( ExpLimitm2, THXSec);
+    multiplyGraph( ExpLimitm1, THXSec);
+    multiplyGraph(   ExpLimit, THXSec);
+    multiplyGraph( ExpLimitp1, THXSec);
+    multiplyGraph( ExpLimitp2, THXSec);
+  }
   /*
   //Scale exclusion XSec in fb
   scaleGraph(ObsLimit  , 0.001); //pb to fb
@@ -190,13 +197,13 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   //scal eTH cross-section and limits according to scale factor 
   //this only apply to NarrowResonnance case
   if(strengthLimit){
-     Hxswg::utils::divideGraph(ObsLimit   , THXSec);
-     Hxswg::utils::divideGraph(ExpLimitm2 , THXSec);
-     Hxswg::utils::divideGraph(ExpLimitm1 , THXSec);
-     Hxswg::utils::divideGraph(ExpLimit   , THXSec);
-     Hxswg::utils::divideGraph(ExpLimitp1 , THXSec);
-     Hxswg::utils::divideGraph(ExpLimitp2 , THXSec);
-     Hxswg::utils::divideGraph(THXSec     , THXSec);
+     divideGraph(ObsLimit   , THXSec);
+     divideGraph(ExpLimitm2 , THXSec);
+     divideGraph(ExpLimitm1 , THXSec);
+     divideGraph(ExpLimit   , THXSec);
+     divideGraph(ExpLimitp1 , THXSec);
+     divideGraph(ExpLimitp2 , THXSec);
+     divideGraph(THXSec     , THXSec);
   }
   */
 
@@ -210,13 +217,13 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   framework->GetXaxis()->SetTitle("M_{a} [GeV]");
   framework->GetYaxis()->SetTitleOffset(1.70);
   if(strengthLimit){
-  framework->GetYaxis()->SetTitle("#mu = #sigma_{95%} / #sigma_{th}");
-  framework->GetYaxis()->SetRangeUser(1E-2,1E3);
-  c->SetLogy(true);
+    framework->GetYaxis()->SetTitle("#mu = #sigma_{95%} / #sigma_{th}");
+    framework->GetYaxis()->SetRangeUser(1E-2,1E3);
+    c->SetLogy(true);
   }else{
-  framework->GetYaxis()->SetTitle((string("#sigma_{95%} (") + prod +" Wh) x BR (pb)").c_str());
-  framework->GetYaxis()->SetRangeUser(1E-3,1E3);
-  c->SetLogy(true);
+    framework->GetYaxis()->SetTitle((string("#sigma_{95%} (") + prod +") x BR (pb)").c_str());
+    framework->GetYaxis()->SetRangeUser(1E-2,1E3);
+    c->SetLogy(true);
   }
   framework->GetXaxis()->SetLabelOffset(0.007);
   framework->GetXaxis()->SetLabelSize(0.03);
@@ -246,13 +253,16 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   TGExpLimit->Draw("same c");
 
   
-  /*if(strengthLimit){
+  if(strengthLimit){
      TLine* SMLine = new TLine(framework->GetXaxis()->GetXmin(),1.0,framework->GetXaxis()->GetXmax(),1.0);
      SMLine->SetLineWidth(2); SMLine->SetLineStyle(1); SMLine->SetLineColor(4);      
      SMLine->Draw("same C");
-  }else{
-     THXSec->Draw("same C");
-  }*/
+  }
+  else{
+    THXSec->SetPoint(0,10.,1.37);
+    THXSec->SetLineWidth(2); THXSec->SetLineStyle(1); THXSec->SetLineColor(2); 
+    THXSec->Draw("same C");
+  }
 
   utils::root::DrawPreliminary(luminosity, energy, c);
 
@@ -279,7 +289,7 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   FILE* pFileSum = fopen((outputDir+"LimitSummary").c_str(),"w");
   for(int i=0;i<TGExpLimit->GetN();i++){
      double M = ExpLimit->GetX()[i];
-     //     fprintf(pFileSum, "$%8.6E$ & $%8.6E$ & $[%8.6E,%8.6E]$ & $[%8.6E,%8.6E]$ & $%8.6E$ & Th=$%8.6E$ & pValue=$%8.6E$\\\\\\hline\n",M, ExpLimit->Eval(M), ExpLimitm1->Eval(M), ExpLimitp1->Eval(M), ExpLimitm2->Eval(M),  ExpLimitp2->Eval(M), ObsLimit->Eval(M), (THXSec!=NULL)?THXSec->Eval(M):-1, pValue->Eval(M));
+     fprintf(pFileSum, "$%8.6E$ & $%8.6E$ & $[%8.6E,%8.6E]$ & $[%8.6E,%8.6E]$ & $%8.6E$ & Th=$%8.6E$ & pValue=$%8.6E$\\\\\\hline\n",M, ExpLimit->Eval(M), ExpLimitm1->Eval(M), ExpLimitp1->Eval(M), ExpLimitm2->Eval(M),  ExpLimitp2->Eval(M), ObsLimit->Eval(M), 1.37, pValue->Eval(M));
     if(int(ExpLimit->GetX()[i])%50!=0)continue; printf("%f ",ObsLimit->Eval(M));
   }printf("\n");
   fclose(pFileSum);
