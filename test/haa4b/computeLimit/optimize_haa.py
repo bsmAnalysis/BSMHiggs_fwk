@@ -15,8 +15,9 @@ signalSuffixVec = []
 OUTName         = []
 LandSArgOptions = []
 BIN             = []
+MODEL           = []
 
-LaunchOnCondor.Jobs_Queue='8nh'
+LaunchOnCondor.Jobs_Queue='cmscaf1nd'
 FarmDirectory  = "FARM"
 JobName        = "computeLimits"
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
@@ -27,35 +28,43 @@ phase=-1
 ##   VALUES TO BE EDITED BY THE USE ARE BELLOW   ##
 ###################################################
 
-
-jsonUrl='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples.json'
-inUrl='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter.root'
-BESTDISCOVERYOPTIM=False #Set to True for best discovery optimization, Set to False for best limit optimization
+MODELS=["SM"] #,"RsGrav","BulkGrav","Rad"] #Models which can be used are: "RsGrav", "BulkGrav", "Rad", "SM"
+based_key="haa_mcbased" #mcbased_" #to run limits on MC use: 2l2v_mcbased_, to use data driven obj use: 2l2v_datadriven_
+jsonPath='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples2016.json' 
+inUrl='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2017_09_21_forLimits.root' #plotter_2017_05_05_forLimits.root'
+BESTDISCOVERYOPTIM=True #Set to True for best discovery optimization, Set to False for best limit optimization
 ASYMTOTICLIMIT=True #Set to True to compute asymptotic limits (faster) instead of toy based hybrid-new limits
-BINS = ["eq0jets+geq1jets+vbf"] # list individual analysis bins to consider as well as combined bins (separated with a coma but without space)
+BINS = ["3b","4b","3b,4b"]
+#"eq0jets","geq1jets","vbf","eq0jets,geq1jets,vbf"] # list individual analysis bins to consider as well as combined bins (separated with a coma but without space)
 
-MASS = [400,600, 1000]
-SUBMASS = [400,600, 1000]
-#MASS = [200,250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 800, 900, 1000]
-#SUBMASS = [200, 205, 210, 215, 220, 225, 230, 235, 240, 245, 250, 255, 260, 265, 270, 275, 280, 285, 290, 295, 300, 310, 320, 330, 340, 350, 360, 370, 380, 390, 400, 420, 440, 460, 480, 500, 520, 540, 560, 580, 600, 700, 800, 900, 1000]
+MASS = [12, 15, 20, 25, 30, 40, 50, 60]
+SUBMASS = [12, 15, 20, 25, 30, 40, 50, 60]
 
-LandSArgCommonOptions=" --blind --dropBckgBelow 0.00001 --signalTag qqH --signalRescale 1000.0 "
-#LandSArgCommonOptions=" --indexvbf 9 --subNRB --subDY $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimits_14_04_20/dy_from_gamma_fixed.root --interf --BackExtrapol "
+LandSArgCommonOptions="  --BackExtrapol --statBinByBin 0.00001 --dropBckgBelow 0.00001 --blind"
 
-for shape in ["vbf_shapes "]:  #here run all the shapes you want to test.  '"mt_shapes --histoVBF met_shapes"' is a very particular case since we change the shape for VBF
-   for bin in BINS:
-      #Run limit for Cut&Count GG+VBF
-      signalSuffixVec += [ "" ]
-      OUTName         += ["VBFOPTIM13TeV"]
-      LandSArgOptions += [" --histo " + shape + " --systpostfix _13TeV "]
-      BIN             += [bin]
+for model in MODELS:
+   for shape in ["bdt_shapes"]:# --histoVBF met_shapes"]:  #here run all the shapes you want to test.  '"mt_shapes --histoVBF met_shapes"' is a very particular case since we change the shape for VBF
+      for bin in BINS:
+         if(model=="SM"):
+            suffix = "" 
+                   #Run limit for ShapeBased GG+VBF
+                   #signalSuffixVec += [ suffix ]
+                   #OUTName         += ["SB13TeV_SM"]
+                   #LandSArgOptions += [" --histo " + shape + " --histoVBF " + shape + " --systpostfix _13TeV --shape "]  #as this combine ggF and VBF, we need to scale VBF to the SM ratio expectation
+                   #BIN             += [bin]
+                   #MODEL           += [model]
 
-      #Run limit for ShapeBased GG+VBF
-#      signalSuffixVec += [ "" ]
-#      OUTName         += ["SB13TeV"]
-#      LandSArgOptions += [" --histo " + shape + "  --systpostfix _13TeV --shape "]
-#      BIN             += [bin]
+                   #signalSuffixVec += [ suffix ]
+                   #OUTName         += ["SB13TeV_SM_GGF"]
+                   #LandSArgOptions += [" --histo " + shape + " --histoVBF " + shape + "  --systpostfix _13TeV --shape --skipQQH "]
+                   #BIN             += [bin]
+                   #MODEL          += [model]
 
+            signalSuffixVec += [ suffix ]
+            OUTName         += ["SB13TeV_SM_Wh"]
+            LandSArgOptions += [" --histo " + shape + "  --systpostfix _13TeV --shape "]
+            BIN             += [bin]
+            MODEL           += [model]
 
 ###################################################
 ##   MAIN  CODE : MODIFY AT YOUR OWN RISK        ##
@@ -118,16 +127,16 @@ def findSideMassPoint(mass):
 
 #Loop over all configurations
 iConf = -1
-for signalSuffix in signalSuffixVec :
+cp = 0
+for signalSuffix in signalSuffixVec : 
    iConf+=1;
+   if(phase<=3 and ',' in BIN[iConf]):continue #only need individual bin for these phases
 
-   if(phase<=3 and ',' in BIN[iConf] and "--inclusive" not in BIN[iConf]):continue #only need individual bin for these phases
-
+   jsonUrl = jsonPath + " --key " + based_key #+ MODEL[iConf]
    LandSArg = LandSArgCommonOptions + ' ' + LandSArgOptions[iConf];
    if(signalSuffix != ""):LandSArg+=' --signalSufix \"' + signalSuffix +'\" '
    binSuffix = ""
-   if("--inclusive" in BIN[iConf]): binSuffix="_inc"      
-   elif(',' not in BIN[iConf]):binSuffix="_"+ BIN[iConf]   
+   if(',' not in BIN[iConf]):binSuffix="_"+ BIN[iConf]   
 
    DataCardsDir='cards_'+OUTName[iConf]+signalSuffix+binSuffix
 
@@ -137,8 +146,16 @@ for signalSuffix in signalSuffixVec :
 
    #get the cuts
    file = ROOT.TFile(inUrl)
-   cutsH = file.Get('Z#rightarrow ll/all_optim_cut_VBF') 
-      
+   cutsH = file.Get('Wh (20)/all_optim_cut') 
+
+   #Cp
+   if "100.0" in signalSuffix:
+   	cp = 100.0
+   elif "10.0" in signalSuffix:
+	cp = 10.0
+   elif "5.0" in signalSuffix:
+        cp = 5.0     
+ 
    ###################################################
    ##   OPTIMIZATION LOOP                           ##
    ###################################################
@@ -146,12 +163,11 @@ for signalSuffix in signalSuffixVec :
    if( phase == 1 ):
       print '# RUN LIMITS FOR ALL POSSIBLE CUTS  for ' + DataCardsDir + '#\n'
       LaunchOnCondor.SendCluster_Create(FarmDirectory, JobName + "_"+signalSuffix+binSuffix+OUTName[iConf])
-      
-      for m in MASS: os.system('rm ' + OUT+str(m)+'.log')
+
       FILE = open(OUT+"/LIST.txt","w")
-      i = 1
+      i = 1 # cut index 8 corresponds to BDT cut at ~0.1 (please check!)
       while (i<cutsH.GetXaxis().GetNbins()+1):                   
-          shapeCutMin_ = 0
+          shapeCutMin_ = -9999
           shapeCutMax_ = 9999
           SCRIPT = open(OUT+'script_'+str(i)+'_'+str(shapeCutMin_)+'_'+str(shapeCutMax_)+'.sh',"w")
           SCRIPT.writelines('cd ' + CMSSW_BASE + '/src;\n')
@@ -164,18 +180,11 @@ for signalSuffix in signalSuffixVec :
                 SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
                 SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " --syst " + " --index " + str(i)     + " --json " + jsonUrl + " --shapeMin " + str(shapeCutMin_) + " --shapeMax " + str(shapeCutMax_) + " " + LandSArg + " --bins " + BIN[iConf] + " ;\n")
                 SCRIPT.writelines("sh combineCards.sh;\n")
-                SCRIPT.writelines('echo "######CUTS_'+str(i)+'_'+str(shapeCutMin_)+'_'+str(shapeCutMax_)+'" > SUMMARY;\n')
-                SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " --run expected card_combined.dat | tail -n 100 >> SUMMARY;\n") #limit computation
-                SCRIPT.writelines("combine -M ProfileLikelihood  -m " +  str(m) + " --significance -t -1 --expectSignal=1 card_combined.dat| tail -n 100 >> SUMMARY;\n") #apriori significance computation
-#                SCRIPT.writelines('tail -n 100 LIMIT.log > ' +OUT+str(m)+'_'+str(i)+'_'+str(shapeCutMin_)+'_'+str(shapeCutMax_)+'.log;\n')
-#                SCRIPT.writelines('tail -n 100 SIGN.log >> ' +OUT+str(m)+'_'+str(i)+'_'+str(shapeCutMin_)+'_'+str(shapeCutMax_)+'.log;\n')
-#                SCRIPT.writelines('echo "######CUTS_'+str(i)+'_'+str(shapeCutMin_)+'_'+str(shapeCutMax_)+'" >> ' +OUT+str(m)+'.log;\n')
-#                SCRIPT.writelines('tail -n 100 LIMIT.log >> ' +OUT+str(m)+'.log;\n')
-#                SCRIPT.writelines('tail -n 100 SIGN.log >> ' +OUT+str(m)+'.log;\n')
-#                SCRIPT.writelines('cat LIMIT.log; cat SIGN.log\n')
-#                SCRIPT.writelines('echo "######CUTS_'+str(i)+'_'+str(shapeCutMin_)+'_'+str(shapeCutMax_)+'" > SUMMARY;\n')
-#                SCRIPT.writelines('tail -n 100 LIMIT.log >> SUMMARY;\n')
-                SCRIPT.writelines('cat SUMMARY >> ' +OUT+str(m)+'.log;\n')
+                SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " --run expected card_combined.dat > LIMIT.log;\n") #limit computation
+                SCRIPT.writelines("combine -M ProfileLikelihood  -m " +  str(m) + " --significance -t -1 --expectSignal=1 card_combined.dat  > SIGN.log;\n") #apriori significance computation
+                SCRIPT.writelines('tail -n 100 LIMIT.log > ' +OUT+str(m)+'_'+str(i)+'_'+str(shapeCutMin_)+'_'+str(shapeCutMax_)+'.log;\n')
+                SCRIPT.writelines('tail -n 100 SIGN.log >> ' +OUT+str(m)+'_'+str(i)+'_'+str(shapeCutMin_)+'_'+str(shapeCutMax_)+'.log;\n')
+                SCRIPT.writelines('cat LIMIT.log; cat SIGN.log\n')
                 SCRIPT.writelines('cd ..;\n')
                 #SCRIPT.writelines('mv ' + cardsdir + ' ' + OUT + '/.\n')
                 SCRIPT.writelines('rm -rd ' + cardsdir+';\n')            
@@ -184,7 +193,7 @@ for signalSuffix in signalSuffixVec :
           i = i+1#increment the cut index
       FILE.close()
       LaunchOnCondor.SendCluster_Submit()
-         
+      
    ###################################################
    ##   WRAPPING UP RESULTS                         ##
    ###################################################
@@ -196,63 +205,32 @@ for signalSuffix in signalSuffixVec :
          print 'Starting mass ' + str(m)
          FILE.writelines("------------------------------------------------------------------------------------\n")
          BestLimit = []
-         optimFile = open(OUT+str(m)+'.log')
-         CurrentCuts = []
-#         try:
-         if(True):
-            for line in optimFile:
-               line = line.replace('\n','')
-               value=-1.0
-               if("######CUTS" in line):
-                  CurrentCuts = line.split('_')[1:]
-                  continue
-               elif(BESTDISCOVERYOPTIM==True and "Significance:" in line):
-                  value = line.split()[1]
-                  if(float(value)>1000.0):continue #too high for a significance --> something is going wrong here
-               elif(BESTDISCOVERYOPTIM==False and "Expected 50.0%" in line):
-                  value = line.split()[4]
+         fileList = commands.getstatusoutput("find " + OUT +" -name " + str(m)+"_*.log")[1].split();           
+         for f in fileList:
+            try:
+               value = -1.0;
+               if(BESTDISCOVERYOPTIM==True):
+                  exp = commands.getstatusoutput("cat " + f + " | grep \"Significance:\"")[1]; 
+                  if(len(exp)<=0):continue
+                  value = exp.split()[1]
                else:
-                  continue;
+                  exp = commands.getstatusoutput("cat " + f + " | grep \"Expected 50.0%\"")[1];  
+                  if(len(exp)<=0):continue
+                  value = exp.split()[4]
 
                if(value=='matches'):continue             
                if(float(value)<=0.0):continue
-               N = len(CurrentCuts)
-               if(N>3):continue   #parsing error
-               index = CurrentCuts[0] 
+               if(BESTDISCOVERYOPTIM and float(value)>1000.0):continue #too high for a significance --> something is going wrong here
+               f = f.replace(".log","")
+               fields = f.split('_')
+               N = len(fields)
+               index = fields[N-3] 
                Cuts = ''
                for c in range(1, cutsH.GetYaxis().GetNbins()+1): 
                   Cuts += str(cutsH.GetBinContent(int(index),c)).rjust(7) + " ("+str(cutsH.GetYaxis().GetBinLabel(c))+")   "
-               BestLimit.append("mH="+str(m)+ " --> Limit/Significance=" + ('%010.6f' % float(value)) + "  Index: " + str(index).rjust(5)   + "  Cuts: " + Cuts + "   CutsOnShape: " + str(CurrentCuts[1]).rjust(5) + " " + str(CurrentCuts[2]).rjust(5))
-#         except:
-#            print "File %s does not contain a valid limit" % OUT+str(m)+'.log'
-         optimFile.close()
-
-#         fileList = commands.getstatusoutput("find " + OUT +" -name " + str(m)+"_*.log")[1].split();           
-#         for f in fileList:
-#            try:
-#               value = -1.0;
-#               if(BESTDISCOVERYOPTIM==True):
-#                  exp = commands.getstatusoutput("cat " + f + " | grep \"Significance:\"")[1]; 
-#                  if(len(exp)<=0):continue
-#                  value = exp.split()[1]
-#               else:
-#                  exp = commands.getstatusoutput("cat " + f + " | grep \"Expected 50.0%\"")[1];  
-#                  if(len(exp)<=0):continue
-#                  value = exp.split()[4]
-#
-#               if(value=='matches'):continue             
-#               if(float(value)<=0.0):continue
-#               if(BESTDISCOVERYOPTIM and float(value)>1000.0):continue #too high for a significance --> something is going wrong here
-#               f = f.replace(".log","")
-#               fields = f.split('_')
-#               N = len(fields)
-#               index = fields[N-3] 
-#               Cuts = ''
-#               for c in range(1, cutsH.GetYaxis().GetNbins()+1): 
-#                  Cuts += str(cutsH.GetBinContent(int(index),c)).rjust(7) + " ("+str(cutsH.GetYaxis().GetBinLabel(c))+")   "
-#               BestLimit.append("mH="+str(m)+ " --> Limit/Significance=" + ('%010.6f' % float(value)) + "  Index: " + str(index)   + "  Cuts: " + Cuts + "   CutsOnShape: " + str(fields[N-2]).rjust(5) + " " + str(fields[N-1]).rjust(5))
-#            except:
-#               print "File %s does not contain a valid limit" % f
+               BestLimit.append("mH="+str(m)+ " --> Limit/Significance=" + ('%010.6f' % float(value)) + "  Index: " + str(index)   + "  Cuts: " + Cuts + "   CutsOnShape: " + str(fields[N-2]).rjust(5) + " " + str(fields[N-1]).rjust(5))
+            except:
+               print "File %s does not contain a valid limit" % f
 
          #sort the limits for this mass
          BestLimit.sort(reverse=BESTDISCOVERYOPTIM)
@@ -273,8 +251,8 @@ for signalSuffix in signalSuffixVec :
       Gcut  = []
       for c in range(1, cutsH.GetYaxis().GetNbins()+1):
          Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #add a graph for each cut
-	 Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #also add a graph for shapeMin
-	 Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #also add a graph for shapeMax
+         Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #also add a graph for shapeMin
+         Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #also add a graph for shapeMax
 
       fileName = OUT+"/OPTIM"+signalSuffix
       fileName+=".txt"
@@ -313,13 +291,14 @@ for signalSuffix in signalSuffixVec :
            Cuts = ''
            for c in range(1, cutsH.GetYaxis().GetNbins()+1):
               Cuts += str(cutsH.GetBinContent(int(index),c)).rjust(7) + " ("+str(cutsH.GetYaxis().GetBinLabel(c))+")   "
+
            print "M=%04i : Index=% 5i --> Cuts: %s"  % (m, index, Cuts)
 
       while True:
            #ans = raw_input('Use this fit and compute final limits? (y or n)\n')
            ans='y'
            if(ans=='y' or ans == 'Y'): break;
-           else:			    sys.exit(0);           
+           else:			       sys.exit(0);           
       print 'YES'
 
       listcuts = open(OUT+'cuts.txt',"w")
@@ -334,7 +313,7 @@ for signalSuffix in signalSuffixVec :
 
 
    elif(phase == 4 ):
-      LaunchOnCondor.Jobs_RunHere        = 1
+      LaunchOnCondor.Jobs_RunHere        = 0
       print '# FINAL COMBINED LIMITS  for ' + DataCardsDir + '#\n'
       LaunchOnCondor.SendCluster_Create(FarmDirectory, JobName + "_"+signalSuffix+binSuffix+OUTName[iConf])
       for m in SUBMASS:
@@ -348,19 +327,30 @@ for signalSuffix in signalSuffixVec :
                for c in range(1, cutsH.GetYaxis().GetNbins()+1):
                  Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #add a graph for each cut
                Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #also add a graph for shapeMin
-               Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #also add a graph for shapeMax                
+               Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #also add a graph for shapeMax
 
-               INbinSuffix = "_" + bin
+               INbinSuffix = "_" + bin 
                IN = CWD+'/JOBS/'+OUTName[iConf]+signalSuffix+INbinSuffix+'/'
-               listcuts = open(IN+'cuts.txt',"r")
-               mi=0
-               for line in listcuts :
-                  vals=line.split(' ')
-                  for c in range(1, cutsH.GetYaxis().GetNbins()+3):
-                     Gcut[c-1].SetPoint(mi, float(vals[0]), float(vals[c+1]));
-                  mi+=1
-               for c in range(1, cutsH.GetYaxis().GetNbins()+3): Gcut[c-1].Set(mi);
-               listcuts.close();          
+               try:
+                  listcuts = open(IN+'cuts.txt',"r")
+                  mi=0
+                  for line in listcuts :
+                     vals=line.split(' ')
+                     for c in range(1, cutsH.GetYaxis().GetNbins()+3):
+                        #FIXME FORCE INDEX TO BE 17 (Met>125GeV)
+                        Gcut[c-1].SetPoint(mi, 17, float(125));
+   #                     Gcut[c-1].SetPoint(mi, float(vals[0]), float(vals[c+1]));
+                     mi+=1
+                  for c in range(1, cutsH.GetYaxis().GetNbins()+3): Gcut[c-1].Set(mi);
+                  listcuts.close();          
+               except:
+                  mi=0
+                  for mtmp in SUBMASS:
+                     for c in range(1, cutsH.GetYaxis().GetNbins()+3):
+                        #FIXME FORCE INDEX TO BE 17 (Met>125GeV)
+                        Gcut[c-1].SetPoint(mi, 17, float(125));
+                     mi+=1
+                  for c in range(1, cutsH.GetYaxis().GetNbins()+3): Gcut[c-1].Set(mi);
 
                #add comma to index string if it is not empty
                if(indexString!=' '):
@@ -375,8 +365,8 @@ for signalSuffix in signalSuffixVec :
                   indexLString = str(findCutIndex(cutsH, Gcut, SideMasses[0]));
                   indexRString = str(findCutIndex(cutsH, Gcut, SideMasses[1]));
 
-           #all done with the bin treatment
-           #cutStr = " --shapeMin " + str(Gcut[cutsH.GetYaxis().GetNbins()].Eval(m,0,"")) +" --shapeMax " + str(Gcut[cutsH.GetYaxis().GetNbins()+1].Eval(m,0,""));
+           #print indexString
+
            cutStr = " "
            SideMassesArgs = ""
            if(not (SideMasses[0]==SideMasses[1])):
@@ -386,25 +376,28 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines('cd ' + CMSSW_BASE + ';\n')
            SCRIPT.writelines("export SCRAM_ARCH="+os.getenv("SCRAM_ARCH","slc6_amd64_gcc491")+";\n")
            SCRIPT.writelines("eval `scram r -sh`;\n")
-           SCRIPT.writelines('cd ' + CWD + ';\n')
+           SCRIPT.writelines('cd -;\n')
 
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
-           SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
-           SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + " --syst --index " + indexString + " --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
-           SCRIPT.writelines("sh combineCards.sh;\n")
-
+           SCRIPT.writelines('mkdir -p out;\ncd out;\n')
+	   SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + " --index 8 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
+           #SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --index " + indexString + " --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
+           SCRIPT.writelines("sh combineCards.sh;\n"); 
+           SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root --PO verbose --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n")  
+#	   SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root -P UserCode.bsmhiggs_fwk.HiggsWidth:higgswidth --PO verbose --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n")
            #compute pvalue
-           SCRIPT.writelines("combine -M ProfileLikelihood --signif --pvalue -m " +  str(m) + "  card_combined.dat > COMB.log;\n")
+           SCRIPT.writelines("combine -M ProfileLikelihood --signif --pvalue -m " +  str(m) + "  workspace.root > COMB.log;\n")
+	   SCRIPT.writelines("combine -M MaxLikelihoodFit workspace.root  \n")
+	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py  mlfit.root -g Nuisance_CrossCheck.root \n")
 
+	   ##fvbf=0 for GGH and 1 for VBF
            ### THIS IS FOR Asymptotic fit
            if(ASYMTOTICLIMIT==True):
-              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + "  card_combined.dat > COMB.log;\n") 
-              #SCRIPT.writelines("combine -M MaxLikelihoodFit -m " +  str(m) + " --saveNormalizations card_combined.dat;\n")
-              #SCRIPT.writelines("extractFitNormalization.py mlfit.root haa4b_"+str(m)+"_?TeV.root > fit.txt;\n")
+              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root --run blind -v 3 >  COMB.log;\n") 
 
            ### THIS is for toy (hybridNew) fit
            else:
-              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + "  card_combined.dat > COMB.log;\n") #first run assymptotic limit to get quickly the range of interest
+              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root > COMB.log;\n") #first run assymptotic limit to get quickly the range of interest
               SCRIPT.writelines("rm higgsCombineTest.Asymptotic*.root;\n")
               SCRIPT.writelines("RMIN=`cat COMB.log | grep 'Expected  2.5%' | awk '{print $5;}'`;\n") #get the low edge 2sigma band from the assymptotic --> will be used to know where to put points
               SCRIPT.writelines("RMAX=`cat COMB.log | grep 'Expected 97.5%' | awk '{print $5;}'`;\n") #get the high edge 2sigma band from the assymptotic --> will be used to know where to put points
@@ -416,18 +409,21 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("rm grid.root;\n")
               SCRIPT.writelines("sh grid.sh 1 16 &> /dev/null;\n")
               SCRIPT.writelines("rm higgsCombinegrid.HybridNew.*;\n")
-              SCRIPT.writelines("combine card_combined.dat -M HybridNew --grid=grid.root -m "+str(m)+";\n")
-              SCRIPT.writelines("combine card_combined.dat -M HybridNew --grid=grid.root -m "+str(m)+" --expectedFromGrid 0.025;\n")
-              SCRIPT.writelines("combine card_combined.dat -M HybridNew --grid=grid.root -m "+str(m)+" --expectedFromGrid 0.160;\n")
-              SCRIPT.writelines("combine card_combined.dat -M HybridNew --grid=grid.root -m "+str(m)+" --expectedFromGrid 0.500;\n")
-              SCRIPT.writelines("combine card_combined.dat -M HybridNew --grid=grid.root -m "+str(m)+" --expectedFromGrid 0.840;\n")
-              SCRIPT.writelines("combine card_combined.dat -M HybridNew --grid=grid.root -m "+str(m)+" --expectedFromGrid 0.975;\n")
+              SCRIPT.writelines("combine workspace.root -M HybridNew --grid=grid.root -m "+str(m)+";\n")
+              SCRIPT.writelines("combine workspace.root -M HybridNew --grid=grid.root -m "+str(m)+" --expectedFromGrid 0.025;\n")
+              SCRIPT.writelines("combine workspace.root -M HybridNew --grid=grid.root -m "+str(m)+" --expectedFromGrid 0.160;\n")
+              SCRIPT.writelines("combine workspace.root -M HybridNew --grid=grid.root -m "+str(m)+" --expectedFromGrid 0.500;\n")
+              SCRIPT.writelines("combine workspace.root -M HybridNew --grid=grid.root -m "+str(m)+" --expectedFromGrid 0.840;\n")
+              SCRIPT.writelines("combine workspace.root -M HybridNew --grid=grid.root -m "+str(m)+" --expectedFromGrid 0.975;\n")
               SCRIPT.writelines("hadd -f higgsCombineTest.HybridNewMerged.mH"+str(m)+".root  higgsCombineTest.HybridNew.mH"+str(m)+"*.root;\n")
               SCRIPT.writelines("rm higgsCombineTest.HybridNew.mH"+str(m)+"*.root;\n")
 
+           SCRIPT.writelines('mkdir -p ' + CWD+'/'+cardsdir+';\n')
+           SCRIPT.writelines('mv * ' + CWD+'/'+cardsdir+'/.;\n')
            SCRIPT.writelines('cd ..;\n\n') 
            SCRIPT.close()
-	   LaunchOnCondor.SendCluster_Push(["BASH", 'sh ' + OUT+'script_mass_'+str(m)+'.sh'])
+           #os.system('sh ' + OUT+'script_mass_'+str(m)+'.sh ')  #uncomment this line to launch interactively (this may take a lot of time)
+           LaunchOnCondor.SendCluster_Push(["BASH", 'sh ' + OUT+'script_mass_'+str(m)+'.sh'])
       LaunchOnCondor.SendCluster_Submit()
 
 
@@ -444,10 +440,8 @@ for signalSuffix in signalSuffixVec :
       else:
          os.system("hadd -f "+DataCardsDir+"/LimitTree.root "+DataCardsDir+"/*/higgsCombineTest.HybridNewMerged.*.root > /dev/null")
 
-      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Stength_\",\""+DataCardsDir+"/LimitTree.root\",\"\",  true, false, 13 , 0.058 )'")
-      #os.system("getXSec "+DataCardsDir+"/XSecs.txt "+DataCardsDir+"/*/Efficiency.tex")
-      #os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Stength_\",\""+DataCardsDir+"/LimitTree.root\",\""+DataCardsDir+"/XSecs.txt\",  true, false, 13 , 19.8 )'")
-      #os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/XSec_\",\""+DataCardsDir+"/LimitTree.root\",\""+DataCardsDir+"/XSecs.txt\",  false, false, 13 , 19.8 )'")
+      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Stength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 35914.143 )'")
+
    ######################################################################
 
 
