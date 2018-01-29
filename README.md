@@ -38,11 +38,15 @@ cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
 git checkout -b modified #copy the branch to a new one to host future modifications (ease pull request and code merging)
 cd $CMSSW_BASE/src
 
-#since HiggsAnalysis is broken in 80X, copy one of the missing file to allow compilation and change some paths
+## HiggsCombine in 80X 
 cd $CMSSW_BASE/src
-wget https://raw.githubusercontent.com/cms-analysis/HiggsAnalysis-CombinedLimit/74x-root6/src/th1fmorph.cc -P UserCode/bsmhiggs_fwk/src/
-wget https://raw.githubusercontent.com/cms-analysis/HiggsAnalysis-CombinedLimit/74x-root6/interface/th1fmorph.h -P UserCode/bsmhiggs_fwk/interface/
-find UserCode/bsmhiggs_fwk/ -type f -name '*.cc' -exec sed -i -e 's/HiggsAnalysis\/CombinedLimit\/interface\/th1fmorph.h/UserCode\/bsmhiggs_fwk\/interface\/th1fmorph.h/g' {} \;
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+cd HiggsAnalysis/CombinedLimit
+git fetch origin
+##Update to a reccomended tag - currently the reccomended tag is v7.0.6
+git checkout v7.0.6
+scramv1 b clean; scramv1 b # always make a clean build
+cd ../../
 
 #And compile
 scramv1 b -j 16 
