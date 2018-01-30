@@ -10,3 +10,7 @@ where :
 ## Run the limit scan in all A mass points
 > python optimize_haa.py -p 4 (wait for the jobs to finish)
 > python optimize_haa.py -p 5 
+
+## Run the BDT cuts optimization scan
+> python optimize_haa.py -p 1
+> python optimize_haa.py -p 2
