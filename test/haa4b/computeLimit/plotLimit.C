@@ -26,8 +26,6 @@
 #include "UserCode/bsmhiggs_fwk/interface/tdrstyle.h"
 #include "UserCode/bsmhiggs_fwk/src/tdrstyle.C"
 #include "UserCode/bsmhiggs_fwk/interface/RootUtils.h"
-#include "UserCode/bsmhiggs_fwk/interface/HxswgUtils.h"
-#include "UserCode/bsmhiggs_fwk/src/HxswgUtils.cc"
 
 //tree variables
 double Tmh, Tlimit, TlimitErr; float TquantExp;
@@ -90,7 +88,7 @@ void printLimits(FILE* pFile, TGraph* graph, double Mmin=12, double Mmax=60){
 
 
 
-void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", bool strengthLimit=true, bool blind=false, double energy=7, double luminosity=5.035, TString legendName="ee and #mu#mu channels")
+void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", bool strengthLimit=true, bool blind=false, double energy=7, double luminosity=5.035, TString legendName="Wh channels")
 {
    setTDRStyle();  
    gStyle->SetPadTopMargin   (0.05);
@@ -102,7 +100,7 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
    gStyle->SetTitleYOffset(1.45);
    gStyle->SetPalette(1);
    gStyle->SetNdivisions(505);
-  
+
   //get the limits from the tree
   TFile* file = TFile::Open(inputs);
   printf("Looping on %s\n",inputs.Data());
@@ -158,16 +156,6 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
    for (int i=0; i<N; i++) {
      THXSec->SetPoint(i,mA[i],1.37);
    }
-   
-   /*
-   TGraph* THXSec   = Hxswg::utils::getXSec(outputDir); 
-   scaleGraph(THXSec, 1000);  //convert cross-section to fb
-   double cprime=1.0; double  brnew=0.0;
-   double XSecScaleFactor = 1.0;
-
-  //XSecScaleFactor = 0.001; //pb to fb
-  scaleGraph(THXSec, XSecScaleFactor);
-   */
 
   string prod = "pp";
   if(outputDir.find("GGF")!=std::string::npos)prod="gg";
@@ -208,10 +196,10 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   */
 
   //limits in terms of signal strength
-  TCanvas* c = new TCanvas("c", "c",800,800);
+  TCanvas* c = new TCanvas("c", "c",1000,700);
   c->SetGridx();
   c->SetGridy();
-  TH1F* framework = new TH1F("Graph","Graph",1,10,60); //3000);
+  TH1F* framework = new TH1F(inputs.Data(),"Graph",1,10,60); //3000);
   framework->SetStats(false);
   framework->SetTitle("");
   framework->GetXaxis()->SetTitle("M_{a} [GeV]");

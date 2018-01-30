@@ -215,7 +215,7 @@ for signalSuffix in signalSuffixVec :
                Cuts = ''
                for c in range(1, cutsH.GetYaxis().GetNbins()+1): 
                   Cuts += str(cutsH.GetBinContent(int(index),c)).rjust(7) + " ("+str(cutsH.GetYaxis().GetBinLabel(c))+")   "
-               BestLimit.append("mH="+str(m)+ " --> Limit/Significance=" + ('%010.6f' % float(value)) + "  Index: " + str(index)   + "  Cuts: " + Cuts + "   CutsOnShape: " + str(fields[N-2]).rjust(5) + " " + str(fields[N-1]).rjust(5))
+               BestLimit.append("mH= "+str(m)+ " --> Limit= " + ('%10.3f' % float(value)) + "  Index: " + str(index)   + "  Cuts: " + Cuts + "   CutsOnShape: " + str(fields[N-2]).rjust(5) + " " + str(fields[N-1]).rjust(5))
             except:
                print "File %s does not contain a valid limit" % f
 
@@ -227,6 +227,8 @@ for signalSuffix in signalSuffixVec :
       #all done
       FILE.close()
       print("file "+fileName+".txt is written: it contains all selection points ordered by exp limit")
+
+      os.system("root -l -b -q plotOptim.C+'(\"\",\""+fileName+".txt\",\"\", false, true, 13 , 35914.143 )'")  
 
    ###################################################
    ##   CHOSE BEST SELECTION CUTS and SAVE IT       ##
@@ -367,7 +369,7 @@ for signalSuffix in signalSuffixVec :
 
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
            SCRIPT.writelines('mkdir -p out;\ncd out;\n')
-	   SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + " --index 8 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
+	   SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + " --index 10 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
            #SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --index " + indexString + " --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
            SCRIPT.writelines("sh combineCards.sh;\n"); 
            SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root --PO verbose --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n")  
@@ -430,7 +432,6 @@ for signalSuffix in signalSuffixVec :
       os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 35914.143 )'")
 
    ######################################################################
-
 
 if(phase>5):
       help()
