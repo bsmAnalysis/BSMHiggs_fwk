@@ -36,8 +36,8 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 
 #SUFFIX=_2018_01_05
 #SUFFIX=_2017_09_20 #Data
-#SUFFIX=_2017_09_21 #BG MC
-SUFFIX=_2018_02_07 #Hua Test at Fermilab
+SUFFIX=_2017_09_21 #BG MC
+#SUFFIX=_2018_02_07 #Hua Test at Fermilab
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
@@ -94,21 +94,6 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "JOB SUBMISSION for Ntuplization using full CMSSW fwk"
        echo "Input: " $JSON
        echo "Output: " $RESULTSDIR
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_DY1JetsToLL_10to50_2016 -s crab 
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_DY2JetsToLL_10to50_2016 -s crab
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_DY3JetsToLL_10to50_2016 -s crab
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_DY4JetsToLL_10to50_2016 -s crab
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_DY1JetsToLL_50toInf_2016 -s crab
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_DY2JetsToLL_50toInf_2016 -s crab
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_DY3JetsToLL_50toInf_2016 -s crab
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_DY4JetsToLL_50toInf_2016 -s crab
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_W1Jets_2016 -s crab
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_W2Jets_2016 -s crab
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_W2Jets_ext1_2016 -s crab
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_W3Jets_2016 -s crab
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_W3Jets_ext1_2016 -s crab
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_W4Jets_2016 -s crab
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_W4Jets_ext1_2016 -s crab
        runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -t MC13TeV_W4Jets_ext2_2016 -s crab
    fi    
 
