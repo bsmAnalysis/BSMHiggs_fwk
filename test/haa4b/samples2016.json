@@ -575,24 +575,6 @@
                     "xsec": 18610
                 },
                 {
-                    "br": [ 0.35 ],
-                    "dset": [
-                        "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM"
-                    ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_DYJetsToLL_50toInf_ext1_2016",
-                    "xsec": 5765.4
-                },
-                {
-                    "br": [ 0.65 ],
-                    "dset": [
-                        "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
-                    ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_DYJetsToLL_50toInf_ext2_2016",
-                    "xsec": 5765.4
-                },
-                {
                     "br": [ 0.0 ],
                     "dset": [
                         "/DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
@@ -627,6 +609,24 @@
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_DY4JetsToLL_10to50_2016",
                     "xsec": 18610
+                },
+                {
+                    "br": [ 0.35 ],
+                    "dset": [
+                        "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_DYJetsToLL_50toInf_ext1_2016",
+                    "xsec": 5765.4
+                },
+                {
+                    "br": [ 0.65 ],
+                    "dset": [
+                        "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_DYJetsToLL_50toInf_ext2_2016",
+                    "xsec": 5765.4
                 },
                 {
                     "br": [ 0.0 ],
