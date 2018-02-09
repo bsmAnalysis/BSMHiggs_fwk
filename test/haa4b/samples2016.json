@@ -677,7 +677,7 @@
             "data": [
                 {
                     "br": [
-                       0.3425
+                       0.10557934
                     ],
                     "dset": [
                         "/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
@@ -688,7 +688,7 @@
                 },
                 {   
                     "br": [
-                        0.6575
+                        0.20268042
                     ],
                     "dset": [
                         "/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
@@ -699,7 +699,7 @@
                 },
                 {   
                     "br": [
-                        0.0
+                        0.16124228
                     ],
                     "dset": [
                         "/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
@@ -710,7 +710,7 @@
                 },
                 {   
                     "br": [
-                        0.0
+                        0.10619303
                     ],
                     "dset": [
                         "/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
@@ -721,7 +721,7 @@
                 },
                 {   
                     "br": [
-                        0.0
+                        0.10776019
                     ],
                     "dset": [
                         "/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
@@ -732,7 +732,7 @@
                 },
                 {   
                     "br": [
-                        0.0
+                        0.07036591
                     ],
                     "dset": [
                         "/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
@@ -743,7 +743,7 @@
                 },
                 {   
                     "br": [
-                        0.0
+                        0.13957032
                     ],
                     "dset": [
                         "/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
@@ -754,7 +754,7 @@
                 },
                 {   
                     "br": [
-                        0.0
+                        0.03259381
                     ],
                     "dset": [
                         "/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
@@ -765,7 +765,7 @@
                 },
                 {   
                     "br": [
-                        0.0
+                        0.00736878
                     ],
                     "dset": [
                         "/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
@@ -776,10 +776,10 @@
                 },
                 {
                     "br": [
-                        0.0
+                        0.06664592
                     ],
                     "dset": [
-                        "/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
+                        "/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_W4Jets_ext2_2016",
