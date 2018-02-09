@@ -138,9 +138,11 @@ int main(int argc, char* argv[])
 
     bool verbose = runProcess.getParameter<bool>("verbose");
 
-    bool runCR = runProcess.getParameter<bool>("runControl");
+    bool runMVA = runProcess.getParameter<bool>("runMVA");
+
+    // Will set DeepCSV as the default b-tagger automaticaly:
+    bool use_DeepCSV = runProcess.getParameter<bool>("useDeepCSV");
     
-    bool use_DeepCSV = runProcess.getParameter<bool>("useDeepCSV"); // Will set DeepCSV as the default b-tagger automaticaly
     bool usemetNoHF = runProcess.getParameter<bool>("usemetNoHF");
     
     TString url = runProcess.getParameter<std::string>("input");
@@ -563,7 +565,7 @@ int main(int argc, char* argv[])
     //construct MVA out put file name
     TString mvaout = TString ( runProcess.getParameter<std::string>("outdir") ) + "/mva_" + outFileUrl + ".root";
     MVAHandler myMVAHandler_;
-    myMVAHandler_.initTree(mvaout);
+    if (runMVA) { myMVAHandler_.initTree(mvaout); }
 
     //####################################################################################################################
     //###########################################           TMVAReader         ###########################################
@@ -1042,7 +1044,7 @@ int main(int argc, char* argv[])
           if (corrJets[ijet].motherid == 36) mon.fillHisto("b_discrim",b_tagging_name+"_true",btag_dsc,weight);
           hasCSVtag = btag_dsc>LooseWP;
 
-	  if (isMC) {
+	  if (isMC && (corrJets[ijet].pt()>30.) ) {
 	    //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X
 	    btsfutil.SetSeed(ev.event*10 + ijet*10000);
     
@@ -1062,11 +1064,8 @@ int main(int argc, char* argv[])
 	  } // isMC
   
 	    // Fill b-jet vector:
-	  if (runCR) {
-	    // To start with, simply use all AK4 jets in the pseudo b-jet collection:
-	    CSVLoosebJets.push_back(corrJets[ijet]);
-	  } else {
-	    if (hasCSVtag) {
+
+	  if (hasCSVtag) {
 	      /*
 	      if (runDBversion) {
 		float dRmin(999.);
@@ -1077,13 +1076,12 @@ int main(int argc, char* argv[])
 		  }//subjets
 		} // AK8
 		if (dRmin>0.4) CSVLoosebJets.push_back(corrJets[ijet]);
-	      }	else { 
-	      */
-	      CSVLoosebJets.push_back(corrJets[ijet]); 
-		// }
-	    }
+	      }	else {
+	      */ 
+	    CSVLoosebJets.push_back(corrJets[ijet]); 
+		//	      }
 	  }
-
+	  
 	  //} // b-jet loop
 	} // jet loop
     
@@ -1100,15 +1098,9 @@ int main(int argc, char* argv[])
 	sort(CSVLoosebJets.begin(), CSVLoosebJets.end(), ptsort());
 	mon.fillHisto("nbjets_raw","nb", CSVLoosebJets.size(),weight);
 
-	if (runCR) {
-	  // CR: Fake b-jets are sorted in b-tag discriminator rather than pt
-	  sort(CSVLoosebJets.begin(), CSVLoosebJets.end(), btagsort());
-	}
-
 	//--------------------------------------------------------------------------
 	// dphi(jet,MET)
 	mon.fillHisto("dphijmet","raw",mindphijmet,weight);
-
 
 	//--------------------------------------------------------------------------
 	//--------------------------------------------------------------------------
@@ -1225,21 +1217,40 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("dR_raw","svs",dR,weight);
 	}
 
- 
-	//--------------------------------------------------------------------------
-	// First , set all b-jets (x-cleaned) in one vector<LorentzVector>
+	
+        //#########################################################
+        //####  RUN PRESELECTION AND CONTROL REGION PLOTS  ########
+        //#########################################################
+	
+	//-------------------------------------------------------------------
+	// At least 2 jets and 2 b-jets
+	if (GoodIdJets.size()<2 || CSVLoosebJets.size()<2) continue;
+	mon.fillHisto("eventflow","all",5,weight); 
+	mon.fillHisto("eventflow","bdt",5,weight);
+	//-------------------------------------------------------------------
+
+	//-------------------------------------------------------------------
+	//-------------------------------------------------------------------
+	// First, set all b-jets (x-cleaned) in one vector<LorentzVector>
 	vector<LorentzVector> GoodIdbJets;
 
-	for (auto & i : CSVLoosebJets) 
-	  {
+	if (CSVLoosebJets.size()==2 && SVs.size()==0) { // Top Control Region
+	  sort(GoodIdJets.begin(), GoodIdJets.end(), btagsort());  
+
+	  for (auto & i : GoodIdJets) {
 	    GoodIdbJets.push_back(i);
-	  } // AK4 + CSV
-	if (!runCR) 
-	  { // disable soft b's in the CR for the moment
-	    for (auto & i : SVs) {
-	      GoodIdbJets.push_back(i);
-	    } // soft-b from SV
 	  }
+	  
+	} else { // Signal Region GoodIdbJets
+	  for (auto & i : CSVLoosebJets) 
+	    {
+	      GoodIdbJets.push_back(i);
+	    } // AK4 + CSV
+	  for (auto & i : SVs) {
+	    GoodIdbJets.push_back(i);
+	  } // soft-b from SV
+	}
+	
 	/*
 	if (runDBversion) {
 	  for (auto & i : DBfatJets) {
@@ -1249,25 +1260,15 @@ int main(int argc, char* argv[])
 	  }// AK8 jet
 	}
 	*/
+
+	// 2D plots
+	//-------------------------------------------------------------------
 	mon.fillHisto("nbjets_2D","cat_raw",GoodIdJets.size(),GoodIdbJets.size(),weight);
 	mon.fillHisto("nbjets_raw","merged",GoodIdbJets.size(),weight);
-	
-
-        //#########################################################
-        //####  RUN PRESELECTION AND CONTROL REGION PLOTS  ########
-        //#########################################################
-
 	//-------------------------------------------------------------------
 	mon.fillHisto("nbjets_2D","cat2_raw",GoodIdbJets.size(),DBfatJets.size(),weight);
 	mon.fillHisto("nbjets_2D","cats_raw",CSVLoosebJets.size(),SVs.size(),weight);
-
-	//-------------------------------------------------------------------
-	// At least 2 jets and 2 b-jets
-	if (GoodIdJets.size()<2 || CSVLoosebJets.size()<2) continue;
-	mon.fillHisto("eventflow","all",5,weight); 
-	mon.fillHisto("eventflow","bdt",5,weight);
-	//-------------------------------------------------------------------
-
+	
 	//-------------------------------------------------------------------
 	// AK4 jets pt
 	is=0;
@@ -1304,22 +1305,53 @@ int main(int argc, char* argv[])
 
         //-------------------------------------------------------------------
         // At least 3 b-tags
-	if (runCR) 
-	  {
-	    if (CSVLoosebJets[1].btag0<CSVLooseWP) continue;
-	    if (CSVLoosebJets.size()>=3) 
-	      {
-		if (CSVLoosebJets[2].btag0>CSVLooseWP) continue;    
-	      }
-	  }
 	if (GoodIdbJets.size()<3) continue;
-	mon.fillHisto("eventflow","all",6,weight); 
 	
-  
-        //----------------------------------------------------------------------------------------------------------//
+          //----------------------------------------------------------------------------------------------------------//
         // Event categories according to (n-j, m-b, k-fat) jet multiplicities [nj>=2, (nb==1 + kf=1), nb>=2, kf>=0 ]
         //----------------------------------------------------------------------------------------------------------//
 
+	bool isthisSRs=true;
+	
+	if (CSVLoosebJets.size()>2 || SVs.size()>0) {
+	  // SR categories
+	  mon.fillHisto("eventflow","all",6,weight); 
+	  
+	  // Cats: 3b
+	  if (GoodIdbJets.size()==3) { tags.push_back("SR_3b");}
+	  else {
+	    tags.push_back("SR_geq4b"); 
+	    mon.fillHisto("eventflow","all",7,weight);
+	    
+	    if (GoodIdbJets.size()==4) { tags.push_back("SR_4b"); }
+	    else {
+	      if (GoodIdbJets.size()==5) { tags.push_back("SR_5b"); }
+	      tags.push_back("SR_geq5b");
+	    }
+	  }
+	} else { 
+	  // thats the Control Regions
+	  isthisSRs=false;
+	  
+	  // Top Control Region categories
+	  if (GoodIdbJets.size()==3) { tags.push_back("CR_3b");}
+	  else {
+	    tags.push_back("CR_geq4b");
+	    if (GoodIdbJets.size()==4) { tags.push_back("CR_4b"); }
+	    else {
+	      if (GoodIdbJets.size()==5) { tags.push_back("CR_5b"); }
+	      tags.push_back("CR_geq5b");
+	    }
+	  }
+	  
+	}
+	/*
+	else {
+	  tags.push_back("UNKNOWN");
+	  printf("\n Unknown category, please check \n");
+        }
+	*/
+	
 	// Here define all variables 
         LorentzVector allHadronic;
         //std::pair <int,LorentzVector> pairHadronic;
@@ -1329,46 +1361,31 @@ int main(int argc, char* argv[])
 
 	if (GoodIdbJets.size()==3) // 3b category
         {// 3b cat.
-            tags.push_back("SR_3b");
+        
 	    // Hadronic vector sum:
-	    for (auto & thisb : GoodIdbJets) 
-	      {
-		allHadronic+=thisb;
-	      }
-	    // Hadronic scalar sum (HT):
-	    for (auto & thisb : GoodIdbJets) 
-	      {
-		ht+=thisb.pt();
-	      }
-	    //mon.fillHisto("eventflow","all",6,weight); 
-        } 
-        else if (GoodIdbJets.size()>=4) // 4b category
+	  for (auto & thisb : GoodIdbJets) {
+	    allHadronic+=thisb;
+	  }
+	  // Hadronic scalar sum (HT):
+	  for (auto & thisb : GoodIdbJets) {
+	    ht+=thisb.pt();
+	  }
+        } else if (GoodIdbJets.size()>=4) // 4b category
         {// 4b cat.
-	  tags.push_back("SR_geq4b"); 
-
-	  if (GoodIdbJets.size()==4) {tags.push_back("SR_4b"); }
-	  else {tags.push_back("SR_geq5b");}
 
 	  // Hadronic vector sum:
 	  int countb(0);
-	  for (auto & thisb : GoodIdbJets) 
-	    {
-	      allHadronic+=thisb;
-	      countb++; if (countb>3) break;
-	    }
+	  for (auto & thisb : GoodIdbJets) {
+	    allHadronic+=thisb;
+	    countb++; if (countb>3) break;
+	  }
 	  // Hadronic scalar sum (HT):
-	  for (auto & thisb : GoodIdbJets) 
-	    {
-	      ht+=thisb.pt();
-	    }
+	  for (auto & thisb : GoodIdbJets) {
+	    ht+=thisb.pt();
+	  }
 	  
-	  mon.fillHisto("eventflow","all",7,weight);
         } 
-        else 
-        {
-            tags.push_back("UNKNOWN");
-            printf("\n Unknown category, please check \n");
-        }
+	
  
         //-----------------------------------------------------------
         // Control plots
@@ -1476,21 +1493,24 @@ int main(int argc, char* argv[])
 	//##############################################################################
         //############ MVA Handler ####################################################
 	//##############################################################################
+
+	if (runMVA) {
 	
-        float mvaweight = 1.0;
-        genWeight > 0 ? mvaweight = puWeight : mvaweight = -puWeight; // absorb the negative sign 
-        if ( GoodIdbJets.size() >= 3 )
-        {
-          myMVAHandler_.getEntry
-          (
-	   GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
-	   wsum.pt(), //W only, w pt
-            allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
-	   dphi_Wh, //W and H, dr 
-	   mvaweight //note, since weight is not the weight we want, we store all others except xSec weight
-	   );
-          myMVAHandler_.fillTree();
-        }
+	  float mvaweight = 1.0;
+	  genWeight > 0 ? mvaweight = puWeight : mvaweight = -puWeight; // absorb the negative sign 
+	  if ( isthisSRs && GoodIdbJets.size() >= 3 )
+	    {
+	      myMVAHandler_.getEntry
+		(
+		 GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
+		 wsum.pt(), //W only, w pt
+		 allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
+		 dphi_Wh, //W and H, dr 
+		 mvaweight //note, since weight is not the weight we want, we store all others except xSec weight
+		 );
+	      myMVAHandler_.fillTree();
+	    }
+	}
 	
         //##############################################################################
         //### HISTOS FOR STATISTICAL ANALYSIS (include systematic variations)
@@ -1521,7 +1541,7 @@ int main(int argc, char* argv[])
     file->Close();
 
     //write MVA files
-    myMVAHandler_.writeTree();
+    if (runMVA) { myMVAHandler_.writeTree(); }
 
     //##############################################
     //########     SAVING HISTO TO FILE     ########
