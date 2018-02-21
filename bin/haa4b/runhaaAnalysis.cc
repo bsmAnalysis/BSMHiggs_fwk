@@ -196,7 +196,9 @@ int main(int argc, char* argv[])
     bool isMC_VBF = isMC && (string(url.Data()).find("VBF")  != string::npos); 
 
     bool isQCD = isMC && (string(url.Data()).find("QCD")  != string::npos);
+
     bool isSignal = (isMC_Wh || isMC_Zh || isMC_VBF );
+
     if (isSignal) printf("Signal url = %s\n",url.Data());
 
     //b-tagging: beff and leff must be derived from the MC sample using the discriminator vs flavor
@@ -341,7 +343,9 @@ int main(int argc, char* argv[])
     
     mon.addHistogram( new TH1F( "jet_pt_raw", ";#it{p}_{T} [GeV];Events",30,0.,600.) );
     mon.addHistogram( new TH1F( "softjet_pt_raw", ";#it{p}_{T} [GeV];Events",20,0.,40.) );
-    mon.addHistogram( new TH1F( "jet_eta_raw",";#eta;Events", 70,-3,3) );
+    mon.addHistogram( new TH1F( "jet_eta_raw",";jet #eta;Events", 70,-3,3) );
+    mon.addHistogram( new TH1F( "jet_phi_raw",";jet #phi;Events", 70,-6,6) );
+    mon.addHistogram( new TH2F( "jet_eta_phi_raw",";jet #eta;jet #phi", 70,-3,3, 70,-6,6) );  
 
     mon.addHistogram( new TH1F( "b_discrim"," ;b discriminator;",50,0,1.) );
     mon.addHistogram( new TH1F( "db_discrim"," ;double-b discriminator;",25,-1.,1.) );
@@ -446,7 +450,7 @@ int main(int argc, char* argv[])
 
     std::vector<double> optim_Cuts1_bdt;
     optim_Cuts1_bdt.push_back(-0.4); //add a bin in the shapes with a BDT cut of -0.4
-    for(double bdt=-0.050;bdt<0.200;bdt+=0.025) { optim_Cuts1_bdt.push_back(bdt); }
+    for(double bdt=0.00;bdt<0.30;bdt+=0.01) { optim_Cuts1_bdt.push_back(bdt); }
 
     TH2F* Hoptim_cuts =(TH2F*)mon.addHistogram(new TProfile2D("optim_cut", ";cut index;variable", optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 1, 0, 1)) ;
     Hoptim_cuts->GetYaxis()->SetBinLabel(1, "BDT>");
@@ -488,8 +492,8 @@ int main(int argc, char* argv[])
     double xsecWeight = 1.0;
     float cnorm=1.0;
     if (isMC) {
-      xsecWeight = 0.; // disable MC sample if not present in the map
-      /*
+      //      xsecWeight = 0.; // disable MC sample if not present in the map
+      
       double totalNumberofEvents(0.);
       
       TH1F* nevtH = (TH1F *) file->Get("mainNtuplizer/nevents");
@@ -502,8 +506,8 @@ int main(int argc, char* argv[])
       
       //xsecWeight=xsec/totalNumberofEvents;
       xsecWeight=xsec/cnorm; // effective luminosity
-      */
       
+      /*
       std::map<std::string, int> xsec_map = mStat;
 
       // std::string myproc = proc.Data();
@@ -516,7 +520,7 @@ int main(int argc, char* argv[])
 	  std::cout << "weight = " << (xsecWeight*35866.9) << std::endl;
 	}
       }
-      
+      */
       //      float pereventwgt=(xsecWeight*35866.9);
       // printf("\n Running process with xSec = %f , and totalNumEvents = %d  . Per event weight is (L=35.9 fb-1): %f \n\n",
       //	     xsec, totalNumberofEvents, pereventwgt );
@@ -613,11 +617,14 @@ int main(int argc, char* argv[])
             continue;
         }
 
+	// add PhysicsEvent_t class, get all tree to physics objects
+        PhysicsEvent_t phys=getPhysicsEventFrom(ev); 
+
         std::vector<TString> tags(1,"all");
         //genWeight
         float genWeight = 1.0;
         if (isMC) {
-            if(ev.genWeight<0) { genWeight = -1.0; }
+	  if(ev.genWeight<0) { genWeight = -1.0; }
         }
         //systematical weight
         float weight = 1.0; //xsecWeight;
@@ -625,6 +632,25 @@ int main(int argc, char* argv[])
 	  weight *= genWeight;
 	  weight *= xsecWeight; 
         }
+
+	// Apply Top pt-reweighting
+	if(isMC_ttbar){
+	  
+	  PhysicsObjectCollection &partons = phys.genpartons;
+	  
+	  double SFtop(0.);
+	  double SFantitop(0.);
+
+	  double top_wgt(1.0);
+
+	  for (auto & top : partons) {
+	    if (top.id==6 && top.status==62) SFtop=exp(0.0615-0.0005*top.pt());
+	    if (top.id==-6 && top.status==62) SFantitop=exp(0.0615-0.0005*top.pt());
+	  }
+	  
+	  top_wgt=sqrt(SFtop*SFantitop);
+	  weight *= top_wgt;
+	}
 
         //only take up and down from pileup effect
         double TotalWeight_plus = 1.0;
@@ -649,7 +675,7 @@ int main(int argc, char* argv[])
         //Hcutflow->Fill(4,weight*TotalWeight_plus);
 
         // add PhysicsEvent_t class, get all tree to physics objects
-        PhysicsEvent_t phys=getPhysicsEventFrom(ev);
+	//        PhysicsEvent_t phys=getPhysicsEventFrom(ev);
 
         // FIXME need to have a function: loop all leptons, find a Z candidate,
         // can have input, ev.mn, ev.en
@@ -921,7 +947,7 @@ int main(int argc, char* argv[])
 	for (auto & ijet : fatJets ) {
 
 	  if(ijet.pt()<jet_threshold_) continue;
-	  if(fabs(ijet.eta())>2.5) continue;
+	  if(fabs(ijet.eta())>2.4) continue;
 
 	  double dR = deltaR( ijet, goodLeptons[0].second );
 	  mon.fillHisto("dRlj_raw","all_fjet",dR,weight);
@@ -1008,7 +1034,7 @@ int main(int argc, char* argv[])
 	for(size_t ijet=0; ijet<corrJets.size(); ijet++) {
 
 	  if(corrJets[ijet].pt()<jet_threshold_) continue;
-	  if(fabs(corrJets[ijet].eta())>2.5) continue;
+	  if(fabs(corrJets[ijet].eta())>2.4) continue;
   
 	  //jet ID
 	  if(!corrJets[ijet].isPFLoose) continue;
@@ -1217,6 +1243,44 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("dR_raw","svs",dR,weight);
 	}
 
+
+	//-------------------------------------------------------------------                                                                                                                                                             
+        // AK4 jets pt 
+	is=0;
+                                                                                                                                                                                                                               
+        for (auto & jet : GoodIdJets) {
+	  mon.fillHisto("jet_pt_raw", "jet"+htag[is], jet.pt(),weight); 
+	  mon.fillHisto("jet_eta_raw", "jet"+htag[is], jet.eta(),weight); 
+	  mon.fillHisto("jet_phi_raw","jet"+htag[is], jet.phi(),weight); 
+	  mon.fillHisto("jet_eta_phi_raw","jet"+htag[is], jet.eta(),jet.phi(),weight); 
+	
+	  if (jet.pt()<30.) {
+	    mon.fillHisto("jet_pt_raw", "pt_20to30_"+htag[is], jet.pt(),weight); 
+	    mon.fillHisto("jet_eta_raw", "pt_20to30_"+htag[is], jet.eta(),weight); 
+	    mon.fillHisto("jet_phi_raw", "pt_20to30_"+htag[is], jet.phi(),weight);
+	    mon.fillHisto("jet_eta_phi_raw", "pt_20to30_"+htag[is], jet.eta(),jet.phi(),weight); 
+	  }
+	  is++; 
+	  if (is>3) break; // plot only up to 4 b-jets ?                                                                                                                                                                                   
+        }
+        //-------------------------------------------------------------------
+        // AK4 + CSV jets 
+        is=0; 
+        for (auto & jet : CSVLoosebJets) {
+          mon.fillHisto("jet_pt_raw", b_tagging_name+htag[is], jet.pt(),weight); 
+          mon.fillHisto("jet_eta_raw", b_tagging_name+htag[is], jet.eta(),weight); 
+	  mon.fillHisto("jet_phi_raw", b_tagging_name+htag[is], jet.phi(),weight);
+	  mon.fillHisto("jet_eta_phi_raw", b_tagging_name+htag[is], jet.eta(),jet.phi(),weight);
+          if (jet.pt()<30.) { 
+            mon.fillHisto("jet_pt_raw", "pt_20to30_"+b_tagging_name+htag[is], jet.pt(),weight); 
+            mon.fillHisto("jet_eta_raw", "pt_20to30_"+b_tagging_name+htag[is], jet.eta(),weight); 
+	    mon.fillHisto("jet_phi_raw", "pt_20to30_"+b_tagging_name+htag[is], jet.phi(),weight); 
+	    mon.fillHisto("jet_eta_phi_raw", "pt_20to30_"+b_tagging_name+htag[is], jet.eta(),jet.phi(),weight); 
+          } 
+	  is++;
+          if (is>3) break; // plot only up to 4 b-jets ?
+	}
+	//      ---------------------------  
 	
         //#########################################################
         //####  RUN PRESELECTION AND CONTROL REGION PLOTS  ########
@@ -1224,9 +1288,11 @@ int main(int argc, char* argv[])
 	
 	//-------------------------------------------------------------------
 	// At least 2 jets and 2 b-jets
+	
 	if (GoodIdJets.size()<2 || CSVLoosebJets.size()<2) continue;
 	mon.fillHisto("eventflow","all",5,weight); 
 	mon.fillHisto("eventflow","bdt",5,weight);
+	
 	//-------------------------------------------------------------------
 
 	//-------------------------------------------------------------------
@@ -1270,24 +1336,6 @@ int main(int argc, char* argv[])
 	mon.fillHisto("nbjets_2D","cats_raw",CSVLoosebJets.size(),SVs.size(),weight);
 	
 	//-------------------------------------------------------------------
-	// AK4 jets pt
-	is=0;
-	for (auto & jet : GoodIdJets) {
-	   mon.fillHisto("jet_pt_raw", "jet"+htag[is], jet.pt(),weight);
-	   mon.fillHisto("jet_eta_raw", "jet"+htag[is], jet.eta(),weight);
-	   is++;
-	   if (is>3) break; // plot only up to 4 b-jets ?
-	}
-	//-------------------------------------------------------------------
-	// AK4 + CSV jets
-	is=0;
-	for (auto & jet : CSVLoosebJets) {
-	     mon.fillHisto("jet_pt_raw", b_tagging_name+htag[is], jet.pt(),weight);
-	     mon.fillHisto("jet_eta_raw", b_tagging_name+htag[is], jet.eta(),weight);
-	   is++;
-	   if (is>3) break; // plot only up to 4 b-jets ?
-	}
-	//-------------------------------------------------------------------
 	//-------------------------------------------------------------------
 	// Merged CSV jets + SV
 	is=0;
@@ -1298,6 +1346,7 @@ int main(int argc, char* argv[])
 	   if (is>3) break; // plot only up to 4 b-jets ?
 	}
 
+	//-------------------------------------------------------------------                                                                                                  
 
         //##############################################
         //########  Main Event Selection        ########
@@ -1358,34 +1407,17 @@ int main(int argc, char* argv[])
 
 	// HT from all CSV + soft b's
 	float ht(0.);
-
-	if (GoodIdbJets.size()==3) // 3b category
-        {// 3b cat.
         
-	    // Hadronic vector sum:
-	  for (auto & thisb : GoodIdbJets) {
-	    allHadronic+=thisb;
-	  }
-	  // Hadronic scalar sum (HT):
-	  for (auto & thisb : GoodIdbJets) {
-	    ht+=thisb.pt();
-	  }
-        } else if (GoodIdbJets.size()>=4) // 4b category
-        {// 4b cat.
-
-	  // Hadronic vector sum:
-	  int countb(0);
-	  for (auto & thisb : GoodIdbJets) {
-	    allHadronic+=thisb;
-	    countb++; if (countb>3) break;
-	  }
-	  // Hadronic scalar sum (HT):
-	  for (auto & thisb : GoodIdbJets) {
-	    ht+=thisb.pt();
-	  }
-	  
-        } 
-	
+	// Hadronic vector sum:
+	int countb(0);
+	for (auto & thisb : GoodIdbJets) {
+	  allHadronic+=thisb;
+	  countb++; if (countb>3) break;
+	}
+	// Hadronic scalar sum (HT):
+	for (auto & thisb : GoodIdbJets) {
+	  ht+=thisb.pt();
+	}
  
         //-----------------------------------------------------------
         // Control plots

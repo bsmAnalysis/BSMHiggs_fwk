@@ -582,8 +582,8 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, TFile* OutputF
       std::vector<JSONWrapper::Object> Samples = (Process[i])["data"].daughters();
       for(unsigned int j=0;j<Samples.size();j++){
          std::vector<string>& fileList = DSetFiles[(Samples[j])["dtag"].toString()+filtExt];
-         if(!Process[i].getBoolFromKeyword(matchingKeyword, "isdata", false) && !Process[i].getBoolFromKeyword(matchingKeyword, "isdatadriven", false)){Weight=iLumi;}else{Weight=1.0;}  
-	   //	   {Weight= iLumi/fileList.size();}else{Weight=1.0;}
+         if(!Process[i].getBoolFromKeyword(matchingKeyword, "isdata", false) && !Process[i].getBoolFromKeyword(matchingKeyword, "isdatadriven", false)){Weight=iLumi/fileList.size();}else{Weight=1.0;}  
+	 //	 {Weight= iLumi/fileList.size();}else{Weight=1.0;}
 
          for(int f=0;f<fileList.size();f++){
            if(IndexFiles%NFilesStep==0){printf(".");fflush(stdout);} IndexFiles++;

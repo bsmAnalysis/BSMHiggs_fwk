@@ -17,11 +17,12 @@ enum LeptonChannels { UNKNOWN=0,MUMU=1,MU=2,EE=3,E=4,EMU=5,ETAU=6,MUTAU=7, GAMMA
 
 class PhysicsObject : public LorentzVector {
 public :
- PhysicsObject(LorentzVector vec, Int_t id_, Int_t momid_, Int_t momidx_):
-  LorentzVector(vec), id(id_), momid(momid_), momidx(momidx_) { }
+ PhysicsObject(LorentzVector vec, Int_t id_, Int_t momid_, Int_t momidx_, Int_t status_):
+  LorentzVector(vec), id(id_), momid(momid_), momidx(momidx_), status(status_) { }
     Int_t id;
     Int_t momid;
     Int_t momidx;
+    Int_t status;
 };
 
 

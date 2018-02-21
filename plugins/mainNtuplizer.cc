@@ -63,12 +63,15 @@
 #include "DataFormats/EgammaCandidates/interface/Conversion.h"
 #include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
 
+// Top pt reweighting:
+#include "AnalysisDataFormats/TopObjects/interface/TtGenEvent.h"
+
+// BSM Higgs code:
 #include "UserCode/bsmhiggs_fwk/interface/DataEvtSummaryHandler.h"
 //#include "UserCode/bsmhiggs_fwk/interface/SmartSelectionMonitor.h"
 
 //#include "UserCode/bsmhiggs_fwk/interface/TMVAUtils.h"
 #include "UserCode/bsmhiggs_fwk/interface/LeptonEfficiencySF.h"
-//#include "UserCode/bsmhiggs_fwk/interface/PhotonEfficiencySF.h"
 #include "UserCode/bsmhiggs_fwk/interface/PDFInfo.h"
 #include "UserCode/bsmhiggs_fwk/interface/rochcor2016.h"
 #include "UserCode/bsmhiggs_fwk/interface/muresolution_run2.h"
@@ -154,6 +157,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
     std::vector<std::string> DoubleMuTrigs_, DoubleEleTrigs_, SingleMuTrigs_, SingleEleTrigs_, MuEGTrigs_;// DoubleTauTrigs_;
 
+    string proc_;
     bool isMC_;
     double xsec_;
     int mctruthmode_;
@@ -182,6 +186,8 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   TH1F * h_sumWeights, * h_sumScaleWeights , * h_sumPdfWeights ,* h_sumAlphasWeights; 
   TH1F * h_metFilter;
   
+  bool isMC_ttbar;
+
 };
 
 //
@@ -228,7 +234,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
     SingleMuTrigs_(	iConfig.getParameter<std::vector<std::string> >("SingleMuTrigs")				),
     SingleEleTrigs_(    iConfig.getParameter<std::vector<std::string> >("SingleEleTrigs")				),
     MuEGTrigs_(		iConfig.getParameter<std::vector<std::string> >("MuEGTrigs")					),
-  //   mon_(	iConfig.getParameter<std::string>("dtag")							),
+    proc_(	iConfig.getParameter<std::string>("dtag")							),
     isMC_(		iConfig.getParameter<bool>("isMC")								),
     xsec_(  iConfig.getParameter<double>("xsec")                                                                          ),
     mctruthmode_( iConfig.getParameter<int>("mctruthmode")                                                                ),
@@ -292,6 +298,8 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
 //MC normalization (to 1/pb)
   // xsecWeight = 1.0;
 
+  isMC_ttbar = isMC_ && (string(proc_.c_str()).find("TeV_TTJets") != string::npos);
+
   //  usesResource("TFileService");
 
 }
@@ -339,8 +347,6 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    std::vector<reco::GenParticle> b_hadrons ;
    
    if (isMC_) {
-     
-     ev.nmcparticles = 0;
      
      edm::Handle< std::vector<PileupSummaryInfo> > puInfoH;
      event.getByToken(puInfoTag_,puInfoH);
@@ -442,6 +448,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      if ( verbose_ ) { printf("\n\n Gen particles:\n" ) ; }
      
      //Look for mother particle and Fill gen variables
+     ev.nmcparticles = 0;  
+   
      //for(unsigned int igen=0; igen<gen.size(); igen++){
      int igen(0);
      for (auto & it : *pruned) {
@@ -468,6 +476,36 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 }
        }
        
+       // Specific info for Top pt re-weighting
+       if (isMC_ttbar) {
+	 //'isLastCopy' definition of the parton-level top quark (after radiation and before decay) in Pythia8
+	 // It is crucial that the pT value used when you calculate the weights is derived from the 'isLastCopy' definition
+	 if (it.isLastCopy()) {
+	   if (abs(it.pdgId()) == 6) {
+
+	     if (verbose_) { printf("  Top : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, status=%d\n",  
+				   it.pdgId(),
+				   it.mass(),
+				   findFirstMotherWithDifferentID(&it)->pdgId(),
+				   it.pt(),
+				   it.status()
+				   );
+	     }
+	     
+	     ev.mc_px[ev.nmcparticles] = it.px();
+	     ev.mc_py[ev.nmcparticles] = it.py(); 
+	     ev.mc_pz[ev.nmcparticles] = it.pz(); 
+	     ev.mc_en[ev.nmcparticles] = it.energy(); 
+	     ev.mc_id[ev.nmcparticles] = it.pdgId(); 
+	     ev.mc_mom[ev.nmcparticles] = findFirstMotherWithDifferentID(&it)->pdgId(); 
+
+	     ev.mc_momidx[ev.nmcparticles] = -999;
+	     ev.mc_status[ev.nmcparticles] = it.status(); 
+	   }
+	   //	   printf("GenParticle isLastCopy iwth pdgId=%d\n\n",it.pdgId());
+	 }
+       }
+
        if(!it.isHardProcess()) continue; 
        
        //find the ID of the first mother that has a different ID than the particle itself
@@ -508,14 +546,15 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.nmcparticles++;
 	 
 	 if ( verbose_ ) {
-	   printf("  %3d : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, eta=%7.3f, phi=%7.3f\n",
+	   printf("  %3d : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, eta=%7.3f, phi=%7.3f, status=%d\n",
                   igen,
                   it.pdgId(),
                   it.mass(),
                   mom->pdgId(),
                   it.pt(),
                   it.eta(),
-                  it.phi()
+                  it.phi(),
+		  it.status()
 		  ) ;
 	 }
 	 
