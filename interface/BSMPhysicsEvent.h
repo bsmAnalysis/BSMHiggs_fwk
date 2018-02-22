@@ -58,9 +58,9 @@ public :
 	isTauDM = isTauDM_;
     }
 
-    void setLeptonIsoInfo(float mn_pileupIso_, float mn_chargedIso_, float mn_photonIso_, float mn_neutralHadIso_, bool passIsoMu_,
+    void setLeptonIsoInfo(float mn_pileupIso_, float mn_chargedIso_, float mn_photonIso_, float mn_neutralHadIso_, bool passIsoMu_, float mn_relIso_, float mn_trkrelIso_,
                           float en_pileupIso_, float en_chargedIso_, float en_photonIso_, float en_neutralHadIso_, float en_relIsoWithEA_, bool passIsoEl_,
-			  bool ta_IsLooseIso_, bool ta_IsMediumIso_, bool ta_IsTightIso_ ) {
+			  bool ta_IsLooseIso_, bool ta_IsMediumIso_, bool ta_IsTightIso_, float en_relIso_ ) {
 
         mn_pileupIso = mn_pileupIso_;
         mn_chargedIso = mn_chargedIso_;
@@ -76,6 +76,10 @@ public :
         en_relIsoWithEA = en_relIsoWithEA_;
 
 	passIsoEl = passIsoEl_; 
+
+        mn_relIso = mn_relIso_;
+        en_relIso = en_relIso_;
+        mn_trkrelIso = mn_trkrelIso_;
 
 	ta_IsLooseIso = ta_IsLooseIso_;
 	ta_IsMediumIso = ta_IsMediumIso_;
@@ -96,6 +100,7 @@ public :
 
     Int_t id;
 
+    float en_relIso, mn_relIso, mn_trkrelIso;
     bool isLooseMu, isTightMu, isMediumMu, isSoftMu, isHighPtMu;
     bool passIdMu, passIdLooseMu, passSoftMuon, passIsoMu;
 

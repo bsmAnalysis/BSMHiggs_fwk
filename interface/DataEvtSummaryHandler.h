@@ -87,6 +87,7 @@ struct DataEvtSummary_t {
     Float_t mn_pileupIsoR04[MAXPARTICLES],mn_chargedIsoR04[MAXPARTICLES],mn_photonIsoR04[MAXPARTICLES],mn_neutralHadIsoR04[MAXPARTICLES];
     Bool_t mn_passId[MAXPARTICLES],mn_passIdLoose[MAXPARTICLES],mn_passSoftMuon[MAXPARTICLES],mn_passIso[MAXPARTICLES];
     Float_t mn_nMatches[MAXPARTICLES],mn_nMatchedStations[MAXPARTICLES],mn_validMuonHits[MAXPARTICLES],mn_innerTrackChi2[MAXPARTICLES],mn_trkLayersWithMeasurement[MAXPARTICLES],mn_pixelLayersWithMeasurement[MAXPARTICLES];
+    Float_t mn_relIso[MAXPARTICLES], mn_trkrelIso[MAXPARTICLES];
 
     //electron
     Int_t en;
@@ -103,6 +104,7 @@ struct DataEvtSummary_t {
     Int_t   en_IDMVATrigCategory[MAXPARTICLES];
     Int_t en_istrue[MAXPARTICLES];
     Bool_t en_passId[MAXPARTICLES],en_passIdLoose[MAXPARTICLES],en_passIso[MAXPARTICLES];
+    Float_t en_relIso[MAXPARTICLES];
 
     //tau
     Int_t ta;

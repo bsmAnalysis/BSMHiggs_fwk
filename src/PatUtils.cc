@@ -616,7 +616,7 @@ namespace patUtils
     return true; // Isolation is now embedded into the ID.
   }
 
-  bool passIso(pat::Electron& el, int IsoLevel, int cutVersion, double rho  ){
+  bool passIso(pat::Electron& el, int IsoLevel, int cutVersion, float* relIso_el, double rho ){
          //https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
 	  float  chIso   = el.pfIsolationVariables().sumChargedHadronPt;
           float  nhIso   = el.pfIsolationVariables().sumNeutralHadronEt;
@@ -632,7 +632,7 @@ namespace patUtils
 	    float effArea = utils::cmssw::getEffectiveArea(11,el.superCluster()->eta());
 	    relIso  = (chIso + TMath::Max(0.,nhIso+gIso-rho*effArea)) / el.pt();
 	  }
-
+          *relIso_el = relIso;
           bool barrel = (fabs(el.superCluster()->eta()) <= 1.479);
           bool endcap = (!barrel && fabs(el.superCluster()->eta()) < 2.5);
           // Spring15 selection
@@ -708,7 +708,7 @@ namespace patUtils
           return false;
    }
 
-  bool passIso(pat::Muon& mu, int IsoLevel, int cutVersion){
+  bool passIso(pat::Muon& mu, int IsoLevel, int cutVersion, float* relIso_mu, float* trkrelIso_){
     //https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#Muon_Isolation
     float  chIso   = mu.pfIsolationR04().sumChargedHadronPt;
     float  nhIso   = mu.pfIsolationR04().sumNeutralHadronEt;
@@ -721,7 +721,8 @@ namespace patUtils
     float  puchIso03 = mu.pfIsolationR03().sumPUPt;
     float  relIso03  = (chIso03 + TMath::Max(0.,nhIso03+gIso03-0.5*puchIso03)) / mu.pt();
     float  trkrelIso = mu.isolationR03().sumPt/mu.pt(); // no PU correction
-
+    *trkrelIso_ = trkrelIso;
+    *relIso_mu  = relIso;
     switch(cutVersion){
        case CutVersion::Spring15Cut25ns :
            switch(IsoLevel){

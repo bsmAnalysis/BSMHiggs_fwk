@@ -131,6 +131,8 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("mn_passIdLoose",   evSummary_.mn_passIdLoose,  "mn_passIdLoose[mn]/O");
     t_->Branch("mn_passSoftMuon",   evSummary_.mn_passSoftMuon,  "mn_passSoftMuon[mn]/O");
     t_->Branch("mn_passIso",   evSummary_.mn_passIso,  "mn_passIso[mn]/O");
+    t_->Branch("mn_relIso",   evSummary_.mn_relIso, "mn_relIso[mn]/F");
+    t_->Branch("mn_trkrelIso",   evSummary_.mn_trkrelIso, "mn_trkrelIso[mn]/F");
     /*
     t_->Branch("mn_nMatches",                   evSummary_.mn_nMatches,                     "mn_nMatches[mn]/F");
     t_->Branch("mn_nMatchedStations",           evSummary_.mn_nMatchedStations,             "mn_nMatchedStations[mn]/F");
@@ -185,6 +187,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("en_passId",   evSummary_.en_passId,  "en_passId[en]/O");
     t_->Branch("en_passIdLoose",   evSummary_.en_passIdLoose,  "en_passIdLoose[en]/O"); 
     t_->Branch("en_passIso",   evSummary_.en_passIso,  "en_passIso[en]/O"); 
+    t_->Branch("en_relIso",   evSummary_.en_relIso,  "en_relIso[en]/F");
 
     /* tmp
     //tau
