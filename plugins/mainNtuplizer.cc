@@ -501,65 +501,69 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 
 	     ev.mc_momidx[ev.nmcparticles] = -999;
 	     ev.mc_status[ev.nmcparticles] = it.status(); 
+
+	     ev.nmcparticles++;    
 	   }
 	   //	   printf("GenParticle isLastCopy iwth pdgId=%d\n\n",it.pdgId());
 	 }
        }
 
-       if(!it.isHardProcess()) continue; 
-       
+       //       if(!it.isHardProcess()) continue; 
+       if(it.isHardProcess()){
+
        //find the ID of the first mother that has a different ID than the particle itself
-       const reco::Candidate* mom = findFirstMotherWithDifferentID(&it);
-       
-       if (mom) {
-	 int pid = it.pdgId();
+	 const reco::Candidate* mom = findFirstMotherWithDifferentID(&it);
 	 
-	 ev.mc_px[ev.nmcparticles] = it.px();
-	 ev.mc_py[ev.nmcparticles] = it.py();
-	 ev.mc_pz[ev.nmcparticles] = it.pz();
-	 ev.mc_en[ev.nmcparticles] = it.energy();
-	 ev.mc_id[ev.nmcparticles] = it.pdgId();
-	 ev.mc_mom[ev.nmcparticles] = mom->pdgId();
-	 
-	 // loop over genParticles to find the mom index
-	 int idx=0; int idxx=0;
-	 for (auto & ig : *pruned) {
-	 //	 for(unsigned int ig=0; ig<gen.size(); ig++){ 
-	   if(!ig.isHardProcess()) continue; 
+	 if (mom) {
+	   int pid = it.pdgId();
 	   
-	   const reco::Candidate* imom = findFirstMotherWithDifferentID(&ig);
-	   if (imom) {
-	     if ( mom->p4() == ig.p4() && idxx==0) {
-	       idxx=idx; 
+	   ev.mc_px[ev.nmcparticles] = it.px();
+	   ev.mc_py[ev.nmcparticles] = it.py();
+	   ev.mc_pz[ev.nmcparticles] = it.pz();
+	   ev.mc_en[ev.nmcparticles] = it.energy();
+	   ev.mc_id[ev.nmcparticles] = it.pdgId();
+	   ev.mc_mom[ev.nmcparticles] = mom->pdgId();
+	   
+	   // loop over genParticles to find the mom index
+	   int idx=0; int idxx=0;
+	   for (auto & ig : *pruned) {
+	     //	 for(unsigned int ig=0; ig<gen.size(); ig++){ 
+	     if(!ig.isHardProcess()) continue; 
+	     
+	     const reco::Candidate* imom = findFirstMotherWithDifferentID(&ig);
+	     if (imom) {
+	       if ( mom->p4() == ig.p4() && idxx==0) {
+		 idxx=idx; 
+	       }
+	       idx++;      
 	     }
-	     idx++;      
 	   }
-	 }
-	 
-	 ev.mc_momidx[ev.nmcparticles] = idxx; 
-	 ev.mc_status[ev.nmcparticles] = it.status();
-	 
-	 TLorentzVector p4( it.px(), it.py(), it.pz(), it.energy() );
-	 if(abs(pid)==11 || abs(pid)==13 || abs(pid)==15) {
-	   chLeptons.push_back(p4);
-	 }
-	 ev.nmcparticles++;
-	 
-	 if ( verbose_ ) {
-	   printf("  %3d : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, eta=%7.3f, phi=%7.3f, status=%d\n",
-                  igen,
-                  it.pdgId(),
-                  it.mass(),
-                  mom->pdgId(),
-                  it.pt(),
-                  it.eta(),
-                  it.phi(),
-		  it.status()
-		  ) ;
-	 }
-	 
-       } // has mom?
-       igen++;
+	   
+	   ev.mc_momidx[ev.nmcparticles] = idxx; 
+	   ev.mc_status[ev.nmcparticles] = it.status();
+	   
+	   TLorentzVector p4( it.px(), it.py(), it.pz(), it.energy() );
+	   if(abs(pid)==11 || abs(pid)==13 || abs(pid)==15) {
+	     chLeptons.push_back(p4);
+	   }
+	   ev.nmcparticles++;
+	   
+	   if ( verbose_ ) {
+	     printf("  %3d : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, eta=%7.3f, phi=%7.3f, status=%d\n",
+		    igen,
+		    it.pdgId(),
+		    it.mass(),
+		    mom->pdgId(),
+		    it.pt(),
+		    it.eta(),
+		    it.phi(),
+		    it.status()
+		    ) ;
+	   }
+	   
+	 } // has mom?
+	 igen++;
+       } // if is hardProcess
      } // igen
      
      if ( verbose_ ) {
