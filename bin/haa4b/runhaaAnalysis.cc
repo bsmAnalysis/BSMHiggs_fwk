@@ -77,6 +77,12 @@ struct ptsort: public std::binary_function<LorentzVector, LorentzVector, bool>
   { return  ( x.pt() > y.pt() ) ; }
 };
 
+struct ptsortinpair: public std::binary_function<std::pair<int,LorentzVector>, std::pair<int,LorentzVector>, bool>  
+{
+  bool operator () (const std::pair<int,LorentzVector> & x, const std::pair<int,LorentzVector> & y) 
+  { return (x.second.pt() > y.second.pt() ); }
+};
+
 struct btagsort: public std::binary_function<PhysicsObject_Jet, PhysicsObject_Jet, float> 
 {
   bool operator () (const PhysicsObject_Jet & x, PhysicsObject_Jet & y) 
@@ -138,6 +144,10 @@ int main(int argc, char* argv[])
 
     bool verbose = runProcess.getParameter<bool>("verbose");
 
+    // will reweight the top pt in TT+jets sample (optional)
+    bool reweightTopPt = runProcess.getParameter<bool>("reweightTopPt");
+
+    // will produce the input root trees to BDT training (optional)
     bool runMVA = runProcess.getParameter<bool>("runMVA");
 
     // Will set DeepCSV as the default b-tagger automaticaly:
@@ -634,7 +644,7 @@ int main(int argc, char* argv[])
         }
 
 	// Apply Top pt-reweighting
-	if(isMC_ttbar){
+	if(reweightTopPt && isMC_ttbar){
 	  
 	  PhysicsObjectCollection &partons = phys.genpartons;
 	  
@@ -643,13 +653,38 @@ int main(int argc, char* argv[])
 
 	  double top_wgt(1.0);
 
+	  int itop(0);
 	  for (auto & top : partons) {
-	    if (top.id==6 && top.status==62) SFtop=exp(0.0615-0.0005*top.pt());
-	    if (top.id==-6 && top.status==62) SFantitop=exp(0.0615-0.0005*top.pt());
+
+	    printf("Parton : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, status=%d\n",
+		   top.id,
+		   top.mass(),
+		   top.momid,
+		   top.pt(),
+		   top.status
+		   );
+
+	    if (top.id==6 && top.status==62) {
+	      SFtop=exp(0.0615-0.0005*top.pt());
+	      itop++;
+	    }
+	    if (top.id==-6 && top.status==62) {
+	      SFantitop=exp(0.0615-0.0005*top.pt());
+	      itop++;
+	    }
 	  }
 	  
-	  top_wgt=sqrt(SFtop*SFantitop);
+	  if (itop<2) { 
+	    printf("Did not found tt pair!!\n"); 
+	  } else if (itop==2) {
+	    top_wgt=sqrt(SFtop*SFantitop);
+	  } else {
+	    printf("More than 2 top particles found. Please check\n");
+	  }
+	    
+	  printf("weight= %3f and top weight= %3f\n",weight,top_wgt);
 	  weight *= top_wgt;
+	  printf("Final weight is : %3f\n\n",weight);
 	}
 
         //only take up and down from pileup effect
@@ -720,6 +755,8 @@ int main(int argc, char* argv[])
 	int nExtraLeptons(0);
 	std::vector<LorentzVector> extraLeptons;
 
+	std::vector<LorentzVector> vetoLeptons; // ---> Use this collection to remove jet-lepton overlaps for e/mu below 30(25) GeV. 
+
 	float lep_threshold(25.);
 	float eta_threshold=2.5;
 	
@@ -758,13 +795,19 @@ int main(int argc, char* argv[])
 
 	  }
 
+	  if ( hasTightIdandIso && ilep.pt()>20. && ilep.pt()<30.) { 
+            vetoLeptons.push_back(ilep); 
+          }   
+
 	  if (hasExtraLepton) {
 	    nExtraLeptons++;
 	    extraLeptons.push_back(ilep);
 	  }
 	} // leptons
 
-	// sort(goodLeptons.begin(), goodLeptons.end(), ptsort());
+	sort(goodLeptons.begin(), goodLeptons.end(), ptsortinpair());
+	sort(vetoLeptons.begin(), vetoLeptons.end(), ptsort());
+
 	mon.fillHisto("nleptons","raw", goodLeptons.size(),weight);
 	mon.fillHisto("nleptons","raw_extra", extraLeptons.size(),weight);
 	
@@ -1051,6 +1094,11 @@ int main(int argc, char* argv[])
 	  }
 	  if(hasOverlap) continue;
   
+	  if (vetoLeptons.size()>0) {  
+	    double dR_thr=deltaR(corrJets[ijet],vetoLeptons[0]); 
+	    if (dR_thr<0.4) continue; // reject jet if found close to e/mu below 30 GeV 
+	  }
+
 	  GoodIdJets.push_back(corrJets[ijet]);
 	  if(corrJets[ijet].pt()>30) nJetsGood30++;
 
