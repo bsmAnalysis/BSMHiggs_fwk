@@ -89,8 +89,8 @@ namespace patUtils
    bool passId (pat::Photon& photon,  double rho, int IdLevel);
    float relIso(patUtils::GenericLepton& lep, double rho);
    bool passIso (VersionedPatElectronSelector id, pat::Electron& el);
-   bool passIso(pat::Electron& el,  int IsoLevel, int cutVersion, double rho=0.0 ); // Old PHYS15 Iso
-   bool passIso(pat::Muon&     mu,  int IsoLevel, int cutVersion);
+   bool passIso(pat::Electron& el,  int IsoLevel, int cutVersion, float* relIso_el, double rho=0.0 ); // Old PHYS15 Iso
+   bool passIso(pat::Muon&     mu,  int IsoLevel, int cutVersion, float* relIso_mu, float* trkrelIso_);
    bool passIso(pat::Muon& mu, int IsoLevel, int cutVersion, std::vector<pat::PackedCandidate> thePats, pat::MuonCollection muons, reco::Vertex& vertex );
    bool passPhotonTrigger(fwlite::Event &ev, float &triggerThreshold, float &triggerPrescale, float& triggerThresholdHigh);
    bool passVBFPhotonTrigger(fwlite::Event &ev, float &triggerThreshold, float &triggerPrescale, float& triggerThresholdHigh);

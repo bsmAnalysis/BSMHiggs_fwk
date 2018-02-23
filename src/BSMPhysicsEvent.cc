@@ -30,9 +30,9 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
 					       ev.en_passId[i], ev.en_passIdLoose[i],
                                                ev.ta_dm[i]
                                               );
-            phys.leptons[nlep].setLeptonIsoInfo(ev.mn_pileupIsoR03[i],ev.mn_chargedIsoR03[i],ev.mn_photonIsoR03[i],ev.mn_neutralHadIsoR03[i],ev.mn_passIso[i],
+            phys.leptons[nlep].setLeptonIsoInfo(ev.mn_pileupIsoR03[i],ev.mn_chargedIsoR03[i],ev.mn_photonIsoR03[i],ev.mn_neutralHadIsoR03[i],ev.mn_passIso[i], ev.mn_relIso[i], ev.mn_trkrelIso[i],
                                                 ev.en_pileupIso[i],ev.en_chargedIso[i],ev.en_photonIso[i],ev.en_neutralHadIso[i],ev.en_relIsoWithEA[i],ev.en_passIso[i],
-                                                ev.ta_IsLooseIso[i], ev.ta_IsMediumIso[i], ev.ta_IsTightIso[i]
+                                                ev.ta_IsLooseIso[i], ev.ta_IsMediumIso[i], ev.ta_IsTightIso[i], ev.en_relIso[i]
                                                );
 
             nlep++;
@@ -49,9 +49,9 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
 					       ev.en_passId[i], ev.en_passIdLoose[i],
                                                ev.ta_dm[i]
                                               );
-            phys.leptons[nlep].setLeptonIsoInfo(ev.mn_pileupIsoR03[i],ev.mn_chargedIsoR03[i],ev.mn_photonIsoR03[i],ev.mn_neutralHadIsoR03[i],ev.mn_passIso[i],
+            phys.leptons[nlep].setLeptonIsoInfo(ev.mn_pileupIsoR03[i],ev.mn_chargedIsoR03[i],ev.mn_photonIsoR03[i],ev.mn_neutralHadIsoR03[i],ev.mn_passIso[i], ev.mn_relIso[i], ev.mn_trkrelIso[i],
                                                 ev.en_pileupIso[i],ev.en_chargedIso[i],ev.en_photonIso[i],ev.en_neutralHadIso[i],ev.en_relIsoWithEA[i],ev.en_passIso[i],
-                                                ev.ta_IsLooseIso[i], ev.ta_IsMediumIso[i], ev.ta_IsTightIso[i]
+                                                ev.ta_IsLooseIso[i], ev.ta_IsMediumIso[i], ev.ta_IsTightIso[i], ev.en_relIso[i]
                                                );
 
 
@@ -70,9 +70,9 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
 					       ev.en_passId[i], ev.en_passIdLoose[i],
                                                ev.ta_dm[i]
                                               );
-            phys.leptons[nlep].setLeptonIsoInfo(ev.mn_pileupIsoR03[i],ev.mn_chargedIsoR03[i],ev.mn_photonIsoR03[i],ev.mn_neutralHadIsoR03[i],ev.mn_passIso[i],
+            phys.leptons[nlep].setLeptonIsoInfo(ev.mn_pileupIsoR03[i],ev.mn_chargedIsoR03[i],ev.mn_photonIsoR03[i],ev.mn_neutralHadIsoR03[i],ev.mn_passIso[i], ev.mn_relIso[i], ev.mn_trkrelIso[i],
                                                 ev.en_pileupIso[i],ev.en_chargedIso[i],ev.en_photonIso[i],ev.en_neutralHadIso[i],ev.en_relIsoWithEA[i],ev.en_passIso[i],
-                                                ev.ta_IsLooseIso[i], ev.ta_IsMediumIso[i], ev.ta_IsTightIso[i]
+                                                ev.ta_IsLooseIso[i], ev.ta_IsMediumIso[i], ev.ta_IsTightIso[i], ev.en_relIso[i]
                                                );
 
             nlep++;
