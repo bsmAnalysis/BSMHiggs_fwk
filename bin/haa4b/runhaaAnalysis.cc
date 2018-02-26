@@ -690,7 +690,7 @@ int main(int argc, char* argv[])
 	  }
 	    
 	  printf("weight= %3f and top weight= %3f\n",weight,top_wgt);
-	  //	  weight *= top_wgt;
+	  weight *= top_wgt;
 	  printf("Final weight is : %3f\n\n",weight);
 	}
 
@@ -1350,6 +1350,8 @@ int main(int argc, char* argv[])
 	} else {
 	  btag_high=GoodIdJets[0].btag0;
 	}
+
+	bool btag_sideband((btag_high<=0.7 && btag_high>=0.57) || (btag_high<=0.5 && btag_high>=0.3));
 	
 	is=0;
 	for (auto & jet : GoodIdJets) {
@@ -1393,7 +1395,7 @@ int main(int argc, char* argv[])
 
 	  } else { continue; } // At least 2 CSVv2 b-jets
 
-	} else if ( (btag_high<=0.7 && btag_high>=0.57) || (btag_high<=0.5 && btag_high>=0.3) ) { 	// non-TT backgrouns (W, DY, QCD) CRs:
+	} else if ( btag_sideband) { // non-TT backgrouns (W, DY, QCD) CRs:
 	  
 	  for (auto & i : GoodIdJets) {
 	    GoodIdbJets.push_back(i);
@@ -1487,12 +1489,8 @@ int main(int argc, char* argv[])
 		tags.push_back("CR_geq5b");
 	      }
 	    }
-	  
-	    // Apply Top pt reweighitng only in TT Contron Regions
-	    if (isMC_ttbar) { weight *= top_wgt; }
-
 	  }
-	} else if (btag_high<0.8 && btag_high>0.55) {  // thats the non-TT (W,DY,QCD) Control Regions
+	} else if (btag_sideband) {  // thats the non-TT (W,DY,QCD) Control Regions
 	  
 	  isthisSRs=false;
 
