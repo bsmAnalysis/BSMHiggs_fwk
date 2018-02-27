@@ -8,6 +8,7 @@ combine -M FitDiagnostics workspace.root --plots --saveNormalizations --saveShap
 
 python ../mlfitNormsToText.py -u fitDiagnostics.root
 
-combine -M Asymptotic -m 60 workspace.root --run blind -v 3 > COMB.log;
+#combine -M Asymptotic -m 60 workspace.root --run blind -v 3 > COMB.log;
+combine -M Asymptotic -m 60 --run expected card_combined.dat > COMB.log;
 
 cd ..
