@@ -324,14 +324,14 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 {
    using namespace edm;
 
-   //   mon_.fillHisto("nevents","all",1.,1.); //increment event count
+   //mon_.fillHisto("nevents","all",1.,1.); //increment event count
    h_nevents->Fill(0.);
    
    summaryHandler_.resetStruct();
    //event summary to be filled
    DataEvtSummary_t &ev=summaryHandler_.getEvent();
 
-   //   float weight = xsecWeight;
+   //float weight = xsecWeight;
 
    // PU weights
    //float puWeight_(1.0);
@@ -405,34 +405,51 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      event.getManyByType(EvtHandles);
      ev.npdfs=0;
      ev.nalphaS=0;
-     if(EvtHandles.size()>0) {
+     ev.lheNJets=0;
+     if(EvtHandles.size()>0)
+     {
        edm::Handle<LHEEventProduct> EvtHandle = EvtHandles.front();
-       if(EvtHandle.isValid() && EvtHandle->weights().size()>0) {
-       
-       //fill pdf+alpha_s variation weights
-	 if (firstPdfWeight>=0 && lastPdfWeight>=0 && lastPdfWeight<int(EvtHandle->weights().size()) && (lastPdfWeight-firstPdfWeight+1)==100) {
-	 
-	   //fill pdf variation weights after converting with mc2hessian transformation
-	   //std::array<double, 100> inpdfweights;
-	   for (int iwgt=firstPdfWeight; iwgt<=lastPdfWeight; ++iwgt) {
-	     ev.pdfWeights[ev.npdfs] = SignGenWeight * EvtHandle->weights()[iwgt].wgt/EvtHandle->originalXWGTUP();
-	     h_sumPdfWeights->Fill(double(ev.npdfs), ev.pdfWeights[ev.npdfs]);
-	     // mon_.fillHisto("sumPdfWeights","all",double(ev.npdfs), ev.pdfWeights[ev.npdfs]);
-	     ev.npdfs++;
-	   }
-	   
-	   //fill alpha_s variation weights
-	   if (firstAlphasWeight>=0 && lastAlphasWeight>=0 && lastAlphasWeight<int(EvtHandle->weights().size())) {
-	     for (int iwgt = firstAlphasWeight; iwgt<=lastAlphasWeight; ++iwgt) {
-	       ev.alphaSWeights[ev.nalphaS] = SignGenWeight * EvtHandle->weights()[iwgt].wgt/EvtHandle->originalXWGTUP();
-	       h_sumAlphasWeights->Fill(double(ev.nalphaS), ev.alphaSWeights[ev.nalphaS]);
-	       //  mon_.fillHisto("sumAlphasWeights","all",double(ev.nalphaS), ev.alphaSWeights[ev.nalphaS]);
-	       ev.nalphaS++;
-	     }
-	   }
-	   
-	 } // pdf variation weights END
-	 
+       if(EvtHandle.isValid() && EvtHandle->weights().size()>0)
+       {       
+         //fill pdf+alpha_s variation weights
+         if (firstPdfWeight>=0 && lastPdfWeight>=0 && lastPdfWeight<int(EvtHandle->weights().size()) && (lastPdfWeight-firstPdfWeight+1)==100)
+         { 
+           //fill pdf variation weights after converting with mc2hessian transformation
+           //std::array<double, 100> inpdfweights;
+           for (int iwgt=firstPdfWeight; iwgt<=lastPdfWeight; ++iwgt)
+           {
+             ev.pdfWeights[ev.npdfs] = SignGenWeight * EvtHandle->weights()[iwgt].wgt/EvtHandle->originalXWGTUP();
+             h_sumPdfWeights->Fill(double(ev.npdfs), ev.pdfWeights[ev.npdfs]);
+             //mon_.fillHisto("sumPdfWeights","all",double(ev.npdfs), ev.pdfWeights[ev.npdfs]);
+             ev.npdfs++;
+           }
+   
+           //fill alpha_s variation weights
+           if (firstAlphasWeight>=0 && lastAlphasWeight>=0 && lastAlphasWeight<int(EvtHandle->weights().size()))
+           {
+             for (int iwgt = firstAlphasWeight; iwgt<=lastAlphasWeight; ++iwgt)
+             {
+               ev.alphaSWeights[ev.nalphaS] = SignGenWeight * EvtHandle->weights()[iwgt].wgt/EvtHandle->originalXWGTUP();
+               h_sumAlphasWeights->Fill(double(ev.nalphaS), ev.alphaSWeights[ev.nalphaS]);
+               //mon_.fillHisto("sumAlphasWeights","all",double(ev.nalphaS), ev.alphaSWeights[ev.nalphaS]);
+               ev.nalphaS++;
+             }
+           }   
+         } // pdf variation weights END
+
+         //Add lhe njets into DataEvtSummaryHandler
+         const lhef::HEPEUP& lheEvent = EvtHandle->hepeup();
+         std::vector<lhef::HEPEUP::FiveVector> lheParticles = lheEvent.PUP;
+         size_t numParticles = lheParticles.size();
+         for ( size_t idxParticle = 0; idxParticle < numParticles; ++idxParticle )
+         {
+           int absPdgId = TMath::Abs(lheEvent.IDUP[idxParticle]);
+           int status = lheEvent.ISTUP[idxParticle];
+           if ( status == 1 && ((absPdgId >= 1 && absPdgId <= 6) || absPdgId == 21) )
+           { // quarks and gluons
+             ev.lheNJets++;
+           }
+         }
        }// EvtHandle.isValid
      }
      

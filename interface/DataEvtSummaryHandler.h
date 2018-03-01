@@ -33,7 +33,7 @@ struct DataEvtSummary_t {
 
     Int_t run,lumi;
     Long64_t event;
-  //  Float_t puWeight;
+    //Float_t puWeight;
     Float_t curAvgInstLumi,curIntegLumi;
     Bool_t hasTrigger;
     Int_t triggerType;
@@ -47,7 +47,7 @@ struct DataEvtSummary_t {
     Int_t ngenITpu,ngenOOTpu,ngenOOTpum1, ngenTruepu;
     Float_t pthat,genWeight, qscale, x1,x2;
     Int_t id1,id2;
-  /*
+    /*
     Float_t weight_QCDscale_muR1_muF1;
     Float_t weight_QCDscale_muR1_muF2;
     Float_t weight_QCDscale_muR1_muF0p5;
@@ -57,13 +57,14 @@ struct DataEvtSummary_t {
     Float_t weight_QCDscale_muR0p5_muF1;
     Float_t weight_QCDscale_muR0p5_muF2;
     Float_t weight_QCDscale_muR0p5_muF0p5;
-  */
+    */
 
     Int_t   npdfs;
     Float_t pdfWeights[MAXLHEWEIGHTS];
     Int_t   nalphaS;
     Float_t alphaSWeights[MAXLHEWEIGHTS];
-
+    //lhe njet
+    Int_t lheNJets;
 
     //gen level event
     Int_t nmcparticles, nmcjparticles;
@@ -119,11 +120,11 @@ struct DataEvtSummary_t {
     Int_t jet;
     Float_t jet_px[MAXPARTICLES],jet_py[MAXPARTICLES],jet_pz[MAXPARTICLES],jet_en[MAXPARTICLES];
     Float_t jet_btag0[MAXPARTICLES], jet_btag1[MAXPARTICLES];//,jet_btag1[MAXPARTICLES],jet_btag2[MAXPARTICLES],jet_btag3[MAXPARTICLES];
-  //    Float_t jet_btag4[MAXPARTICLES],jet_btag5[MAXPARTICLES],jet_btag6[MAXPARTICLES],jet_btag7[MAXPARTICLES];
-  // Float_t jet_btag8[MAXPARTICLES],jet_btag9[MAXPARTICLES],jet_btag10[MAXPARTICLES];
+    //Float_t jet_btag4[MAXPARTICLES],jet_btag5[MAXPARTICLES],jet_btag6[MAXPARTICLES],jet_btag7[MAXPARTICLES];
+    //Float_t jet_btag8[MAXPARTICLES],jet_btag9[MAXPARTICLES],jet_btag10[MAXPARTICLES];
     Float_t jet_mass[MAXPARTICLES],jet_area[MAXPARTICLES],jet_pu[MAXPARTICLES],jet_puId[MAXPARTICLES],jet_genpt[MAXPARTICLES];
     Bool_t jet_PFLoose[MAXPARTICLES], jet_PFTight[MAXPARTICLES];
-  Int_t jet_partonFlavour[MAXPARTICLES], jet_hadronFlavour[MAXPARTICLES], jet_mother_id[MAXPARTICLES];
+    Int_t jet_partonFlavour[MAXPARTICLES], jet_hadronFlavour[MAXPARTICLES], jet_mother_id[MAXPARTICLES];
     Float_t jet_parton_px[MAXPARTICLES], jet_parton_py[MAXPARTICLES], jet_parton_pz[MAXPARTICLES], jet_parton_en[MAXPARTICLES];
 
 
@@ -138,9 +139,7 @@ struct DataEvtSummary_t {
     Int_t   sv_mc_nbh_daus[MAXPARTICLES] ;
     Int_t   sv_mc_mcbh_ind[MAXPARTICLES] ;
 
-
-
-/*
+    /*
     //jet (slimmedJetsPuppi)
     Int_t pjet;
     Float_t pjet_px[MAXPARTICLES],pjet_py[MAXPARTICLES],pjet_pz[MAXPARTICLES],pjet_en[MAXPARTICLES];
@@ -148,8 +147,7 @@ struct DataEvtSummary_t {
     Float_t pjet_btag4[MAXPARTICLES],pjet_btag5[MAXPARTICLES],pjet_btag6[MAXPARTICLES],pjet_btag7[MAXPARTICLES];
     Float_t pjet_btag8[MAXPARTICLES],pjet_btag9[MAXPARTICLES],pjet_btag10[MAXPARTICLES];
     Float_t pjet_genpt[MAXPARTICLES];
-*/
-
+    */
 
     //fjet (ak8PFJetsCHS)
     Int_t fjet;
@@ -158,10 +156,10 @@ struct DataEvtSummary_t {
     Float_t fjet_prunedM[MAXPARTICLES], fjet_softdropM[MAXPARTICLES]; //fjet_trimmedM[MAXPARTICLES],fjet_filteredM[MAXPARTICLES];
     Float_t fjet_tau1[MAXPARTICLES],fjet_tau2[MAXPARTICLES],fjet_tau3[MAXPARTICLES];
     Float_t fjet_genpt[MAXPARTICLES];
-  Int_t fjet_partonFlavour[MAXPARTICLES], fjet_hadronFlavour[MAXPARTICLES], fjet_mother_id[MAXPARTICLES];
+    Int_t fjet_partonFlavour[MAXPARTICLES], fjet_hadronFlavour[MAXPARTICLES], fjet_mother_id[MAXPARTICLES];
     Float_t fjet_parton_px[MAXPARTICLES], fjet_parton_py[MAXPARTICLES], fjet_parton_pz[MAXPARTICLES], fjet_parton_en[MAXPARTICLES];
     Int_t fjet_subjet_count[MAXPARTICLES];
-  Float_t fjet_subjets_px[MAXPARTICLES][MAXSB], fjet_subjets_py[MAXPARTICLES][MAXSB], fjet_subjets_pz[MAXPARTICLES][MAXSB], fjet_subjets_en[MAXPARTICLES][MAXSB];
+    Float_t fjet_subjets_px[MAXPARTICLES][MAXSB], fjet_subjets_py[MAXPARTICLES][MAXSB], fjet_subjets_pz[MAXPARTICLES][MAXSB], fjet_subjets_en[MAXPARTICLES][MAXSB];
 
     //met
     Float_t met_pt,met_phi,met_sumMET;
@@ -169,18 +167,17 @@ struct DataEvtSummary_t {
     Float_t metPuppi_pt,metPuppi_phi,metPuppi_sumMET;
     Float_t rawpfmet_pt,rawpfmet_phi,rawpfmet_sumMET;
     Float_t rawcalomet_pt,rawcalomet_phi,rawcalomet_sumMET;
-/*
+    /*
     Bool_t flag_HBHENoiseFilter,flag_CSCTightHaloFilter,flag_hcalLaserEventFilter,flag_EcalDeadCellTriggerPrimitiveFilter,flag_goodVertices;
     Bool_t flag_HBHENoiseIsoFilter;
     Bool_t flag_EcalDeadCellBoundaryEnergyFilter;
     Bool_t flag_trackingFailureFilter,flag_eeBadScFilter,flag_ecalLaserCorrFilter,flag_trkPOGFilters,flag_trkPOG_manystripclus53X,flag_trkPOG_toomanystripclus53X;
     Bool_t flag_trkPOG_logErrorTooManyClusters,flag_METFilters;
-*/
-
+    */
 };
 
 class DataEvtSummaryHandler {
-public:
+  public:
     //
     DataEvtSummaryHandler();
     ~DataEvtSummaryHandler();
@@ -199,13 +196,13 @@ public:
     bool attachToTree(TTree *t);
     int getEntries() { return (t_ ? t_->GetEntriesFast() : 0); }
     void getEntry(int ientry) {
-    	resetStruct();
-    	if(t_) t_->GetEntry(ientry);
+        resetStruct();
+        if(t_) t_->GetEntry(ientry);
     }
 
     void resetStruct();
 
-private:
+  private:
     //the tree
     TTree *t_;
 };
