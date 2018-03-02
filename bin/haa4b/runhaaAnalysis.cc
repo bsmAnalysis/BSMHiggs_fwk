@@ -1456,7 +1456,12 @@ int main(int argc, char* argv[])
         // At least 3 b-tags
 	if (GoodIdbJets.size()<3) continue;
 	
-	bool isthisSRs=true;
+	TString ch;
+	if (evcat==E) { ch="E_";}
+	else if (evcat==MU) { ch="MU_"; }
+	else { printf("UNKNOWN lepton category - please check\n"); }
+
+	bool isSignalRegion(true);
 
 	if (nCSVMtags>=1) {
 	  if (CSVLoosebJets.size()>2 || SVs.size()>0) {
@@ -1464,44 +1469,78 @@ int main(int argc, char* argv[])
 	    mon.fillHisto("eventflow","all",6,weight); 
 	    
 	    // Cats: 3b
-	    if (GoodIdbJets.size()==3) { tags.push_back("SR_3b");}
+	    if (GoodIdbJets.size()==3) { 
+	      tags.push_back("SR_3b");
+	      tags.push_back(ch+"SR_3b"); 
+	    }
 	    else {
 	      tags.push_back("SR_geq4b"); 
+	      tags.push_back(ch+"SR_geq4b"); 
+
 	      mon.fillHisto("eventflow","all",7,weight);
 	      
-	      if (GoodIdbJets.size()==4) { tags.push_back("SR_4b"); }
+	      if (GoodIdbJets.size()==4) { 
+		tags.push_back("SR_4b"); 
+		tags.push_back(ch+"SR_4b"); 
+	      }
 	      else {
-		if (GoodIdbJets.size()==5) { tags.push_back("SR_5b"); }
+		if (GoodIdbJets.size()==5) { 
+		  tags.push_back("SR_5b"); 
+		  tags.push_back(ch+"SR_5b");
+		}
 		tags.push_back("SR_geq5b");
+		tags.push_back(ch+"SR_geq5b");  
 	      }
 	    }
 	  } else { 
 	    // thats the Top Control Regions
-	    isthisSRs=false;
+	    isSignalRegion=false;
 	    
 	    // Top Control Region categories
-	    if (GoodIdbJets.size()==3) { tags.push_back("CR_3b");}
+	    if (GoodIdbJets.size()==3) { 
+	      tags.push_back("CR_3b");
+	      tags.push_back(ch+"CR_3b");  
+	    }
 	    else {
 	      tags.push_back("CR_geq4b");
-	      if (GoodIdbJets.size()==4) { tags.push_back("CR_4b"); }
+	      tags.push_back(ch+"CR_geq4b");
+	      if (GoodIdbJets.size()==4) { 
+		tags.push_back("CR_4b"); 
+		tags.push_back(ch+"CR_4b"); 
+	      }
 	      else {
-		if (GoodIdbJets.size()==5) { tags.push_back("CR_5b"); }
+		if (GoodIdbJets.size()==5) { 
+		  tags.push_back("CR_5b"); 
+		  tags.push_back(ch+"CR_5b");
+		}
 		tags.push_back("CR_geq5b");
+		tags.push_back(ch+"CR_geq5b"); 
 	      }
 	    }
 	  }
 	} else if (btag_sideband) {  // thats the non-TT (W,DY,QCD) Control Regions
 	  
-	  isthisSRs=false;
+	  isSignalRegion=false;
 
 	  // Non-TT Control Region categories
-	  if (GoodIdbJets.size()==3) { tags.push_back("CR_nonTT_3b");}
+	  if (GoodIdbJets.size()==3) { 
+	    tags.push_back("CR_nonTT_3b");
+	    tags.push_back(ch+"CR_nonTT_3b");
+	  }
 	  else {
 	    tags.push_back("CR_nonTT_geq4b");
-	    if (GoodIdbJets.size()==4) { tags.push_back("CR_nonTT_4b"); }
+	    tags.push_back(ch+"CR_nonTT_geq4b");
+	    if (GoodIdbJets.size()==4) { 
+	      tags.push_back("CR_nonTT_4b"); 
+	      tags.push_back(ch+"CR_nonTT_4b"); 
+	    }
 	    else {
-	      if (GoodIdbJets.size()==5) { tags.push_back("CR_nonTT_5b"); }
+	      if (GoodIdbJets.size()==5) { 
+		tags.push_back("CR_nonTT_5b"); 
+		tags.push_back(ch+"CR_nonTT_5b");
+	      }
 	      tags.push_back("CR_nonTT_geq5b");
+	      tags.push_back(ch+"CR_nonTT_geq5b");
 	    }
 	  }
 	} else {
@@ -1641,7 +1680,7 @@ int main(int argc, char* argv[])
 	
 	  float mvaweight = 1.0;
 	  genWeight > 0 ? mvaweight = puWeight : mvaweight = -puWeight; // absorb the negative sign 
-	  if ( isthisSRs && GoodIdbJets.size() >= 3 )
+	  if ( isSignalRegion && GoodIdbJets.size() >= 3 )
 	    {
 	      myMVAHandler_.getEntry
 		(
