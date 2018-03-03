@@ -64,14 +64,11 @@
 #include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
 
 // Top pt reweighting:
-#include "AnalysisDataFormats/TopObjects/interface/TtGenEvent.h"
+//#include "AnalysisDataFormats/TopObjects/interface/TtGenEvent.h"
 
 // BSM Higgs code:
 #include "UserCode/bsmhiggs_fwk/interface/DataEvtSummaryHandler.h"
-//#include "UserCode/bsmhiggs_fwk/interface/SmartSelectionMonitor.h"
-
-//#include "UserCode/bsmhiggs_fwk/interface/TMVAUtils.h"
-#include "UserCode/bsmhiggs_fwk/interface/LeptonEfficiencySF.h"
+//#include "UserCode/bsmhiggs_fwk/interface/LeptonEfficiencySF.h"
 #include "UserCode/bsmhiggs_fwk/interface/PDFInfo.h"
 #include "UserCode/bsmhiggs_fwk/interface/rochcor2016.h"
 #include "UserCode/bsmhiggs_fwk/interface/muresolution_run2.h"
@@ -151,6 +148,10 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   // edm::EDGetTokenT<LHERunInfoProduct> lheRunInfoToken_;
     edm::EDGetTokenT<double> rhoFastjetAllTag_;
 
+  //  EnergyScaleCorrection_class eScaler_;     
+  edm::EDGetTokenT<EcalRecHitCollection> reducedEBRecHitCollectionToken_;
+  edm::EDGetTokenT<EcalRecHitCollection> reducedEERecHitCollectionToken_;
+
     edm::EDGetTokenT<edm::TriggerResults> triggerBits_;
     edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> triggerObjects_;
     edm::EDGetTokenT<pat::PackedTriggerPrescales> triggerPrescales_;
@@ -164,6 +165,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     bool verbose_;
   
     DataEvtSummaryHandler summaryHandler_;
+
   // SmartSelectionMonitor mon_;
   //    double xsecWeight;
   
@@ -187,7 +189,14 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   TH1F * h_metFilter;
   
   bool isMC_ttbar;
-
+  /*
+  std::string bit_string_stat = "001";
+  std::string bit_string_syst = "010";
+  std::string bit_string_gain = "100";
+  std::bitset<6> bit_stat(bit_string_stat);
+  std::bitset<6> bit_syst(bit_string_syst);
+  std::bitset<6> bit_gain(bit_string_gain);
+  */
 };
 
 //
@@ -226,6 +235,9 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   //   lheRunInfoTag_(     iConfig.getParameter<edm::InputTag>("lheInfo")                                                  ),
   // lheRunInfoToken_(   consumes<LHERunInfoProduct,edm::InRun>(lheRunInfoTag_)						),
     rhoFastjetAllTag_(  	consumes<double>(iConfig.getParameter<edm::InputTag>("rhoFastjetAll")) 			),
+  //  eScaler_(iConfig.getParameter<std::string>("correctionFile") ),
+	   reducedEBRecHitCollectionToken_(     consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>("reducedEcalRecHitsEB")) ),
+	   reducedEERecHitCollectionToken_(     consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>("reducedEcalRecHitsEE"))  ),
     triggerBits_(	consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("bits"))			),
     triggerObjects_(	consumes<pat::TriggerObjectStandAloneCollection>(iConfig.getParameter<edm::InputTag>("objects"))),
     triggerPrescales_(	consumes<pat::PackedTriggerPrescales>(iConfig.getParameter<edm::InputTag>("prescales"))		),
@@ -298,8 +310,20 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
 //MC normalization (to 1/pb)
   // xsecWeight = 1.0;
 
+  // Use for Top pt re-weighting
   isMC_ttbar = isMC_ && (string(proc_.c_str()).find("TeV_TTJets") != string::npos);
 
+  // Energy scale and resolution residuals
+  // Remember we are using the MC-based electron calibration in miniAOD
+  /*
+  if (isMC_) {
+    eScaler_.doScale=false;
+    eScaler_.doSmearings=true;
+  } else {
+    eScaler_.doScale=true;
+    eScaler_.doSmearings=false;
+  }
+  */
   //  usesResource("TFileService");
 
 }
@@ -723,6 +747,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
     //   if (!filterbadPFMuon || !filterbadChCandidate) return;
    //##############################################   EVENT PASSED MET FILTER   #######################################
    
+  
     //load all the objects we will need to access
        reco::VertexCollection vtx;
        edm::Handle< reco::VertexCollection > vtxHandle;
@@ -747,6 +772,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 if(vtx.at(i).isValid() && !vtx.at(i).isFake()) ev.nvtx++;
        }
        if(ev.nvtx == 0) return;
+
 
        pat::MuonCollection muons;
        edm::Handle< pat::MuonCollection > muonsHandle;
@@ -789,9 +815,10 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.mn_nMatchedStations[ev.mn]           = mu.numberOfMatchedStations();
 	 ev.mn_validMuonHits[ev.mn]              = mu.isGlobalMuon() ? mu.globalTrack().hitPattern().numberOfValidMuonHits() : 0.;
 	 ev.mn_innerTrackChi2[ev.mn]             = mu.isTrackerMuon() ? mu.innerTrack().normalizedChi2() : 0.;
-	 ev.mn_trkLayersWithMeasurement[ev.mn]   = mu.track().hitPattern().trackerLayersWithMeasurement();
-	 ev.mn_pixelLayersWithMeasurement[ev.mn] = mu.isTrackerMuon() ? mu.innerTrack().hitPattern().pixelLayersWithMeasurement() : 0.;
 	 */
+	 ev.mn_validMuonHits[ev.mn]              = mu.isGlobalMuon() ? mu.globalTrack()->hitPattern().numberOfValidMuonHits() : 0.;    
+	 ev.mn_trkLayersWithMeasurement[ev.mn]   = mu.isTrackerMuon() ? mu.innerTrack()->hitPattern().trackerLayersWithMeasurement() : 0.;
+	 ev.mn_pixelLayersWithMeasurement[ev.mn] = mu.isTrackerMuon() ? mu.innerTrack()->hitPattern().pixelLayersWithMeasurement() : 0.;
 
          float relIso_mu = -1, trkrelIso = -1;
 	 ev.mn_passId[ev.mn]  = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::ICHEP16Cut);
@@ -817,6 +844,12 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        event.getByToken(electronTag_, electronsHandle);
        if(electronsHandle.isValid()){ electrons = *electronsHandle;}
 
+       // to find Gain Seed 
+       edm::Handle<EcalRecHitCollection> recHitCollectionEBHandle;
+       edm::Handle<EcalRecHitCollection> recHitCollectionEEHandle;
+       event.getByToken(reducedEBRecHitCollectionToken_, recHitCollectionEBHandle); // "reducedEgamma","reducedEBRecHits");
+       event.getByToken(reducedEERecHitCollectionToken_, recHitCollectionEEHandle); //"reducedEgamma","reducedEERecHits");
+
        ev.en=0;
  
        for (pat::Electron &el : electrons) {
@@ -830,6 +863,13 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.en_pz[ev.en] = el.pz();
 	 ev.en_en[ev.en] = el.energy();
 	 ev.en_id[ev.en] = 11*el.charge();
+
+	 //	 float aeta = std::abs(el.superCluster()->eta());
+	 float cor_en = el.correctedEcalEnergy() ;           
+
+	 ev.en_cor_en[ev.en] = cor_en;
+	 ev.en_EtaSC[ev.en] = el.superCluster()->eta(); 
+	 ev.en_R9[ev.en] = el.full5x5_r9();
 
 	 /*
 	 //Isolation
@@ -845,7 +885,25 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_el, rho) ;
          ev.en_relIso[ev.en] = relIso_el;
 
+	 const EcalRecHitCollection* recHits = (el.isEB()) ? recHitCollectionEBHandle.product() : recHitCollectionEEHandle.product();
+	 unsigned int gainSeed = patUtils::GainSeed(el,recHits);
 
+	 ev.en_gainSeed[ev.en] = gainSeed;
+
+	 /*
+	 if(isMC_){
+	   double sigma= eScaler_.getSmearingSigma(event.eventAuxiliary().run(),el.isEB(),el.full5x5_r9(), el.superCluster()->eta(), el.et(),gainSeed,0,0);
+	   //Put the last two inputs at 0,0 for the nominal value of sigma
+	   //Now smear the MC energy
+	   TRandom3 *rgen_ = new TRandom3(0);
+	   ev.en_scale_corr[ev.en] = (float)rgen_->Gaus(1, sigma) ;
+	   //E_new=E_old*(rgen_->Gaus(1, sigma)) ;
+	 } else {
+	   ev.en_scale_corr[ev.en] = (float)eScaler_.ScaleCorrection(event.eventAuxiliary().run(),el.isEB(),el.full5x5_r9(), el.superCluster()->eta(), el.et(),gainSeed);
+	   //At this point, the new data energy will be:
+	   //	   E_new=E_old*(scale_corr); 
+	 }
+	 */
 	 ev.en++;
        } // el
 

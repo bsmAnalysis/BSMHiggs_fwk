@@ -82,27 +82,34 @@ struct DataEvtSummary_t {
     Int_t mn;
     Float_t mn_px[MAXPARTICLES],mn_py[MAXPARTICLES],mn_pz[MAXPARTICLES],mn_en[MAXPARTICLES];
     Int_t mn_id[MAXPARTICLES], mn_type[MAXPARTICLES];
+
     Float_t mn_d0[MAXPARTICLES],mn_dZ[MAXPARTICLES],mn_ip3d[MAXPARTICLES],mn_ip3dsig[MAXPARTICLES];
     Bool_t mn_IsLoose[MAXPARTICLES],mn_IsMedium[MAXPARTICLES],mn_IsTight[MAXPARTICLES],mn_IsSoft[MAXPARTICLES],mn_IsHighPt[MAXPARTICLES];
     Float_t mn_pileupIsoR03[MAXPARTICLES],mn_chargedIsoR03[MAXPARTICLES],mn_photonIsoR03[MAXPARTICLES],mn_neutralHadIsoR03[MAXPARTICLES];
     Float_t mn_pileupIsoR04[MAXPARTICLES],mn_chargedIsoR04[MAXPARTICLES],mn_photonIsoR04[MAXPARTICLES],mn_neutralHadIsoR04[MAXPARTICLES];
+
     Bool_t mn_passId[MAXPARTICLES],mn_passIdLoose[MAXPARTICLES],mn_passSoftMuon[MAXPARTICLES],mn_passIso[MAXPARTICLES];
     Float_t mn_nMatches[MAXPARTICLES],mn_nMatchedStations[MAXPARTICLES],mn_validMuonHits[MAXPARTICLES],mn_innerTrackChi2[MAXPARTICLES],mn_trkLayersWithMeasurement[MAXPARTICLES],mn_pixelLayersWithMeasurement[MAXPARTICLES];
     Float_t mn_relIso[MAXPARTICLES], mn_trkrelIso[MAXPARTICLES];
 
     //electron
     Int_t en;
-    Float_t en_px[MAXPARTICLES],en_py[MAXPARTICLES],en_pz[MAXPARTICLES],en_en[MAXPARTICLES];
+  Float_t en_px[MAXPARTICLES],en_py[MAXPARTICLES],en_pz[MAXPARTICLES],en_en[MAXPARTICLES],en_cor_en[MAXPARTICLES];
     Int_t en_id[MAXPARTICLES];
+  Int_t en_gainSeed[MAXPARTICLES]; 
+  //  Float_t en_scale_corr[MAXPARTICLES];
     //Float_t en_d0[MAXPARTICLES],en_dZ[MAXPARTICLES];
-    //Float_t en_EtaSC[MAXPARTICLES],en_PhiSC[MAXPARTICLES],en_EnSC[MAXPARTICLES];
-    //Float_t en_dEtaIn[MAXPARTICLES],en_dPhiIn[MAXPARTICLES],en_hOverE[MAXPARTICLES],en_R9[MAXPARTICLES],en_sigmaIetaIeta[MAXPARTICLES],en_sigmaIetaIeta5x5[MAXPARTICLES],en_ooEmooP[MAXPARTICLES];
+  Float_t en_EtaSC[MAXPARTICLES];
+
+  Float_t en_dEtaIn[MAXPARTICLES],en_dPhiIn[MAXPARTICLES],en_hOverE[MAXPARTICLES],en_R9[MAXPARTICLES],en_sigmaIetaIeta[MAXPARTICLES],en_sigmaIetaIeta5x5[MAXPARTICLES],en_ooEmooP[MAXPARTICLES];
     Float_t en_pileupIso[MAXPARTICLES],en_chargedIso[MAXPARTICLES],en_photonIso[MAXPARTICLES],en_neutralHadIso[MAXPARTICLES];
     Float_t en_relIsoWithEA[MAXPARTICLES],en_relIsoWithDBeta[MAXPARTICLES],en_MissingHits[MAXPARTICLES],en_passConversionVeto[MAXPARTICLES];
     Bool_t en_passVeto[MAXPARTICLES],en_passLoose[MAXPARTICLES],en_passMedium[MAXPARTICLES],en_passTight[MAXPARTICLES],en_passHEEP[MAXPARTICLES];
+  
     Bool_t en_passMVATrigMedium[MAXPARTICLES], en_passMVATrigTight[MAXPARTICLES];
     Float_t en_IDMVATrigValue[MAXPARTICLES];
     Int_t   en_IDMVATrigCategory[MAXPARTICLES];
+
     Int_t en_istrue[MAXPARTICLES];
     Bool_t en_passId[MAXPARTICLES],en_passIdLoose[MAXPARTICLES],en_passIso[MAXPARTICLES];
     Float_t en_relIso[MAXPARTICLES];

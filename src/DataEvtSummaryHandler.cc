@@ -134,14 +134,14 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("mn_passIso",            evSummary_.mn_passIso,              "mn_passIso[mn]/O");
     t_->Branch("mn_relIso",             evSummary_.mn_relIso,               "mn_relIso[mn]/F");
     t_->Branch("mn_trkrelIso",          evSummary_.mn_trkrelIso,            "mn_trkrelIso[mn]/F");
-    /*
-    t_->Branch("mn_nMatches",                   evSummary_.mn_nMatches,                     "mn_nMatches[mn]/F");
-    t_->Branch("mn_nMatchedStations",           evSummary_.mn_nMatchedStations,             "mn_nMatchedStations[mn]/F");
+
+    //    t_->Branch("mn_nMatches",                   evSummary_.mn_nMatches,                     "mn_nMatches[mn]/F");
+    //t_->Branch("mn_nMatchedStations",           evSummary_.mn_nMatchedStations,             "mn_nMatchedStations[mn]/F");
     t_->Branch("mn_validMuonHits",              evSummary_.mn_validMuonHits,                "mn_validMuonHits[mn]/F");
-    t_->Branch("mn_innerTrackChi2",             evSummary_.mn_innerTrackChi2,               "mn_innerTrackChi2[mn]/F");
+    //    t_->Branch("mn_innerTrackChi2",             evSummary_.mn_innerTrackChi2,               "mn_innerTrackChi2[mn]/F");
     t_->Branch("mn_trkLayersWithMeasurement",   evSummary_.mn_trkLayersWithMeasurement,     "mn_trkLayersWithMeasurement[mn]/F");
     t_->Branch("mn_pixelLayersWithMeasurement", evSummary_.mn_pixelLayersWithMeasurement,   "mn_pixelLayersWithMeasurement[mn]/F");
-    */
+
 
     //electron
     t_->Branch("en",                    &evSummary_.en,                     "en/I");
@@ -150,6 +150,11 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("en_pz",                 evSummary_.en_pz,                   "en_pz[en]/F");
     t_->Branch("en_en",                 evSummary_.en_en,                   "en_en[en]/F");
     t_->Branch("en_id",                 evSummary_.en_id,                   "en_id[en]/I");
+    t_->Branch("en_cor_en",                 evSummary_.en_cor_en,                   "en_cor_en[en]/F"); 
+    //    t_->Branch("en_scale_corr",                 evSummary_.en_scale_corr,                   "en_scale_corr[en]/F");  
+    t_->Branch("en_EtaSC",              evSummary_.en_EtaSC,                "en_EtaSC[en]/F");  
+    t_->Branch("en_R9",                 evSummary_.en_R9,                   "en_R9[en]/F"); 
+    t_->Branch("en_gainSeed",                 evSummary_.en_gainSeed,                   "en_gainSeed[en]/I");     
     /*
     t_->Branch("en_d0",                 evSummary_.en_d0,                   "en_d0[en]/F");
     t_->Branch("en_dZ",                 evSummary_.en_dZ,                   "en_dZ[en]/F");
@@ -280,7 +285,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("fjet_genpt",              evSummary_.fjet_genpt,              "fjet_genpt[fjet]/F");
     t_->Branch("fjet_prunedM",            evSummary_.fjet_prunedM,            "fjet_prunedM[fjet]/F");
     t_->Branch("fjet_softdropM",          evSummary_.fjet_softdropM,          "fjet_softdropM[fjet]/F"); 
-    //t_->Branch("fjet_trimmedM",         evSummary_.fjet_trimmedM,           "fjet_trimmedM[fjet]/F");
+    //t_->Branch("fjet_trimmeen_dM",         evSummary_.fjet_trimmedM,           "fjet_trimmedM[fjet]/F");
     //t_->Branch("fjet_filteredM",        evSummary_.fjet_filteredM,          "fjet_filteredM[fjet]/F");
     t_->Branch("fjet_tau1",               evSummary_.fjet_tau1,               "fjet_tau1[fjet]/F");
     t_->Branch("fjet_tau2",               evSummary_.fjet_tau2,               "fjet_tau2[fjet]/F");
@@ -451,14 +456,14 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("mn_passIdLoose",  evSummary_.mn_passIdLoose);
     t_->SetBranchAddress("mn_passSoftMuon",  evSummary_.mn_passSoftMuon);
     t_->SetBranchAddress("mn_passIso",  evSummary_.mn_passIso);
-    /*
-    t_->SetBranchAddress("mn_nMatches",                   evSummary_.mn_nMatches);
-    t_->SetBranchAddress("mn_nMatchedStations",           evSummary_.mn_nMatchedStations);
+
+    //    t_->SetBranchAddress("mn_nMatches",                   evSummary_.mn_nMatches);
+    //t_->SetBranchAddress("mn_nMatchedStations",           evSummary_.mn_nMatchedStations);
     t_->SetBranchAddress("mn_validMuonHits",              evSummary_.mn_validMuonHits);
-    t_->SetBranchAddress("mn_innerTrackChi2",             evSummary_.mn_innerTrackChi2);
+    //    t_->SetBranchAddress("mn_innerTrackChi2",             evSummary_.mn_innerTrackChi2);
     t_->SetBranchAddress("mn_trkLayersWithMeasurement",   evSummary_.mn_trkLayersWithMeasurement);
     t_->SetBranchAddress("mn_pixelLayersWithMeasurement", evSummary_.mn_pixelLayersWithMeasurement);
-    */
+
 
     //electron
     t_->SetBranchAddress("en",                      &evSummary_.en);
@@ -467,6 +472,12 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("en_pz",                   evSummary_.en_pz);
     t_->SetBranchAddress("en_en",                   evSummary_.en_en);
     t_->SetBranchAddress("en_id",                   evSummary_.en_id);
+    t_->SetBranchAddress("en_cor_en",                   evSummary_.en_cor_en); 
+    //    t_->SetBranchAddress("en_scale_corr",           evSummary_.en_scale_corr);  
+    t_->SetBranchAddress("en_EtaSC",                evSummary_.en_EtaSC);           
+    t_->SetBranchAddress("en_R9",                   evSummary_.en_R9);    
+    t_->SetBranchAddress("en_gainSeed",                   evSummary_.en_gainSeed); 
+
     /*
     t_->SetBranchAddress("en_d0",                   evSummary_.en_d0);
     t_->SetBranchAddress("en_dZ",                   evSummary_.en_dZ);
