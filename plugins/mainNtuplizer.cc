@@ -783,7 +783,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        ev.mn=0;
        //       for (std::vector<pat::Muon >::const_iterator mu = muons.begin(); mu!=muons.end(); mu++) 
        for(pat::Muon &mu : muons) {
-	 if(mu.pt() < 3) continue;
+	 if(mu.pt() < 5.) continue;
 	 ev.mn_px[ev.mn] = mu.px();
 	 ev.mn_py[ev.mn] = mu.py();
 	 ev.mn_pz[ev.mn] = mu.pz();
@@ -855,7 +855,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        for (pat::Electron &el : electrons) {
        //       for( View<pat::ElectronCollection>::const_iterator el = electrons.begin(); el != electrons.end(); el++ ) 
 	 float pt_ = el.pt();
-	 if (pt_ < 5) continue;
+	 if (pt_ < 10.) continue;
 
 	 // Kinematics
 	 ev.en_px[ev.en] = el.px();
