@@ -63,12 +63,12 @@
 #include "DataFormats/EgammaCandidates/interface/Conversion.h"
 #include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
 
-#include "UserCode/bsmhiggs_fwk/interface/DataEvtSummaryHandler.h"
-//#include "UserCode/bsmhiggs_fwk/interface/SmartSelectionMonitor.h"
+// Top pt reweighting:
+//#include "AnalysisDataFormats/TopObjects/interface/TtGenEvent.h"
 
-//#include "UserCode/bsmhiggs_fwk/interface/TMVAUtils.h"
-#include "UserCode/bsmhiggs_fwk/interface/LeptonEfficiencySF.h"
-//#include "UserCode/bsmhiggs_fwk/interface/PhotonEfficiencySF.h"
+// BSM Higgs code:
+#include "UserCode/bsmhiggs_fwk/interface/DataEvtSummaryHandler.h"
+//#include "UserCode/bsmhiggs_fwk/interface/LeptonEfficiencySF.h"
 #include "UserCode/bsmhiggs_fwk/interface/PDFInfo.h"
 #include "UserCode/bsmhiggs_fwk/interface/rochcor2016.h"
 #include "UserCode/bsmhiggs_fwk/interface/muresolution_run2.h"
@@ -148,18 +148,24 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   // edm::EDGetTokenT<LHERunInfoProduct> lheRunInfoToken_;
     edm::EDGetTokenT<double> rhoFastjetAllTag_;
 
+  //  EnergyScaleCorrection_class eScaler_;     
+  edm::EDGetTokenT<EcalRecHitCollection> reducedEBRecHitCollectionToken_;
+  edm::EDGetTokenT<EcalRecHitCollection> reducedEERecHitCollectionToken_;
+
     edm::EDGetTokenT<edm::TriggerResults> triggerBits_;
     edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> triggerObjects_;
     edm::EDGetTokenT<pat::PackedTriggerPrescales> triggerPrescales_;
 
     std::vector<std::string> DoubleMuTrigs_, DoubleEleTrigs_, SingleMuTrigs_, SingleEleTrigs_, MuEGTrigs_;// DoubleTauTrigs_;
 
+    string proc_;
     bool isMC_;
     double xsec_;
     int mctruthmode_;
     bool verbose_;
   
     DataEvtSummaryHandler summaryHandler_;
+
   // SmartSelectionMonitor mon_;
   //    double xsecWeight;
   
@@ -182,6 +188,15 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
   TH1F * h_sumWeights, * h_sumScaleWeights , * h_sumPdfWeights ,* h_sumAlphasWeights; 
   TH1F * h_metFilter;
   
+  bool isMC_ttbar;
+  /*
+  std::string bit_string_stat = "001";
+  std::string bit_string_syst = "010";
+  std::string bit_string_gain = "100";
+  std::bitset<6> bit_stat(bit_string_stat);
+  std::bitset<6> bit_syst(bit_string_syst);
+  std::bitset<6> bit_gain(bit_string_gain);
+  */
 };
 
 //
@@ -220,6 +235,9 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   //   lheRunInfoTag_(     iConfig.getParameter<edm::InputTag>("lheInfo")                                                  ),
   // lheRunInfoToken_(   consumes<LHERunInfoProduct,edm::InRun>(lheRunInfoTag_)						),
     rhoFastjetAllTag_(  	consumes<double>(iConfig.getParameter<edm::InputTag>("rhoFastjetAll")) 			),
+  //  eScaler_(iConfig.getParameter<std::string>("correctionFile") ),
+	   reducedEBRecHitCollectionToken_(     consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>("reducedEcalRecHitsEB")) ),
+	   reducedEERecHitCollectionToken_(     consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>("reducedEcalRecHitsEE"))  ),
     triggerBits_(	consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("bits"))			),
     triggerObjects_(	consumes<pat::TriggerObjectStandAloneCollection>(iConfig.getParameter<edm::InputTag>("objects"))),
     triggerPrescales_(	consumes<pat::PackedTriggerPrescales>(iConfig.getParameter<edm::InputTag>("prescales"))		),
@@ -228,7 +246,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
     SingleMuTrigs_(	iConfig.getParameter<std::vector<std::string> >("SingleMuTrigs")				),
     SingleEleTrigs_(    iConfig.getParameter<std::vector<std::string> >("SingleEleTrigs")				),
     MuEGTrigs_(		iConfig.getParameter<std::vector<std::string> >("MuEGTrigs")					),
-  //   mon_(	iConfig.getParameter<std::string>("dtag")							),
+    proc_(	iConfig.getParameter<std::string>("dtag")							),
     isMC_(		iConfig.getParameter<bool>("isMC")								),
     xsec_(  iConfig.getParameter<double>("xsec")                                                                          ),
     mctruthmode_( iConfig.getParameter<int>("mctruthmode")                                                                ),
@@ -292,6 +310,20 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
 //MC normalization (to 1/pb)
   // xsecWeight = 1.0;
 
+  // Use for Top pt re-weighting
+  isMC_ttbar = isMC_ && (string(proc_.c_str()).find("TeV_TTJets") != string::npos);
+
+  // Energy scale and resolution residuals
+  // Remember we are using the MC-based electron calibration in miniAOD
+  /*
+  if (isMC_) {
+    eScaler_.doScale=false;
+    eScaler_.doSmearings=true;
+  } else {
+    eScaler_.doScale=true;
+    eScaler_.doSmearings=false;
+  }
+  */
   //  usesResource("TFileService");
 
 }
@@ -316,14 +348,14 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 {
    using namespace edm;
 
-   //   mon_.fillHisto("nevents","all",1.,1.); //increment event count
+   //mon_.fillHisto("nevents","all",1.,1.); //increment event count
    h_nevents->Fill(0.);
    
    summaryHandler_.resetStruct();
    //event summary to be filled
    DataEvtSummary_t &ev=summaryHandler_.getEvent();
 
-   //   float weight = xsecWeight;
+   //float weight = xsecWeight;
 
    // PU weights
    //float puWeight_(1.0);
@@ -339,8 +371,6 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    std::vector<reco::GenParticle> b_hadrons ;
    
    if (isMC_) {
-     
-     ev.nmcparticles = 0;
      
      edm::Handle< std::vector<PileupSummaryInfo> > puInfoH;
      event.getByToken(puInfoTag_,puInfoH);
@@ -399,34 +429,51 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      event.getManyByType(EvtHandles);
      ev.npdfs=0;
      ev.nalphaS=0;
-     if(EvtHandles.size()>0) {
+     ev.lheNJets=0;
+     if(EvtHandles.size()>0)
+     {
        edm::Handle<LHEEventProduct> EvtHandle = EvtHandles.front();
-       if(EvtHandle.isValid() && EvtHandle->weights().size()>0) {
-       
-       //fill pdf+alpha_s variation weights
-	 if (firstPdfWeight>=0 && lastPdfWeight>=0 && lastPdfWeight<int(EvtHandle->weights().size()) && (lastPdfWeight-firstPdfWeight+1)==100) {
-	 
-	   //fill pdf variation weights after converting with mc2hessian transformation
-	   //std::array<double, 100> inpdfweights;
-	   for (int iwgt=firstPdfWeight; iwgt<=lastPdfWeight; ++iwgt) {
-	     ev.pdfWeights[ev.npdfs] = SignGenWeight * EvtHandle->weights()[iwgt].wgt/EvtHandle->originalXWGTUP();
-	     h_sumPdfWeights->Fill(double(ev.npdfs), ev.pdfWeights[ev.npdfs]);
-	     // mon_.fillHisto("sumPdfWeights","all",double(ev.npdfs), ev.pdfWeights[ev.npdfs]);
-	     ev.npdfs++;
-	   }
-	   
-	   //fill alpha_s variation weights
-	   if (firstAlphasWeight>=0 && lastAlphasWeight>=0 && lastAlphasWeight<int(EvtHandle->weights().size())) {
-	     for (int iwgt = firstAlphasWeight; iwgt<=lastAlphasWeight; ++iwgt) {
-	       ev.alphaSWeights[ev.nalphaS] = SignGenWeight * EvtHandle->weights()[iwgt].wgt/EvtHandle->originalXWGTUP();
-	       h_sumAlphasWeights->Fill(double(ev.nalphaS), ev.alphaSWeights[ev.nalphaS]);
-	       //  mon_.fillHisto("sumAlphasWeights","all",double(ev.nalphaS), ev.alphaSWeights[ev.nalphaS]);
-	       ev.nalphaS++;
-	     }
-	   }
-	   
-	 } // pdf variation weights END
-	 
+       if(EvtHandle.isValid() && EvtHandle->weights().size()>0)
+       {       
+         //fill pdf+alpha_s variation weights
+         if (firstPdfWeight>=0 && lastPdfWeight>=0 && lastPdfWeight<int(EvtHandle->weights().size()) && (lastPdfWeight-firstPdfWeight+1)==100)
+         { 
+           //fill pdf variation weights after converting with mc2hessian transformation
+           //std::array<double, 100> inpdfweights;
+           for (int iwgt=firstPdfWeight; iwgt<=lastPdfWeight; ++iwgt)
+           {
+             ev.pdfWeights[ev.npdfs] = SignGenWeight * EvtHandle->weights()[iwgt].wgt/EvtHandle->originalXWGTUP();
+             h_sumPdfWeights->Fill(double(ev.npdfs), ev.pdfWeights[ev.npdfs]);
+             //mon_.fillHisto("sumPdfWeights","all",double(ev.npdfs), ev.pdfWeights[ev.npdfs]);
+             ev.npdfs++;
+           }
+   
+           //fill alpha_s variation weights
+           if (firstAlphasWeight>=0 && lastAlphasWeight>=0 && lastAlphasWeight<int(EvtHandle->weights().size()))
+           {
+             for (int iwgt = firstAlphasWeight; iwgt<=lastAlphasWeight; ++iwgt)
+             {
+               ev.alphaSWeights[ev.nalphaS] = SignGenWeight * EvtHandle->weights()[iwgt].wgt/EvtHandle->originalXWGTUP();
+               h_sumAlphasWeights->Fill(double(ev.nalphaS), ev.alphaSWeights[ev.nalphaS]);
+               //mon_.fillHisto("sumAlphasWeights","all",double(ev.nalphaS), ev.alphaSWeights[ev.nalphaS]);
+               ev.nalphaS++;
+             }
+           }   
+         } // pdf variation weights END
+
+         //Add lhe njets into DataEvtSummaryHandler
+         const lhef::HEPEUP& lheEvent = EvtHandle->hepeup();
+         std::vector<lhef::HEPEUP::FiveVector> lheParticles = lheEvent.PUP;
+         size_t numParticles = lheParticles.size();
+         for ( size_t idxParticle = 0; idxParticle < numParticles; ++idxParticle )
+         {
+           int absPdgId = TMath::Abs(lheEvent.IDUP[idxParticle]);
+           int status = lheEvent.ISTUP[idxParticle];
+           if ( status == 1 && ((absPdgId >= 1 && absPdgId <= 6) || absPdgId == 21) )
+           { // quarks and gluons
+             ev.lheNJets++;
+           }
+         }
        }// EvtHandle.isValid
      }
      
@@ -442,6 +489,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      if ( verbose_ ) { printf("\n\n Gen particles:\n" ) ; }
      
      //Look for mother particle and Fill gen variables
+     ev.nmcparticles = 0;  
+   
      //for(unsigned int igen=0; igen<gen.size(); igen++){
      int igen(0);
      for (auto & it : *pruned) {
@@ -468,59 +517,94 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 }
        }
        
-       if(!it.isHardProcess()) continue; 
-       
-       //find the ID of the first mother that has a different ID than the particle itself
-       const reco::Candidate* mom = findFirstMotherWithDifferentID(&it);
-       
-       if (mom) {
-	 int pid = it.pdgId();
-	 
-	 ev.mc_px[ev.nmcparticles] = it.px();
-	 ev.mc_py[ev.nmcparticles] = it.py();
-	 ev.mc_pz[ev.nmcparticles] = it.pz();
-	 ev.mc_en[ev.nmcparticles] = it.energy();
-	 ev.mc_id[ev.nmcparticles] = it.pdgId();
-	 ev.mc_mom[ev.nmcparticles] = mom->pdgId();
-	 
-	 // loop over genParticles to find the mom index
-	 int idx=0; int idxx=0;
-	 for (auto & ig : *pruned) {
-	 //	 for(unsigned int ig=0; ig<gen.size(); ig++){ 
-	   if(!ig.isHardProcess()) continue; 
-	   
-	   const reco::Candidate* imom = findFirstMotherWithDifferentID(&ig);
-	   if (imom) {
-	     if ( mom->p4() == ig.p4() && idxx==0) {
-	       idxx=idx; 
+       // Specific info for Top pt re-weighting
+       if (isMC_ttbar) {
+	 //'isLastCopy' definition of the parton-level top quark (after radiation and before decay) in Pythia8
+	 // It is crucial that the pT value used when you calculate the weights is derived from the 'isLastCopy' definition
+	 if (it.isLastCopy()) {
+	   if (abs(it.pdgId()) == 6) {
+
+	     if (verbose_) { printf("  Top : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, status=%d\n",  
+				   it.pdgId(),
+				   it.mass(),
+				   findFirstMotherWithDifferentID(&it)->pdgId(),
+				   it.pt(),
+				   it.status()
+				   );
 	     }
-	     idx++;      
+	     
+	     ev.mc_px[ev.nmcparticles] = it.px();
+	     ev.mc_py[ev.nmcparticles] = it.py(); 
+	     ev.mc_pz[ev.nmcparticles] = it.pz(); 
+	     ev.mc_en[ev.nmcparticles] = it.energy(); 
+	     ev.mc_id[ev.nmcparticles] = it.pdgId(); 
+	     ev.mc_mom[ev.nmcparticles] = findFirstMotherWithDifferentID(&it)->pdgId(); 
+
+	     ev.mc_momidx[ev.nmcparticles] = -999;
+	     ev.mc_status[ev.nmcparticles] = it.status(); 
+
+	     ev.nmcparticles++;    
 	   }
+	   //	   printf("GenParticle isLastCopy iwth pdgId=%d\n\n",it.pdgId());
 	 }
+       }
+
+       //       if(!it.isHardProcess()) continue; 
+       if(it.isHardProcess()){
+
+       //find the ID of the first mother that has a different ID than the particle itself
+	 const reco::Candidate* mom = findFirstMotherWithDifferentID(&it);
 	 
-	 ev.mc_momidx[ev.nmcparticles] = idxx; 
-	 ev.mc_status[ev.nmcparticles] = it.status();
-	 
-	 TLorentzVector p4( it.px(), it.py(), it.pz(), it.energy() );
-	 if(abs(pid)==11 || abs(pid)==13 || abs(pid)==15) {
-	   chLeptons.push_back(p4);
-	 }
-	 ev.nmcparticles++;
-	 
-	 if ( verbose_ ) {
-	   printf("  %3d : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, eta=%7.3f, phi=%7.3f\n",
-                  igen,
-                  it.pdgId(),
-                  it.mass(),
-                  mom->pdgId(),
-                  it.pt(),
-                  it.eta(),
-                  it.phi()
-		  ) ;
-	 }
-	 
-       } // has mom?
-       igen++;
+	 if (mom) {
+	   int pid = it.pdgId();
+	   
+	   ev.mc_px[ev.nmcparticles] = it.px();
+	   ev.mc_py[ev.nmcparticles] = it.py();
+	   ev.mc_pz[ev.nmcparticles] = it.pz();
+	   ev.mc_en[ev.nmcparticles] = it.energy();
+	   ev.mc_id[ev.nmcparticles] = it.pdgId();
+	   ev.mc_mom[ev.nmcparticles] = mom->pdgId();
+	   
+	   // loop over genParticles to find the mom index
+	   int idx=0; int idxx=0;
+	   for (auto & ig : *pruned) {
+	     //	 for(unsigned int ig=0; ig<gen.size(); ig++){ 
+	     if(!ig.isHardProcess()) continue; 
+	     
+	     const reco::Candidate* imom = findFirstMotherWithDifferentID(&ig);
+	     if (imom) {
+	       if ( mom->p4() == ig.p4() && idxx==0) {
+		 idxx=idx; 
+	       }
+	       idx++;      
+	     }
+	   }
+	   
+	   ev.mc_momidx[ev.nmcparticles] = idxx; 
+	   ev.mc_status[ev.nmcparticles] = it.status();
+	   
+	   TLorentzVector p4( it.px(), it.py(), it.pz(), it.energy() );
+	   if(abs(pid)==11 || abs(pid)==13 || abs(pid)==15) {
+	     chLeptons.push_back(p4);
+	   }
+	   ev.nmcparticles++;
+	   
+	   if ( verbose_ ) {
+	     printf("  %3d : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, eta=%7.3f, phi=%7.3f, status=%d\n",
+		    igen,
+		    it.pdgId(),
+		    it.mass(),
+		    mom->pdgId(),
+		    it.pt(),
+		    it.eta(),
+		    it.phi(),
+		    it.status()
+		    ) ;
+	   }
+	   
+	 } // has mom?
+	 igen++;
+       } // if is hardProcess
      } // igen
      
      if ( verbose_ ) {
@@ -663,6 +747,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
     //   if (!filterbadPFMuon || !filterbadChCandidate) return;
    //##############################################   EVENT PASSED MET FILTER   #######################################
    
+  
     //load all the objects we will need to access
        reco::VertexCollection vtx;
        edm::Handle< reco::VertexCollection > vtxHandle;
@@ -688,6 +773,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        }
        if(ev.nvtx == 0) return;
 
+
        pat::MuonCollection muons;
        edm::Handle< pat::MuonCollection > muonsHandle;
        event.getByToken(muonTag_, muonsHandle);
@@ -697,7 +783,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        ev.mn=0;
        //       for (std::vector<pat::Muon >::const_iterator mu = muons.begin(); mu!=muons.end(); mu++) 
        for(pat::Muon &mu : muons) {
-	 if(mu.pt() < 3) continue;
+	 if(mu.pt() < 5.) continue;
 	 ev.mn_px[ev.mn] = mu.px();
 	 ev.mn_py[ev.mn] = mu.py();
 	 ev.mn_pz[ev.mn] = mu.pz();
@@ -729,14 +815,18 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.mn_nMatchedStations[ev.mn]           = mu.numberOfMatchedStations();
 	 ev.mn_validMuonHits[ev.mn]              = mu.isGlobalMuon() ? mu.globalTrack().hitPattern().numberOfValidMuonHits() : 0.;
 	 ev.mn_innerTrackChi2[ev.mn]             = mu.isTrackerMuon() ? mu.innerTrack().normalizedChi2() : 0.;
-	 ev.mn_trkLayersWithMeasurement[ev.mn]   = mu.track().hitPattern().trackerLayersWithMeasurement();
-	 ev.mn_pixelLayersWithMeasurement[ev.mn] = mu.isTrackerMuon() ? mu.innerTrack().hitPattern().pixelLayersWithMeasurement() : 0.;
 	 */
+	 ev.mn_validMuonHits[ev.mn]              = mu.isGlobalMuon() ? mu.globalTrack()->hitPattern().numberOfValidMuonHits() : 0.;    
+	 ev.mn_trkLayersWithMeasurement[ev.mn]   = mu.isTrackerMuon() ? mu.innerTrack()->hitPattern().trackerLayersWithMeasurement() : 0.;
+	 ev.mn_pixelLayersWithMeasurement[ev.mn] = mu.isTrackerMuon() ? mu.innerTrack()->hitPattern().pixelLayersWithMeasurement() : 0.;
+
+         float relIso_mu = -1, trkrelIso = -1;
 	 ev.mn_passId[ev.mn]  = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::ICHEP16Cut);
 	 ev.mn_passIdLoose[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Loose, patUtils::CutVersion::ICHEP16Cut);
 	 ev.mn_passSoftMuon[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Soft, patUtils::CutVersion::ICHEP16Cut);
-	 ev.mn_passIso[ev.mn] = patUtils::passIso(mu, patUtils::llvvMuonIso::Tight, patUtils::CutVersion::ICHEP16Cut);
-	 
+	 ev.mn_passIso[ev.mn] = patUtils::passIso(mu, patUtils::llvvMuonIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_mu, &trkrelIso);
+         ev.mn_relIso[ev.mn] = relIso_mu;
+         ev.mn_trkrelIso[ev.mn] = trkrelIso;
 
 	 ev.mn_type[ev.mn]   = (mu.isMuon() << 0)
 	   | (mu.isGlobalMuon() << 1)
@@ -754,12 +844,18 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        event.getByToken(electronTag_, electronsHandle);
        if(electronsHandle.isValid()){ electrons = *electronsHandle;}
 
+       // to find Gain Seed 
+       edm::Handle<EcalRecHitCollection> recHitCollectionEBHandle;
+       edm::Handle<EcalRecHitCollection> recHitCollectionEEHandle;
+       event.getByToken(reducedEBRecHitCollectionToken_, recHitCollectionEBHandle); // "reducedEgamma","reducedEBRecHits");
+       event.getByToken(reducedEERecHitCollectionToken_, recHitCollectionEEHandle); //"reducedEgamma","reducedEERecHits");
+
        ev.en=0;
  
        for (pat::Electron &el : electrons) {
        //       for( View<pat::ElectronCollection>::const_iterator el = electrons.begin(); el != electrons.end(); el++ ) 
 	 float pt_ = el.pt();
-	 if (pt_ < 5) continue;
+	 if (pt_ < 10.) continue;
 
 	 // Kinematics
 	 ev.en_px[ev.en] = el.px();
@@ -767,6 +863,13 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.en_pz[ev.en] = el.pz();
 	 ev.en_en[ev.en] = el.energy();
 	 ev.en_id[ev.en] = 11*el.charge();
+
+	 //	 float aeta = std::abs(el.superCluster()->eta());
+	 float cor_en = el.correctedEcalEnergy() ;           
+
+	 ev.en_cor_en[ev.en] = cor_en;
+	 ev.en_EtaSC[ev.en] = el.superCluster()->eta(); 
+	 ev.en_R9[ev.en] = el.full5x5_r9();
 
 	 /*
 	 //Isolation
@@ -776,12 +879,31 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.en_photonIso[ev.en] = pfIso.sumPhotonEt;
 	 ev.en_neutralHadIso[ev.en] = pfIso.sumNeutralHadronEt;
 	 */
-
+         float relIso_el = -1;
 	 ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut);
 	 ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut);
-	 ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, rho) ;
+	 ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_el, rho) ;
+         ev.en_relIso[ev.en] = relIso_el;
 
+	 const EcalRecHitCollection* recHits = (el.isEB()) ? recHitCollectionEBHandle.product() : recHitCollectionEEHandle.product();
+	 unsigned int gainSeed = patUtils::GainSeed(el,recHits);
 
+	 ev.en_gainSeed[ev.en] = gainSeed;
+
+	 /*
+	 if(isMC_){
+	   double sigma= eScaler_.getSmearingSigma(event.eventAuxiliary().run(),el.isEB(),el.full5x5_r9(), el.superCluster()->eta(), el.et(),gainSeed,0,0);
+	   //Put the last two inputs at 0,0 for the nominal value of sigma
+	   //Now smear the MC energy
+	   TRandom3 *rgen_ = new TRandom3(0);
+	   ev.en_scale_corr[ev.en] = (float)rgen_->Gaus(1, sigma) ;
+	   //E_new=E_old*(rgen_->Gaus(1, sigma)) ;
+	 } else {
+	   ev.en_scale_corr[ev.en] = (float)eScaler_.ScaleCorrection(event.eventAuxiliary().run(),el.isEB(),el.full5x5_r9(), el.superCluster()->eta(), el.et(),gainSeed);
+	   //At this point, the new data energy will be:
+	   //	   E_new=E_old*(scale_corr); 
+	 }
+	 */
 	 ev.en++;
        } // el
 
