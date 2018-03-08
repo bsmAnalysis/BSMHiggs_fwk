@@ -708,9 +708,9 @@ int main(int argc, char* argv[])
 	    printf("More than 2 top particles found. Please check\n");
 	  }
 	    
-	  printf("weight= %3f and top weight= %3f\n",weight,top_wgt);
+	  //	  printf("weight= %3f and top weight= %3f\n",weight,top_wgt);
 	  weight *= top_wgt;
-	  printf("Final weight is : %3f\n\n",weight);
+	  //	  printf("Final weight is : %3f\n\n",weight);
 	}
 
         //only take up and down from pileup effect
@@ -813,10 +813,8 @@ int main(int argc, char* argv[])
 		//Now smear the MC energy
 		TRandom3 *rgen_ = new TRandom3(0);
 		double smearValue = rgen_->Gaus(1, sigma) ;
-
-		printf("Electron P4 (before corr): px=%f, py=%f, pz=%f, e=%f\n",ilep.Px(),ilep.Py(),ilep.Pz(),ilep.E());      
+		//TLorentzVector p4        
 		ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue);
-		printf("electron P4 (AFTER corr): px=%f, py=%f, pz=%f, e=%f\n\n",ilep.Px(),ilep.Py(),ilep.Pz(),ilep.E());
 	      } else {
 		double scale_corr=eScaler_.ScaleCorrection(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed); 
 		//TLorentzVector p4
