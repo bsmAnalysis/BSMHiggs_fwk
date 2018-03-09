@@ -368,7 +368,7 @@
                         "/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_SingleT_t_2016",
+                    "dtag": "MC13TeV_SingleT_at_2016",
                     "xsec": 136.02 
                 },
                 {
@@ -379,7 +379,7 @@
                         "/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_SingleT_at_2016",
+                    "dtag": "MC13TeV_SingleT_t_2016",
                     "xsec": 80.95
                 },
                 {
