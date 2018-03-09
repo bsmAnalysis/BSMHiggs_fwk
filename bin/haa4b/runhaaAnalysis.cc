@@ -120,18 +120,18 @@ int main(int argc, char* argv[])
     //##########################    GLOBAL INITIALIZATION     ##########################
     //##################################################################################
 
-    // check arguments
+    //check arguments
     if(argc<2) {
         std::cout << "Usage : " << argv[0] << " parameters_cfg.py" << std::endl;
         exit(0);
     }
    
-    // load framework libraries
+    //load framework libraries
     gSystem->Load( "libFWCoreFWLite" );
     //AutoLibraryLoader::enable();
     FWLiteEnabler::enable();
 
-    // configure the process
+    //configure the process
     const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
   
     bool isMC = runProcess.getParameter<bool>("isMC");
@@ -158,7 +158,7 @@ int main(int argc, char* argv[])
     
     TString url = runProcess.getParameter<std::string>("input");
     TString outFileUrl( dtag ); //gSystem->BaseName(url));
-    //    outFileUrl.ReplaceAll(".root","");
+    //outFileUrl.ReplaceAll(".root","");
     if(mctruthmode!=0) {
         outFileUrl += "_filt";
         outFileUrl += mctruthmode;
@@ -219,29 +219,29 @@ int main(int argc, char* argv[])
     float beff(0.68), sfb(0.99), sfbunc(0.015);
     float leff(0.13), sfl(1.05), sflunc(0.12);
 
-    // setup calibration readers 80X
+    //setup calibration readers 80X
     std::string b_tagging_name, csv_file_path;
     float LooseWP = -1, MediumWP = -1, TightWP = -1;
     if (!use_DeepCSV) 
     {
-       b_tagging_name = "CSVv2";
+      b_tagging_name = "CSVv2";
        
-       csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
-	 "/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_Moriond17_B_H.csv";
+      csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
+                      "/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_Moriond17_B_H.csv";
        
-       LooseWP = CSVLooseWP;
-       MediumWP = CSVMediumWP;
-       TightWP = CSVTightWP;
+      LooseWP = CSVLooseWP;
+      MediumWP = CSVMediumWP;
+      TightWP = CSVTightWP;
     }
     if ( use_DeepCSV) {
-       b_tagging_name = "DeepCSV";
+      b_tagging_name = "DeepCSV";
        
-       csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
-	 "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_Moriond17_B_H.csv";
+      csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
+                      "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_Moriond17_B_H.csv";
        
-       LooseWP = DeepCSVLooseWP;
-       MediumWP = DeepCSVMediumWP;
-       TightWP = DeepCSVTightWP;
+      LooseWP = DeepCSVLooseWP;
+      MediumWP = DeepCSVMediumWP;
+      TightWP = DeepCSVTightWP;
     }
     
     BTagCalibration btagCalib(b_tagging_name, csv_file_path);
@@ -302,10 +302,10 @@ int main(int argc, char* argv[])
     
     //jet energy scale uncertainties
     TString jecDir = runProcess.getParameter<std::string>("jecDir");
-    //    gSystem->ExpandPathName(uncFile);
+    //gSystem->ExpandPathName(uncFile);
     cout << "Loading jet energy scale uncertainties from: " << jecDir << endl;
 
-    if(dtag.Contains("2016B") || dtag.Contains("2016C") ||dtag.Contains("2016D")) jecDir+="Summer16_80X/Summer16_23Sep2016BCDV4_DATA/";
+    if     (dtag.Contains("2016B") || dtag.Contains("2016C") ||dtag.Contains("2016D")) jecDir+="Summer16_80X/Summer16_23Sep2016BCDV4_DATA/";
     else if(dtag.Contains("2016E") || dtag.Contains("2016F")) jecDir+="Summer16_80X/Summer16_23Sep2016EFV4_DATA/";
     else if(dtag.Contains("2016G")) jecDir+="Summer16_80X/Summer16_23Sep2016GV4_DATA/";
     else if(dtag.Contains("2016H")) jecDir+="Summer16_80X/Summer16_23Sep2016HV4_DATA/";
@@ -320,7 +320,7 @@ int main(int argc, char* argv[])
     totalJESUnc = new JetCorrectionUncertainty((jecDir+"/"+pf+"_Uncertainty_AK4PFchs.txt").Data());
     //JetCorrectionUncertainty jecUnc(uncFile.Data());
 
-    // Lepton scale corrections
+    //Lepton scale corrections
     EnergyScaleCorrection_class eScaler_("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_74x_pho");     
     eScaler_.doScale=true;
     eScaler_.doSmearings=true;
@@ -356,17 +356,17 @@ int main(int argc, char* argv[])
     h->GetXaxis()->SetBinLabel(7,">=3b-tags");
     h->GetXaxis()->SetBinLabel(8,">=4b-tags");
  
-     // generator level plots
+    //generator level plots
     mon.addHistogram( new TH1F( "pileup", ";pileup;Events", 100,-0.5,99.5) );
     
     mon.addHistogram( new TH1F( "higgsMass",";m_{h} [GeV];Events",50,0.,1000.) );
     mon.addHistogram( new TH1F( "higgsPt",";p_{T}^{h} [GeV];Events",30,0.,500.));
-    // mon.addHistogram( new TH1F( "higgsEta",";#eta (h);Evenets",100,-5,5) );
+    //mon.addHistogram( new TH1F( "higgsEta",";#eta (h);Evenets",100,-5,5) );
  
-    // Top pt
+    //Top pt
     mon.addHistogram( new TH1F( "toppt",";#it{p}_{T}^{top} [GeV];Events",100,0.,2000.) );    
 
-     // RECO level, physics objects
+    //RECO level, physics objects
     mon.addHistogram( new TH1F( "dR_raw",";#Delta R(SV,b);Events",50,0.,5.));
     mon.addHistogram( new TH1F( "dRlj_raw",";#Delta R(lep,jet);Events",100,0.,5.));
 
@@ -444,12 +444,12 @@ int main(int argc, char* argv[])
     }
 
     //--------------------------------------------------------------------------
-    // some strings for tagging histograms:
+    //some strings for tagging histograms:
     const char* astr[] = {"_b1","_b2","_b3","_b4"};
     std::vector<TString> htag(astr, astr+4);
     //--------------------------------------------------------------------------
     
-    // btaging efficiency
+    //btaging efficiency
 
     //#################################################
     //############# CONTROL PLOTS #####################
@@ -524,7 +524,7 @@ int main(int argc, char* argv[])
     double xsecWeight = 1.0;
     float cnorm=1.0;
     if (isMC) {
-      //      xsecWeight = 0.; // disable MC sample if not present in the map
+      //xsecWeight = 0.; //disable MC sample if not present in the map
       
       double totalNumberofEvents(0.);
       
@@ -542,22 +542,22 @@ int main(int argc, char* argv[])
       /*
       std::map<std::string, int> xsec_map = mStat;
 
-      // std::string myproc = proc.Data();
-      //   std::cout << "Runnin process " << myproc << std::endl;
+      //std::string myproc = proc.Data();
+      //std::cout << "Runnin process " << myproc << std::endl;
       std::map<std::string, int>::iterator it;
       for ( it = xsec_map.begin(); it != xsec_map.end(); it++ ) {
-	if (it->first == proc.Data()) {
-	  xsecWeight = (xsec/(float)it->second);
-	  //	  totalNumberofEvents = it->second;
-	  std::cout << "weight = " << (xsecWeight*35866.9) << std::endl;
-	}
+        if (it->first == proc.Data()) {
+          xsecWeight = (xsec/(float)it->second);
+          //totalNumberofEvents = it->second;
+          std::cout << "weight = " << (xsecWeight*35866.9) << std::endl;
+        }
       }
       */
-      //      float pereventwgt=(xsecWeight*35866.9);
-      // printf("\n Running process with xSec = %f , and totalNumEvents = %d  . Per event weight is (L=35.9 fb-1): %f \n\n",
-      //	     xsec, totalNumberofEvents, pereventwgt );
+      //float pereventwgt=(xsecWeight*35866.9);
+      //printf("\n Running process with xSec = %f , and totalNumEvents = %d  . Per event weight is (L=35.9 fb-1): %f \n\n",
+      //xsec, totalNumberofEvents, pereventwgt );
     }
-    //  Hcutflow->SetBinContent(1,cnorm);
+    //Hcutflow->SetBinContent(1,cnorm);
 
     //pileup weighting
     TString PU_Central = runProcess.getParameter<std::string>("pu_central");
@@ -571,7 +571,7 @@ int main(int argc, char* argv[])
     TH1F* PU_weight=new TH1F("hPUweight","",100,-0.5,99.5);
     
     if (isMC) {
-      // PU_generated = (TH1F*)file->Get("mainNtuplizer/pileuptrue"); // MC pileup distribution
+      //PU_generated = (TH1F*)file->Get("mainNtuplizer/pileuptrue"); // MC pileup distribution
       PU_generated = (TH1F*)file->Get("mainNtuplizer/pileuptrue");
       
       PU_intended->Scale(1./PU_intended->Integral());
@@ -587,12 +587,12 @@ int main(int argc, char* argv[])
         PU_weight->SetBinContent(ibin,x);
         if ( verbose ) printf("pu = %3d has weight = %7.3f \n",ibin,x);
       }
-    } // is MC
+    }//is MC
     
-    // event categorizer
-    //    EventCategory eventCategoryInst(1);   
+    //event categorizer
+    //EventCategory eventCategoryInst(1);   
 
-    // Lepton scale factors
+    //Lepton scale factors
     LeptonEfficiencySF lepEff;
 
     //####################################################################################################################
@@ -622,7 +622,7 @@ int main(int argc, char* argv[])
     //###########################################           EVENT LOOP         ###########################################
     //####################################################################################################################
 
-    // loop on all the events
+    //loop on all the events
     int treeStep = (evEnd-evStart)/50;
     if(treeStep==0)treeStep=1;
     DuplicatesChecker duplicatesChecker;
@@ -649,20 +649,20 @@ int main(int argc, char* argv[])
             continue;
         }
 
-	// add PhysicsEvent_t class, get all tree to physics objects
+        // add PhysicsEvent_t class, get all tree to physics objects
         PhysicsEvent_t phys=getPhysicsEventFrom(ev); 
 
         std::vector<TString> tags(1,"all");
         //genWeight
         float genWeight = 1.0;
         if (isMC) {
-	  if(ev.genWeight<0) { genWeight = -1.0; }
+          if(ev.genWeight<0) { genWeight = -1.0; }
         }
         //systematical weight
         float weight = 1.0; //xsecWeight;
         if(isMC) {
-	  weight *= genWeight;
-	  weight *= xsecWeight; 
+          weight *= genWeight;
+          weight *= xsecWeight; 
         }
 
 	// Apply Top pt-reweighting
@@ -708,9 +708,9 @@ int main(int argc, char* argv[])
 	    printf("More than 2 top particles found. Please check\n");
 	  }
 	    
-	  //	  printf("weight= %3f and top weight= %3f\n",weight,top_wgt);
+	  //printf("weight= %3f and top weight= %3f\n",weight,top_wgt);
 	  weight *= top_wgt;
-	  //	  printf("Final weight is : %3f\n\n",weight);
+	  //printf("Final weight is : %3f\n\n",weight);
 	}
 
         //only take up and down from pileup effect
@@ -735,8 +735,8 @@ int main(int argc, char* argv[])
         //Hcutflow->Fill(3,weight*TotalWeight_minus);
         //Hcutflow->Fill(4,weight*TotalWeight_plus);
 
-        // add PhysicsEvent_t class, get all tree to physics objects
-	//        PhysicsEvent_t phys=getPhysicsEventFrom(ev);
+        //add PhysicsEvent_t class, get all tree to physics objects
+        //PhysicsEvent_t phys=getPhysicsEventFrom(ev);
 
         // FIXME need to have a function: loop all leptons, find a Z candidate,
         // can have input, ev.mn, ev.en
@@ -787,7 +787,7 @@ int main(int argc, char* argv[])
 	float eta_threshold=2.5;
 	
 	for (auto &ilep : leps) {
-	  //	  if ( ilep.pt()<5. ) continue;
+	  //if ( ilep.pt()<5. ) continue;
 
 	  int lepid = ilep.id;
 	  if (abs(lepid)==13) eta_threshold=2.4;
@@ -826,12 +826,12 @@ int main(int argc, char* argv[])
 		int ntrk = ilep.mn_trkLayersWithMeasurement;
 
 		TLorentzVector p4(ilep.Px(),ilep.Py(),ilep.Pz(),ilep.E());
-		//		printf("Muon P4 (before roch): px=%f, py=%f, pz=%f, e=%f\n",p4.Px(),p4.Py(),p4.Pz(),p4.E());
+		//printf("Muon P4 (before roch): px=%f, py=%f, pz=%f, e=%f\n",p4.Px(),p4.Py(),p4.Pz(),p4.E());
 		if (isMC) { muCor2016->momcor_mc(p4, lepid<0 ? -1 :1, ntrk, qter);}
 		else { muCor2016->momcor_data(p4, lepid<0 ? -1 :1, 0, qter); }
 
 		ilep.SetPxPyPzE(p4.Px(),p4.Py(),p4.Pz(),p4.E());
-		//		printf("Muon P4 (AFTER roch): px=%f, py=%f, pz=%f, e=%f\n\n",ilep.Px(),ilep.Py(),ilep.Pz(),ilep.E());
+		//printf("Muon P4 (AFTER roch): px=%f, py=%f, pz=%f, e=%f\n\n",ilep.Px(),ilep.Py(),ilep.Pz(),ilep.E());
 	      }
 	    }
 
@@ -912,11 +912,11 @@ int main(int argc, char* argv[])
         bool hasTrigger(false);
 
         if(!isMC) {
-	  //   if(evcat!=fType) continue;
+	    //if(evcat!=fType) continue;
 
-            // if(evcat==EE   && !(hasEEtrigger||hasEtrigger) ) continue;
-            // if(evcat==MUMU && !(hasMMtrigger||hasMtrigger) ) continue;
-            // if(evcat==EMU  && !hasEMtrigger ) continue;
+            //if(evcat==EE   && !(hasEEtrigger||hasEtrigger) ) continue;
+            //if(evcat==MUMU && !(hasMMtrigger||hasMtrigger) ) continue;
+            //if(evcat==EMU  && !hasEMtrigger ) continue;
 
             //this is a safety veto for the single mu PD
             if(isSingleMuPD) {
@@ -1114,8 +1114,8 @@ int main(int argc, char* argv[])
 	   if (is>3) break; // plot only up to 4 b-jets ?
 	}
 	//--------------------------------------------------------------------------
-	
-	
+
+
         //###########################################################
         //  AK4 jets ,
         // AK4 jets + CSVloose b-tagged configuration
@@ -1166,7 +1166,7 @@ int main(int argc, char* argv[])
 	  bool hasCSVtag;
           double btag_dsc = -1;
           if ( use_DeepCSV ) {btag_dsc = corrJets[ijet].btag1;} else {btag_dsc = corrJets[ijet].btag0;}
-  	  nCSVLtags += (btag_dsc>LooseWP);
+	  nCSVLtags += (btag_dsc>LooseWP);
 	  nCSVMtags += (btag_dsc>MediumWP);
           nCSVTtags += (btag_dsc>TightWP);
           mon.fillHisto("b_discrim",b_tagging_name,btag_dsc,weight);
@@ -1205,12 +1205,12 @@ int main(int argc, char* argv[])
 		  }//subjets
 		} // AK8
 		if (dRmin>0.4) CSVLoosebJets.push_back(corrJets[ijet]);
-	      }	else {
+	      }
+              else {
 	      */ 
 	    CSVLoosebJets.push_back(corrJets[ijet]); 
-		//	      }
+	      //}
 	  }
-	  
 	  //} // b-jet loop
 	} // jet loop
     
@@ -1242,7 +1242,7 @@ int main(int argc, char* argv[])
 	sort(CSVLoosebJets.begin(), CSVLoosebJets.end(), ptsort());
 	mon.fillHisto("nbjets_raw","nb", CSVLoosebJets.size(),weight);
 
-	
+
         //-------------------------------------------------------------------
         // AK4 + CSV jets 
         is=0; 
@@ -1346,7 +1346,7 @@ int main(int argc, char* argv[])
 	  }
 	  mon.fillHisto("dR_raw","sv_b",dRmin_csv,weight);
 
-	  //	  if (!runDBversion) { // use soft-b tags only if AK8 jets are not used
+	  //if (!runDBversion) { // use soft-b tags only if AK8 jets are not used
 	  hasOverlap=(dRmin_csv<0.4);
 	  if (!hasOverlap) {// continue;
 	    // Fill final soft-bs from SVs
@@ -1354,7 +1354,7 @@ int main(int argc, char* argv[])
 	  }
 	  //}
 
- 	}
+	}
 
 	//--------------------------------------------------------------------------
 	// Soft-bs properties
@@ -1380,8 +1380,8 @@ int main(int argc, char* argv[])
 	}
 
 
-	//-------------------------------------------------------------------                                                                                                              
-	//      ---------------------------  
+	//-------------------------------------------------------------------
+	//-------------------------------------------------------------------
 	
         //#########################################################
         //####  RUN PRESELECTION AND CONTROL REGION PLOTS  ########
@@ -1450,17 +1450,17 @@ int main(int argc, char* argv[])
 	  }
 
 	} else {
-	  //	  printf("\n Unknown category, please check \n");
+	  //printf("\n Unknown category, please check \n");
 	  continue;
 	}
 
 
-	
+
 	//-------------------------------------------------------------------
-	// // At least 2 jets and 2 b-jets
+	//At least 2 jets and 2 b-jets
 	
-	// //	if (GoodIdJets.size()<2 || CSVLoosebJets.size()<2) continue;
-	// //	if (nCSVMtags<1) continue; // At least 2 CSVv2 b-jets with LooseWP(0.54) and at least 1 satisfying the MediumWP(0.80)
+	//if (GoodIdJets.size()<2 || CSVLoosebJets.size()<2) continue;
+	//if (nCSVMtags<1) continue; // At least 2 CSVv2 b-jets with LooseWP(0.54) and at least 1 satisfying the MediumWP(0.80)
 	// mon.fillHisto("eventflow","all",5,weight); 
 	// mon.fillHisto("eventflow","bdt",5,weight);
 	
@@ -1595,8 +1595,8 @@ int main(int argc, char* argv[])
 	  tags.push_back("UNKNOWN");
 	  printf("\n Unknown category, please check \n");
         }
-	
-	
+
+
 	// Here define all variables 
         LorentzVector allHadronic;
         //std::pair <int,LorentzVector> pairHadronic;
@@ -1650,7 +1650,7 @@ int main(int argc, char* argv[])
         // Dphi(W,h) instead of DRmin(l,b)
         double dphi_Wh=fabs(deltaPhi(allHadronic.phi(),wsum.phi()));
         mon.fillHisto("dphiWh",tags,dphi_Wh,weight);
-	
+
         // DR(bb)_average
         vector<float> dRs;
         float dm(0.);
@@ -1682,11 +1682,11 @@ int main(int argc, char* argv[])
         dRave_/=dRs.size();
         mon.fillHisto("dRave",tags,dRave_,weight);
         mon.fillHisto("dmmin",tags,dm, weight);
-	
+
 	//##############################################################################
         //############ MVA Reader #####################################################
 	//##############################################################################
-	
+
         float mvaBDT(-10.0);
         if (GoodIdbJets.size() == 3)
         {
@@ -1729,19 +1729,19 @@ int main(int argc, char* argv[])
 	  float mvaweight = 1.0;
 	  genWeight > 0 ? mvaweight = puWeight : mvaweight = -puWeight; // absorb the negative sign 
 	  if ( isSignalRegion && GoodIdbJets.size() >= 3 )
-	    {
-	      myMVAHandler_.getEntry
-		(
-		 GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
-		 wsum.pt(), //W only, w pt
-		 allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
-		 dphi_Wh, //W and H, dr 
-		 mvaweight //note, since weight is not the weight we want, we store all others except xSec weight
-		 );
-	      myMVAHandler_.fillTree();
-	    }
+	  {
+	    myMVAHandler_.getEntry
+	    (
+		GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
+		wsum.pt(), //W only, w pt
+		allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
+		dphi_Wh, //W and H, dr 
+		mvaweight //note, since weight is not the weight we want, we store all others except xSec weight
+	    );
+	    myMVAHandler_.fillTree();
+	  }
 	}
-	
+
         //##############################################################################
         //### HISTOS FOR STATISTICAL ANALYSIS (include systematic variations)
         //##############################################################################
@@ -1764,7 +1764,6 @@ int main(int argc, char* argv[])
         //##############################################
         //LorentzVector vMET = variedMET[ivar>8 ? 0 : ivar];
         //PhysicsObjectJetCollection &vJets = ( ivar<=4 ? variedJets[ivar] : variedJets[0] );
-	
     } // loop on all events END
 
     printf("\n");
