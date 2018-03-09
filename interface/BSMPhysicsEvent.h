@@ -59,6 +59,20 @@ public :
 	isTauDM = isTauDM_;
     }
 
+    void setLeptonVar(float en_cor_en_, float en_EtaSC_, float en_R9_, int en_gainSeed_,
+		      float mn_validMuonHits_, float mn_trkLayersWithMeasurement_, float mn_pixelLayersWithMeasurement_) {
+
+      en_cor_en = en_cor_en_;
+      en_EtaSC = en_EtaSC_;
+      en_R9 = en_R9_;
+      en_gainSeed = en_gainSeed_;
+
+      mn_validMuonHits = mn_validMuonHits_;
+      mn_trkLayersWithMeasurement = mn_trkLayersWithMeasurement_;
+      mn_pixelLayersWithMeasurement = mn_pixelLayersWithMeasurement_;
+
+    }
+
     void setLeptonIsoInfo(float mn_pileupIso_, float mn_chargedIso_, float mn_photonIso_, float mn_neutralHadIso_, bool passIsoMu_, float mn_relIso_, float mn_trkrelIso_,
                           float en_pileupIso_, float en_chargedIso_, float en_photonIso_, float en_neutralHadIso_, float en_relIsoWithEA_, bool passIsoEl_,
 			  bool ta_IsLooseIso_, bool ta_IsMediumIso_, bool ta_IsTightIso_, float en_relIso_ ) {
@@ -104,6 +118,10 @@ public :
     float en_relIso, mn_relIso, mn_trkrelIso;
     bool isLooseMu, isTightMu, isMediumMu, isSoftMu, isHighPtMu;
     bool passIdMu, passIdLooseMu, passSoftMuon, passIsoMu;
+
+    int en_gainSeed;
+    float en_cor_en, en_EtaSC, en_R9;
+    float mn_validMuonHits, mn_trkLayersWithMeasurement, mn_pixelLayersWithMeasurement;
 
     bool isElpassVeto, isElpassLoose, isElpassMedium, isElpassTight;
     bool passIdEl, passIdLooseEl, passIsoEl;
