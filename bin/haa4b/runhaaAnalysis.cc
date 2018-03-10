@@ -1739,7 +1739,7 @@ int main(int argc, char* argv[])
 	if (runMVA)
         {
 	  float mvaweight = 1.0;
-	  genWeight > 0 ? mvaweight = puWeight : mvaweight = -puWeight; // absorb the negative sign 
+	  genWeight > 0 ? mvaweight = weight/xsecWeight : mvaweight = -weight / xsecWeight; // Include all weights except for the xsecWeight
 	  if ( isSignalRegion && GoodIdbJets.size() >= 3 )
 	  {
 	    myMVAHandler_.getEntry
