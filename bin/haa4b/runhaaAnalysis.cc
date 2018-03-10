@@ -1129,7 +1129,7 @@ int main(int argc, char* argv[])
 
 
         //###########################################################
-        //  AK4 jets ,
+        // AK4 jets ,
         // AK4 jets + CSVloose b-tagged configuration
         //###########################################################
 
@@ -1724,20 +1724,20 @@ int main(int argc, char* argv[])
         mon.fillHisto("bdt", tags, mvaBDT, weight);
 
 	if (GoodIdbJets.size() == 3) 
-	  {
-	    if (mvaBDT>0.19) mon.fillHisto("eventflow","bdt",6,weight);  
-	  }
+	{
+	  if (mvaBDT>0.19) mon.fillHisto("eventflow","bdt",6,weight);  
+	}
 	else if (GoodIdbJets.size() >= 4) 
-	  {
-	    if (mvaBDT>0.14) mon.fillHisto("eventflow","bdt",7,weight);  
-	  }
+	{
+	  if (mvaBDT>0.14) mon.fillHisto("eventflow","bdt",7,weight);  
+	}
 
 	//##############################################################################
         //############ MVA Handler ####################################################
 	//##############################################################################
 
-	if (runMVA) {
-	
+	if (runMVA)
+        {
 	  float mvaweight = 1.0;
 	  genWeight > 0 ? mvaweight = puWeight : mvaweight = -puWeight; // absorb the negative sign 
 	  if ( isSignalRegion && GoodIdbJets.size() >= 3 )
@@ -1748,7 +1748,8 @@ int main(int argc, char* argv[])
 		wsum.pt(), //W only, w pt
 		allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
 		dphi_Wh, //W and H, dr 
-		mvaweight //note, since weight is not the weight we want, we store all others except xSec weight
+                mvaweight, //note, since weight is not the weight we want, we store all others except xSec weigh
+                ev.lheNJets //AUX variable for weight calculation
 	    );
 	    myMVAHandler_.fillTree();
 	  }
@@ -1759,7 +1760,8 @@ int main(int argc, char* argv[])
         //##############################################################################
 
 	// LOOP ON SYSTEMATIC VARIATION FOR THE STATISTICAL ANALYSIS
-	for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
+	for(size_t ivar=0; ivar<nvarsToInclude; ivar++)
+        {
 	  if(!isMC && ivar>0 ) continue; //loop on variation only for MC samples
 
 	  //scan the BDT cut and fill the shapes
@@ -1768,7 +1770,6 @@ int main(int argc, char* argv[])
 	      mon.fillHisto(TString("bdt_shapes")+varNames[ivar],tags,index, mvaBDT,weight);
 	    }
 	  }
-
 	}
 
         //##############################################
