@@ -96,3 +96,55 @@ const std::map<std::string, std::pair <int, float> > mStat =
     { "MC13TeV_QCD_Pt300ToInf_EMEnr_2016", std::make_pair(7373633, 1350) }, //6.56669 },
     { "MC13TeV_QCD_Pt20ToInf_MuEnr_2016" , std::make_pair(22094081, 302672) } //491.35 }
 };
+
+namespace xsecWeightCalculator
+{
+    float xsecWeightCalcLHEJets(int bit, int lheNJets)
+    {
+        //bit == 0 for WJets/WXJets, bit == 1 for low mass DY, bit == 2 for high mass DY
+        float this_kf = 1;
+        int this_events[5] = {1, 1, 1, 1, 1};
+        float this_xsec[5] = {1, 1, 1, 1, 1};
+
+        if (bit == 0)//WJets
+        {
+            this_kf = 1.23;
+            this_events[0] = (mStat.find("MC13TeV_WJets_2016")->second).first; this_xsec[0] = (mStat.find("MC13TeV_WJets_2016")->second).second;
+            this_events[1] = (mStat.find("MC13TeV_W1Jets_2016")->second).first; this_xsec[1] = (mStat.find("MC13TeV_W1Jets_2016")->second).second;
+            this_events[2] = (mStat.find("MC13TeV_W2Jets_2016")->second).first; this_xsec[2] = (mStat.find("MC13TeV_W2Jets_2016")->second).second;
+            this_events[3] = (mStat.find("MC13TeV_W3Jets_2016")->second).first; this_xsec[3] = (mStat.find("MC13TeV_W3Jets_2016")->second).second;
+            this_events[4] = (mStat.find("MC13TeV_W4Jets_2016")->second).first; this_xsec[4] = (mStat.find("MC13TeV_W4Jets_2016")->second).second;
+        }
+        else if( bit == 1)//low mass DY
+        {
+            this_kf = 1.21;
+            this_events[0] = (mStat.find("MC13TeV_DYJetsToLL_10to50_2016")->second).first; this_xsec[0] = (mStat.find("MC13TeV_DYJetsToLL_10to50_2016")->second).second;
+            this_events[1] = (mStat.find("MC13TeV_DY1JetsToLL_10to50_2016")->second).first; this_xsec[1] = (mStat.find("MC13TeV_DY1JetsToLL_10to50_2016")->second).second;
+            this_events[2] = (mStat.find("MC13TeV_DY2JetsToLL_10to50_2016")->second).first; this_xsec[2] = (mStat.find("MC13TeV_DY2JetsToLL_10to50_2016")->second).second;
+            this_events[3] = (mStat.find("MC13TeV_DY3JetsToLL_10to50_2016")->second).first; this_xsec[3] = (mStat.find("MC13TeV_DY3JetsToLL_10to50_2016")->second).second;
+            this_events[4] = (mStat.find("MC13TeV_DY4JetsToLL_10to50_2016")->second).first; this_xsec[4] = (mStat.find("MC13TeV_DY4JetsToLL_10to50_2016")->second).second;
+        }
+        else if( bit == 2)//high mass DY
+        {
+            this_kf = 1.21;
+            this_events[0] = (mStat.find("MC13TeV_DYJetsToLL_50toInf_ext1_2016")->second).first; this_xsec[0] = (mStat.find("MC13TeV_DYJetsToLL_50toInf_ext1_2016")->second).second;
+            this_events[1] = (mStat.find("MC13TeV_DY1JetsToLL_50toInf_2016")->second).first; this_xsec[1] = (mStat.find("MC13TeV_DY1JetsToLL_50toInf_2016")->second).second;
+            this_events[2] = (mStat.find("MC13TeV_DY2JetsToLL_50toInf_2016")->second).first; this_xsec[2] = (mStat.find("MC13TeV_DY2JetsToLL_50toInf_2016")->second).second;
+            this_events[3] = (mStat.find("MC13TeV_DY3JetsToLL_50toInf_2016")->second).first; this_xsec[3] = (mStat.find("MC13TeV_DY3JetsToLL_50toInf_2016")->second).second;
+            this_events[4] = (mStat.find("MC13TeV_DY4JetsToLL_50toInf_2016")->second).first; this_xsec[4] = (mStat.find("MC13TeV_DY4JetsToLL_50toInf_2016")->second).second;
+        }
+        else
+        {
+            std::cout << "### There is a problem here!" << std::endl;
+            return 0;
+        }
+
+        if      (lheNJets == 0) return this_kf / (this_events[0] / this_xsec[0]);
+        else if (lheNJets == 1) return this_kf / (this_events[1] / this_xsec[1] + this_events[0] / this_xsec[0]);
+        else if (lheNJets == 2) return this_kf / (this_events[2] / this_xsec[2] + this_events[0] / this_xsec[0]);
+        else if (lheNJets == 3) return this_kf / (this_events[3] / this_xsec[3] + this_events[0] / this_xsec[0]);
+        else if (lheNJets == 4) return this_kf / (this_events[4] / this_xsec[4] + this_events[0] / this_xsec[0]);
+        else { std::cout << "### There is a problem here!" << std::endl; return 0; }
+        return 0;
+    }
+}

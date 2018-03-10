@@ -199,8 +199,8 @@ int main(int argc, char* argv[])
     bool isMC_ttbar = isMC && (string(url.Data()).find("TeV_TTJets")  != string::npos);
     bool isMC_stop  = isMC && (string(url.Data()).find("TeV_SingleT")  != string::npos);
 
-    bool isMC_WJets = isMC && (string(url.Data()).find("MC13TeV_WJets")  != string::npos);
-    bool isMC_DY = isMC && (string(url.Data()).find("MC13TeV_DY")  != string::npos);
+    bool isMC_WJets = isMC && ( (string(url.Data()).find("MC13TeV_WJets")  != string::npos) || (string(url.Data()).find("MC13TeV_W1Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W2Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W3Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W4Jets")  != string::npos) );
+    bool isMC_DY = isMC && ( (string(url.Data()).find("MC13TeV_DY")  != string::npos) );
     
     bool isMC_Wh = isMC && (string(url.Data()).find("Wh")  != string::npos); 
     bool isMC_Zh = isMC && (string(url.Data()).find("Zh")  != string::npos); 
@@ -534,11 +534,9 @@ int main(int argc, char* argv[])
       TH1F* negH = (TH1F *) file->Get("mainNtuplizer/n_negevents");
       if(posH && negH) cnorm = posH->GetBinContent(1) - negH->GetBinContent(1);
       if(rescaleFactor>0) cnorm /= rescaleFactor;
-      printf("cnorm = %f and totalNumberOfEvents= %f\n",cnorm, totalNumberofEvents);
-      
+      printf("cnorm = %f and totalNumberOfEvents= %f\n", cnorm, totalNumberofEvents);
       //xsecWeight=xsec/totalNumberofEvents;
-      xsecWeight=xsec/cnorm; // effective luminosity
-      
+      xsecWeight=xsec/cnorm; // effective luminosity}
       /*
       std::map<std::string, int> xsec_map = mStat;
 
@@ -660,18 +658,33 @@ int main(int argc, char* argv[])
         }
         //systematical weight
         float weight = 1.0; //xsecWeight;
-        if(isMC) {
+        if(isMC) 
+        {
           weight *= genWeight;
+          //Here is the tricky part.,... rewrite xsecWeight for WJets/WXJets and DYJets/DYXJets
+          if( isMC_WJets )
+          {
+            xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(0, ev.lheNJets);
+          }
+          else if( isMC_DY )
+          {
+            if (string(url.Data()).find("10to50")  != string::npos)
+            {
+              xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(1, ev.lheNJets);
+            }
+            else
+            {
+              xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(2, ev.lheNJets);
+            }
+          }
           weight *= xsecWeight; 
         }
 
 	// Apply Top pt-reweighting
 	double top_wgt(1.0);    
-	
+
 	if(reweightTopPt && isMC_ttbar){
-	  
 	  PhysicsObjectCollection &partons = phys.genpartons;
-	  
 	  double SFtop(0.);
 	  double SFantitop(0.);
 
@@ -699,7 +712,7 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("toppt","antitop",top.pt(),weight);
 	    }
 	  }
-	  
+  
 	  if (itop<2) { 
 	    printf("Did not found tt pair!!\n"); 
 	  } else if (itop==2) {
@@ -707,7 +720,7 @@ int main(int argc, char* argv[])
 	  } else {
 	    printf("More than 2 top particles found. Please check\n");
 	  }
-	    
+    
 	  //printf("weight= %3f and top weight= %3f\n",weight,top_wgt);
 	  weight *= top_wgt;
 	  //printf("Final weight is : %3f\n\n",weight);
@@ -785,14 +798,14 @@ int main(int argc, char* argv[])
 
 	float lep_threshold(25.);
 	float eta_threshold=2.5;
-	
+
 	for (auto &ilep : leps) {
 	  //if ( ilep.pt()<5. ) continue;
 
 	  int lepid = ilep.id;
 	  if (abs(lepid)==13) eta_threshold=2.4;
 	  if (fabs(ilep.eta())>eta_threshold) continue;
-	  
+  
 	  bool hasTightIdandIso(true);
 	  if (abs(lepid)==11) {
 	    lep_threshold=ele_threshold_;
@@ -839,9 +852,8 @@ int main(int argc, char* argv[])
 	    std::pair <int,LorentzVector> goodlep;
 	    goodlep = std::make_pair(lepid,ilep);
 	    goodLeptons.push_back(goodlep);
-	    
 	  } else { // extra loose leptons
-	   
+
 	    if (abs(lepid)==11) {
 	      hasExtraLepton = (ilep.passIdLooseEl && ilep.passIsoEl && ilep.pt()>10.);
 	    } else if (abs(lepid)==13) {
@@ -889,8 +901,8 @@ int main(int argc, char* argv[])
         case EMU  :
 	  tag_cat.push_back("emu");
             break;
-	    //    default   :
-	    // continue;
+	    //default :
+	    //continue;
         }
         /*
         //split inclusive DY sample into DYToLL and DYToTauTau
@@ -949,9 +961,9 @@ int main(int argc, char* argv[])
 	//tags.push_back(tag_cat); //add ee, mumu, emu category
 
         //prepare the tag's vectors for histo filling
-	// for(size_t ich=0; ich<tag_cat.size(); ich++){
-	//   tags.push_back( tag_cat[ich] );
-	// }
+	//for(size_t ich=0; ich<tag_cat.size(); ich++) {
+	//  tags.push_back( tag_cat[ich] );
+	//}
 
         // pielup reweightiing
         mon.fillHisto("nvtx_raw",   tags, phys.nvtx,      xsecWeight*genWeight);
@@ -1000,7 +1012,7 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("leadlep_eta_raw","mu",goodLeptons[0].second.eta(),weight);
 	}
 
-	// Dphi(lep, MET) ?
+	//Dphi(lep, MET) ?
 	float dphilepmet=fabs(deltaPhi(goodLeptons[0].second.phi(),metP4.phi()));
 	mon.fillHisto("dphilepmet","raw",dphilepmet,weight);
 
@@ -1017,14 +1029,14 @@ int main(int argc, char* argv[])
 	mon.fillHisto("ptw","raw",wsum.pt(),weight);
 
 	//-------------------------------------------------------------------
-	// MET>25 GeV 
+	//MET>25 GeV 
 	bool passMet25(metP4.pt()>25);
 	if (!passMet25) continue;
 	mon.fillHisto("eventflow","all",3,weight); // MEt cut
 	mon.fillHisto("eventflow","bdt",3,weight);
 	//-------------------------------------------------------------------
 
-	// mtW >50 GeV
+	//mtW >50 GeV
 	bool passMt(sqrt(tMass)>50. && sqrt(tMass)<250.);
 	if (!passMt) continue;
 	mon.fillHisto("eventflow","all",4,weight); // MT cut
@@ -1038,7 +1050,7 @@ int main(int argc, char* argv[])
 	// The AK8 fat jets configuration
 	//###########################################################
 
-	// AK8 + double-b tagger fat-jet collection
+	//AK8 + double-b tagger fat-jet collection
 	PhysicsObjectFatJetCollection DBfatJets; // collection of AK8 fat jets
 
 	int ifjet(0);
@@ -1618,7 +1630,7 @@ int main(int argc, char* argv[])
  
         //-----------------------------------------------------------
         // Control plots
-        // ----------------------------------------------------------
+        //----------------------------------------------------------
 
         // 3,4 b's pT
         mon.fillHisto("nbjets_raw",tags,GoodIdbJets.size(),weight);
@@ -1635,7 +1647,7 @@ int main(int argc, char* argv[])
         mon.fillHisto("higgsMass",tags,allHadronic.mass(),weight);
         // higgs pT
         mon.fillHisto("higgsPt",tags,allHadronic.pt(),weight);
-        // // HT from all CSV + soft b's
+        // HT from all CSV + soft b's
         mon.fillHisto("ht",tags,ht,weight);
 	mon.fillHisto("ht_b30",tags,ht_b30,weight);
         // MET
