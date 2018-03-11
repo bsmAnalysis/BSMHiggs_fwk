@@ -22,9 +22,10 @@
 //#include "UserCode/bsmhiggs_fwk/interface/BTagUtils.h"
 #include "UserCode/bsmhiggs_fwk/interface/statWgt.h"
 
+#include "EgammaAnalysis/ElectronTools/interface/EnergyScaleCorrection_class.h"
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
-#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
+//#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
 #include "TSystem.h"
 #include "TFile.h"
@@ -319,6 +320,24 @@ int main(int argc, char* argv[])
     totalJESUnc = new JetCorrectionUncertainty((jecDir+"/"+pf+"_Uncertainty_AK4PFchs.txt").Data());
     //JetCorrectionUncertainty jecUnc(uncFile.Data());
 
+    // Lepton scale corrections
+    EnergyScaleCorrection_class eScaler_("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_74x_pho");     
+    eScaler_.doScale=true;
+    eScaler_.doSmearings=true;
+
+    std::string bit_string_stat = "001";
+    std::string bit_string_syst = "010";
+    std::string bit_string_gain = "100";
+    std::bitset<6> bit_stat(bit_string_stat);
+    std::bitset<6> bit_syst(bit_string_syst);
+    std::bitset<6> bit_gain(bit_string_gain);
+
+    //muon energy scale and uncertainties
+    TString muscleDir = runProcess.getParameter<std::string>("muscleDir");
+    gSystem->ExpandPathName(muscleDir);
+
+    rochcor2016* muCor2016 = new rochcor2016(); //replace the MuScleFitCorrector we used at run1
+    
     //pdf info
     
     //##################################################################################
@@ -340,21 +359,21 @@ int main(int argc, char* argv[])
      // generator level plots
     mon.addHistogram( new TH1F( "pileup", ";pileup;Events", 100,-0.5,99.5) );
     
-    mon.addHistogram( new TH1F( "higgsMass",";m_{h} [GeV];Events",30,0.,600.) );
-    mon.addHistogram( new TH1F( "higgsPt",";p_{T}^{h} [GeV];Events",30,0.,600.));
+    mon.addHistogram( new TH1F( "higgsMass",";m_{h} [GeV];Events",50,0.,1000.) );
+    mon.addHistogram( new TH1F( "higgsPt",";p_{T}^{h} [GeV];Events",30,0.,500.));
     // mon.addHistogram( new TH1F( "higgsEta",";#eta (h);Evenets",100,-5,5) );
  
     // Top pt
-    mon.addHistogram( new TH1F( "toppt",";#it{p}_{T}^{top} [GeV];Events",40,0.,800.) );    
+    mon.addHistogram( new TH1F( "toppt",";#it{p}_{T}^{top} [GeV];Events",100,0.,2000.) );    
 
      // RECO level, physics objects
     mon.addHistogram( new TH1F( "dR_raw",";#Delta R(SV,b);Events",50,0.,5.));
     mon.addHistogram( new TH1F( "dRlj_raw",";#Delta R(lep,jet);Events",100,0.,5.));
 
-    mon.addHistogram( new TH1F( "leadlep_pt_raw", ";Leading lepton #it{p}_{T}^{l} [GeV];Events", 30,0.,600.) );
+    mon.addHistogram( new TH1F( "leadlep_pt_raw", ";Leading lepton #it{p}_{T}^{l} [GeV];Events", 30,0.,500.) );
     mon.addHistogram( new TH1F( "leadlep_eta_raw",";Leading lepton #eta^{l};Events", 52,-2.6,2.6) );
     
-    mon.addHistogram( new TH1F( "jet_pt_raw", ";#it{p}_{T} [GeV];Events",30,0.,600.) );
+    mon.addHistogram( new TH1F( "jet_pt_raw", ";#it{p}_{T} [GeV];Events",30,0.,500.) );
     mon.addHistogram( new TH1F( "softjet_pt_raw", ";#it{p}_{T} [GeV];Events",20,0.,40.) );
     mon.addHistogram( new TH1F( "jet_eta_raw",";jet #eta;Events", 70,-3,3) );
     mon.addHistogram( new TH1F( "jet_phi_raw",";jet #phi;Events", 70,-6,6) );
@@ -438,11 +457,11 @@ int main(int argc, char* argv[])
     
     mon.addHistogram( new TH1F( "nvtx_raw",";Vertices;Events",100,0,100) );
     mon.addHistogram( new TH1F( "nvtxwgt_raw",";Vertices;Events",100,0,100) );
-    mon.addHistogram( new TH1F( "pfmet",    ";E_{T}^{miss} [GeV];Events", 60,0.,600.) );
-    mon.addHistogram( new TH1F( "ht",    ";H_{T} (p_{T}^{j}>20) [GeV];Events", 30,0.,600.) );
-    mon.addHistogram( new TH1F( "ht_b30",    ";H_{T} (p_{T}^{j}>30) [GeV];Events", 30,0.,600.) );
-    mon.addHistogram( new TH1F( "mtw",       ";#it{m}_{T}^{W} [GeV];Events", 60,0.,600.) );
-    mon.addHistogram( new TH1F( "ptw",       ";#it{p}_{T}^{W} [GeV];Events",30,0.,600.) );
+    mon.addHistogram( new TH1F( "pfmet",    ";E_{T}^{miss} [GeV];Events", 50,0.,500.) );
+    mon.addHistogram( new TH1F( "ht",    ";H_{T} (p_{T}^{j}>20) [GeV];Events", 50,0.,800.) );
+    mon.addHistogram( new TH1F( "ht_b30",    ";H_{T} (p_{T}^{j}>30) [GeV];Events", 50,0.,800.) );
+    mon.addHistogram( new TH1F( "mtw",       ";#it{m}_{T}^{W} [GeV];Events", 50,0.,500.) );
+    mon.addHistogram( new TH1F( "ptw",       ";#it{p}_{T}^{W} [GeV];Events",30,0.,500.) );
     mon.addHistogram( new TH1F( "dphiWh", ";#Delta#it{#phi}(#it{W},h);Events", 20,0,TMath::Pi()) );
     mon.addHistogram( new TH1F( "dRave",";#Delta R(b,b)_{ave};Events",50,0.,5.));
     mon.addHistogram( new TH1F( "dmmin",";#Delta m_{b,b}^{min};Events",25,0.,250.));
@@ -450,7 +469,7 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "dphilepmet", ";|#Delta#it{#phi}(lep,E_{T}^{miss})|;Events", 20,0,TMath::Pi()) );
 
     //MVA
-    mon.addHistogram( new TH1F( "bdt", ";BDT;Events", 80, -0.4, 0.4) );
+    mon.addHistogram( new TH1F( "bdt", ";BDT;Events", 30, -0.3, 0.3) );
     
     //##################################################################################
     //########################## STUFF FOR CUTS OPTIMIZATION  ##########################
@@ -463,13 +482,13 @@ int main(int argc, char* argv[])
 
     std::vector<double> optim_Cuts1_bdt;
     optim_Cuts1_bdt.push_back(-0.4); //add a bin in the shapes with a BDT cut of -0.4
-    for(double bdt=0.00;bdt<0.30;bdt+=0.01) { optim_Cuts1_bdt.push_back(bdt); }
+    for(double bdt=-0.30;bdt<0.30;bdt+=0.02) { optim_Cuts1_bdt.push_back(bdt); }
 
     TH2F* Hoptim_cuts =(TH2F*)mon.addHistogram(new TProfile2D("optim_cut", ";cut index;variable", optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 1, 0, 1)) ;
     Hoptim_cuts->GetYaxis()->SetBinLabel(1, "BDT>");
     for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){ Hoptim_cuts->Fill(index, 0.0, optim_Cuts1_bdt[index]); }
     for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
-      mon.addHistogram( new TH2F (TString("bdt_shapes")+varNames[ivar],";cut index;BDT;Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 80,-0.4,0.4) );
+      mon.addHistogram( new TH2F (TString("bdt_shapes")+varNames[ivar],";cut index;BDT;Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 30,-0.3,0.3) );
     }
 
 
@@ -689,9 +708,9 @@ int main(int argc, char* argv[])
 	    printf("More than 2 top particles found. Please check\n");
 	  }
 	    
-	  printf("weight= %3f and top weight= %3f\n",weight,top_wgt);
+	  //	  printf("weight= %3f and top weight= %3f\n",weight,top_wgt);
 	  weight *= top_wgt;
-	  printf("Final weight is : %3f\n\n",weight);
+	  //	  printf("Final weight is : %3f\n\n",weight);
 	}
 
         //only take up and down from pileup effect
@@ -768,7 +787,7 @@ int main(int argc, char* argv[])
 	float eta_threshold=2.5;
 	
 	for (auto &ilep : leps) {
-	  if ( ilep.pt()<3. ) continue;
+	  //	  if ( ilep.pt()<5. ) continue;
 
 	  int lepid = ilep.id;
 	  if (abs(lepid)==13) eta_threshold=2.4;
@@ -787,11 +806,40 @@ int main(int argc, char* argv[])
 	  
 	  if ( hasTightIdandIso && (ilep.pt()>lep_threshold) ) {
 
-	      nGoodLeptons++;
-	      std::pair <int,LorentzVector> goodlep;
-	      goodlep = std::make_pair(lepid,ilep);
-	      goodLeptons.push_back(goodlep);
-    
+	    if(abs(lepid)==11) { // ele scale corrections
+	      double et = ilep.en_cor_en / cosh(fabs(ilep.en_EtaSC));
+	      if (isMC) {
+		double sigma= eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed,0,0);
+		//Now smear the MC energy
+		TRandom3 *rgen_ = new TRandom3(0);
+		double smearValue = rgen_->Gaus(1, sigma) ;
+		//TLorentzVector p4        
+		ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue);
+	      } else {
+		double scale_corr=eScaler_.ScaleCorrection(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed); 
+		//TLorentzVector p4
+		ilep.SetPxPyPzE(ilep.Px()*scale_corr, ilep.Py()*scale_corr, ilep.Pz()*scale_corr, ilep.E()*scale_corr); 
+	      }
+	    } else if (abs(lepid)==13) { // mu scale corrections    
+	      if(muCor2016){
+		float qter =1.0;
+		int ntrk = ilep.mn_trkLayersWithMeasurement;
+
+		TLorentzVector p4(ilep.Px(),ilep.Py(),ilep.Pz(),ilep.E());
+		//		printf("Muon P4 (before roch): px=%f, py=%f, pz=%f, e=%f\n",p4.Px(),p4.Py(),p4.Pz(),p4.E());
+		if (isMC) { muCor2016->momcor_mc(p4, lepid<0 ? -1 :1, ntrk, qter);}
+		else { muCor2016->momcor_data(p4, lepid<0 ? -1 :1, 0, qter); }
+
+		ilep.SetPxPyPzE(p4.Px(),p4.Py(),p4.Pz(),p4.E());
+		//		printf("Muon P4 (AFTER roch): px=%f, py=%f, pz=%f, e=%f\n\n",ilep.Px(),ilep.Py(),ilep.Pz(),ilep.E());
+	      }
+	    }
+
+	    nGoodLeptons++;
+	    std::pair <int,LorentzVector> goodlep;
+	    goodlep = std::make_pair(lepid,ilep);
+	    goodLeptons.push_back(goodlep);
+	    
 	  } else { // extra loose leptons
 	   
 	    if (abs(lepid)==11) {
