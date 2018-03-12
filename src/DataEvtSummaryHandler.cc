@@ -456,7 +456,8 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("mn_passIdLoose",  evSummary_.mn_passIdLoose);
     t_->SetBranchAddress("mn_passSoftMuon",  evSummary_.mn_passSoftMuon);
     t_->SetBranchAddress("mn_passIso",  evSummary_.mn_passIso);
-
+    t_->SetBranchAddress("mn_relIso",  evSummary_.mn_relIso);
+    t_->SetBranchAddress("mn_trkrelIso",  evSummary_.mn_trkrelIso);
     //    t_->SetBranchAddress("mn_nMatches",                   evSummary_.mn_nMatches);
     //t_->SetBranchAddress("mn_nMatchedStations",           evSummary_.mn_nMatchedStations);
     t_->SetBranchAddress("mn_validMuonHits",              evSummary_.mn_validMuonHits);
@@ -516,7 +517,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("en_passId", evSummary_.en_passId);
     t_->SetBranchAddress("en_passIdLoose", evSummary_.en_passIdLoose);
     t_->SetBranchAddress("en_passIso", evSummary_.en_passIso);
-
+    t_->SetBranchAddress("en_relIso", evSummary_.en_relIso);
     /* tmp
     //tau
     t_->SetBranchAddress("ta",                      &evSummary_.ta);
