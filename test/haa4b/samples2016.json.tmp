@@ -577,6 +577,61 @@
                         1.0
                     ],
                     "dset": [
+                        "/QCD_Pt-20to30_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt20To30_EMEnr_2016",
+                    "xsec": 5352960 
+                },
+                {
+                    "br": [
+                        0.5
+                    ],
+                    "dset": [
+                        "/QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt30To50_EMEnr_2016",
+                    "xsec": 9928000
+                },
+                {
+                    "br": [
+                        0.5
+                    ],
+                    "dset": [
+                        "/QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt30To50_EMEnr_ext1_2016",
+                    "xsec": 9928000 
+                },
+                {
+                    "br": [
+                        0.5
+                    ],
+                    "dset": [
+                        "/QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt50To80_EMEnr_2016",
+                    "xsec": 2890800 
+                },
+                {
+                    "br": [
+                        0.5
+                    ],
+                    "dset": [
+                        "/QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt50To80_EMEnr_ext1_2016",
+                    "xsec": 2890800
+                },
+                {
+                    "br": [
+                        0.5
+                    ],
+                    "dset": [
                         "/QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
@@ -585,13 +640,35 @@
                 },
                 {
                     "br": [
-                        1.0
+                        0.5
+                    ],
+                    "dset": [
+                        "/QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt80To120_EMEnr_ext1_2016",
+                    "xsec": 350000
+                },
+                {
+                    "br": [
+                        0.5
                     ],
                     "dset": [
                         "/QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_QCD_Pt120To170_EMEnr_2016",
+                    "xsec": 62964
+                },
+                {
+                    "br": [
+                        0.5
+                    ],
+                    "dset": [
+                        "/QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt120To170_EMEnr_ext1_2016",
                     "xsec": 62964
                 },
                 {
@@ -621,77 +698,308 @@
                         1.0
                     ],
                     "dset": [
-                        "/QCD_Pt-20toInf_MuEnrichedPt15_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                        "/QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_QCD_Pt20ToInf_MuEnr_2016",
-                    "xsec": 302672
+                    "dtag": "MC13TeV_QCD_Pt15to20_MuEnrPt5_2016",
+                    "xsec": 3819570
                 },
                 {
                     "br": [
-                        0.0002
+                        1.0
+                    ],
+                    "dset": [
+                        "/QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt20to30_MuEnrPt5_2016",
+                    "xsec": 2960198.4
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/QCD_Pt-30to50_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt30to50_MuEnrPt5_2016",
+                    "xsec": 1652471.46
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/QCD_Pt-50to80_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt50to80_MuEnrPt5_2016",
+                    "xsec": 437504.1
+                },
+                {
+                    "br": [
+                        0.5
+                    ],
+                    "dset": [
+                        "/QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt80to120_MuEnrPt5_2016",
+                    "xsec": 106033.6648
+                },
+                {
+                    "br": [
+                        0.5
+                    ],
+                    "dset": [
+                        "/QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v3/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt80to120_MuEnrPt5_ext1_2016",
+                    "xsec": 106033.6648
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt120to170_MuEnrPt5_2016",
+                    "xsec": 25190.51514
+                },
+                {
+                    "br": [
+                        0.5
+                    ],
+                    "dset": [
+                        "/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt170to300_MuEnrPt5_2016",
+                    "xsec": 8654.49315
+                },
+                {
+                    "br": [
+                        0.5
+                    ],
+                    "dset": [
+                        "/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt170to300_MuEnrPt5_ext1_2016",
+                    "xsec": 8654.49315
+                },
+                {
+                    "br": [
+                        0.33333333
+                    ],
+                    "dset": [
+                        "/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt300to470_MuEnrPt5_2016",
+                    "xsec": 797.35269
+                },
+                {
+                    "br": [
+                        0.33333333
+                    ],
+                    "dset": [
+                        "/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt300to470_MuEnrPt5_ext1_2016",
+                    "xsec": 797.35269
+                },
+                {
+                    "br": [
+                        0.33333333
+                    ],
+                    "dset": [
+                        "/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt300to470_MuEnrPt5_ext2_2016",
+                    "xsec": 797.35269
+                },
+                {
+                    "br": [
+                        0.33333333
+                    ],
+                    "dset": [
+                        "/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt470to600_MuEnrPt5_2016",
+                    "xsec": 79.02553776
+                },
+                {
+                    "br": [
+                        0.33333333
+                    ],
+                    "dset": [
+                        "/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt470to600_MuEnrPt5_ext1_2016",
+                    "xsec": 79.02553776
+                },
+                {
+                    "br": [
+                        0.33333333
+                    ],
+                    "dset": [
+                        "/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt470to600_MuEnrPt5_ext2_2016",
+                    "xsec": 79.02553776
+                },
+                {
+                    "br": [
+                        0.5
+                    ],
+                    "dset": [
+                        "/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt600to800_MuEnrPt5_2016",
+                    "xsec": 25.09505908
+                },
+                {
+                    "br": [
+                        0.5
+                    ],
+                    "dset": [
+                        "/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt600to800_MuEnrPt5_ext1_2016",
+                    "xsec": 25.09505908
+                },
+                {
+                    "br": [
+                        0.33333333
+                    ],
+                    "dset": [
+                        "/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt800to1000_MuEnrPt5_2016",
+                    "xsec": 4.707368272
+                },
+                {
+                    "br": [
+                        0.33333333
+                    ],
+                    "dset": [
+                        "/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt800to1000_MuEnrPt5_ext1_2016",
+                    "xsec": 4.707368272
+                },
+                {
+                    "br": [
+                        0.33333333
+                    ],
+                    "dset": [
+                        "/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt800to1000_MuEnrPt5_ext2_2016",
+                    "xsec": 4.707368272
+                },
+                {
+                    "br": [
+                        0.5
+                    ],
+                    "dset": [
+                        "/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt1000toInf_MuEnrPt5_2016",
+                    "xsec": 1.62131692
+                },
+                {
+                    "br": [
+                        0.5
+                    ],
+                    "dset": [
+                        "/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v3/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_QCD_Pt1000toInf_MuEnrPt5_ext1_/2016",
+                    "xsec": 1.62131692
+                },
+                {
+                    "br": [
+                        1.0
                     ],
                     "dset": [
                         "/QCD_Pt_15to20_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_QCD_Pt_15to20_bcToE_2016",
-                    "xsec": 1272980000
+                    "xsec": 254596
                 },
                 {
                     "br": [
-                        0.00059
+                        1.0
                     ],
                     "dset": [
                         "/QCD_Pt_20to30_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_QCD_20to30_bcToE_2016",
-                    "xsec": 557627000
+                    "xsec": 328999.93
                 },
                 {
                     "br": [
-                        0.00255
+                        1.0
                     ],
                     "dset": [
                         "/QCD_Pt_30to80_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_QCD_30to80_bcToE_2016",
-                    "xsec": 159068000
+                    "xsec": 405623.4
                 },
                 {
                     "br": [
-                        0.01183
+                        1.0
                     ],
                     "dset": [
                         "/QCD_Pt_80to170_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_QCD_Pt_80to170_bcToE_2016",
-                    "xsec": 3221000
+                    "xsec": 38104.43
                 },
                 {
                     "br": [
-                        0.02492
+                        1.0
                     ],
                     "dset": [
                         "/QCD_Pt_170to250_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_QCD_Pt_170to250_bcToE_2016",
-                    "xsec": 105771
+                    "xsec": 2635.81332
                 },
                 {
                     "br": [
-                        0.03375
+                        1.0
                     ],
                     "dset": [
                         "/QCD_Pt_250toInf_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_QCD_Pt_250toInf_bcToE_2016",
-                    "xsec": 21094.1
+                    "xsec": 711.925875
                 }
             ],
             "isdata": false,
