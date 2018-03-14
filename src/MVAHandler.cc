@@ -29,6 +29,7 @@ void MVAHandler::resetStruct()
   evSummary_.WHdR = -1.0;
   //weight
   evSummary_.weight = 0.0;
+  evSummary_.lheNJets = -1;
 }
 
 //
@@ -37,7 +38,8 @@ void MVAHandler::getEntry(
                           float Wpt, //W only
                           float Hmass, float HpT, float bbdRAve, float bbdMMin, float HHt, //Higgs only
                           float WHdR, //W and H
-                          float weight
+                          float weight,
+                          int lheNJets
                          )
 {
   resetStruct();
@@ -56,6 +58,8 @@ void MVAHandler::getEntry(
   evSummary_.WHdR = WHdR;
   //weight
   evSummary_.weight = weight;
+  //AUX
+  evSummary_.lheNJets = lheNJets;
   return ;
 }
 
@@ -75,6 +79,8 @@ bool MVAHandler::initTree(TString mvaout)
   to3b->Branch("HHt",  &evSummary_.HHt,  "HHt/F");
   to3b->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F");
   to3b->Branch("weight",  &evSummary_.weight,  "weight/F");
+  to3b->Branch("lheNJets",  &evSummary_.lheNJets,  "lheNJets/I");
+
 
   to4b->Branch("WpT",  &evSummary_.WpT,  "WpT/F");
   to4b->Branch("Hmass",  &evSummary_.Hmass,  "Hmass/F");
@@ -84,6 +90,7 @@ bool MVAHandler::initTree(TString mvaout)
   to4b->Branch("HHt",  &evSummary_.HHt,  "HHt/F");
   to4b->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F");
   to4b->Branch("weight",  &evSummary_.weight,  "weight/F");
+  to4b->Branch("lheNJets",  &evSummary_.lheNJets,  "lheNJets/I");
 
   return true;
 }
@@ -92,9 +99,9 @@ bool MVAHandler::initTree(TString mvaout)
 void MVAHandler::fillTree()
 {
   if ( evSummary_.is3b && evSummary_.is4b )
-    {
-      std::cout << "One event can not be both in 3 and 4 b cat! Please check!" << std::endl;
-    }
+  {
+    std::cout << "One event can not be both in 3 and 4 b cat! Please check!" << std::endl;
+  }
   else if ( evSummary_.is3b && !evSummary_.is4b )
   {
     if ( to3b ) to3b->Fill();
