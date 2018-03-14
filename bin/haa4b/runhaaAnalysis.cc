@@ -1431,14 +1431,17 @@ int main(int argc, char* argv[])
 	// SRs: (nj,3b), (nj, 4b), ... or
 	// Top CRs: (5j, 2b), (4j, 2b), (3j, 2b), ...
 	if (nCSVMtags>=1) {
-	  if (CSVLoosebJets.size()>=2 ) {
-	    
+
+	  if (CSVLoosebJets.size()>=2 ) {     
+
 	    if (CSVLoosebJets.size()==2 && SVs.size()==0) { // Top Control Regions
-	      
-	      for (auto & i : GoodIdJets) {
-		GoodIdbJets.push_back(i);
-	      }
-	      
+
+	      if (nCSVTtags>=1) {
+		for (auto & i : GoodIdJets) {
+		  GoodIdbJets.push_back(i);
+		}
+	      } else { continue; }
+
 	    } else { // Signal Region GoodIdbJets
 	      for (auto & i : CSVLoosebJets) 
 		{
@@ -1452,21 +1455,32 @@ int main(int argc, char* argv[])
 	    // At least 2 jets and 2 b-jets
 	    mon.fillHisto("eventflow","all",5,weight); 
 	    mon.fillHisto("eventflow","bdt",5,weight);
+	   
+	  } else if (CSVLoosebJets.size()==1) { // && SVs.size()>0) { // Top Control Regions
 
-	  } else { continue; } // At least 2 CSVv2 b-jets
+	    if (nCSVTtags>=1) {    
+	      for (auto & i : GoodIdJets) { 
+		GoodIdbJets.push_back(i); 
+	      }
+	      for (auto & i : SVs) { 
+		GoodIdbJets.push_back(i); 
+	      }
+	    } else { continue; }
+
+	  } else { continue; } // At least 2 CSVv2 b-jets OR at least 1 Tight CSV + SVs
 
 	} else if ( btag_sideband) { // non-TT backgrouns (W, DY, QCD) CRs:
 	  
 	  for (auto & i : GoodIdJets) {
 	    GoodIdbJets.push_back(i);
 	  }
-
+	  for (auto & i : SVs) {
+	    GoodIdbJets.push_back(i);
+	  } 
 	} else {
-	  //printf("\n Unknown category, please check \n");
+	  //	  printf("\n Unknown category, please check \n");
 	  continue;
 	}
-
-
 
 	//-------------------------------------------------------------------
 	//At least 2 jets and 2 b-jets
@@ -1487,32 +1501,15 @@ int main(int argc, char* argv[])
 	}
 	*/
 
-	// // 2D plots
-	// //-------------------------------------------------------------------
-	// mon.fillHisto("nbjets_2D","cat_raw",GoodIdJets.size(),GoodIdbJets.size(),weight);
-	// mon.fillHisto("nbjets_raw","merged",GoodIdbJets.size(),weight);
-	// //-------------------------------------------------------------------
-	// mon.fillHisto("nbjets_2D","cat2_raw",GoodIdbJets.size(),DBfatJets.size(),weight);
-	// mon.fillHisto("nbjets_2D","cats_raw",CSVLoosebJets.size(),SVs.size(),weight);
-	
-	// //-------------------------------------------------------------------
-	// //-------------------------------------------------------------------
-	// // Merged CSV jets + SV
-	// is=0;
-	// for (auto & jet : GoodIdbJets) {
-	//    mon.fillHisto("jet_pt_raw", "merged"+htag[is], jet.pt(),weight);
-	//    mon.fillHisto("jet_eta_raw", "merged"+htag[is], jet.eta(),weight);
-	//    is++;
-	//    if (is>3) break; // plot only up to 4 b-jets ?
-	// }
-
 	//-------------------------------------------------------------------                                                                                                  
 
         //##############################################
         //########  Main Event Selection        ########
         //##############################################
 
-        //-------------------------------------------------------------------
+       //-------------------------------------------------------------------
+	sort(GoodIdJets.begin(), GoodIdJets.end(), ptsort());       
+
         // At least 3 b-tags
 	if (GoodIdbJets.size()<3) continue;
 	
@@ -1524,38 +1521,66 @@ int main(int argc, char* argv[])
 	bool isSignalRegion(true);
 
 	if (nCSVMtags>=1) {
-	  if (CSVLoosebJets.size()>2 || SVs.size()>0) {
-	    // SR categories
-	    mon.fillHisto("eventflow","all",6,weight); 
-	    
-	    // Cats: 3b
-	    if (GoodIdbJets.size()==3) { 
-	      tags.push_back("SR_3b");
-	      tags.push_back(ch+"SR_3b"); 
-	    }
-	    else {
-	      tags.push_back("SR_geq4b"); 
-	      tags.push_back(ch+"SR_geq4b"); 
 
-	      mon.fillHisto("eventflow","all",7,weight);
+	  if (CSVLoosebJets.size()>=2 ) {
+	    
+	    if (CSVLoosebJets.size()>2 || SVs.size()>0) {
+	      // SR categories
+	      mon.fillHisto("eventflow","all",6,weight); 
 	      
-	      if (GoodIdbJets.size()==4) { 
-		tags.push_back("SR_4b"); 
-		tags.push_back(ch+"SR_4b"); 
+	      // Cats: 3b
+	      if (GoodIdbJets.size()==3) { 
+		tags.push_back("SR_3b");
+		tags.push_back(ch+"SR_3b"); 
 	      }
 	      else {
-		if (GoodIdbJets.size()==5) { 
-		  tags.push_back("SR_5b"); 
-		  tags.push_back(ch+"SR_5b");
+		tags.push_back("SR_geq4b"); 
+		tags.push_back(ch+"SR_geq4b"); 
+		
+		mon.fillHisto("eventflow","all",7,weight);
+		
+		if (GoodIdbJets.size()==4) { 
+		  tags.push_back("SR_4b"); 
+		  tags.push_back(ch+"SR_4b"); 
 		}
-		tags.push_back("SR_geq5b");
-		tags.push_back(ch+"SR_geq5b");  
+		else {
+		  if (GoodIdbJets.size()==5) { 
+		    tags.push_back("SR_5b"); 
+		    tags.push_back(ch+"SR_5b");
+		  }
+		  tags.push_back("SR_geq5b");
+		  tags.push_back(ch+"SR_geq5b");  
+		}
+	      }
+	    } else { 
+	      // thats the Top Control Regions
+	      isSignalRegion=false;
+	      
+	      // Top Control Region categories
+	      if (GoodIdbJets.size()==3) { 
+	      tags.push_back("CR_3b");
+	      tags.push_back(ch+"CR_3b");  
+	      }
+	      else {
+		tags.push_back("CR_geq4b");
+		tags.push_back(ch+"CR_geq4b");
+		if (GoodIdbJets.size()==4) { 
+		  tags.push_back("CR_4b"); 
+		  tags.push_back(ch+"CR_4b"); 
+		}
+		else {
+		  if (GoodIdbJets.size()==5) { 
+		    tags.push_back("CR_5b"); 
+		  tags.push_back(ch+"CR_5b");
+		  }
+		  tags.push_back("CR_geq5b");
+		  tags.push_back(ch+"CR_geq5b"); 
+		}
 	      }
 	    }
-	  } else { 
-	    // thats the Top Control Regions
-	    isSignalRegion=false;
-	    
+	  } else if (CSVLoosebJets.size()==1) { // && SVs.size()>0) { // Top Control Regions
+	    isSignalRegion=false;      
+
 	    // Top Control Region categories
 	    if (GoodIdbJets.size()==3) { 
 	      tags.push_back("CR_3b");
@@ -1578,6 +1603,7 @@ int main(int argc, char* argv[])
 	      }
 	    }
 	  }
+	    
 	} else if (btag_sideband) {  // thats the non-TT (W,DY,QCD) Control Regions
 	  
 	  isSignalRegion=false;
@@ -1607,7 +1633,6 @@ int main(int argc, char* argv[])
 	  tags.push_back("UNKNOWN");
 	  printf("\n Unknown category, please check \n");
         }
-
 
 	// Here define all variables 
         LorentzVector allHadronic;
