@@ -694,7 +694,7 @@ int main(int argc, char* argv[])
   fclose(pFile);
 
   //add by hand the hard coded uncertainties
-  allInfo.addHardCodedUncertainties(histo.Data());
+  //  allInfo.addHardCodedUncertainties(histo.Data());
 
   //produce a plot
   allInfo.showShape(selCh,histo,"plot"); //this produce the final global shape
@@ -1864,6 +1864,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     TString mumucard = "";
     TString combinedcard = "";
 
+    TString ecrcard = "";
+    TString mucrcard = "";
+
     for(std::map<string, bool>::iterator C=allChannels.begin(); C!=allChannels.end();C++){
       TString dcName=url;              
       dcName.ReplaceAll(".root","_"+TString(C->first.c_str())+".dat");
@@ -1871,6 +1874,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       combinedcard += (C->first+"=").c_str()+dcName+" ";
       if(C->first.find("E"  )!=string::npos)eecard   += (C->first+"=").c_str()+dcName+" ";
       if(C->first.find("MU")!=string::npos)mumucard += (C->first+"=").c_str()+dcName+" ";
+
+      if(C->first.find("E_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";  
+      if(C->first.find("MU_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" "; 
 
       bool TTcontrolregion(false);  
       bool nonTTcontrolregion(false); 
@@ -1916,6 +1922,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       for(std::map<string, bool>::iterator U=allSysts.begin(); U!=allSysts.end();U++){
         if(mass==125 && U->first=="CMS_haa4b_lshape")continue;//skip lineshape uncertainty for 125GeV Higgs
 	if((TTcontrolregion || nonTTcontrolregion) && U->first=="lumi_13TeV") continue; //skip lumi unc in the Control Regions
+	//	if(!TTcontrolregion && !nonTTcontrolregion && U->first=="CMS_eff") continue;
 
         char line[2048];
         sprintf(line,"%-45s %-10s ", U->first.c_str(), U->second?"shapeN2":"lnN");
@@ -1934,19 +1941,20 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       }
 
       // Add lines for simultaneous fit in the CRs:  
-      if(TTcontrolregion) {   
+      if (controlR) {
 	fprintf(pFile, "-------------------------------\n");  
 	fprintf(pFile,"\n");
-	fprintf(pFile,"tt_norm rateParam bin1 ttbarjet 1\n");
+	if(C->first.find("E" )!=string::npos) {
+	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarjet 1\n");
+	  fprintf(pFile,"w_norm_e rateParam bin1 wlnu 1\n");    
+	}
+	if(C->first.find("MU")!=string::npos) {
+	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarjet 1\n");
+	  fprintf(pFile,"w_norm_mu rateParam bin1 wlnu 1\n");   
+	}
 	fprintf(pFile, "-------------------------------\n");  
-      } 
-      if(nonTTcontrolregion) {
-	fprintf(pFile, "-------------------------------\n");          
-	fprintf(pFile,"\n");     
-	fprintf(pFile,"w_norm rateParam bin1 wlnu 1\n");  
-	fprintf(pFile, "-------------------------------\n");    
       }
-
+      
       fclose(pFile);
     }
 
@@ -1958,6 +1966,13 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mumucard     + " > " + "card_mu.dat").Data());
     fclose(pFile);         
 
+    /*
+    if (controlR) {
+      FILE* eFile = fopen("combineCards_eCR.sh","w");
+      fprintf(pFile,"%s;\n",(TString("combineCards.py ") + ecrcard       + " > " + "card_eCR.dat").Data());
+      fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mucrcard     + " > " + "card_muCR.dat").Data()); 
+    }
+    */
   }
 
 
