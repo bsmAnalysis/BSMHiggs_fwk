@@ -932,7 +932,7 @@
                         "/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v3/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_QCD_Pt1000toInf_MuEnrPt5_ext1_/2016",
+                    "dtag": "MC13TeV_QCD_Pt1000toInf_MuEnrPt5_ext1_2016",
                     "xsec": 1.62131692
                 },
                 {
