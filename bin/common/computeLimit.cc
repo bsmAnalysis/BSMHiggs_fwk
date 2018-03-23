@@ -52,6 +52,19 @@ TString histo(""), histoVBF("");
 int rebinVal = 1;
 double MCRescale = 1.0;
 double SignalRescale = 1.0;
+
+bool postfit_Norms=false;
+
+double norm_top_e_3b=0.76;
+double norm_top_mu_3b=0.94;
+double norm_top_e_4b=0.75;
+double norm_top_mu_4b=0.94;
+
+double norm_w_e_3b=1.23;
+double norm_w_mu_3b=1.31;
+double norm_w_e_4b=1.26;
+double norm_w_mu_4b=1.22;
+
 int mass;
 bool shape = false;
 TString postfix="";
@@ -460,6 +473,7 @@ void printHelp()
   printf("--postfix    --> use this to specify a postfix that will be added to the process names)\n");
   printf("--systpostfix    --> use this to specify a syst postfix that will be added to the process names)\n");
   printf("--MCRescale    --> use this to rescale the cross-section of all MC processes by a given factor)\n");
+  printf("--postfit_Norms  ---> use this to apply postfit Normalization values for W and Top processes in the Signal + Control regions \n");
   printf("--signalRescale    --> use this to rescale signal cross-section by a given factor)\n");
   printf("--interf     --> use this to rescale xsection according to WW interferences)\n");
   printf("--minSignalYield   --> use this to specify the minimum Signal yield you want in each channel)\n");
@@ -532,6 +546,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--syst")     !=string::npos) { runSystematics=true; printf("syst = True\n");}
     else if(arg.find("--shape")    !=string::npos) { shape=true; printf("shapeBased = True\n");}
     else if(arg.find("--controlR")  !=string::npos) { controlR=true; printf("controlR = True\n");} 
+    else if(arg.find("--postfit_Norms")  !=string::npos) { postfit_Norms=true; printf("postfit_Norms = True\n");}    
     else if(arg.find("--dirtyFix2")    !=string::npos) { dirtyFix2=true; printf("dirtyFix2 = True\n");}
     else if(arg.find("--dirtyFix1")    !=string::npos) { dirtyFix1=true; printf("dirtyFix1 = True\n");}
     else if(arg.find("--signalSufix") !=string::npos) { signalSufix = argv[i+1]; i++; printf("signalSufix '%s' will be used\n", signalSufix.Data()); }
@@ -551,8 +566,9 @@ int main(int argc, char* argv[])
   if(AnalysisBins.size()==0)AnalysisBins.push_back("all");
   if(Channels.size()==0){ 
     Channels.push_back("E_SR"); Channels.push_back("MU_SR");
-    if(controlR){Channels.push_back("E_CR");Channels.push_back("MU_CR");
-      Channels.push_back("E_CR_nonTT");Channels.push_back("MU_CR_nonTT"); 
+    if(controlR){
+      Channels.push_back("E_CR");Channels.push_back("MU_CR"); // Top CR
+      Channels.push_back("E_CR_nonTT");Channels.push_back("MU_CR_nonTT"); // nonTop CR 
     } 
   }
 
@@ -2163,6 +2179,33 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             hshape->GetYaxis()->SetTitle("Entries");// (/25GeV)");
           }
           hshape->Scale(MCRescale);
+	  if (postfit_Norms) {
+	    printf("W/Top NORMALIZATIONs: Process = %s and channel = %s\n\n",proc.Data(),ch.Data());
+
+	    // Top normalization
+	    if (proc.Contains("t#bar{t}+jets")!=std::string::npos) {   
+	      if (ch.Contains("E")) {  
+		if(ch.Contains("3b")) hshape->Scale(norm_top_e_3b);
+		if(ch.Contains("4b")) hshape->Scale(norm_top_e_4b);   
+	      }
+	      if (ch.Contains("MU")) { 
+		if(ch.Contains("3b")) hshape->Scale(norm_top_mu_3b);
+		if(ch.Contains("4b")) hshape->Scale(norm_top_mu_4b); 
+	      }    
+	    }
+	    
+	    // W normalization
+	    if (proc.Contains("W#rightarrow l#nu")!=std::string::npos) {
+	      if (ch.Contains("E")) {  
+		if(ch.Contains("3b")) hshape->Scale(norm_w_e_3b);    
+		if(ch.Contains("4b")) hshape->Scale(norm_w_e_4b);     
+	      }
+	      if (ch.Contains("MU")) {          
+		if(ch.Contains("3b")) hshape->Scale(norm_w_mu_3b);      
+		if(ch.Contains("4b")) hshape->Scale(norm_w_mu_4b);          
+	      }
+	    }
+	  }
           if(isSignal)hshape->Scale(SignalRescale);
 
           //Do Renaming and cleaning
