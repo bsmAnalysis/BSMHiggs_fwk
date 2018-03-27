@@ -62,10 +62,23 @@ bool onlyCutIndex = false;
 bool showRatioBox=true;
 bool fixUnderflow=true;
 bool fixOverflow=true;
+bool addExternalNorm=false;
+
 int rebin=0;
 double blind=-1E99;
 double metxmax=600.;
 double  mtxmax=900.;
+
+double topNorm_e_3b=0.80;
+double topNorm_e_4b=0.74; 
+double topNorm_mu_3b=0.99;
+double topNorm_mu_4b=0.92;      
+
+double wNorm_e_3b=1.24;
+double wNorm_e_4b=1.25; 
+double wNorm_mu_3b=1.32;
+double wNorm_mu_4b=1.22;  
+
 double signalScale=1.0;
 string inDir   = "OUTNew/";
 string jsonFile = "../../data/beauty-samples.json";
@@ -577,12 +590,19 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, TFile* OutputF
       subdir->cd();
 
 //      time_t after1 = time(0);
-      
+      std::string dirProc = dirName.c_str();
+
       float  Weight = 1.0;     
       std::vector<JSONWrapper::Object> Samples = (Process[i])["data"].daughters();
       for(unsigned int j=0;j<Samples.size();j++){
          std::vector<string>& fileList = DSetFiles[(Samples[j])["dtag"].toString()+filtExt];
-         if(!Process[i].getBoolFromKeyword(matchingKeyword, "isdata", false) && !Process[i].getBoolFromKeyword(matchingKeyword, "isdatadriven", false)){Weight=iLumi/fileList.size();}else{Weight=1.0;}  
+         if(!Process[i].getBoolFromKeyword(matchingKeyword, "isdata", false) && !Process[i].getBoolFromKeyword(matchingKeyword, "isdatadriven", false)){
+	   Weight=iLumi/fileList.size();
+	   // Overwrite weight for W+Nj and DY+Nj samples
+	   if (dirProc.find("W#rightarrow l#nu")!=std::string::npos) Weight=iLumi;
+	   if (dirProc.find("Z#rightarrow ll")!=std::string::npos) Weight=iLumi;  
+	   //	   if (Process[i].getStringFromKeyword(matchingKeyword, "tag", "W#rightarrow l#nu")) Weight=iLumi;
+	 } else {Weight=1.0;}  
 	 //	 {Weight= iLumi/fileList.size();}else{Weight=1.0;}
 
          for(int f=0;f<fileList.size();f++){
@@ -864,6 +884,31 @@ void Draw1DHistogram(JSONWrapper::Object& Root, TFile* File, NameAndType& HistoP
           spimpose.push_back(hist);
           if(SignalMin>hist->GetMaximum()*1E-2) SignalMin=hist->GetMaximum()*1E-2;
       }else{
+	// here scale W and Top processes normalization(optionally)
+	if (addExternalNorm) {
+	  //	  printf("Now adding the post-fit Norms for W and Top!\n");
+	  if (dirName.find("t#bar{t}+jets")!=std::string::npos) {
+	    if( HistoProperties.name.find("E_")!=std::string::npos){
+	      if( HistoProperties.name.find("3b")!=std::string::npos) hist->Scale(topNorm_e_3b); 
+	      if( HistoProperties.name.find("4b")!=std::string::npos) hist->Scale(topNorm_e_4b);  
+	    }
+	    if( HistoProperties.name.find("MU_")!=std::string::npos){ 
+	      if( HistoProperties.name.find("3b")!=std::string::npos) hist->Scale(topNorm_mu_3b);    
+	      if( HistoProperties.name.find("4b")!=std::string::npos) hist->Scale(topNorm_mu_4b);       
+	    }  
+	  }
+	  if (dirName.find("W#rightarrow l#nu")!=std::string::npos) {
+	    if( HistoProperties.name.find("E_")!=std::string::npos){ 
+	      if( HistoProperties.name.find("3b")!=std::string::npos) hist->Scale(wNorm_e_3b);
+	      if( HistoProperties.name.find("4b")!=std::string::npos) hist->Scale(wNorm_e_4b);   
+	    }     
+	    if( HistoProperties.name.find("MU_")!=std::string::npos){ 
+	      if( HistoProperties.name.find("3b")!=std::string::npos) hist->Scale(wNorm_mu_3b);  
+	      if( HistoProperties.name.find("4b")!=std::string::npos) hist->Scale(wNorm_mu_4b);   
+	    }    
+	  }
+	}
+
 	 stack->Add(hist, "HIST"); //Add to Stack
          legEntries.push_back(new TLegendEntry(hist, Process[i].getStringFromKeyword(matchingKeyword, "tag", "").c_str(), "F"));
          if(!mc){mc = (TH1D*)hist->Clone("mc");utils::root::checkSumw2(mc);}else{mc->Add(hist);}      
@@ -1406,6 +1451,7 @@ int main(int argc, char* argv[]){
      if(arg.find("--noPowers" )!=string::npos){ doPowers= false;    }
      if(arg.find("--noRoot")!=string::npos){ StoreInFile = false;    }
      if(arg.find("--noPlot")!=string::npos){ doPlot = false;    }
+     if(arg.find("--addExternalNorm")!=string::npos){ addExternalNorm = true;    }           
      if(arg.find("--removeRatioPlot")!=string::npos){ showRatioBox = false; printf("No ratio plot between Data and Mc \n"); }
      if(arg.find("--removeUnderFlow")!=string::npos){ fixUnderflow = false; printf("No UnderFlowBin \n"); }
      if(arg.find("--removeOverFlow")!=string::npos){ fixOverflow = false; printf("No OverFlowBin \n"); }
