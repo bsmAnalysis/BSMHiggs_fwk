@@ -827,10 +827,7 @@ int main(int argc, char* argv[])
 
 	METUtils::computeVariation(phys.jets, phys.leptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
 
-	//	LorentzVector metP4=phys.met; //variedMET[0];
-	//	LorentzVector metP4=variedMET[0];  
 	//PhysicsObjectJetCollection &corrJets = phys.jets; 
-	//	PhysicsObjectJetCollection &corrJets = variedJets[0];    
         PhysicsObjectFatJetCollection &fatJets = phys.fatjets;
         PhysicsObjectSVCollection &secVs = phys.svs;
 
@@ -1282,9 +1279,6 @@ int main(int argc, char* argv[])
 	     varNames[ivar]=="_umetup" || varNames[ivar]=="_umetdown" || varNames[ivar]=="_lesup" || varNames[ivar]=="_lesdown") {
 	    metP4 = variedMET[ivar];
 	  }
-	  
-	  //update the met for lepton energy scales
-	  //	  metP4 -= (muDiff + elDiff); //note this also propagates to all MET uncertainties
 	
 	  PhysicsObjectJetCollection &vJets = variedJets[0];
 	  if(varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || varNames[ivar]=="_jesup" || varNames[ivar]=="_jesdown") {
@@ -1292,8 +1286,12 @@ int main(int argc, char* argv[])
 	    vJets = variedJets[ivar];
 	  }
 
-	  if(selLeptonsVar.find(varNames[ivar].Data())!=selLeptonsVar .end())selLeptons = selLeptonsVar [varNames[ivar].Data()];
-	  //	  auto selJets = selJetsVar[""]; if(selJetsVar .find(varNames[ivar].Data())!=selJetsVar .end())selJets = selJetsVar [varNames[ivar].Data()];
+	  if(varNames[ivar]=="_scale_mup" || varNames[ivar]=="_scale_mdown" || varNames[ivar]=="_stat_eup" || varNames[ivar]=="_stat_edown" ||
+	     varNames[ivar]=="_sys_eup" || varNames[ivar]=="_sys_edown" || varNames[ivar]=="_GS_eup" || varNames[ivar]=="_GS_edown" ||
+	     varNames[ivar]=="_resRho_eup" || varNames[ivar]=="_resRho_edown" || varNames[ivar]=="_resPhi_edown") {
+	    //if(selLeptonsVar.find(varNames[ivar].Data())!=selLeptonsVar .end())
+	    selLeptons = selLeptonsVar[varNames[ivar].Data()];
+	  }
 	
 	  if ( verbose ) {
 	    printf("\nMissing  pt=%6.1f\n", metP4.pt());
@@ -1328,7 +1326,7 @@ int main(int argc, char* argv[])
 	  for(size_t ijet=0; ijet<vJets.size(); ijet++) {
 	    
 	    if(vJets[ijet].pt()<jet_threshold_) continue;
-	    if(fabs(vJets[ijet].eta())>5.0) continue;
+	    if(fabs(vJets[ijet].eta())>2.5) continue;
 	    
 	    //jet ID
 	    if(!vJets[ijet].isPFLoose) continue;
@@ -1368,7 +1366,7 @@ int main(int argc, char* argv[])
 	    } // verbose
 
 	    
-	    if(vJets[ijet].pt()>20 && fabs(vJets[ijet].eta())<2.4) {
+	    if(vJets[ijet].pt()>20. && fabs(vJets[ijet].eta())<2.4) {
 	      // B-tagging
 	      bool hasCSVtag;
 	      double btag_dsc = -1;
@@ -1705,33 +1703,27 @@ int main(int argc, char* argv[])
 	if (nCSVMtags>=1) {
 
 	  if (CSVLoosebJets.size()>=2 ) {
-	    
 	    if (CSVLoosebJets.size()>2 || SVs.size()>0) {
 	      // SR categories
 	      if(ivar==0) { mon.fillHisto("eventflow","all",6,weight); }
 	      
 	      // Cats: 3b
 	      if (GoodIdbJets.size()==3) { 
-		tags.push_back("SR_3b");
-		tags.push_back(ch+"SR_3b"); 
+		tags.push_back("SR_3b"); tags.push_back(ch+"SR_3b"); 
 	      }
 	      else {
-		tags.push_back("SR_geq4b"); 
-		tags.push_back(ch+"SR_geq4b"); 
+		tags.push_back("SR_geq4b"); tags.push_back(ch+"SR_geq4b"); 
 		
 		if(ivar==0) { mon.fillHisto("eventflow","all",7,weight); }
 		
 		if (GoodIdbJets.size()==4) { 
-		  tags.push_back("SR_4b"); 
-		  tags.push_back(ch+"SR_4b"); 
+		  tags.push_back("SR_4b"); tags.push_back(ch+"SR_4b"); 
 		}
 		else {
 		  if (GoodIdbJets.size()==5) { 
-		    tags.push_back("SR_5b"); 
-		    tags.push_back(ch+"SR_5b");
+		    tags.push_back("SR_5b"); tags.push_back(ch+"SR_5b");
 		  }
-		  tags.push_back("SR_geq5b");
-		  tags.push_back(ch+"SR_geq5b");  
+		  tags.push_back("SR_geq5b"); tags.push_back(ch+"SR_geq5b");  
 		}
 	      }
 	    } else { 
@@ -1740,23 +1732,18 @@ int main(int argc, char* argv[])
 	      
 	      // Top Control Region categories
 	      if (GoodIdbJets.size()==3) { 
-	      tags.push_back("CR_3b");
-	      tags.push_back(ch+"CR_3b");  
+		tags.push_back("CR_3b"); tags.push_back(ch+"CR_3b");  
 	      }
 	      else {
-		tags.push_back("CR_geq4b");
-		tags.push_back(ch+"CR_geq4b");
+		tags.push_back("CR_geq4b"); tags.push_back(ch+"CR_geq4b");
 		if (GoodIdbJets.size()==4) { 
-		  tags.push_back("CR_4b"); 
-		  tags.push_back(ch+"CR_4b"); 
+		  tags.push_back("CR_4b"); tags.push_back(ch+"CR_4b"); 
 		}
 		else {
 		  if (GoodIdbJets.size()==5) { 
-		    tags.push_back("CR_5b"); 
-		  tags.push_back(ch+"CR_5b");
+		    tags.push_back("CR_5b"); tags.push_back(ch+"CR_5b");
 		  }
-		  tags.push_back("CR_geq5b");
-		  tags.push_back(ch+"CR_geq5b"); 
+		  tags.push_back("CR_geq5b"); tags.push_back(ch+"CR_geq5b"); 
 		}
 	      }
 	    }
@@ -1765,23 +1752,18 @@ int main(int argc, char* argv[])
 
 	    // Top Control Region categories
 	    if (GoodIdbJets.size()==3) { 
-	      tags.push_back("CR_3b");
-	      tags.push_back(ch+"CR_3b");  
+	      tags.push_back("CR_3b"); tags.push_back(ch+"CR_3b");  
 	    }
 	    else {
-	      tags.push_back("CR_geq4b");
-	      tags.push_back(ch+"CR_geq4b");
+	      tags.push_back("CR_geq4b"); tags.push_back(ch+"CR_geq4b");
 	      if (GoodIdbJets.size()==4) { 
-		tags.push_back("CR_4b"); 
-		tags.push_back(ch+"CR_4b"); 
+		tags.push_back("CR_4b"); tags.push_back(ch+"CR_4b"); 
 	      }
 	      else {
 		if (GoodIdbJets.size()==5) { 
-		  tags.push_back("CR_5b"); 
-		  tags.push_back(ch+"CR_5b");
+		  tags.push_back("CR_5b"); tags.push_back(ch+"CR_5b");
 		}
-		tags.push_back("CR_geq5b");
-		tags.push_back(ch+"CR_geq5b"); 
+		tags.push_back("CR_geq5b"); tags.push_back(ch+"CR_geq5b"); 
 	      }
 	    }
 	  }
@@ -1792,23 +1774,18 @@ int main(int argc, char* argv[])
 
 	  // Non-TT Control Region categories
 	  if (GoodIdbJets.size()==3) { 
-	    tags.push_back("CR_nonTT_3b");
-	    tags.push_back(ch+"CR_nonTT_3b");
+	    tags.push_back("CR_nonTT_3b"); tags.push_back(ch+"CR_nonTT_3b");
 	  }
 	  else {
-	    tags.push_back("CR_nonTT_geq4b");
-	    tags.push_back(ch+"CR_nonTT_geq4b");
+	    tags.push_back("CR_nonTT_geq4b"); tags.push_back(ch+"CR_nonTT_geq4b");
 	    if (GoodIdbJets.size()==4) { 
-	      tags.push_back("CR_nonTT_4b"); 
-	      tags.push_back(ch+"CR_nonTT_4b"); 
+	      tags.push_back("CR_nonTT_4b"); tags.push_back(ch+"CR_nonTT_4b"); 
 	    }
 	    else {
 	      if (GoodIdbJets.size()==5) { 
-		tags.push_back("CR_nonTT_5b"); 
-		tags.push_back(ch+"CR_nonTT_5b");
+		tags.push_back("CR_nonTT_5b"); tags.push_back(ch+"CR_nonTT_5b");
 	      }
-	      tags.push_back("CR_nonTT_geq5b");
-	      tags.push_back(ch+"CR_nonTT_geq5b");
+	      tags.push_back("CR_nonTT_geq5b"); tags.push_back(ch+"CR_nonTT_geq5b");
 	    }
 	  }
 	} else {
@@ -1965,31 +1942,23 @@ int main(int argc, char* argv[])
         //##############################################################################
         //### HISTOS FOR STATISTICAL ANALYSIS (include systematic variations)
         //##############################################################################
-
-	// // LOOP ON SYSTEMATIC VARIATION FOR THE STATISTICAL ANALYSIS
-	// for(size_t ivar=0; ivar<nvarsToInclude; ivar++)
-        // {
-	//   if(!isMC && ivar>0 ) continue; //loop on variation only for MC samples
-
 	    
-	      //scan the BDT cut and fill the shapes
-	    for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){
-	      if(mvaBDT>optim_Cuts1_bdt[index]){
-		mon.fillHisto(TString("bdt_shapes")+varNames[ivar],tags,index, mvaBDT,weight);
-	      }
+	  //scan the BDT cut and fill the shapes
+	  for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){
+	    if(mvaBDT>optim_Cuts1_bdt[index]){
+	      mon.fillHisto(TString("bdt_shapes")+varNames[ivar],tags,index, mvaBDT,weight);
 	    }
-
-
+	  }
 	  
 	} // Systematic variation END
 
-        //##############################################
-        // recompute MET/MT if JES/JER was varied
-        //##############################################
-        //LorentzVector vMET = variedMET[ivar>8 ? 0 : ivar];
-        //PhysicsObjectJetCollection &vJets = ( ivar<=4 ? variedJets[ivar] : variedJets[0] );
     } // loop on all events END
 
+    PU_Central_File->Close(); 
+    
+    E_TRG_SF_file->Close(); E_RECO_SF_file->Close(); E_TIGHTID_SF_file->Close();
+    MU_TRG_SF_file->Close();
+    
     printf("\n");
     file->Close();
 
