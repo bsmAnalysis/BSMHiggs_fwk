@@ -77,13 +77,6 @@ struct ptsort: public std::binary_function<LorentzVector, LorentzVector, bool>
   bool operator () (const LorentzVector & x, const LorentzVector & y) 
   { return  ( x.pt() > y.pt() ) ; }
 };
-/*
-struct ptsortinpair: public std::binary_function<std::pair<int,LorentzVector>, std::pair<int,LorentzVector>, bool>  
-{
-  bool operator () (const std::pair<int,LorentzVector> & x, const std::pair<int,LorentzVector> & y) 
-  { return (x.second.pt() > y.second.pt() ); }
-};
-*/
 struct btagsort: public std::binary_function<PhysicsObject_Jet, PhysicsObject_Jet, float> 
 {
   bool operator () (const PhysicsObject_Jet & x, PhysicsObject_Jet & y) 
@@ -275,6 +268,8 @@ int main(int argc, char* argv[])
 	// varNames.push_back("_scale_umetup"); varNames.push_back("_scale_umetdown");    //unclustered met
         // varNames.push_back("_res_jup");      varNames.push_back("_res_jdown");    //jet energy resolution
         // varNames.push_back("_scale_jup");    varNames.push_back("_scale_jdown");  //jet energy scale
+	varNames.push_back("_puup");  varNames.push_back("_pudown");      //pileup uncertainty
+	
 	varNames.push_back("_jerup"); 	//1
         varNames.push_back("_jerdown"); //2
         varNames.push_back("_jesup"); 	//3
@@ -290,7 +285,6 @@ int main(int argc, char* argv[])
         varNames.push_back("_GS_eup");    varNames.push_back("_GS_edown");  //electron energy scale
         varNames.push_back("_resRho_eup");    varNames.push_back("_resRho_edown");  //electron energy resolution
         varNames.push_back("_resPhi_edown");     //electron energy resolution
-        varNames.push_back("_puup");         varNames.push_back("_pudown");      //pileup uncertainty
 	//	varNames.push_back("_eff_bup"); varNames.push_back("_eff_bdown"); //btag SFs
 	/*
         varNames.push_back("_jerup"); //1
@@ -1336,17 +1330,12 @@ int main(int argc, char* argv[])
 	    bool hasOverlap(false);
 	    for(size_t ilep=0; ilep<selLeptons.size(); ilep++) {
 	      double dR = deltaR( vJets[ijet], selLeptons[ilep] );
-	      mon.fillHisto("dRlj_raw","all",dR,weight);
+	      if (ivar==0) mon.fillHisto("dRlj_raw","all",dR,weight);
 	      
 	      if (abs(selLeptons[ilep].id)==11) hasOverlap = (dR<0.2); // within 0.2 for electrons
 	      if (abs(selLeptons[ilep].id)==13) hasOverlap = (dR<0.4); // within 0.4 for muons
 	    }
 	    if(hasOverlap) continue;
-	    
-	    // if (vetoLeptons.size()>0) {  
-	    //   double dR_thr=deltaR(vJets[ijet],vetoLeptons[0]); 
-	    //   if (dR_thr<0.4) continue; // reject jet if found close to e/mu below 30 GeV 
-	    // }
 	    
 	    GoodIdJets.push_back(vJets[ijet]);
 	    if(vJets[ijet].pt()>30) nJetsGood30++;
@@ -1356,7 +1345,6 @@ int main(int argc, char* argv[])
 	    if (dphijmet<mindphijmet) mindphijmet=dphijmet;
 
 	    if ( verbose ) {
-	      
 	      printf("AK4 jet has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",   
 		     vJets[ijet].pt(),
 		     vJets[ijet].eta(),
@@ -1374,9 +1362,10 @@ int main(int argc, char* argv[])
 	      nCSVLtags += (btag_dsc>LooseWP);
 	      nCSVMtags += (btag_dsc>MediumWP);
 	      nCSVTtags += (btag_dsc>TightWP);
-	      mon.fillHisto("b_discrim",b_tagging_name,btag_dsc,weight);
-	      if (vJets[ijet].motherid == 36) mon.fillHisto("b_discrim",b_tagging_name+"_true",btag_dsc,weight);
-	      
+	      if (ivar==0) {
+		mon.fillHisto("b_discrim",b_tagging_name,btag_dsc,weight);
+		if (vJets[ijet].motherid == 36) mon.fillHisto("b_discrim",b_tagging_name+"_true",btag_dsc,weight);
+	      }
 	      hasCSVtag = btag_dsc>LooseWP;
 	      bool hasCSVtagUp = hasCSVtag;
 	      bool hasCSVtagDown = hasCSVtag;
