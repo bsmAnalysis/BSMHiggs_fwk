@@ -38,8 +38,6 @@ struct MVAEvtContainer
   float weight = -1.0;
   //AUX
   int lheNJets = -1;
-  // Syst. source
-  int ivar;
 };
 
 class MVAHandler 
@@ -61,8 +59,7 @@ class MVAHandler
                 float Hmass, float HpT, float bbdRAve, float bbdMMin, float HHt, //Higgs only
                 float WHdR, //W and H
                 float weight,
-                int lheNJets,
-		int ivar
+                int lheNJets
                );
 
   //write mode, to mva tree

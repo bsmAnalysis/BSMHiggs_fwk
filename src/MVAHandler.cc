@@ -30,7 +30,6 @@ void MVAHandler::resetStruct()
   //weight
   evSummary_.weight = 0.0;
   evSummary_.lheNJets = -1;
-  evSummary_.ivar = 0;
 }
 
 //
@@ -40,8 +39,7 @@ void MVAHandler::getEntry(
                           float Hmass, float HpT, float bbdRAve, float bbdMMin, float HHt, //Higgs only
                           float WHdR, //W and H
                           float weight,
-                          int lheNJets,
-			  int ivar
+                          int lheNJets
                          )
 {
   resetStruct();
@@ -62,7 +60,6 @@ void MVAHandler::getEntry(
   evSummary_.weight = weight;
   //AUX
   evSummary_.lheNJets = lheNJets;
-  evSummary_.ivar = ivar;
   return ;
 }
 
@@ -83,7 +80,7 @@ bool MVAHandler::initTree(TString mvaout)
   to3b->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F");
   to3b->Branch("weight",  &evSummary_.weight,  "weight/F");
   to3b->Branch("lheNJets",  &evSummary_.lheNJets,  "lheNJets/I");
-  to3b->Branch("ivar",  &evSummary_.ivar,  "ivar/I");  
+
 
   to4b->Branch("WpT",  &evSummary_.WpT,  "WpT/F");
   to4b->Branch("Hmass",  &evSummary_.Hmass,  "Hmass/F");
@@ -93,7 +90,7 @@ bool MVAHandler::initTree(TString mvaout)
   to4b->Branch("HHt",  &evSummary_.HHt,  "HHt/F");
   to4b->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F");
   to4b->Branch("weight",  &evSummary_.weight,  "weight/F");
-  to4b->Branch("ivar",  &evSummary_.ivar,  "ivar/I");
+  to4b->Branch("lheNJets",  &evSummary_.lheNJets,  "lheNJets/I");
 
   return true;
 }
