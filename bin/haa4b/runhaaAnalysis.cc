@@ -159,8 +159,7 @@ int main(int argc, char* argv[])
     TString outdir = runProcess.getParameter<std::string>("outdir");
     TString outUrl( outdir );
     gSystem->Exec("mkdir -p " + outUrl);
-    //    gSystem->Exec("mkdir -p " + outUrl + "/output");
-
+  
     TString outTxtUrl_final= outUrl + "/" + outFileUrl + "_FinalList.txt";
     FILE* outTxtFile_final = NULL;
     outTxtFile_final = fopen(outTxtUrl_final.Data(), "w");
