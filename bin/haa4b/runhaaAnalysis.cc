@@ -159,7 +159,7 @@ int main(int argc, char* argv[])
     TString outdir = runProcess.getParameter<std::string>("outdir");
     TString outUrl( outdir );
     gSystem->Exec("mkdir -p " + outUrl);
-
+    //    gSystem->Exec("mkdir -p " + outUrl + "/output");
 
     TString outTxtUrl_final= outUrl + "/" + outFileUrl + "_FinalList.txt";
     FILE* outTxtFile_final = NULL;
@@ -255,74 +255,58 @@ int main(int argc, char* argv[])
     if(runSystematics) {
         cout << "Systematics will be computed for this analysis: " << endl;
 
-	eleVarNames.push_back("_stat_eup");
-	eleVarNames.push_back("_stat_edown");
-	eleVarNames.push_back("_sys_eup");
-	eleVarNames.push_back("_sys_edown");
-	eleVarNames.push_back("_GS_eup");
-	eleVarNames.push_back("_GS_edown");
-	eleVarNames.push_back("_resRho_eup");
-	eleVarNames.push_back("_resRho_edown");
-	eleVarNames.push_back("_resPhi_edown");
+	  eleVarNames.push_back("_stat_eup");
+	  eleVarNames.push_back("_stat_edown");
+	  eleVarNames.push_back("_sys_eup");
+	  eleVarNames.push_back("_sys_edown");
+	  eleVarNames.push_back("_GS_eup");
+	  eleVarNames.push_back("_GS_edown");
+	  eleVarNames.push_back("_resRho_eup");
+	  eleVarNames.push_back("_resRho_edown");
+	  eleVarNames.push_back("_resPhi_edown");
 
-	// varNames.push_back("_scale_umetup"); varNames.push_back("_scale_umetdown");    //unclustered met
-        // varNames.push_back("_res_jup");      varNames.push_back("_res_jdown");    //jet energy resolution
-        // varNames.push_back("_scale_jup");    varNames.push_back("_scale_jdown");  //jet energy scale
-	
-	varNames.push_back("_jerup"); 	//1
-        varNames.push_back("_jerdown"); //2
-        varNames.push_back("_jesup"); 	//3
-        varNames.push_back("_jesdown"); //4
-        varNames.push_back("_umetup"); 	//5
-        varNames.push_back("_umetdown");//6
-        varNames.push_back("_lesup"); 	//7
-	varNames.push_back("_lesdown"); //8
-	
-	//
-	//varNames.push_back("_scale_mup");    varNames.push_back("_scale_mdown");  //muon energy scale
-        varNames.push_back("_stat_eup");    varNames.push_back("_stat_edown");  //electron energy scale
-        varNames.push_back("_sys_eup");    varNames.push_back("_sys_edown");  //electron energy scale
-        varNames.push_back("_GS_eup");    varNames.push_back("_GS_edown");  //electron energy scale
-        varNames.push_back("_resRho_eup");    varNames.push_back("_resRho_edown");  //electron energy resolution
-        varNames.push_back("_resPhi_edown");     //electron energy resolution
-	//	varNames.push_back("_eff_bup"); varNames.push_back("_eff_bdown"); //btag SFs
-	/*
-        varNames.push_back("_jerup"); //1
-        varNames.push_back("_jerdown"); //2
-        varNames.push_back("_jesup"); //3
-        varNames.push_back("_jesdown"); //4
-        varNames.push_back("_umetup"); //5
-        varNames.push_back("_umetdown");//6
-        varNames.push_back("_lesup"); //7
-        varNames.push_back("_lesdown"); //8
-        varNames.push_back("_puup"); //9
-        varNames.push_back("_pudown"); //10
-	*/
-	varNames.push_back("_btagup"); //11
-        varNames.push_back("_btagdown");//12
+	  varNames.push_back("_jerup"); 	//1 
+	  varNames.push_back("_jerdown"); //2
+	  varNames.push_back("_jesup"); 	//3
+	  varNames.push_back("_jesdown"); //4
+	  varNames.push_back("_umetup"); 	//5
+	  varNames.push_back("_umetdown");//6
+	  varNames.push_back("_lesup"); 	//7
+	  varNames.push_back("_lesdown"); //8
+	  varNames.push_back("_btagup"); //11
+	  varNames.push_back("_btagdown");//12
+	  //
+	  //varNames.push_back("_scale_mup");    varNames.push_back("_scale_mdown");  //muon energy scale
+	  varNames.push_back("_stat_eup");    varNames.push_back("_stat_edown");  //electron energy scale
+	  varNames.push_back("_sys_eup");    varNames.push_back("_sys_edown");  //electron energy scale
+	  varNames.push_back("_GS_eup");    varNames.push_back("_GS_edown");  //electron energy scale
+	  varNames.push_back("_resRho_eup");    varNames.push_back("_resRho_edown");  //electron energy resolution
+	  varNames.push_back("_resPhi_edown");     //electron energy resolution
+	  //	varNames.push_back("_eff_bup"); varNames.push_back("_eff_bdown"); //btag SFs
 
 	//varNames.push_back("_puup");  varNames.push_back("_pudown");      //pileup uncertainty
 	
-        if(isMCBkg_runPDFQCDscale) {
+	  if(isMCBkg_runPDFQCDscale) {
             varNames.push_back("_pdfup");
             varNames.push_back("_pdfdown");
             varNames.push_back("_qcdscaleup");
             varNames.push_back("_qcdscaledown");
-
-        }
-        if(isSignal) {
+	    
+	  }
+	  if(isSignal) {
             varNames.push_back("_pdfup");
             varNames.push_back("_pdfdown");
             varNames.push_back("_qcdscaleup");
             varNames.push_back("_qcdscaledown");
-        }
+	  }
 
+	
         for(size_t sys=1; sys<varNames.size(); sys++) {
             cout << varNames[sys] << endl;
         }
     }
     size_t nvarsToInclude=varNames.size();
-
+    
 
     //tree info
     int evStart     = runProcess.getParameter<int>("evStart");
@@ -1633,10 +1617,12 @@ int main(int argc, char* argv[])
 	    mon.fillHisto("eventflow","all",4,weight); // MT cut
 	  }
 	  
+	  //-------------------------------------------------------------------
 	  //At least 2 jets
 	  if (GoodIdJets.size()<2) continue;
 	  sort(GoodIdJets.begin(), GoodIdJets.end(), btagsort());
-	  
+
+	  //-------------------------------------------------------------------
 	  // Use highest b-tagged jet 0.55<b-tag_high<0.8
 	  double btag_high(-1.);
 	  if (use_DeepCSV) {
@@ -1938,10 +1924,9 @@ int main(int argc, char* argv[])
 	  //############ MVA Handler ####################################################
 	  //##############################################################################
 	  
-	  //	if (runMVA && ivar==0)
 	  if (runMVA) {
-	    if (ivar==0 || varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || varNames[ivar]=="_jesup" || varNames[ivar]=="_jesdown" ||
-	     	varNames[ivar]=="_btagup" || varNames[ivar]=="_btagdown") {
+	    //   if ( (isMC && (varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || varNames[ivar]=="_jesup" || varNames[ivar]=="_jesdown" ||
+	    //	   varNames[ivar]=="_btagup" || varNames[ivar]=="_btagdown")) || !isMC) {
 	      
 	      float mvaweight = 1.0;
 	      genWeight > 0 ? mvaweight = weight/xsecWeight : mvaweight = -weight / xsecWeight; // Include all weights except for the xsecWeight
@@ -1954,12 +1939,11 @@ int main(int argc, char* argv[])
 		     allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
 		     dphi_Wh, //W and H, dr 
 		     mvaweight, //note, since weight is not the weight we want, we store all others except xSec weigh
-		     ev.lheNJets, //AUX variable for weight calculation
-		     ivar // order of systematic source
+		     ev.lheNJets //AUX variable for weight calculation
 		     );
 		  myMVAHandler_.fillTree();
 		}
-	    }
+	      //   }
 	  }
 	  
 	  //##############################################################################
