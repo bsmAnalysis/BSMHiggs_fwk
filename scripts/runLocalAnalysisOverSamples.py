@@ -164,6 +164,7 @@ for proc in procList :
                 if(params.find('@runSystematics')<0) :  params = '@runSystematics=False ' + params
                 if(params.find('@usemetNoHF')<0) :  	params = '@usemetNoHF=False ' + params
                 if(params.find('@useDeepCSV')<0) :      params = '@useDeepCSV=False ' + params
+                if(params.find('@runQCD')<0) :          params = '@runQCD=False ' + params
                 if(params.find('@runMVA')<0) :          params = '@runMVA=False ' + params
                 if(len(params)>0) :
                     extracfgs = params.split(' ')
