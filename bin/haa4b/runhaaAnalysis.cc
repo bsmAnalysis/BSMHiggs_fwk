@@ -550,7 +550,6 @@ int main(int argc, char* argv[])
       xsecWeight=xsec/cnorm; // effective luminosity}
       /*
       std::map<std::string, int> xsec_map = mStat;
-
       //std::string myproc = proc.Data();
       //std::cout << "Runnin process " << myproc << std::endl;
       std::map<std::string, int>::iterator it;
@@ -1041,7 +1040,6 @@ int main(int argc, char* argv[])
             //if(phys.genleptons.size()!=2) continue;
             if(phys.genleptons.size()==2 && isDYToTauTau(phys.genleptons[0].id, phys.genleptons[1].id) ) continue;
         }
-
         if(isMC && mctruthmode==2) {
             if(phys.genleptons.size()!=2) continue;
             if(!isDYToTauTau(phys.genleptons[0].id, phys.genleptons[1].id) ) continue;
@@ -1619,17 +1617,16 @@ int main(int argc, char* argv[])
 	  }
 	  //-------------------------------------------------------------------
           bool passIso = false;
-          int  QCD_region = -100; // 1 = A, 2 = B, 3 = C, 4 = D
+          TString  QCD_region = "";
 
           if (evcat==E) passIso = selLeptons[0].passIsoEl;
           if (evcat==MU) passIso = selLeptons[0].passIsoMu;
 
-          if (  passIso && !passMet25 ) QCD_region = 1;
-          if (  passIso &&  passMet25 ) QCD_region = 2;
-          if ( !passIso && !passMet25 ) QCD_region = 3;
-          if ( !passIso &&  passMet25 ) QCD_region = 4;
+          if (  passIso && !passMet25 && runQCD) QCD_region = "_qcdA";
+          if (  passIso &&  passMet25 && runQCD) QCD_region = "_qcdB";
+          if ( !passIso && !passMet25 && runQCD) QCD_region = "_qcdC";
+          if ( !passIso &&  passMet25 && runQCD) QCD_region = "_qcdD";
 
-          char QCD_region_ = 64 + QCD_region;
 
 	  //mtW >50 GeV
 	  bool passMt(sqrt(tMass)>50. && sqrt(tMass)<250.);
@@ -1738,26 +1735,21 @@ int main(int argc, char* argv[])
 		
 		// Cats: 3b
 		if (GoodIdbJets.size()==3) { 
-		  tags.push_back("SR_3b"); tags.push_back(ch+"SR_3b"); 
-                  if ( runQCD ) tags.push_back(ch+"SR_qcd"+QCD_region_+"_3b");
+		  tags.push_back("SR_3b"); tags.push_back(ch+"SR"+QCD_region+"_3b");
 		}
 		else {
-		  tags.push_back("SR_geq4b"); tags.push_back(ch+"SR_geq4b"); 
-                  if ( runQCD ) tags.push_back(ch+"SR_qcd"+QCD_region_+"_geq4b");
+		  tags.push_back("SR_geq4b"); tags.push_back(ch+"SR"+QCD_region+"_geq4b");
 		  
 		  if(ivar==0) { mon.fillHisto("eventflow","all",7,weight); }
 		  
 		  if (GoodIdbJets.size()==4) { 
-		    tags.push_back("SR_4b"); tags.push_back(ch+"SR_4b"); 
-                    if ( runQCD ) tags.push_back(ch+"SR_qcd"+QCD_region_+"_4b");
+		    tags.push_back("SR_4b"); tags.push_back(ch+"SR"+QCD_region+"_4b");
 		  }
 		  else {
 		    if (GoodIdbJets.size()==5) { 
-		      tags.push_back("SR_5b"); tags.push_back(ch+"SR_5b");
-                      if ( runQCD ) tags.push_back(ch+"SR_qcd"+QCD_region_+"_5b");
+		      tags.push_back("SR_5b"); tags.push_back(ch+"SR"+QCD_region+"_5b");
 		    }
-		    tags.push_back("SR_geq5b"); tags.push_back(ch+"SR_geq5b");  
-                    if ( runQCD ) tags.push_back(ch+"SR_qcd"+QCD_region_+"_geq5b");
+		    tags.push_back("SR_geq5b"); tags.push_back(ch+"SR"+QCD_region+"_geq5b");
 		  }
 		}
 	      } else { 
@@ -1766,23 +1758,18 @@ int main(int argc, char* argv[])
 		
 		// Top Control Region categories
 		if (GoodIdbJets.size()==3) { 
-		  tags.push_back("CR_3b"); tags.push_back(ch+"CR_3b");  
-                  if ( runQCD ) tags.push_back(ch+"CR_qcd"+QCD_region_+"_3b");
+		  tags.push_back("CR_3b"); tags.push_back(ch+"CR"+QCD_region+"_3b");
 		}
 		else {
-		  tags.push_back("CR_geq4b"); tags.push_back(ch+"CR_geq4b");
-                  if ( runQCD ) tags.push_back(ch+"CR_qcd"+QCD_region_+"_geq4b");
+		  tags.push_back("CR_geq4b"); tags.push_back(ch+"CR"+QCD_region+"_geq4b");
 		  if (GoodIdbJets.size()==4) { 
-		    tags.push_back("CR_4b"); tags.push_back(ch+"CR_4b"); 
-                    if ( runQCD ) tags.push_back(ch+"CR_qcd"+QCD_region_+"_4b");
+		    tags.push_back("CR_4b"); tags.push_back(ch+"CR"+QCD_region+"_4b");
 		  }
 		  else {
 		    if (GoodIdbJets.size()==5) { 
-		      tags.push_back("CR_5b"); tags.push_back(ch+"CR_5b");
-                      if ( runQCD ) tags.push_back(ch+"CR_qcd"+QCD_region_+"_5b");
+		      tags.push_back("CR_5b"); tags.push_back(ch+"CR"+QCD_region+"_5b");
 		    }
-		    tags.push_back("CR_geq5b"); tags.push_back(ch+"CR_geq5b"); 
-                    if ( runQCD ) tags.push_back(ch+"CR_qcd"+QCD_region_+"_geq5b");
+		    tags.push_back("CR_geq5b"); tags.push_back(ch+"CR"+QCD_region+"_geq5b");
 		  }
 		}
 	      }
@@ -1791,23 +1778,18 @@ int main(int argc, char* argv[])
 	      
 	      // Top Control Region categories
 	      if (GoodIdbJets.size()==3) { 
-		tags.push_back("CR_3b"); tags.push_back(ch+"CR_3b");  
-                if ( runQCD ) tags.push_back(ch+"CR_qcd"+QCD_region_+"_3b");
+		tags.push_back("CR_3b"); tags.push_back(ch+"CR"+QCD_region+"_3b");
 	      }
 	      else {
-		tags.push_back("CR_geq4b"); tags.push_back(ch+"CR_geq4b");
-                if ( runQCD ) tags.push_back(ch+"CR_qcd"+QCD_region_+"_geq4b");
+		tags.push_back("CR_geq4b"); tags.push_back(ch+"CR"+QCD_region+"_geq4b");
 		if (GoodIdbJets.size()==4) { 
-		  tags.push_back("CR_4b"); tags.push_back(ch+"CR_4b"); 
-                  if ( runQCD ) tags.push_back(ch+"CR_qcd"+QCD_region_+"_4b");
+		  tags.push_back("CR_4b"); tags.push_back(ch+"CR"+QCD_region+"_4b");
 		}
 		else {
 		  if (GoodIdbJets.size()==5) { 
-		    tags.push_back("CR_5b"); tags.push_back(ch+"CR_5b");
-                    if ( runQCD ) tags.push_back(ch+"CR_qcd"+QCD_region_+"_5b");
+		    tags.push_back("CR_5b"); tags.push_back(ch+"CR"+QCD_region+"_5b");
 		  }
-		  tags.push_back("CR_geq5b"); tags.push_back(ch+"CR_geq5b"); 
-                  if ( runQCD ) tags.push_back(ch+"CR_qcd"+QCD_region_+"_geq5b");
+		  tags.push_back("CR_geq5b"); tags.push_back(ch+"CR"+QCD_region+"_geq5b");
 		}
 	      }
 	    }
@@ -1818,23 +1800,18 @@ int main(int argc, char* argv[])
 	    
 	    // Non-TT Control Region categories
 	    if (GoodIdbJets.size()==3) { 
-	      tags.push_back("CR_nonTT_3b"); tags.push_back(ch+"CR_nonTT_3b");
-                  if ( runQCD ) tags.push_back(ch+"CR_qcd"+QCD_region_+"_nonTT_3b");
+	      tags.push_back("CR_nonTT_3b"); tags.push_back(ch+"CR"+QCD_region+"_nonTT_3b");
 	    }
 	    else {
-	      tags.push_back("CR_nonTT_geq4b"); tags.push_back(ch+"CR_nonTT_geq4b");
-              if ( runQCD ) tags.push_back(ch+"CR_qcd"+QCD_region_+"_nonTT_geq4b");
+	      tags.push_back("CR_nonTT_geq4b"); tags.push_back(ch+"CR"+QCD_region+"_nonTT_geq4b");
 	      if (GoodIdbJets.size()==4) { 
-		tags.push_back("CR_nonTT_4b"); tags.push_back(ch+"CR_nonTT_4b"); 
-                if ( runQCD ) tags.push_back(ch+"CR_qcd"+QCD_region_+"_nonTT_4b");
+		tags.push_back("CR_nonTT_4b"); tags.push_back(ch+"CR"+QCD_region+"_nonTT_4b");
 	      }
 	      else {
 		if (GoodIdbJets.size()==5) { 
-		  tags.push_back("CR_nonTT_5b"); tags.push_back(ch+"CR_nonTT_5b");
-                  if ( runQCD ) tags.push_back(ch+"CR_qcd"+QCD_region_+"_nonTT_5b");
+		  tags.push_back("CR_nonTT_5b"); tags.push_back(ch+"CR"+QCD_region+"_nonTT_5b");
 		}
-		tags.push_back("CR_nonTT_geq5b"); tags.push_back(ch+"CR_nonTT_geq5b");
-                if ( runQCD ) tags.push_back(ch+"CR_qcd"+QCD_region_+"_nonTT_geq5b");
+		tags.push_back("CR_nonTT_geq5b"); tags.push_back(ch+"CR"+QCD_region+"_nonTT_geq5b");
 	      }
 	    }
 	  } else {
