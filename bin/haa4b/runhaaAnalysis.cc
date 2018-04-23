@@ -285,7 +285,7 @@ int main(int argc, char* argv[])
 	  //	varNames.push_back("_eff_bup"); varNames.push_back("_eff_bdown"); //btag SFs
 
 	//varNames.push_back("_puup");  varNames.push_back("_pudown");      //pileup uncertainty
-	
+	  /*	
 	  if(isMCBkg_runPDFQCDscale) {
             varNames.push_back("_pdfup");
             varNames.push_back("_pdfdown");
@@ -299,8 +299,7 @@ int main(int argc, char* argv[])
             varNames.push_back("_qcdscaleup");
             varNames.push_back("_qcdscaledown");
 	  }
-
-	
+	  */
         for(size_t sys=1; sys<varNames.size(); sys++) {
             cout << varNames[sys] << endl;
         }
@@ -685,7 +684,7 @@ int main(int argc, char* argv[])
         // add PhysicsEvent_t class, get all tree to physics objects
         PhysicsEvent_t phys=getPhysicsEventFrom(ev); 
 
-	std::vector<TString> tags(1,"all");
+	//	std::vector<TString> tags(1,"all");
 
 	//genWeight
         float genWeight = 1.0;
@@ -835,7 +834,7 @@ int main(int argc, char* argv[])
 	float lep_threshold(25.);
 	float eta_threshold=2.5;
 
-        bool  passIsoEl_ = false, passIsoMu_ = false;
+        bool  passIsoEl_(false), passIsoMu_(false);
 
 	for (auto &ilep : leps) {
 	  //if ( ilep.pt()<5. ) continue;
@@ -860,8 +859,8 @@ int main(int argc, char* argv[])
 	  
 	  if ( hasTightIdandIso && (ilep.pt()>lep_threshold) ) {
 
-              passIsoEl_ = ilep.passIsoEl;
-              passIsoMu_ = ilep.passIsoMu;
+	    //              passIsoEl_ = ilep.passIsoEl;
+	    //              passIsoMu_ = ilep.passIsoMu;
 
 	    if(abs(lepid)==11) { // ele scale corrections
 	      double et = ilep.en_cor_en / cosh(fabs(ilep.en_EtaSC));
@@ -1297,20 +1296,22 @@ int main(int argc, char* argv[])
 	//##############################################################################
         //### 	// LOOP ON SYSTEMATIC VARIATION FOR THE STATISTICAL ANALYSIS
 	//##############################################################################
+	
+	float iweight = weight;   //nominal
 
 	for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
 	  if(!isMC && ivar>0 ) continue; //loop on variation only for MC samples
 
 	  if ( verbose ) { std::cout << "\n\n Running variation: " << varNames[ivar] << " with ivar == " << ivar << std::endl; }
 	  
-	  //	  std::vector<TString> tags(1,"all");
-	  tags.clear();
+	  std::vector<TString> tags(1,"all");
 	  
-	  float iweight = weight;                                               //nominal
+	  //	  float iweight = weight;                                               //nominal
+	  weight = iweight; // reset to nominal weight
 
             //pileup
-	  if(varNames[ivar]=="_puup")        iweight *=TotalWeight_plus;        //pu up
-	  if(varNames[ivar]=="_pudown") iweight *=TotalWeight_minus; //pu down
+	  //if(varNames[ivar]=="_puup")        iweight *=TotalWeight_plus;        //pu up
+	  // if(varNames[ivar]=="_pudown") iweight *=TotalWeight_minus; //pu down
 
 	  //	  if(varNames[ivar]=="_scale_mup" || varNames[ivar]=="_scale_mdown")
 	  if (varNames[ivar]=="_stat_eup" || varNames[ivar]=="_stat_edown" ||
@@ -1620,8 +1621,8 @@ int main(int argc, char* argv[])
           bool passIso = false;
           int  QCD_region = -100; // 1 = A, 2 = B, 3 = C, 4 = D
 
-          if (evcat==E) passIso = passIsoEl_;
-          if (evcat==MU) passIso = passIsoMu_;
+          if (evcat==E) passIso = selLeptons[0].passIsoEl;
+          if (evcat==MU) passIso = selLeptons[0].passIsoMu;
 
           if (  passIso && !passMet25 ) QCD_region = 1;
           if (  passIso &&  passMet25 ) QCD_region = 2;
