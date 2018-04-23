@@ -64,12 +64,12 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("weight_QCDscale_muR0p5_muF2",     &evSummary_.weight_QCDscale_muR0p5_muF2,      "weight_QCDscale_muR0p5_muF2/F");
     t_->Branch("weight_QCDscale_muR0p5_muF0p5",     &evSummary_.weight_QCDscale_muR0p5_muF0p5,      "weight_QCDscale_muR0p5_muF0p5/F");
     */
-    /* tmp
+
     t_->Branch("npdfs", &evSummary_.npdfs, "npdfs/I");
     t_->Branch("pdfWeights", evSummary_.pdfWeights, "pdfWeights[npdfs]/F");
     t_->Branch("nalphaS", &evSummary_.nalphaS, "nalphaS/I");
     t_->Branch("alphaSWeights", evSummary_.alphaSWeights, "alphaSWeights[nalphaS]/F");
-    */
+
     //mc truth
     t_->Branch("nmcparticles",  &evSummary_.nmcparticles,   "nmcparticles/I");
     t_->Branch("mc_px",         evSummary_.mc_px,           "mc_px[nmcparticles]/F");
