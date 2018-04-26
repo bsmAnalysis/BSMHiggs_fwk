@@ -20,6 +20,8 @@ if [[ $# -eq 0 ]]; then
 
 ## Make plots in mcbased(_blind), datadriven(_blind) cases
     printf "\n\t%-5s  %-40s\n"  "3.1"  "make plots for mcbased analysis"  
+    printf "\n\t%-5s  %-40s\n"  "3.01"  "make root file for input to the Limits"  
+    printf "\n\t%-5s  %-40s\n"  "3.02"  "make plots for QCD analysis"
     printf "\n\t%-5s  %-40s\n"  "3.2"  "make plots with data-driven bkgs"
 fi
 
@@ -34,10 +36,7 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 # Global Variables
 #--------------------------------------------------
 
-#SUFFIX=_2018_01_05
-#SUFFIX=_2017_09_20 #Data
-SUFFIX=_2017_09_21 #BG MC
-#SUFFIX=_2018_02_07 #Hua Test at Fermilab
+SUFFIX=_2018_03_03
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
@@ -94,15 +93,14 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "JOB SUBMISSION for Ntuplization using full CMSSW fwk"
        echo "Input: " $JSON
        echo "Output: " $RESULTSDIR
-       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -s crab 
+       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_prod -s crab 
    fi    
 
    if [[ $step == 1.1 ]]; then  #submit jobs for h->aa->XXYY analysis
        echo "JOB SUBMISSION for BSM h->aa Analysis"
        echo "Input: " $NTPL_JSON
        echo "Output: " $NTPL_OUTDIR
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@runSystematics=False @runMVA=False @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=False @runQCD=True" -s $queue 
-#MC13TeV_Wh_amass
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@runSystematics=False @runMVA=False @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=False @runQCD=False" -s $queue 
    fi
 fi
 
@@ -152,7 +150,6 @@ if [[ $step > 2.999 && $step < 4 ]]; then
             echo "Please run step==2 above to calculate int. luminosity for 2016 data!" 
         else
 	    echo "Please run step==2 above to calculate int. luminosity!"
-#            INTLUMI=2268.759 #correspond to the value from DoubleMu OR DoubleEl OR MuEG without jobs failling and golden JSON 
         fi                                                                                                                   
 	echo "WARNING: $RESULTSDIR/LUMI.txt file is missing so use fixed integrated luminosity value, this might be different than the dataset you ran on"
     fi
@@ -161,21 +158,29 @@ if [[ $step > 2.999 && $step < 4 ]]; then
 	echo "MAKE SUMMARY ROOT FILE, BASED ON AN INTEGRATED LUMINOSITY OF $INTLUMI"
 	echo "Input DIR = "$NTPL_OUTDIR
         runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased $arguments        
-    fi        
+   fi        
 
     if [[ $step == 3 || $step == 3.01 ]]; then  # make plots and combined root files for limits only
 	echo "MAKE SUMMARY ROOT FILE FOR LIMITS, BASED ON AN INTEGRATED LUMINOSITY OF $INTLUMI" 
 	echo "Input DIR = "$NTPL_OUTDIR  
-	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outFile ${PLOTTER}_forLimits.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "(all_optim_systs|all_optim_cut|(SR_3b|SR_4b|SR_geq4b|SR_geq5b)_(bdt)(|_shapes))" $arguments 
+	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outFile ${PLOTTER}_forLimits.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "(all_optim_systs|all_optim_cut|(E|MU)_(SR_3b|SR_4b|SR_5b|SR_geq4b|SR_geq5b|CR_3b|CR_4b|CR_5b|CR_geq4b|CR_geq5b|CR_nonTT_3b|CR_nonTT_4b|CR_nonTT_5b|CR_nonTT_geq4b|CR_nonTT_geq5b)_(bdt)(|_shapes)(|_umetup|_umetdown|_jerup|_jerdown|_jesup|_jesdown|_scale_mup|_scale_mdown|_stat_eup|_stat_edown|_stat_eup|_stat_edown|_sys_eup|_sys_edown|_GS_eup|_GS_edown|_resRho_eup|_resRho_edown|_puup|_pudown|_btagup|_btagdown))" $arguments 
+    fi
+
+    if [[ $step == 3.02 ]]; then # make plots for data-driven QCD bkg
+	echo "MAKE SUMMARY ROOT FILE, for data-driven QCD estimate"
+	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outFile ${PLOTTER}_forQCD.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "(E|MU)_(SR|CR|CR_nonTT)_(qcdA|qcdB|qcdC|qcdD)_(3b|4b|5b|geq4b)_bdt" $arguments
+	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outDir $PLOTSDIR/mcbased_forQCD/ --outFile ${PLOTTER}_forQCD.root  --json $JSON --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --only "(E|MU)_(SR|CR|CR_nonTT)_(qcdA|qcdB|qcdC|qcdD)_(3b|4b|5b|geq4b)_bdt" $arguments
     fi
 
     if [[ $step == 3 || $step == 3.1 ]]; then  # make plots and combine root files for mcbased study    
 #	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased $arguments 
-	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outDir $PLOTSDIR/mcbased/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --signalScale 100 $arguments
-        runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outDir $PLOTSDIR/mcbased_blind/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --signalScale 100 --blind 0.1 --only "(SR_3b|SR_4b|SR_geq4b|SR_geq5b)_bdt" $arguments
+	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outDir $PLOTSDIR/mcbased/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --signalScale 100 $arguments 
+#	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outDir $PLOTSDIR/mcbased_Norm/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --signalScale 100 --addExternalNorm $arguments
+        runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outDir $PLOTSDIR/mcbased_blind/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --signalScale 100 --blind 0.1 --only "(E|MU)_(SR_3b|SR_4b|SR_5b|SR_geq4b|SR_geq5b)_bdt" $arguments
+#	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outDir $PLOTSDIR/mcbased_blind_Norm/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --signalScale 100 --blind 0.1 --addExternalNorm --only "(SR_3b|SR_4b|SR_5b|SR_geq4b|SR_geq5b)_bdt" $arguments
     fi
 
-    if [[ $step == 3 || $step == 3.2 ]]; then # make plots and combine root files for photon + jet study   
+    if [[ $step == 3 || $step == 3.2 ]]; then # make plots and combine root files for data-driven backgrounds 
 	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $RESULTSDIR/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption UPDATE   --key haa_datadriven $arguments
         runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $RESULTSDIR/ --outDir $PLOTSDIR/datadriven/       --outFile ${PLOTTER}.root  --json $JSON --no2D --plotExt .png --plotExt .pdf  --key haa_datadriven --fileOption READ $arguments
     fi	

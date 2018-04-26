@@ -1109,37 +1109,6 @@ int main(int argc, char* argv[])
 
 	mon.fillHisto("eventflow","all",2,weight);  
 
-
-        // // lepton TRG + ID + ISO scale factors 
-        // if(isMC) {
-	//   if (evcat==E) {
-	//     // TRG
-	//     weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
-	//     //	    printf("Ele TRG SFs for pt= %lf and eta= %lf , is SF= %lf\n",selLeptons[0].pt(), selLeptons[0].en_EtaSC,getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1));
-	//     weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h2); 
-	//     // ID + ISO
-	//     weight *= getSFfrom2DHist(selLeptons[0].en_EtaSC, selLeptons[0].pt(), E_RECO_SF_h);
-	//       //lepEff.getRecoEfficiency( selLeptons[0].en_EtaSC, 11).first;
-	//     weight *= getSFfrom2DHist(selLeptons[0].en_EtaSC, selLeptons[0].pt(), E_TIGHTID_SF_h); ; 
-	//       //lepEff.getLeptonEfficiency( selLeptons[0].pt(), selLeptons[0].eta(), 11, "tight" ,patUtils::CutVersion::ICHEP16Cut ).first ; //ID
-	    
-	//   } else if (evcat==MU) {
-	//     // TRG
-	//     weight *= getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h );
-	//     //	    printf("Mu TRG SF for pt= %lf and eta= %lf , is SF= %lf\n",selLeptons[0].pt(), selLeptons[0].eta(),getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h ));
-	//     // TRK + ID + ISO
-	//     weight *= lepEff.getTrackingEfficiency( selLeptons[0].eta(), 13).first; //Tracking eff
-	//     weight *= lepEff.getLeptonEfficiency( selLeptons[0].pt(), selLeptons[0].eta(), 13, "tight" ,patUtils::CutVersion::ICHEP16Cut ).first ; //ID
-	//     weight *= lepEff.getLeptonEfficiency( selLeptons[0].pt(), selLeptons[0].eta(), 13, "tightiso",patUtils::CutVersion::ICHEP16Cut ).first; //ISO w.r.t ID
-	//   }
-        // }
-
-	// // -------------------------------------------------------------------------
-	// // 2nd lepton veto
-	// // -------------------------------------------------------------------------
-	// bool pass2ndlepVeto(extraLeptons.size()==0);
-	// if (!pass2ndlepVeto) continue;
-	// mon.fillHisto("eventflow","all",3,weight);
 	mon.fillHisto("nleptons","raw", selLeptons.size(),weight);
         mon.fillHisto("nleptons","raw_extra", extraLeptons.size(),weight); 
 
@@ -1622,11 +1591,12 @@ int main(int argc, char* argv[])
           if (evcat==E) passIso = selLeptons[0].passIsoEl;
           if (evcat==MU) passIso = selLeptons[0].passIsoMu;
 
-          if (  passIso && !passMet25 && runQCD) QCD_region = "_qcdA";
-          if (  passIso &&  passMet25 && runQCD) QCD_region = "_qcdB";
-          if ( !passIso && !passMet25 && runQCD) QCD_region = "_qcdC";
-          if ( !passIso &&  passMet25 && runQCD) QCD_region = "_qcdD";
-
+	  if (runQCD) {
+	    if (  passIso && !passMet25 ) QCD_region = "_qcdA";
+	    if (  passIso &&  passMet25 ) QCD_region = "_qcdB";
+	    if ( !passIso && !passMet25 ) QCD_region = "_qcdC";
+	    if ( !passIso &&  passMet25 ) QCD_region = "_qcdD";
+	  }
 
 	  //mtW >50 GeV
 	  bool passMt(sqrt(tMass)>50. && sqrt(tMass)<250.);
@@ -1735,21 +1705,21 @@ int main(int argc, char* argv[])
 		
 		// Cats: 3b
 		if (GoodIdbJets.size()==3) { 
-		  tags.push_back("SR_3b"); tags.push_back(ch+"SR"+QCD_region+"_3b");
+		  tags.push_back("SR"+QCD_region+"_3b"); tags.push_back(ch+"SR"+QCD_region+"_3b");
 		}
 		else {
-		  tags.push_back("SR_geq4b"); tags.push_back(ch+"SR"+QCD_region+"_geq4b");
+		  tags.push_back("SR"+QCD_region+"_geq4b"); tags.push_back(ch+"SR"+QCD_region+"_geq4b");
 		  
 		  if(ivar==0) { mon.fillHisto("eventflow","all",7,weight); }
 		  
 		  if (GoodIdbJets.size()==4) { 
-		    tags.push_back("SR_4b"); tags.push_back(ch+"SR"+QCD_region+"_4b");
+		    tags.push_back("SR"+QCD_region+"_4b"); tags.push_back(ch+"SR"+QCD_region+"_4b");
 		  }
 		  else {
 		    if (GoodIdbJets.size()==5) { 
-		      tags.push_back("SR_5b"); tags.push_back(ch+"SR"+QCD_region+"_5b");
+		      tags.push_back("SR"+QCD_region+"_5b"); tags.push_back(ch+"SR"+QCD_region+"_5b");
 		    }
-		    tags.push_back("SR_geq5b"); tags.push_back(ch+"SR"+QCD_region+"_geq5b");
+		    tags.push_back("SR"+QCD_region+"_geq5b"); tags.push_back(ch+"SR"+QCD_region+"_geq5b");
 		  }
 		}
 	      } else { 
@@ -1758,18 +1728,18 @@ int main(int argc, char* argv[])
 		
 		// Top Control Region categories
 		if (GoodIdbJets.size()==3) { 
-		  tags.push_back("CR_3b"); tags.push_back(ch+"CR"+QCD_region+"_3b");
+		  tags.push_back("CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+"_3b");
 		}
 		else {
-		  tags.push_back("CR_geq4b"); tags.push_back(ch+"CR"+QCD_region+"_geq4b");
+		  tags.push_back("CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+"_geq4b");
 		  if (GoodIdbJets.size()==4) { 
-		    tags.push_back("CR_4b"); tags.push_back(ch+"CR"+QCD_region+"_4b");
+		    tags.push_back("CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+"_4b");
 		  }
 		  else {
 		    if (GoodIdbJets.size()==5) { 
-		      tags.push_back("CR_5b"); tags.push_back(ch+"CR"+QCD_region+"_5b");
+		      tags.push_back("CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+"_5b");
 		    }
-		    tags.push_back("CR_geq5b"); tags.push_back(ch+"CR"+QCD_region+"_geq5b");
+		    tags.push_back("CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+"_geq5b");
 		  }
 		}
 	      }
@@ -1778,18 +1748,18 @@ int main(int argc, char* argv[])
 	      
 	      // Top Control Region categories
 	      if (GoodIdbJets.size()==3) { 
-		tags.push_back("CR_3b"); tags.push_back(ch+"CR"+QCD_region+"_3b");
+		tags.push_back("CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+"_3b");
 	      }
 	      else {
-		tags.push_back("CR_geq4b"); tags.push_back(ch+"CR"+QCD_region+"_geq4b");
+		tags.push_back("CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+"_geq4b");
 		if (GoodIdbJets.size()==4) { 
-		  tags.push_back("CR_4b"); tags.push_back(ch+"CR"+QCD_region+"_4b");
+		  tags.push_back("CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+"_4b");
 		}
 		else {
 		  if (GoodIdbJets.size()==5) { 
-		    tags.push_back("CR_5b"); tags.push_back(ch+"CR"+QCD_region+"_5b");
+		    tags.push_back("CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+"_5b");
 		  }
-		  tags.push_back("CR_geq5b"); tags.push_back(ch+"CR"+QCD_region+"_geq5b");
+		  tags.push_back("CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+"_geq5b");
 		}
 	      }
 	    }
@@ -1800,18 +1770,18 @@ int main(int argc, char* argv[])
 	    
 	    // Non-TT Control Region categories
 	    if (GoodIdbJets.size()==3) { 
-	      tags.push_back("CR_nonTT_3b"); tags.push_back(ch+"CR"+QCD_region+"_nonTT_3b");
+	      tags.push_back("CR_nonTT"+QCD_region+"_3b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_3b");
 	    }
 	    else {
-	      tags.push_back("CR_nonTT_geq4b"); tags.push_back(ch+"CR"+QCD_region+"_nonTT_geq4b");
+	      tags.push_back("CR_nonTT"+QCD_region+"_geq4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_geq4b");
 	      if (GoodIdbJets.size()==4) { 
-		tags.push_back("CR_nonTT_4b"); tags.push_back(ch+"CR"+QCD_region+"_nonTT_4b");
+		tags.push_back("CR_nonTT"+QCD_region+"_4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_4b");
 	      }
 	      else {
 		if (GoodIdbJets.size()==5) { 
-		  tags.push_back("CR_nonTT_5b"); tags.push_back(ch+"CR"+QCD_region+"_nonTT_5b");
+		  tags.push_back("CR_nonTT"+QCD_region+"_5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_5b");
 		}
-		tags.push_back("CR_nonTT_geq5b"); tags.push_back(ch+"CR"+QCD_region+"_nonTT_geq5b");
+		tags.push_back("CR_nonTT"+QCD_region+"_geq5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_geq5b");
 	      }
 	    }
 	  } else {
