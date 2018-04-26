@@ -93,7 +93,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "JOB SUBMISSION for Ntuplization using full CMSSW fwk"
        echo "Input: " $JSON
        echo "Output: " $RESULTSDIR
-       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_prod -s crab 
+       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -s crab 
    fi    
 
    if [[ $step == 1.1 ]]; then  #submit jobs for h->aa->XXYY analysis
