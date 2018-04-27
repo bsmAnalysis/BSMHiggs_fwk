@@ -1585,26 +1585,32 @@ int main(int argc, char* argv[])
 	    mon.fillHisto("eventflow","all",3,weight); // MEt cut
 	  }
 	  //-------------------------------------------------------------------
+	  //mtW >50 GeV
+	  bool passMt(sqrt(tMass)>50. && sqrt(tMass)<250.);
+	  if (!passMt && !runQCD) continue;
+	  if(ivar==0) {
+	    mon.fillHisto("eventflow","all",4,weight); // MT cut
+	  }
+
+	  // ABDC for QCD data-driven estimate
           bool passIso = false;
+	  bool passMetMt = false;
+	  
           TString  QCD_region = "";
 
           if (evcat==E) passIso = selLeptons[0].passIsoEl;
           if (evcat==MU) passIso = selLeptons[0].passIsoMu;
 
 	  if (runQCD) {
-	    if (  passIso && !passMet25 ) QCD_region = "_qcdA";
-	    if (  passIso &&  passMet25 ) QCD_region = "_qcdB";
-	    if ( !passIso && !passMet25 ) QCD_region = "_qcdC";
-	    if ( !passIso &&  passMet25 ) QCD_region = "_qcdD";
+	    passMetMt = (passMet25 && passMt);
+	    
+	    if (  passIso && !passMetMt ) QCD_region = "_qcdA";
+	    if (  passIso &&  passMetMt ) QCD_region = "_qcdB";
+	    if ( !passIso && !passMetMt ) QCD_region = "_qcdC";
+	    if ( !passIso &&  passMetMt ) QCD_region = "_qcdD";
 	  }
 
-	  //mtW >50 GeV
-	  bool passMt(sqrt(tMass)>50. && sqrt(tMass)<250.);
-	  if (!passMt) continue;
-	  if(ivar==0) {
-	    mon.fillHisto("eventflow","all",4,weight); // MT cut
-	  }
-	  
+
 	  //-------------------------------------------------------------------
 	  //At least 2 jets
 	  if (GoodIdJets.size()<2) continue;
