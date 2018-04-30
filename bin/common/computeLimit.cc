@@ -710,7 +710,7 @@ int main(int argc, char* argv[])
   fclose(pFile);
 
   //add by hand the hard coded uncertainties
-  //  allInfo.addHardCodedUncertainties(histo.Data());
+  allInfo.addHardCodedUncertainties(histo.Data());
 
   //produce a plot
   allInfo.showShape(selCh,histo,"plot"); //this produce the final global shape
@@ -1418,6 +1418,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       std::map<string, ProcessInfo_t>::iterator it=procs.find(procName);
       if(it==procs.end())continue;
       if(it->first=="total" || it->first=="data")continue;  //only do samples which have systematics
+      //      if(it->first=="data")continue;  //only do samples which have systematics  
 
       std::map<string, bool> mapUncType;
       std::map<string, std::map< string, double> > mapYieldPerBin;
@@ -1805,12 +1806,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         ShapeData_t& shapeInfo = ch->second.shapes[histoName];      
         double integral = shapeInfo.histo()->Integral();
 
-	/*
-	// Toy syst. unc. : 20% for the bkg, 10% for the signal
-	if(!it->second.isData && it->second.isSign)shapeInfo.uncScale["toy_uncSG"] = integral*0.1;
-	if(!it->second.isData && !(it->second.isSign))shapeInfo.uncScale["toy_uncBG"] = integral*0.2;
-	*/ 
-
         //lumi
         if(!it->second.isData && systpostfix.Contains('3'))shapeInfo.uncScale["lumi_13TeV"] = integral*0.026;
         if(!it->second.isData && systpostfix.Contains('8'))shapeInfo.uncScale["lumi_8TeV" ] = integral*0.026;
@@ -1821,6 +1816,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if(chbin.Contains("E"  ))  shapeInfo.uncScale["CMS_eff_e"] = integral*0.072124;
           if(chbin.Contains("MU"))  shapeInfo.uncScale["CMS_eff_m"] = integral*0.061788;
         }
+
+	//normalization uncertainties to be applied in small backgrounds
+
+	if(it->second.shortName.find("vv")!=string::npos){shapeInfo.uncScale["norm_vv"] = integral*0.10;}
+	if(it->second.shortName.find("zll")!=string::npos){shapeInfo.uncScale["norm_zll"] = integral*0.10;}       
+	if(it->second.shortName.find("ttbargam")!=string::npos){shapeInfo.uncScale["norm_TTgzw"] = integral*0.10;} 
+	if(it->second.shortName.find("singleto")!=string::npos){shapeInfo.uncScale["norm_singletop"] = integral*0.10;} 
+	if(it->second.shortName.find("qcd")!=string::npos){shapeInfo.uncScale["norm_qcd"] = integral*0.50;} 
 
         //uncertainties to be applied only in higgs analyses
         if(mass>0){
