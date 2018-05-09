@@ -1072,8 +1072,8 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
 
   if(pFile){
     if (postfit){
-      fprintf(pFile,"\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{rotating}\n\\begin{sidewaystable}[htp]\n\\tiny\n\\begin{center}\n\\caption{Data-driven QCD background estimation (using initial W and Top scale factors).}\n\\label{tab:table}\n");} else {
-      fprintf(pFile,"\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{rotating}\n\\begin{sidewaystable}[htp]\n\\tiny\n\\begin{center}\n\\caption{Data-driven QCD background estimation.}\n\\label{tab:table}\n");
+      fprintf(pFile,"\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{rotating}\n\\begin{document}\n\\begin{sidewaystable}[htp]\n\\tiny\n\\begin{center}\n\\caption{Data-driven QCD background estimation (using initial W and Top scale factors).}\n\\label{tab:table}\n");} else {
+      fprintf(pFile,"\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{rotating}\n\\begin{document}\n\\begin{sidewaystable}[htp]\n\\tiny\n\\begin{center}\n\\caption{Data-driven QCD background estimation.}\n\\label{tab:table}\n");
     }
     fprintf(pFile,"\\begin{tabular}{%s|}\\hline\n", Lcol);
     fprintf(pFile,"channel               %s\\\\\\hline\n", Lchan);
