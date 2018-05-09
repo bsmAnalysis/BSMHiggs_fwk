@@ -14,7 +14,6 @@
 
 <use name="FWCore/Services"/> 
 <use name="FWCore/ServiceRegistry"/>
-<use name="TauAnalysis/SVfitStandalone"/>
 <use name="RecoJets/JetProducers"/>
 <use name="HiggsAnalysis/CombinedLimit"/>
 <use name="RecoEgamma/ElectronIdentification"/>

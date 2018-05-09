@@ -168,8 +168,8 @@ if [[ $step > 2.999 && $step < 4 ]]; then
 
     if [[ $step == 3.02 ]]; then # make plots for data-driven QCD bkg
 	echo "MAKE SUMMARY ROOT FILE, for data-driven QCD estimate"
-	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outFile ${PLOTTER}_forQCD.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "(E|MU)_(SR|CR|CR_nonTT)_(qcdA|qcdB|qcdC|qcdD)_(3b|4b|5b|geq4b)_bdt" $arguments
-	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir $NTPL_OUTDIR/ --outDir $PLOTSDIR/mcbased_forQCD/ --outFile ${PLOTTER}_forQCD.root  --json $JSON --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --only "(E|MU)_(SR|CR|CR_nonTT)_(qcdA|qcdB|qcdC|qcdD)_(3b|4b|5b|geq4b)_bdt" $arguments
+	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outFile ${PLOTTER}_qcd.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "(all_optim_systs|all_optim_cut|(E|MU)_(SR|CR|CR_nonTT)_(qcdA|qcdB|qcdC|qcdD)_(3b|4b)_(bdt)(|_shapes)(|_umetup|_umetdown|_jerup|_jerdown|_jesup|_jesdown|_scale_mup|_scale_mdown|_stat_eup|_stat_edown|_stat_eup|_stat_edown|_sys_eup|_sys_edown|_GS_eup|_GS_edown|_resRho_eup|_resRho_edown|_puup|_pudown|_btagup|_btagdown))" $arguments
+	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outDir $PLOTSDIR/mcbased_qcd/ --outFile ${PLOTTER}_qcd.root  --json $JSON --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --only "(E|MU)_(SR|CR|CR_nonTT)_(qcdA|qcdB|qcdC|qcdD)_(3b|4b)_bdt" $arguments 
     fi
 
     if [[ $step == 3 || $step == 3.1 ]]; then  # make plots and combine root files for mcbased study    
