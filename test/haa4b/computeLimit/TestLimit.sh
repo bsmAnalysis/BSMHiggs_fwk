@@ -1,7 +1,7 @@
 rm -rf TEST
 mkdir -p TEST;
 cd TEST;
-#computeLimit --m 60 --histo bdt_shapes --in $PWD/../../plotter_2018_03_03_forLimits.root --shape --index 1 --json $PWD/../../samples2016.json  --shapeMin -9999 --shapeMax 9999 --bins 3b,4b --systpostfix _13TeV --dropBckgBelow 0.0 ;
+
 computeLimit --m 60 --histo bdt_shapes --in $PWD/../../plotter_2018_03_03_forLimits.root --syst --controlR --shape --index 1 --json $PWD/../../samples2016.json  --shapeMin -9999 --shapeMax 9999 --bins 3b,4b --systpostfix _13TeV --dropBckgBelow 0.0 ;
 sh combineCards.sh;
 
@@ -26,7 +26,6 @@ text2workspace.py card_combined.dat -o workspace.root --PO verbose --channel-mas
 combine -M FitDiagnostics workspace.root --saveShapes --saveWithUncertainties --plots --saveNormalizations --setParameters mask_E_SR_3b=1,mask_MU_SR_3b=1,mask_E_SR_4b=1,mask_MU_SR_4b=1
 
 python ../print.py -u fitDiagnostics.root > log.txt
-
 python ../diffNuisances.py -A -a fitDiagnostics.root -g outputfile.root >> log.txt
 
 #combine -M Asymptotic -m 60 --run expected card_combined.dat -v 3 > COMB.log;
