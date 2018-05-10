@@ -17,7 +17,7 @@ git clone -b Moriond17_gainSwitch_unc https://github.com/ECALELFS/ScalesSmearing
 cd $CMSSW_BASE/src
 scram b -j 8
 
-#Adding DeepCSV (optional)   
+#Adding DeepCSV
 git cms-merge-topic -u mverzett:DeepFlavour-from-CMSSW_8_0_21 
 mkdir $CMSSW_BASE/src/RecoBTag/DeepFlavour/data/
 cd $CMSSW_BASE/src/RecoBTag/DeepFlavour/data/  
