@@ -1312,8 +1312,8 @@ int main(int argc, char* argv[])
 	  weight = iweight; // reset to nominal weight
 
             //pileup
-	  if(varNames[ivar]=="_puup") weight *=TotalWeight_plus; //pu up
-	  if(varNames[ivar]=="_pudown") weight *=TotalWeight_minus; //pu down
+	  if(varNames[ivar]=="_puup") weight *= ( TotalWeight_plus/puWeight ); //pu up
+	  if(varNames[ivar]=="_pudown") weight *= ( TotalWeight_minus/puWeight ); //pu down
 
 	  // for POWHEG, MADGRAPH based samples
 	  // retrive PDFweights from ntuple
