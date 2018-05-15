@@ -266,9 +266,7 @@ int main(int argc, char* argv[])
 	  eleVarNames.push_back("_resPhi_edown");
 
 	  varNames.push_back("_puup");  varNames.push_back("_pudown");      //pileup uncertainty    
-
-	  varNames.push_back("_pdfup");                                                                                                                                                                                       
-	  varNames.push_back("_pdfdown");  
+	  varNames.push_back("_pdfup"); varNames.push_back("_pdfdown");  
 
 	  varNames.push_back("_jerup"); 	//1 
 	  varNames.push_back("_jerdown"); //2
@@ -288,8 +286,6 @@ int main(int argc, char* argv[])
 	  varNames.push_back("_resRho_eup");    varNames.push_back("_resRho_edown");  //electron energy resolution
 	  varNames.push_back("_resPhi_edown");     //electron energy resolution
 	  //	varNames.push_back("_eff_bup"); varNames.push_back("_eff_bdown"); //btag SFs
-
-	//varNames.push_back("_puup");  varNames.push_back("_pudown");      //pileup uncertainty
 
 	  //	  varNames.push_back("_th_pdf");                                           //pdf
 	  //	  varNames.push_back("_th_alphas"); //alpha_s (QCD)
@@ -1323,7 +1319,7 @@ int main(int argc, char* argv[])
 	  }
 	  double pdfError = pdf_h->GetRMS();
 	  delete pdf_h;
-	  cout << "pdfError: " << pdfError << endl;
+	  //	  cout << "pdfError: " << pdfError << endl;
 
 	  // retrive alphaSweights from ntuple
 	  TH1F *alphaS_h = new TH1F();
@@ -1332,7 +1328,7 @@ int main(int argc, char* argv[])
 	  }
 	  double alphaSError = alphaS_h->GetRMS();
 	  delete alphaS_h;
-	  cout << "alphaSError: " << alphaSError << endl;
+	  //	  cout << "alphaSError: " << alphaSError << endl;
 	  double PDFalphaSWeight = sqrt(pdfError*pdfError + alphaSError*alphaSError);
 
 	  if(varNames[ivar]=="_pdfup")    weight *= (1.+PDFalphaSWeight);
@@ -1388,7 +1384,7 @@ int main(int argc, char* argv[])
 	    } else if (evcat==MU) {
 	      // TRG
 	      weight *= getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h );
-	      //	    printf("Mu TRG SF for pt= %lf and eta= %lf , is SF= %lf\n",selLeptons[0].pt(), selLeptons[0].eta(),getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h ));
+	      //printf("Mu TRG SF for pt= %lf and eta= %lf , is SF= %lf\n",selLeptons[0].pt(), selLeptons[0].eta(),getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h ));
 	      // TRK + ID + ISO
 	      weight *= lepEff.getTrackingEfficiency( selLeptons[0].eta(), 13).first; //Tracking eff
 	      weight *= lepEff.getLeptonEfficiency( selLeptons[0].pt(), selLeptons[0].eta(), 13, "tight" ,patUtils::CutVersion::ICHEP16Cut ).first ; //ID
