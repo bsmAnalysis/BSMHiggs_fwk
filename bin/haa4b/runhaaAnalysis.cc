@@ -1678,7 +1678,7 @@ int main(int argc, char* argv[])
 	      if(ivar==0) mon.fillHisto("eventflow","all",3,weight); // MEt cut   
 	      //	      if (!passMt) continue; // only cut on MT in the Signal Region
 	      if (passMt) { 
-		QCD_region = "_fin"; 
+		QCD_region = ""; 
 		if(ivar==0) mon.fillHisto("eventflow","all",4,weight); // MT cut   
 	      }
 	      
