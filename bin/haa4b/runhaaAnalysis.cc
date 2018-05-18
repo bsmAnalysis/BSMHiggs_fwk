@@ -1674,10 +1674,10 @@ int main(int argc, char* argv[])
 	    if (!passMet25) { QCD_region = "_qcdA"; }
 	    else {
 	      QCD_region = "_qcdB";      
-	      if(ivar==0) mon.fillHisto("eventflow","all",3,weight); // MEt cut   
-	      //	      if (!passMt) continue; // only cut on MT in the Signal Region
-
-	      if(ivar==0 && passMt) mon.fillHisto("eventflow","all",4,weight); // MT cut   
+	      if(ivar==0) {
+		mon.fillHisto("eventflow","all",3,weight); // MEt cut   
+		if(passMt) mon.fillHisto("eventflow","all",4,weight); // MT cut   
+	      }
 	    }
 	  }
 
@@ -1783,8 +1783,8 @@ int main(int argc, char* argv[])
 	  else { printf("UNKNOWN lepton category - please check\n"); }
 	  
 	  TString mtpass="";
-	  if (passMt) { mtpass="mt_"; }
-	  else { mtpass="notmt_"; }
+	  if (passMt) { mtpass="_Mt"; }
+	  else { mtpass="_notMt"; }
 
 
 	  bool isSignalRegion(true);
