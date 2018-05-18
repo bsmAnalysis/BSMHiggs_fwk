@@ -1666,7 +1666,6 @@ int main(int argc, char* argv[])
 	  //	  bool passMetMt = (passMet25 && passMt);
 	  
           TString  QCD_region = "";
-	  //	  if (!passMetMt) QCD_region = "_qcdA";
 	  
 	  if (runQCD) {
 	    if ( !passMet25 ) QCD_region = "_qcdC";
@@ -1677,11 +1676,8 @@ int main(int argc, char* argv[])
 	      QCD_region = "_qcdB";      
 	      if(ivar==0) mon.fillHisto("eventflow","all",3,weight); // MEt cut   
 	      //	      if (!passMt) continue; // only cut on MT in the Signal Region
-	      if (passMt) { 
-		QCD_region = ""; 
-		if(ivar==0) mon.fillHisto("eventflow","all",4,weight); // MT cut   
-	      }
-	      
+
+	      if(ivar==0 && passMt) mon.fillHisto("eventflow","all",4,weight); // MT cut   
 	    }
 	  }
 
@@ -1786,6 +1782,11 @@ int main(int argc, char* argv[])
 	  else if (evcat==MU) { ch="MU_"; }
 	  else { printf("UNKNOWN lepton category - please check\n"); }
 	  
+	  TString mtpass="";
+	  if (passMt) { mtpass="mt_"; }
+	  else { mtpass="notmt_"; }
+
+
 	  bool isSignalRegion(true);
 	  
 	  if (nCSVMtags>=1) {
@@ -1797,21 +1798,21 @@ int main(int argc, char* argv[])
 		
 		// Cats: 3b
 		if (GoodIdbJets.size()==3) { 
-		  tags.push_back("SR"+QCD_region+"_3b"); tags.push_back(ch+"SR"+QCD_region+"_3b");
+		  tags.push_back("SR"+QCD_region+"_3b"); tags.push_back(ch+"SR"+QCD_region+"_3b"); tags.push_back(ch+"SR"+QCD_region+mtpass+"_3b");
 		}
 		else {
-		  tags.push_back("SR"+QCD_region+"_geq4b"); tags.push_back(ch+"SR"+QCD_region+"_geq4b");
+		  tags.push_back("SR"+QCD_region+"_geq4b"); tags.push_back(ch+"SR"+QCD_region+"_geq4b"); tags.push_back(ch+"SR"+QCD_region+mtpass+"_geq4b"); 
 		  
 		  if(ivar==0) { mon.fillHisto("eventflow","all",7,weight); }
 		  
 		  if (GoodIdbJets.size()==4) { 
-		    tags.push_back("SR"+QCD_region+"_4b"); tags.push_back(ch+"SR"+QCD_region+"_4b");
+		    tags.push_back("SR"+QCD_region+"_4b"); tags.push_back(ch+"SR"+QCD_region+"_4b"); tags.push_back(ch+"SR"+QCD_region+mtpass+"_4b"); 
 		  }
 		  else {
 		    if (GoodIdbJets.size()==5) { 
-		      tags.push_back("SR"+QCD_region+"_5b"); tags.push_back(ch+"SR"+QCD_region+"_5b");
+		      tags.push_back("SR"+QCD_region+"_5b"); tags.push_back(ch+"SR"+QCD_region+"_5b");  tags.push_back(ch+"SR"+QCD_region+mtpass+"_5b");
 		    }
-		    tags.push_back("SR"+QCD_region+"_geq5b"); tags.push_back(ch+"SR"+QCD_region+"_geq5b");
+		    tags.push_back("SR"+QCD_region+"_geq5b"); tags.push_back(ch+"SR"+QCD_region+"_geq5b"); tags.push_back(ch+"SR"+QCD_region+mtpass+"_geq5b");
 		  }
 		}
 	      } else { 
@@ -1820,18 +1821,18 @@ int main(int argc, char* argv[])
 		
 		// Top Control Region categories
 		if (GoodIdbJets.size()==3) { 
-		  tags.push_back("CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+"_3b");
+		  tags.push_back("CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_3b");
 		}
 		else {
-		  tags.push_back("CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+"_geq4b");
+		  tags.push_back("CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_geq4b");
 		  if (GoodIdbJets.size()==4) { 
-		    tags.push_back("CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+"_4b");
+		    tags.push_back("CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_4b");
 		  }
 		  else {
 		    if (GoodIdbJets.size()==5) { 
-		      tags.push_back("CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+"_5b");
+		      tags.push_back("CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_5b");
 		    }
-		    tags.push_back("CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+"_geq5b");
+		    tags.push_back("CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_geq5b");
 		  }
 		}
 	      }
@@ -1840,18 +1841,18 @@ int main(int argc, char* argv[])
 	      
 	      // Top Control Region categories
 	      if (GoodIdbJets.size()==3) { 
-		tags.push_back("CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+"_3b");
+		tags.push_back("CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_3b");
 	      }
 	      else {
-		tags.push_back("CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+"_geq4b");
+		tags.push_back("CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_geq4b");
 		if (GoodIdbJets.size()==4) { 
-		  tags.push_back("CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+"_4b");
+		  tags.push_back("CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_4b");
 		}
 		else {
 		  if (GoodIdbJets.size()==5) { 
-		    tags.push_back("CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+"_5b");
+		    tags.push_back("CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_5b");
 		  }
-		  tags.push_back("CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+"_geq5b");
+		  tags.push_back("CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_geq5b");
 		}
 	      }
 	    }
@@ -1862,18 +1863,18 @@ int main(int argc, char* argv[])
 	    
 	    // Non-TT Control Region categories
 	    if (GoodIdbJets.size()==3) { 
-	      tags.push_back("CR_nonTT"+QCD_region+"_3b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_3b");
+	      tags.push_back("CR_nonTT"+QCD_region+"_3b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_3b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_3b"); 
 	    }
 	    else {
-	      tags.push_back("CR_nonTT"+QCD_region+"_geq4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_geq4b");
+	      tags.push_back("CR_nonTT"+QCD_region+"_geq4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_geq4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_geq4b");
 	      if (GoodIdbJets.size()==4) { 
-		tags.push_back("CR_nonTT"+QCD_region+"_4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_4b");
+		tags.push_back("CR_nonTT"+QCD_region+"_4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_4b");
 	      }
 	      else {
 		if (GoodIdbJets.size()==5) { 
-		  tags.push_back("CR_nonTT"+QCD_region+"_5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_5b");
+		  tags.push_back("CR_nonTT"+QCD_region+"_5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_5b");
 		}
-		tags.push_back("CR_nonTT"+QCD_region+"_geq5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_geq5b");
+		tags.push_back("CR_nonTT"+QCD_region+"_geq5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_geq5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_geq5b");
 	      }
 	    }
 	  } else {
