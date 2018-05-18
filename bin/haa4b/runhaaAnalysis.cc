@@ -265,9 +265,6 @@ int main(int argc, char* argv[])
 	  eleVarNames.push_back("_resRho_edown");
 	  eleVarNames.push_back("_resPhi_edown");
 
-	  varNames.push_back("_puup");  varNames.push_back("_pudown");      //pileup uncertainty    
-	  varNames.push_back("_pdfup"); varNames.push_back("_pdfdown");  
-
 	  varNames.push_back("_jerup"); 	//1 
 	  varNames.push_back("_jerdown"); //2
 	  varNames.push_back("_jesup"); 	//3
@@ -286,6 +283,9 @@ int main(int argc, char* argv[])
 	  varNames.push_back("_resRho_eup");    varNames.push_back("_resRho_edown");  //electron energy resolution
 	  varNames.push_back("_resPhi_edown");     //electron energy resolution
 	  //	varNames.push_back("_eff_bup"); varNames.push_back("_eff_bdown"); //btag SFs
+
+	  varNames.push_back("_puup");  varNames.push_back("_pudown");      //pileup uncertainty 
+	  varNames.push_back("_pdfup"); varNames.push_back("_pdfdown");  
 
 	  //	  varNames.push_back("_th_pdf");                                           //pdf
 	  //	  varNames.push_back("_th_alphas"); //alpha_s (QCD)
@@ -852,6 +852,7 @@ int main(int argc, char* argv[])
 	int nGoodLeptons(0);
 	
 	std::map<string, std::vector<PhysicsObject_Lepton> > selLeptonsVar;
+	std::map<string, std::vector<PhysicsObject_Lepton> > allLeptonsVar;
 	//	std::vector<std::pair<int,LorentzVector> > goodLeptons;
 	std::vector<PhysicsObject_Lepton> goodLeptons;  
 
@@ -867,7 +868,7 @@ int main(int argc, char* argv[])
 	float lep_threshold(25.);
 	float eta_threshold=2.5;
 
-        bool  passIsoEl_(false), passIsoMu_(false);
+	//        bool  passIsoEl_(false), passIsoMu_(false);
 
 	for (auto &ilep : leps) {
 	  //if ( ilep.pt()<5. ) continue;
@@ -936,7 +937,9 @@ int main(int argc, char* argv[])
 	    for(unsigned int ivar=0;ivar<eleVarNames.size();ivar++){
 	      // only run Systematics in MC samples
 	      if(!isMC && ivar>0) continue;
-
+	      // do not run systs. for QCD
+	      if(isMC && runQCD && ivar>0) continue;
+	      
 	      if (abs(lepid)==11) {
 		double et = ilep.en_cor_en / cosh(fabs(ilep.en_EtaSC)); 
 
@@ -1001,15 +1004,22 @@ int main(int argc, char* argv[])
 		  ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue);        
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);      
 		}if(ivar==0){ // nominal
-		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
+		  if(!runQCD){
+		    selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
+		  } else {
+		    if(!(ilep.passIsoEl)) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
+		  }
 		}
 		
 	      } if (abs(lepid)==13) { // endif ele
-	      
-		selLeptonsVar[eleVarNames[ivar]].push_back(ilep);
+		if(!runQCD){
+		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
+		} else {
+		  if(!(ilep.passIsoMu)) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
+		}
 	      }
 	    }
-
+	    
 	    nGoodLeptons++;
 	    //	    goodLeptons.push_back(ilep);
 	  } else { // extra loose leptons
@@ -1135,8 +1145,14 @@ int main(int argc, char* argv[])
 	// -------------------------------------------------------------------------
 	// Exactly 1 good lepton
 	bool passOneLepton(selLeptons.size()==1); 
-	if (!passOneLepton) continue;
-	// -------------------------------------------------------------------------
+	bool passOneLepton_anti(selLeptons.size()>=1);
+	if (runQCD) {
+	  if (!passOneLepton_anti) continue;
+	} else {
+	  if (!passOneLepton) continue;
+	}
+
+	  // -------------------------------------------------------------------------
 
 	mon.fillHisto("eventflow","all",2,weight);  
 
@@ -1342,6 +1358,8 @@ int main(int argc, char* argv[])
 	    if (evcat==E) {
 	      selLeptons = selLeptonsVar[varNames[ivar].Data()];
 	    } else { continue; }
+	  } else {
+	    selLeptons = selLeptonsVar[varNames[0].Data()]; 
 	  }
 	  
 	  LorentzVector metP4 = variedMET[0];
@@ -1637,34 +1655,34 @@ int main(int argc, char* argv[])
 	  //-------------------------------------------------------------------
 	  //MET>25 GeV 
 	  bool passMet25(metP4.pt()>25);
-	  if (!passMet25 && !runQCD) continue;
-	  if(ivar==0) {
-	    mon.fillHisto("eventflow","all",3,weight); // MEt cut
-	  }
+	  //  if (!passMet25 && !runQCD) continue;
+
 	  //-------------------------------------------------------------------
 	  //mtW >50 GeV
 	  bool passMt(sqrt(tMass)>50. && sqrt(tMass)<250.);
-	  if (!passMt && !runQCD) continue;
-	  if(ivar==0) {
-	    mon.fillHisto("eventflow","all",4,weight); // MT cut
-	  }
+	  //  if (!passMt && !runQCD) continue;
 
 	  // ABDC for QCD data-driven estimate
-          bool passIso = false;
-	  bool passMetMt = false;
+	  //	  bool passMetMt = (passMet25 && passMt);
 	  
           TString  QCD_region = "";
-
-          if (evcat==E) passIso = selLeptons[0].passIsoEl;
-          if (evcat==MU) passIso = selLeptons[0].passIsoMu;
-
+	  //	  if (!passMetMt) QCD_region = "_qcdA";
+	  
 	  if (runQCD) {
-	    passMetMt = (passMet25 && passMt);
-	    
-	    if (  passIso && !passMetMt ) QCD_region = "_qcdA";
-	    if (  passIso &&  passMetMt ) QCD_region = "_qcdB";
-	    if ( !passIso && !passMetMt ) QCD_region = "_qcdC";
-	    if ( !passIso &&  passMetMt ) QCD_region = "_qcdD";
+	    if ( !passMet25 ) QCD_region = "_qcdC";
+	    else QCD_region = "_qcdD";
+	  } else {
+	    if (!passMet25) { QCD_region = "_qcdA"; }
+	    else {
+	      QCD_region = "_qcdB";      
+	      if(ivar==0) mon.fillHisto("eventflow","all",3,weight); // MEt cut   
+	      //	      if (!passMt) continue; // only cut on MT in the Signal Region
+	      if (passMt) { 
+		QCD_region = "_fin"; 
+		if(ivar==0) mon.fillHisto("eventflow","all",4,weight); // MT cut   
+	      }
+	      
+	    }
 	  }
 
 
@@ -1673,9 +1691,14 @@ int main(int argc, char* argv[])
 	  if (GoodIdJets.size()<2) continue;
 
 	  // Reject QCD with Dphi(jet,MET)
-	  float dphijmet_high=fabs(deltaPhi(GoodIdJets[0].phi(),metP4.phi()));       
-	  if (ivar==0)  mon.fillHisto("dphijmet","raw_high",dphijmet_high,weight);   
-	  //	  if (dphijmet_high<0.5) continue;
+	  float dphij1met=fabs(deltaPhi(GoodIdJets[0].phi(),metP4.phi()));       
+	  if (ivar==0)  mon.fillHisto("dphijmet","raw_j1",dphij1met,weight);
+	  // min Df(j,MET) considering the two leading jets
+	  float dphij2met=fabs(deltaPhi(GoodIdJets[1].phi(),metP4.phi()));
+	  float min_dphijmet=min(dphij1met,dphij2met);
+	  if (ivar==0)  mon.fillHisto("dphijmet","raw_minj1j2",min_dphijmet,weight);
+	  // anti-QCD cut
+	  //	  if (min_dphijmet<0.5) continue;
 
 	  sort(GoodIdJets.begin(), GoodIdJets.end(), btagsort());
 
