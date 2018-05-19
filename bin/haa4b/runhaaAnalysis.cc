@@ -852,7 +852,6 @@ int main(int argc, char* argv[])
 	int nGoodLeptons(0);
 	
 	std::map<string, std::vector<PhysicsObject_Lepton> > selLeptonsVar;
-	std::map<string, std::vector<PhysicsObject_Lepton> > allLeptonsVar;
 	//	std::vector<std::pair<int,LorentzVector> > goodLeptons;
 	std::vector<PhysicsObject_Lepton> goodLeptons;  
 
@@ -867,8 +866,6 @@ int main(int argc, char* argv[])
 
 	float lep_threshold(25.);
 	float eta_threshold=2.5;
-
-	//        bool  passIsoEl_(false), passIsoMu_(false);
 
 	for (auto &ilep : leps) {
 	  //if ( ilep.pt()<5. ) continue;
@@ -1217,22 +1214,22 @@ int main(int argc, char* argv[])
 	  } // verbose
   
 	  mon.fillHisto("db_discrim","fjet",ijet.btag0,weight);
-	  if (ijet.motherid == 36) mon.fillHisto("db_discrim","fjet_true",ijet.btag0,weight);
+	  //	  if (ijet.motherid == 36) mon.fillHisto("db_discrim","fjet_true",ijet.btag0,weight);
 	  mon.fillHisto("nsubjets_raw","fjet",count_sbj,weight);
-	  if (ijet.motherid == 36) mon.fillHisto("nsubjets_raw","fjet_true",count_sbj,weight);
+	  //	  if (ijet.motherid == 36) mon.fillHisto("nsubjets_raw","fjet_true",count_sbj,weight);
 	  mon.fillHisto("sd_mass","fjet",ijet.softdropM,weight);
-	  if (ijet.motherid == 36) mon.fillHisto("sd_mass","fjet_true",ijet.softdropM,weight);
+	  //	  if (ijet.motherid == 36) mon.fillHisto("sd_mass","fjet_true",ijet.softdropM,weight);
 	  mon.fillHisto("pruned_mass","fjet",ijet.prunedM,weight);
-	  if (ijet.motherid == 36) mon.fillHisto("pruned_mass","fjet_true",ijet.prunedM,weight);
+	  //	  if (ijet.motherid == 36) mon.fillHisto("pruned_mass","fjet_true",ijet.prunedM,weight);
 
 	  if (ijet.softdropM<=40.) {
 	    if (ijet.softdropM>=7.)  {
 	      mon.fillHisto("db_discrim","fjet_lowm",ijet.btag0,weight);
-	      if (ijet.motherid == 36)  mon.fillHisto("db_discrim","fjet_true_lowm",ijet.btag0,weight);
+	      //  if (ijet.motherid == 36)  mon.fillHisto("db_discrim","fjet_true_lowm",ijet.btag0,weight);
 	    }
 	  } else {
 	    mon.fillHisto("db_discrim","fjet_highm",ijet.btag0,weight);
-	    if (ijet.motherid == 36) mon.fillHisto("db_discrim","fjet_true_highm",ijet.btag0,weight);
+	    //	    if (ijet.motherid == 36) mon.fillHisto("db_discrim","fjet_true_highm",ijet.btag0,weight);
 	  }
 
 	  bool hasDBtag(ijet.btag0>DBMediumWP);
@@ -1311,6 +1308,30 @@ int main(int argc, char* argv[])
         //### 	// LOOP ON SYSTEMATIC VARIATION FOR THE STATISTICAL ANALYSIS
 	//##############################################################################
 	
+	double PDFalphaSWeight(1.);
+
+	if (runSystematics) {
+	  // for POWHEG, MADGRAPH based samples                                                                                                                         
+	  // retrive PDFweights from ntuple                                                                                                                             
+	  TH1F *pdf_h = new TH1F();                                                                                                                                     
+	  for(int npdf=0; npdf<ev.npdfs; npdf++) {                                                                                                                      
+	    pdf_h->Fill(ev.pdfWeights[npdf]);                                                                                                                           
+	  }                                                                                                                                                             
+	  double pdfError = pdf_h->GetRMS();                                                                                                                            
+	  delete pdf_h;                                                                                                                                                 
+	  //      cout << "pdfError: " << pdfError << endl;                                                                                                             
+	  
+	  // retrive alphaSweights from ntuple                                                                                                                          
+	  TH1F *alphaS_h = new TH1F();                                                                                                                                  
+	  for(int nalphaS=0; nalphaS<ev.nalphaS; nalphaS++) {                                                                                                           
+	    alphaS_h->Fill(ev.alphaSWeights[nalphaS]);                                                                                                                  
+	  }                                                                                                                                                             
+	  double alphaSError = alphaS_h->GetRMS();                                                                                                                      
+	  delete alphaS_h;                                                                                                                                              
+	  //      cout << "alphaSError: " << alphaSError << endl;                                                                                                       
+	  PDFalphaSWeight = sqrt(pdfError*pdfError + alphaSError*alphaSError);      
+	}
+
 	float iweight = weight;   //nominal
 
 	for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
@@ -1327,26 +1348,7 @@ int main(int argc, char* argv[])
 	  if(varNames[ivar]=="_puup") weight *= ( TotalWeight_plus/puWeight ); //pu up
 	  if(varNames[ivar]=="_pudown") weight *= ( TotalWeight_minus/puWeight ); //pu down
 
-	  // for POWHEG, MADGRAPH based samples
-	  // retrive PDFweights from ntuple
-	  TH1F *pdf_h = new TH1F();
-	  for(int npdf=0; npdf<ev.npdfs; npdf++) {
-	    pdf_h->Fill(ev.pdfWeights[npdf]);
-	  }
-	  double pdfError = pdf_h->GetRMS();
-	  delete pdf_h;
-	  //	  cout << "pdfError: " << pdfError << endl;
-
-	  // retrive alphaSweights from ntuple
-	  TH1F *alphaS_h = new TH1F();
-	  for(int nalphaS=0; nalphaS<ev.nalphaS; nalphaS++) {
-	    alphaS_h->Fill(ev.alphaSWeights[nalphaS]);
-	  }
-	  double alphaSError = alphaS_h->GetRMS();
-	  delete alphaS_h;
-	  //	  cout << "alphaSError: " << alphaSError << endl;
-	  double PDFalphaSWeight = sqrt(pdfError*pdfError + alphaSError*alphaSError);
-
+	 
 	  if(varNames[ivar]=="_pdfup")    weight *= (1.+PDFalphaSWeight);
 	  else if(varNames[ivar]=="_pdfdown") weight *= (1.-PDFalphaSWeight);
 
@@ -1663,8 +1665,6 @@ int main(int argc, char* argv[])
 	  //  if (!passMt && !runQCD) continue;
 
 	  // ABDC for QCD data-driven estimate
-	  //	  bool passMetMt = (passMet25 && passMt);
-	  
           TString  QCD_region = "";
 	  
 	  if (runQCD) {
@@ -1740,7 +1740,7 @@ int main(int argc, char* argv[])
 	      
 	      if(ivar==0) {
 		// At least 2 jets and 2 b-jets
-		mon.fillHisto("eventflow","all",5,weight); 
+		if (passMt) mon.fillHisto("eventflow","all",5,weight); 
 	      }
 	    } else if (CSVLoosebJets.size()==1) { // && SVs.size()>0) { // Top Control Regions
 	      
@@ -1794,25 +1794,30 @@ int main(int argc, char* argv[])
 	    if (CSVLoosebJets.size()>=2 ) {
 	      if (CSVLoosebJets.size()>2 || SVs.size()>0) {
 		// SR categories
-		if(ivar==0) { mon.fillHisto("eventflow","all",6,weight); }
+		if(ivar==0 && passMt) { mon.fillHisto("eventflow","all",6,weight); }
 		
 		// Cats: 3b
 		if (GoodIdbJets.size()==3) { 
-		  tags.push_back("SR"+QCD_region+"_3b"); tags.push_back(ch+"SR"+QCD_region+"_3b"); tags.push_back(ch+"SR"+QCD_region+mtpass+"_3b");
+		  //tags.push_back("SR"+QCD_region+"_3b"); 
+		  tags.push_back(ch+"SR"+QCD_region+"_3b"); tags.push_back(ch+"SR"+QCD_region+mtpass+"_3b");
 		}
 		else {
-		  tags.push_back("SR"+QCD_region+"_geq4b"); tags.push_back(ch+"SR"+QCD_region+"_geq4b"); tags.push_back(ch+"SR"+QCD_region+mtpass+"_geq4b"); 
+		  //tags.push_back("SR"+QCD_region+"_geq4b"); 
+		  tags.push_back(ch+"SR"+QCD_region+"_geq4b"); tags.push_back(ch+"SR"+QCD_region+mtpass+"_geq4b"); 
 		  
-		  if(ivar==0) { mon.fillHisto("eventflow","all",7,weight); }
+		  if(ivar==0 && passMt) { mon.fillHisto("eventflow","all",7,weight); }
 		  
 		  if (GoodIdbJets.size()==4) { 
-		    tags.push_back("SR"+QCD_region+"_4b"); tags.push_back(ch+"SR"+QCD_region+"_4b"); tags.push_back(ch+"SR"+QCD_region+mtpass+"_4b"); 
+		    //  tags.push_back("SR"+QCD_region+"_4b"); 
+		    tags.push_back(ch+"SR"+QCD_region+"_4b"); tags.push_back(ch+"SR"+QCD_region+mtpass+"_4b"); 
 		  }
 		  else {
 		    if (GoodIdbJets.size()==5) { 
-		      tags.push_back("SR"+QCD_region+"_5b"); tags.push_back(ch+"SR"+QCD_region+"_5b");  tags.push_back(ch+"SR"+QCD_region+mtpass+"_5b");
+		      //  tags.push_back("SR"+QCD_region+"_5b"); 
+		      tags.push_back(ch+"SR"+QCD_region+"_5b");  tags.push_back(ch+"SR"+QCD_region+mtpass+"_5b");
 		    }
-		    tags.push_back("SR"+QCD_region+"_geq5b"); tags.push_back(ch+"SR"+QCD_region+"_geq5b"); tags.push_back(ch+"SR"+QCD_region+mtpass+"_geq5b");
+		    //tags.push_back("SR"+QCD_region+"_geq5b"); 
+		    tags.push_back(ch+"SR"+QCD_region+"_geq5b"); tags.push_back(ch+"SR"+QCD_region+mtpass+"_geq5b");
 		  }
 		}
 	      } else { 
@@ -1821,18 +1826,23 @@ int main(int argc, char* argv[])
 		
 		// Top Control Region categories
 		if (GoodIdbJets.size()==3) { 
-		  tags.push_back("CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_3b");
+		  //tags.push_back("CR"+QCD_region+"_3b"); 
+		  tags.push_back(ch+"CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_3b");
 		}
 		else {
-		  tags.push_back("CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_geq4b");
+		  //tags.push_back("CR"+QCD_region+"_geq4b"); 
+		  tags.push_back(ch+"CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_geq4b");
 		  if (GoodIdbJets.size()==4) { 
-		    tags.push_back("CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_4b");
+		    //  tags.push_back("CR"+QCD_region+"_4b"); 
+		    tags.push_back(ch+"CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_4b");
 		  }
 		  else {
 		    if (GoodIdbJets.size()==5) { 
-		      tags.push_back("CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_5b");
+		      //  tags.push_back("CR"+QCD_region+"_5b"); 
+		      tags.push_back(ch+"CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_5b");
 		    }
-		    tags.push_back("CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_geq5b");
+		    // tags.push_back("CR"+QCD_region+"_geq5b"); 
+		    tags.push_back(ch+"CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_geq5b");
 		  }
 		}
 	      }
@@ -1841,18 +1851,23 @@ int main(int argc, char* argv[])
 	      
 	      // Top Control Region categories
 	      if (GoodIdbJets.size()==3) { 
-		tags.push_back("CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_3b");
+		//tags.push_back("CR"+QCD_region+"_3b"); 
+		tags.push_back(ch+"CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_3b");
 	      }
 	      else {
-		tags.push_back("CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_geq4b");
+		//tags.push_back("CR"+QCD_region+"_geq4b"); 
+		tags.push_back(ch+"CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_geq4b");
 		if (GoodIdbJets.size()==4) { 
-		  tags.push_back("CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_4b");
+		  // tags.push_back("CR"+QCD_region+"_4b"); 
+		  tags.push_back(ch+"CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_4b");
 		}
 		else {
 		  if (GoodIdbJets.size()==5) { 
-		    tags.push_back("CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_5b");
+		    //  tags.push_back("CR"+QCD_region+"_5b");
+		    tags.push_back(ch+"CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_5b");
 		  }
-		  tags.push_back("CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_geq5b");
+		  // tags.push_back("CR"+QCD_region+"_geq5b"); 
+		  tags.push_back(ch+"CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_geq5b");
 		}
 	      }
 	    }
@@ -1863,18 +1878,23 @@ int main(int argc, char* argv[])
 	    
 	    // Non-TT Control Region categories
 	    if (GoodIdbJets.size()==3) { 
-	      tags.push_back("CR_nonTT"+QCD_region+"_3b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_3b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_3b"); 
+	      //  tags.push_back("CR_nonTT"+QCD_region+"_3b"); 
+	      tags.push_back(ch+"CR_nonTT"+QCD_region+"_3b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_3b"); 
 	    }
 	    else {
-	      tags.push_back("CR_nonTT"+QCD_region+"_geq4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_geq4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_geq4b");
+	      //tags.push_back("CR_nonTT"+QCD_region+"_geq4b"); 
+	      tags.push_back(ch+"CR_nonTT"+QCD_region+"_geq4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_geq4b");
 	      if (GoodIdbJets.size()==4) { 
-		tags.push_back("CR_nonTT"+QCD_region+"_4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_4b");
+		//	tags.push_back("CR_nonTT"+QCD_region+"_4b"); 
+		tags.push_back(ch+"CR_nonTT"+QCD_region+"_4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_4b");
 	      }
 	      else {
 		if (GoodIdbJets.size()==5) { 
-		  tags.push_back("CR_nonTT"+QCD_region+"_5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_5b");
+		  //  tags.push_back("CR_nonTT"+QCD_region+"_5b"); 
+		  tags.push_back(ch+"CR_nonTT"+QCD_region+"_5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_5b");
 		}
-		tags.push_back("CR_nonTT"+QCD_region+"_geq5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_geq5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_geq5b");
+		//	tags.push_back("CR_nonTT"+QCD_region+"_geq5b"); 
+		tags.push_back(ch+"CR_nonTT"+QCD_region+"_geq5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_geq5b");
 	      }
 	    }
 	  } else {
