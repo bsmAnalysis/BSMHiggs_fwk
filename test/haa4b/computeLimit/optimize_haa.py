@@ -31,7 +31,7 @@ phase=-1
 MODELS=["SM"] 
 based_key="haa_mcbased" #mcbased_" #to run limits on MC use: 2l2v_mcbased_, to use data driven obj use: 2l2v_datadriven_
 jsonPath='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples2016.json' 
-inUrl='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2017_09_21_forLimits.root' #plotter_2017_05_05_forLimits.root'
+inUrl='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2018_05_11.root' #plotter_2017_05_05_forLimits.root'
 BESTDISCOVERYOPTIM=True #Set to True for best discovery optimization, Set to False for best limit optimization
 ASYMTOTICLIMIT=True #Set to True to compute asymptotic limits (faster) instead of toy based hybrid-new limits
 BINS = ["3b","4b","3b,4b"] # list individual analysis bins to consider as well as combined bins (separated with a coma but without space)
@@ -39,7 +39,8 @@ BINS = ["3b","4b","3b,4b"] # list individual analysis bins to consider as well a
 MASS = [12, 15, 20, 25, 30, 40, 50, 60]
 SUBMASS = [12, 15, 20, 25, 30, 40, 50, 60]
 
-LandSArgCommonOptions="  --BackExtrapol --statBinByBin 0.00001 --dropBckgBelow 0.00001 --blind"
+LandSArgCommonOptions="  --BackExtrapol --dropBckgBelow 0.00001"      
+#LandSArgCommonOptions="  --BackExtrapol --statBinByBin 0.00001 --dropBckgBelow 0.00001 --blind"
 
 for model in MODELS:
    for shape in ["bdt_shapes"]:# --histoVBF met_shapes"]:  #here run all the shapes you want to test.
@@ -369,21 +370,19 @@ for signalSuffix in signalSuffixVec :
 
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
            SCRIPT.writelines('mkdir -p out;\ncd out;\n')
-	   SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --index 10 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
-           #SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --index " + indexString + " --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
+	   SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --subFake --modeDD" + " " + LandSArg + cutStr  +" ;\n")
            SCRIPT.writelines("sh combineCards.sh;\n"); 
-           SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace"+ str(m) +".root --PO verbose --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n")  
-#	   SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root -P UserCode.bsmhiggs_fwk.HiggsWidth:higgswidth --PO verbose --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n")
+           SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n")  
            #compute pvalue
-           SCRIPT.writelines("combine -M ProfileLikelihood --signif --pvalue -m " +  str(m) + "  workspace"+ str(m) + ".root > COMB.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace" + str(m) + ".root --plots --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --rMin=-2 --rMax=2 --robustFit 1 \n") 
-#	   SCRIPT.writelines("combine -M MaxLikelihoodFit workspace.root --saveNormalizations --saveShapes \n")
-	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py  mlfit.root -g Nuisance_CrossCheck.root \n")
+           SCRIPT.writelines("combine -M ProfileLikelihood --signif --pvalue -m " +  str(m) + "  workspace.root > COMB.log;\n")
+           SCRIPT.writelines("combine -M FitDiagnostics workspace.root --plots --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --rMin=-2 --rMax=2 --robustFit 1 --setParameters mask_E_SR_qcdB_Mt_3b=1,mask_MU_SR_qcdB_Mt_3b=1,mask_E_SR_qcdB_Mt_4b=1,mask_MU_SR_qcdB_Mt_4b=1 \n") 
+           # save likelihood fit info
+           SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnostics.root > simfit_m"+ str(m)+".txt \n")
+	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnostics.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +".txt\n")
 
-	   ##fvbf=0 for GGH and 1 for VBF
            ### THIS IS FOR Asymptotic fit
            if(ASYMTOTICLIMIT==True):
-              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace"+ str(m) +".root --run blind -v 3 >  COMB.log;\n") 
+              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root --run blind -v 3 >  COMB.log;\n") 
 
            ### THIS is for toy (hybridNew) fit
            else:
