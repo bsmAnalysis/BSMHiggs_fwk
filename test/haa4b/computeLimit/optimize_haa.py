@@ -39,7 +39,7 @@ BINS = ["3b","4b","3b,4b"] # list individual analysis bins to consider as well a
 MASS = [12, 15, 20, 25, 30, 40, 50, 60]
 SUBMASS = [12, 15, 20, 25, 30, 40, 50, 60]
 
-LandSArgCommonOptions="  --BackExtrapol --dropBckgBelow 0.00001"      
+LandSArgCommonOptions=" --dropBckgBelow 0.00001"      
 #LandSArgCommonOptions="  --BackExtrapol --statBinByBin 0.00001 --dropBckgBelow 0.00001 --blind"
 
 for model in MODELS:
@@ -370,19 +370,27 @@ for signalSuffix in signalSuffixVec :
 
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
            SCRIPT.writelines('mkdir -p out;\ncd out;\n')
+#           SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --blind --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --subFake --modeDD" + " " + LandSArg + cutStr  +" ;\n")
 	   SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --subFake --modeDD" + " " + LandSArg + cutStr  +" ;\n")
            SCRIPT.writelines("sh combineCards.sh;\n"); 
            SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n")  
            #compute pvalue
            SCRIPT.writelines("combine -M ProfileLikelihood --signif --pvalue -m " +  str(m) + "  workspace.root > COMB.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace.root --plots --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --rMin=-2 --rMax=2 --robustFit 1 --setParameters mask_E_SR_qcdB_Mt_3b=1,mask_MU_SR_qcdB_Mt_3b=1,mask_E_SR_qcdB_Mt_4b=1,mask_MU_SR_qcdB_Mt_4b=1 \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace.root --plots --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --rMin=-2 --rMax=2 --robustFit 1 --setParameters mask_E_SR_qcdB_Mt_3b=1,mask_MU_SR_qcdB_Mt_3b=1,mask_E_SR_qcdB_Mt_4b=1,mask_MU_SR_qcdB_Mt_4b=1 > log.txt \n") 
            # save likelihood fit info
            SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnostics.root > simfit_m"+ str(m)+".txt \n")
 	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnostics.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +".txt\n")
 
            ### THIS IS FOR Asymptotic fit
            if(ASYMTOTICLIMIT==True):
-              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root --run blind -v 3 >  COMB.log;\n") 
+              SCRIPT.writelines("tt_e=`cat simfit_m"+ str(m) +".txt | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("tt_mu=`cat simfit_m"+ str(m) +".txt | grep 'tt_norm_mu' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("w_3b_e=`cat simfit_m"+ str(m) +".txt | grep 'w_norm_3b_e' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("w_3b_mu=`cat simfit_m"+ str(m) +".txt | grep 'w_norm_3b_mu' | awk '{print $4;}'`;\n")    
+              SCRIPT.writelines("w_4b_e=`cat simfit_m"+ str(m) +".txt | grep 'w_norm_4b_e' | awk '{print $4;}'`;\n")    
+              SCRIPT.writelines("w_4b_mu=`cat simfit_m"+ str(m) +".txt | grep 'w_norm_4b_mu' | awk '{print $4;}'`;\n")  
+#              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root --run blind -v 3 >  COMB.log;\n") 
+              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root --run blind --setParameters tt_norm_e=$tt_e,tt_norm_mu=$tt_mu,w_norm_3b_e=$w_3b_e,w_norm_3b_mu=$w_3b_mu,w_norm_4b_e=$w_4b_e,w_norm_4b_mu=$w_4b_mu >  COMB.log;\n")  
 
            ### THIS is for toy (hybridNew) fit
            else:
