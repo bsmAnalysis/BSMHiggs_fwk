@@ -383,12 +383,12 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("weight_QCDscale_muR0p5_muF2",       &evSummary_.weight_QCDscale_muR0p5_muF2);
     t_->SetBranchAddress("weight_QCDscale_muR0p5_muF0p5",       &evSummary_.weight_QCDscale_muR0p5_muF0p5);
     */
-    /* tmp
+
     t_->SetBranchAddress("npdfs", &evSummary_.npdfs);
     t_->SetBranchAddress("pdfWeights", evSummary_.pdfWeights);
     t_->SetBranchAddress("nalphaS", &evSummary_.nalphaS);
     t_->SetBranchAddress("alphaSWeights", evSummary_.alphaSWeights);
-    */
+
 
     //mc truth
     t_->SetBranchAddress("nmcparticles",    &evSummary_.nmcparticles);

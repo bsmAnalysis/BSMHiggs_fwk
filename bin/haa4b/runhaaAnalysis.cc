@@ -284,8 +284,13 @@ int main(int argc, char* argv[])
 	  varNames.push_back("_resPhi_edown");     //electron energy resolution
 	  //	varNames.push_back("_eff_bup"); varNames.push_back("_eff_bdown"); //btag SFs
 
-	//varNames.push_back("_puup");  varNames.push_back("_pudown");      //pileup uncertainty
-	  /*	
+	  varNames.push_back("_puup");  varNames.push_back("_pudown");      //pileup uncertainty 
+	  varNames.push_back("_pdfup"); varNames.push_back("_pdfdown");  
+
+	  //	  varNames.push_back("_th_pdf");                                           //pdf
+	  //	  varNames.push_back("_th_alphas"); //alpha_s (QCD)
+
+	  /*
 	  if(isMCBkg_runPDFQCDscale) {
             varNames.push_back("_pdfup");
             varNames.push_back("_pdfdown");
@@ -568,32 +573,61 @@ int main(int argc, char* argv[])
     //Hcutflow->SetBinContent(1,cnorm);
 
     //pileup weighting
-    TString PU_Central = runProcess.getParameter<std::string>("pu_central");
+    TString PU_Central = runProcess.getParameter<std::string>("PU_Central");
     gSystem->ExpandPathName(PU_Central);
     cout << "Loading PU weights Central: " << PU_Central << endl;
     TFile *PU_Central_File = TFile::Open(PU_Central);
     
+    TString PU_Up = runProcess.getParameter<std::string>("PU_Up");
+    gSystem->ExpandPathName(PU_Up);
+    cout << "Loading PU weights Up: " << PU_Up << endl;
+    TFile *PU_Up_File = TFile::Open(PU_Up);
+    //    TH1F* weight_pileup_Up = (TH1F *) PU_Up_File->Get("pileup");
+
+    TString PU_Down = runProcess.getParameter<std::string>("PU_Down");
+    gSystem->ExpandPathName(PU_Down);
+    cout << "Loading PU weights Down: " << PU_Down << endl;
+    TFile *PU_Down_File = TFile::Open(PU_Down);
+    //  TH1F* weight_pileup_Down = (TH1F *) PU_Down_File->Get("pileup");
+
+
     TH1F* PU_intended = (TH1F *) PU_Central_File->Get("pileup"); // Data pileup distribution
+    TH1F* PU_intended_Up = (TH1F *) PU_Up_File->Get("pileup"); 
+    TH1F* PU_intended_Down = (TH1F *) PU_Down_File->Get("pileup"); 
+
     TH1F* PU_generated=NULL; // MC pileup distribution 
 
-    TH1F* PU_weight=new TH1F("hPUweight","",100,-0.5,99.5);
+    TH1F* PU_weight=new TH1F("hPUweight","",100,0,100);
+    TH1F* PU_weight_Up=new TH1F("hPUweight_Up","",100,0,100);   
+    TH1F* PU_weight_Down=new TH1F("hPUweight_Down","",100,0,100);     
     
     if (isMC) {
-      //PU_generated = (TH1F*)file->Get("mainNtuplizer/pileuptrue"); // MC pileup distribution
       PU_generated = (TH1F*)file->Get("mainNtuplizer/pileuptrue");
       
       PU_intended->Scale(1./PU_intended->Integral());
-      TH1F* PUnorm = PU_intended;
+      PU_intended_Up->Scale(1./PU_intended_Up->Integral());      
+      PU_intended_Down->Scale(1./PU_intended_Down->Integral());      
+
+      //      TH1F* PUnorm = PU_intended;
       PU_generated->Scale(1./PU_generated->Integral());
       TH1F *PUgen = PU_generated;
       
-      TH1F* Quotient = PUnorm; //->Clone("quotient");
-      Quotient->Divide(PUgen); 
+      TH1F* Quotient = PU_intended; Quotient->Divide(PUgen); 
+      TH1F* Quotient_Up = PU_intended_Up; Quotient_Up->Divide(PUgen);   //Up
+      TH1F* Quotient_Down = PU_intended_Down; Quotient_Down->Divide(PUgen);   //Down
 
       for(int ibin=0; ibin<100; ibin++){
+
         float x = Quotient->GetBinContent(ibin);
+	float x_up = Quotient_Up->GetBinContent(ibin);  //up
+	float x_down = Quotient_Down->GetBinContent(ibin);  //down
+
         PU_weight->SetBinContent(ibin,x);
+	PU_weight_Up->SetBinContent(ibin,x_up); //up
+	PU_weight_Down->SetBinContent(ibin,x_down); //down
+
         if ( verbose ) printf("pu = %3d has weight = %7.3f \n",ibin,x);
+
       }
     }//is MC
     
@@ -764,16 +798,16 @@ int main(int argc, char* argv[])
           puWeight = getSFfrom1DHist(ev.ngenTruepu, PU_weight) ;
           if ( verbose ) printf("pu = %3d has weight = %7.3f \n",ev.ngenTruepu,puWeight);
           weight *= puWeight;
-          //TotalWeight_plus  *= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Up);
-          //TotalWeight_minus *= getSFfrom1DHist(ev.ngenTruepu, weight_pileup_Down);
+          TotalWeight_plus  *= getSFfrom1DHist(ev.ngenTruepu, PU_weight_Up);
+          TotalWeight_minus *= getSFfrom1DHist(ev.ngenTruepu, PU_weight_Down);
         }
         
         Hcutflow->Fill(1,genWeight);
         Hcutflow->Fill(2,xsecWeight);
         Hcutflow->Fill(3,puWeight);
         Hcutflow->Fill(4,weight);
-        //Hcutflow->Fill(3,weight*TotalWeight_minus);
-        //Hcutflow->Fill(4,weight*TotalWeight_plus);
+        Hcutflow->Fill(3,weight*TotalWeight_minus);
+        Hcutflow->Fill(4,weight*TotalWeight_plus);
 
         //add PhysicsEvent_t class, get all tree to physics objects
         //PhysicsEvent_t phys=getPhysicsEventFrom(ev);
@@ -833,8 +867,6 @@ int main(int argc, char* argv[])
 	float lep_threshold(25.);
 	float eta_threshold=2.5;
 
-        bool  passIsoEl_(false), passIsoMu_(false);
-
 	for (auto &ilep : leps) {
 	  //if ( ilep.pt()<5. ) continue;
 
@@ -857,9 +889,6 @@ int main(int argc, char* argv[])
 	  bool hasExtraLepton(false);
 	  
 	  if ( hasTightIdandIso && (ilep.pt()>lep_threshold) ) {
-
-	    //              passIsoEl_ = ilep.passIsoEl;
-	    //              passIsoMu_ = ilep.passIsoMu;
 
 	    if(abs(lepid)==11) { // ele scale corrections
 	      double et = ilep.en_cor_en / cosh(fabs(ilep.en_EtaSC));
@@ -905,7 +934,9 @@ int main(int argc, char* argv[])
 	    for(unsigned int ivar=0;ivar<eleVarNames.size();ivar++){
 	      // only run Systematics in MC samples
 	      if(!isMC && ivar>0) continue;
-
+	      // do not run systs. for QCD
+	      if(isMC && runQCD && ivar>0) continue;
+	      
 	      if (abs(lepid)==11) {
 		double et = ilep.en_cor_en / cosh(fabs(ilep.en_EtaSC)); 
 
@@ -970,15 +1001,22 @@ int main(int argc, char* argv[])
 		  ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue);        
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);      
 		}if(ivar==0){ // nominal
-		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
+		  if(!runQCD){
+		    selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
+		  } else {
+		    if(!(ilep.passIsoEl)) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
+		  }
 		}
 		
 	      } if (abs(lepid)==13) { // endif ele
-	      
-		selLeptonsVar[eleVarNames[ivar]].push_back(ilep);
+		if(!runQCD){
+		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
+		} else {
+		  if(!(ilep.passIsoMu)) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
+		}
 	      }
 	    }
-
+	    
 	    nGoodLeptons++;
 	    //	    goodLeptons.push_back(ilep);
 	  } else { // extra loose leptons
@@ -1104,8 +1142,14 @@ int main(int argc, char* argv[])
 	// -------------------------------------------------------------------------
 	// Exactly 1 good lepton
 	bool passOneLepton(selLeptons.size()==1); 
-	if (!passOneLepton) continue;
-	// -------------------------------------------------------------------------
+	bool passOneLepton_anti(selLeptons.size()>=1);
+	if (runQCD) {
+	  if (!passOneLepton_anti) continue;
+	} else {
+	  if (!passOneLepton) continue;
+	}
+
+	  // -------------------------------------------------------------------------
 
 	mon.fillHisto("eventflow","all",2,weight);  
 
@@ -1170,22 +1214,22 @@ int main(int argc, char* argv[])
 	  } // verbose
   
 	  mon.fillHisto("db_discrim","fjet",ijet.btag0,weight);
-	  if (ijet.motherid == 36) mon.fillHisto("db_discrim","fjet_true",ijet.btag0,weight);
+	  //	  if (ijet.motherid == 36) mon.fillHisto("db_discrim","fjet_true",ijet.btag0,weight);
 	  mon.fillHisto("nsubjets_raw","fjet",count_sbj,weight);
-	  if (ijet.motherid == 36) mon.fillHisto("nsubjets_raw","fjet_true",count_sbj,weight);
+	  //	  if (ijet.motherid == 36) mon.fillHisto("nsubjets_raw","fjet_true",count_sbj,weight);
 	  mon.fillHisto("sd_mass","fjet",ijet.softdropM,weight);
-	  if (ijet.motherid == 36) mon.fillHisto("sd_mass","fjet_true",ijet.softdropM,weight);
+	  //	  if (ijet.motherid == 36) mon.fillHisto("sd_mass","fjet_true",ijet.softdropM,weight);
 	  mon.fillHisto("pruned_mass","fjet",ijet.prunedM,weight);
-	  if (ijet.motherid == 36) mon.fillHisto("pruned_mass","fjet_true",ijet.prunedM,weight);
+	  //	  if (ijet.motherid == 36) mon.fillHisto("pruned_mass","fjet_true",ijet.prunedM,weight);
 
 	  if (ijet.softdropM<=40.) {
 	    if (ijet.softdropM>=7.)  {
 	      mon.fillHisto("db_discrim","fjet_lowm",ijet.btag0,weight);
-	      if (ijet.motherid == 36)  mon.fillHisto("db_discrim","fjet_true_lowm",ijet.btag0,weight);
+	      //  if (ijet.motherid == 36)  mon.fillHisto("db_discrim","fjet_true_lowm",ijet.btag0,weight);
 	    }
 	  } else {
 	    mon.fillHisto("db_discrim","fjet_highm",ijet.btag0,weight);
-	    if (ijet.motherid == 36) mon.fillHisto("db_discrim","fjet_true_highm",ijet.btag0,weight);
+	    //	    if (ijet.motherid == 36) mon.fillHisto("db_discrim","fjet_true_highm",ijet.btag0,weight);
 	  }
 
 	  bool hasDBtag(ijet.btag0>DBMediumWP);
@@ -1264,6 +1308,30 @@ int main(int argc, char* argv[])
         //### 	// LOOP ON SYSTEMATIC VARIATION FOR THE STATISTICAL ANALYSIS
 	//##############################################################################
 	
+	double PDFalphaSWeight(1.);
+
+	if (runSystematics) {
+	  // for POWHEG, MADGRAPH based samples                                                                                                                         
+	  // retrive PDFweights from ntuple                                                                                                                             
+	  TH1F *pdf_h = new TH1F();                                                                                                                                     
+	  for(int npdf=0; npdf<ev.npdfs; npdf++) {                                                                                                                      
+	    pdf_h->Fill(ev.pdfWeights[npdf]);                                                                                                                           
+	  }                                                                                                                                                             
+	  double pdfError = pdf_h->GetRMS();                                                                                                                            
+	  delete pdf_h;                                                                                                                                                 
+	  //      cout << "pdfError: " << pdfError << endl;                                                                                                             
+	  
+	  // retrive alphaSweights from ntuple                                                                                                                          
+	  TH1F *alphaS_h = new TH1F();                                                                                                                                  
+	  for(int nalphaS=0; nalphaS<ev.nalphaS; nalphaS++) {                                                                                                           
+	    alphaS_h->Fill(ev.alphaSWeights[nalphaS]);                                                                                                                  
+	  }                                                                                                                                                             
+	  double alphaSError = alphaS_h->GetRMS();                                                                                                                      
+	  delete alphaS_h;                                                                                                                                              
+	  //      cout << "alphaSError: " << alphaSError << endl;                                                                                                       
+	  PDFalphaSWeight = sqrt(pdfError*pdfError + alphaSError*alphaSError);      
+	}
+
 	float iweight = weight;   //nominal
 
 	for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
@@ -1277,8 +1345,13 @@ int main(int argc, char* argv[])
 	  weight = iweight; // reset to nominal weight
 
             //pileup
-	  //if(varNames[ivar]=="_puup")        iweight *=TotalWeight_plus;        //pu up
-	  // if(varNames[ivar]=="_pudown") iweight *=TotalWeight_minus; //pu down
+	  if(varNames[ivar]=="_puup") weight *= ( TotalWeight_plus/puWeight ); //pu up
+	  if(varNames[ivar]=="_pudown") weight *= ( TotalWeight_minus/puWeight ); //pu down
+
+	 
+	  if(varNames[ivar]=="_pdfup")    weight *= (1.+PDFalphaSWeight);
+	  else if(varNames[ivar]=="_pdfdown") weight *= (1.-PDFalphaSWeight);
+
 
 	  //	  if(varNames[ivar]=="_scale_mup" || varNames[ivar]=="_scale_mdown")
 	  if (varNames[ivar]=="_stat_eup" || varNames[ivar]=="_stat_edown" ||
@@ -1287,6 +1360,8 @@ int main(int argc, char* argv[])
 	    if (evcat==E) {
 	      selLeptons = selLeptonsVar[varNames[ivar].Data()];
 	    } else { continue; }
+	  } else {
+	    selLeptons = selLeptonsVar[varNames[0].Data()]; 
 	  }
 	  
 	  LorentzVector metP4 = variedMET[0];
@@ -1329,7 +1404,7 @@ int main(int argc, char* argv[])
 	    } else if (evcat==MU) {
 	      // TRG
 	      weight *= getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h );
-	      //	    printf("Mu TRG SF for pt= %lf and eta= %lf , is SF= %lf\n",selLeptons[0].pt(), selLeptons[0].eta(),getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h ));
+	      //printf("Mu TRG SF for pt= %lf and eta= %lf , is SF= %lf\n",selLeptons[0].pt(), selLeptons[0].eta(),getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h ));
 	      // TRK + ID + ISO
 	      weight *= lepEff.getTrackingEfficiency( selLeptons[0].eta(), 13).first; //Tracking eff
 	      weight *= lepEff.getLeptonEfficiency( selLeptons[0].pt(), selLeptons[0].eta(), 13, "tight" ,patUtils::CutVersion::ICHEP16Cut ).first ; //ID
@@ -1443,13 +1518,13 @@ int main(int argc, char* argv[])
 		 printf("AK4 jet has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",   
 			vJets[ijet].pt(),
 			vJets[ijet].eta(),
-			vJets[ijet].Phi(),
+			vJets[ijet].phi(),
 			vJets[ijet].M()
 			);
 	       } // verbose
 	      
 	      // Fill b-jet vector:
-	      if (hasCSVtag) {  CSVLoosebJets.push_back(vJets[ijet]); }
+	       if (hasCSVtag) {  CSVLoosebJets.push_back(vJets[ijet]); }
 	    } // b-jet loop
 	    
 	  } // jet loop
@@ -1459,6 +1534,7 @@ int main(int argc, char* argv[])
 	  // 	  // AK4 jets:
 	  //--------------------------------------------------------------------------
 	  sort(GoodIdJets.begin(), GoodIdJets.end(), ptsort());
+
 	  if(ivar==0) {
 	    mon.fillHisto("njets_raw","nj", GoodIdJets.size(),weight);
 	    
@@ -1563,6 +1639,7 @@ int main(int argc, char* argv[])
 	  //--------------------------------------------------------------------------
 	  // dphi(jet,MET)
 	    mon.fillHisto("dphijmet","raw",mindphijmet,weight);
+	    //	    mon.fillHisto("dphijmet","raw_high",dphijmet_high,weight); 
 	  }
 
 	  //#########################################################
@@ -1580,40 +1657,45 @@ int main(int argc, char* argv[])
 	  //-------------------------------------------------------------------
 	  //MET>25 GeV 
 	  bool passMet25(metP4.pt()>25);
-	  if (!passMet25 && !runQCD) continue;
-	  if(ivar==0) {
-	    mon.fillHisto("eventflow","all",3,weight); // MEt cut
-	  }
+	  //  if (!passMet25 && !runQCD) continue;
+
 	  //-------------------------------------------------------------------
 	  //mtW >50 GeV
 	  bool passMt(sqrt(tMass)>50. && sqrt(tMass)<250.);
-	  if (!passMt && !runQCD) continue;
-	  if(ivar==0) {
-	    mon.fillHisto("eventflow","all",4,weight); // MT cut
-	  }
+	  //  if (!passMt && !runQCD) continue;
 
 	  // ABDC for QCD data-driven estimate
-          bool passIso = false;
-	  bool passMetMt = false;
-	  
           TString  QCD_region = "";
-
-          if (evcat==E) passIso = selLeptons[0].passIsoEl;
-          if (evcat==MU) passIso = selLeptons[0].passIsoMu;
-
+	  
 	  if (runQCD) {
-	    passMetMt = (passMet25 && passMt);
-	    
-	    if (  passIso && !passMetMt ) QCD_region = "_qcdA";
-	    if (  passIso &&  passMetMt ) QCD_region = "_qcdB";
-	    if ( !passIso && !passMetMt ) QCD_region = "_qcdC";
-	    if ( !passIso &&  passMetMt ) QCD_region = "_qcdD";
+	    if ( !passMet25 ) QCD_region = "_qcdC";
+	    else QCD_region = "_qcdD";
+	  } else {
+	    if (!passMet25) { QCD_region = "_qcdA"; }
+	    else {
+	      QCD_region = "_qcdB";      
+	      if(ivar==0) {
+		mon.fillHisto("eventflow","all",3,weight); // MEt cut   
+		if(passMt) mon.fillHisto("eventflow","all",4,weight); // MT cut   
+	      }
+	    }
 	  }
 
 
 	  //-------------------------------------------------------------------
 	  //At least 2 jets
 	  if (GoodIdJets.size()<2) continue;
+
+	  // Reject QCD with Dphi(jet,MET)
+	  float dphij1met=fabs(deltaPhi(GoodIdJets[0].phi(),metP4.phi()));       
+	  if (ivar==0)  mon.fillHisto("dphijmet","raw_j1",dphij1met,weight);
+	  // min Df(j,MET) considering the two leading jets
+	  float dphij2met=fabs(deltaPhi(GoodIdJets[1].phi(),metP4.phi()));
+	  float min_dphijmet=min(dphij1met,dphij2met);
+	  if (ivar==0)  mon.fillHisto("dphijmet","raw_minj1j2",min_dphijmet,weight);
+	  // anti-QCD cut
+	  //	  if (min_dphijmet<0.5) continue;
+
 	  sort(GoodIdJets.begin(), GoodIdJets.end(), btagsort());
 
 	  //-------------------------------------------------------------------
@@ -1658,7 +1740,7 @@ int main(int argc, char* argv[])
 	      
 	      if(ivar==0) {
 		// At least 2 jets and 2 b-jets
-		mon.fillHisto("eventflow","all",5,weight); 
+		if (passMt) mon.fillHisto("eventflow","all",5,weight); 
 	      }
 	    } else if (CSVLoosebJets.size()==1) { // && SVs.size()>0) { // Top Control Regions
 	      
@@ -1700,6 +1782,11 @@ int main(int argc, char* argv[])
 	  else if (evcat==MU) { ch="MU_"; }
 	  else { printf("UNKNOWN lepton category - please check\n"); }
 	  
+	  TString mtpass="";
+	  if (passMt) { mtpass="_Mt"; }
+	  else { mtpass="_notMt"; }
+
+
 	  bool isSignalRegion(true);
 	  
 	  if (nCSVMtags>=1) {
@@ -1707,25 +1794,30 @@ int main(int argc, char* argv[])
 	    if (CSVLoosebJets.size()>=2 ) {
 	      if (CSVLoosebJets.size()>2 || SVs.size()>0) {
 		// SR categories
-		if(ivar==0) { mon.fillHisto("eventflow","all",6,weight); }
+		if(ivar==0 && passMt) { mon.fillHisto("eventflow","all",6,weight); }
 		
 		// Cats: 3b
 		if (GoodIdbJets.size()==3) { 
-		  tags.push_back("SR"+QCD_region+"_3b"); tags.push_back(ch+"SR"+QCD_region+"_3b");
+		  //tags.push_back("SR"+QCD_region+"_3b"); 
+		  tags.push_back(ch+"SR"+QCD_region+"_3b"); tags.push_back(ch+"SR"+QCD_region+mtpass+"_3b");
 		}
 		else {
-		  tags.push_back("SR"+QCD_region+"_geq4b"); tags.push_back(ch+"SR"+QCD_region+"_geq4b");
+		  //tags.push_back("SR"+QCD_region+"_geq4b"); 
+		  tags.push_back(ch+"SR"+QCD_region+"_geq4b"); tags.push_back(ch+"SR"+QCD_region+mtpass+"_geq4b"); 
 		  
-		  if(ivar==0) { mon.fillHisto("eventflow","all",7,weight); }
+		  if(ivar==0 && passMt) { mon.fillHisto("eventflow","all",7,weight); }
 		  
 		  if (GoodIdbJets.size()==4) { 
-		    tags.push_back("SR"+QCD_region+"_4b"); tags.push_back(ch+"SR"+QCD_region+"_4b");
+		    //  tags.push_back("SR"+QCD_region+"_4b"); 
+		    tags.push_back(ch+"SR"+QCD_region+"_4b"); tags.push_back(ch+"SR"+QCD_region+mtpass+"_4b"); 
 		  }
 		  else {
 		    if (GoodIdbJets.size()==5) { 
-		      tags.push_back("SR"+QCD_region+"_5b"); tags.push_back(ch+"SR"+QCD_region+"_5b");
+		      //  tags.push_back("SR"+QCD_region+"_5b"); 
+		      tags.push_back(ch+"SR"+QCD_region+"_5b");  tags.push_back(ch+"SR"+QCD_region+mtpass+"_5b");
 		    }
-		    tags.push_back("SR"+QCD_region+"_geq5b"); tags.push_back(ch+"SR"+QCD_region+"_geq5b");
+		    //tags.push_back("SR"+QCD_region+"_geq5b"); 
+		    tags.push_back(ch+"SR"+QCD_region+"_geq5b"); tags.push_back(ch+"SR"+QCD_region+mtpass+"_geq5b");
 		  }
 		}
 	      } else { 
@@ -1734,18 +1826,23 @@ int main(int argc, char* argv[])
 		
 		// Top Control Region categories
 		if (GoodIdbJets.size()==3) { 
-		  tags.push_back("CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+"_3b");
+		  //tags.push_back("CR"+QCD_region+"_3b"); 
+		  tags.push_back(ch+"CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_3b");
 		}
 		else {
-		  tags.push_back("CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+"_geq4b");
+		  //tags.push_back("CR"+QCD_region+"_geq4b"); 
+		  tags.push_back(ch+"CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_geq4b");
 		  if (GoodIdbJets.size()==4) { 
-		    tags.push_back("CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+"_4b");
+		    //  tags.push_back("CR"+QCD_region+"_4b"); 
+		    tags.push_back(ch+"CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_4b");
 		  }
 		  else {
 		    if (GoodIdbJets.size()==5) { 
-		      tags.push_back("CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+"_5b");
+		      //  tags.push_back("CR"+QCD_region+"_5b"); 
+		      tags.push_back(ch+"CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_5b");
 		    }
-		    tags.push_back("CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+"_geq5b");
+		    // tags.push_back("CR"+QCD_region+"_geq5b"); 
+		    tags.push_back(ch+"CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_geq5b");
 		  }
 		}
 	      }
@@ -1754,18 +1851,23 @@ int main(int argc, char* argv[])
 	      
 	      // Top Control Region categories
 	      if (GoodIdbJets.size()==3) { 
-		tags.push_back("CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+"_3b");
+		//tags.push_back("CR"+QCD_region+"_3b"); 
+		tags.push_back(ch+"CR"+QCD_region+"_3b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_3b");
 	      }
 	      else {
-		tags.push_back("CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+"_geq4b");
+		//tags.push_back("CR"+QCD_region+"_geq4b"); 
+		tags.push_back(ch+"CR"+QCD_region+"_geq4b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_geq4b");
 		if (GoodIdbJets.size()==4) { 
-		  tags.push_back("CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+"_4b");
+		  // tags.push_back("CR"+QCD_region+"_4b"); 
+		  tags.push_back(ch+"CR"+QCD_region+"_4b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_4b");
 		}
 		else {
 		  if (GoodIdbJets.size()==5) { 
-		    tags.push_back("CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+"_5b");
+		    //  tags.push_back("CR"+QCD_region+"_5b");
+		    tags.push_back(ch+"CR"+QCD_region+"_5b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_5b");
 		  }
-		  tags.push_back("CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+"_geq5b");
+		  // tags.push_back("CR"+QCD_region+"_geq5b"); 
+		  tags.push_back(ch+"CR"+QCD_region+"_geq5b"); tags.push_back(ch+"CR"+QCD_region+mtpass+"_geq5b");
 		}
 	      }
 	    }
@@ -1776,18 +1878,23 @@ int main(int argc, char* argv[])
 	    
 	    // Non-TT Control Region categories
 	    if (GoodIdbJets.size()==3) { 
-	      tags.push_back("CR_nonTT"+QCD_region+"_3b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_3b");
+	      //  tags.push_back("CR_nonTT"+QCD_region+"_3b"); 
+	      tags.push_back(ch+"CR_nonTT"+QCD_region+"_3b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_3b"); 
 	    }
 	    else {
-	      tags.push_back("CR_nonTT"+QCD_region+"_geq4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_geq4b");
+	      //tags.push_back("CR_nonTT"+QCD_region+"_geq4b"); 
+	      tags.push_back(ch+"CR_nonTT"+QCD_region+"_geq4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_geq4b");
 	      if (GoodIdbJets.size()==4) { 
-		tags.push_back("CR_nonTT"+QCD_region+"_4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_4b");
+		//	tags.push_back("CR_nonTT"+QCD_region+"_4b"); 
+		tags.push_back(ch+"CR_nonTT"+QCD_region+"_4b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_4b");
 	      }
 	      else {
 		if (GoodIdbJets.size()==5) { 
-		  tags.push_back("CR_nonTT"+QCD_region+"_5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_5b");
+		  //  tags.push_back("CR_nonTT"+QCD_region+"_5b"); 
+		  tags.push_back(ch+"CR_nonTT"+QCD_region+"_5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_5b");
 		}
-		tags.push_back("CR_nonTT"+QCD_region+"_geq5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+"_geq5b");
+		//	tags.push_back("CR_nonTT"+QCD_region+"_geq5b"); 
+		tags.push_back(ch+"CR_nonTT"+QCD_region+"_geq5b"); tags.push_back(ch+"CR_nonTT"+QCD_region+mtpass+"_geq5b");
 	      }
 	    }
 	  } else {
@@ -1918,9 +2025,7 @@ int main(int argc, char* argv[])
 	  //############ MVA Handler ####################################################
 	  //##############################################################################
 	  
-	  if (runMVA) {
-	    //   if ( (isMC && (varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || varNames[ivar]=="_jesup" || varNames[ivar]=="_jesdown" ||
-	    //	   varNames[ivar]=="_btagup" || varNames[ivar]=="_btagdown")) || !isMC) {
+	  if (runMVA && ivar==0) {
 	      
 	      float mvaweight = 1.0;
 	      genWeight > 0 ? mvaweight = weight/xsecWeight : mvaweight = -weight / xsecWeight; // Include all weights except for the xsecWeight
@@ -1956,7 +2061,9 @@ int main(int argc, char* argv[])
     } // loop on all events END
     
     PU_Central_File->Close(); 
-    
+    PU_Up_File->Close(); 
+    PU_Down_File->Close(); 
+
     E_TRG_SF_file->Close(); E_RECO_SF_file->Close(); 
     E_TIGHTID_SF_file->Close();
     MU_TRG_SF_file->Close();
