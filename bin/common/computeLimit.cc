@@ -56,15 +56,15 @@ double datadriven_qcd_Syst = 0.50;
 
 bool postfit=false;
 
-double norm_top_e_3b=1.;
-double norm_top_mu_3b=1.;
-double norm_top_e_4b=1.;
-double norm_top_mu_4b=1.;
+double norm_top_e_3b=0.86;
+double norm_top_mu_3b=0.85;
+double norm_top_e_4b=0.86;
+double norm_top_mu_4b=0.85;
 
-double norm_w_e_3b=1.;
-double norm_w_mu_3b=1.;
-double norm_w_e_4b=1.;
-double norm_w_mu_4b=1.;
+double norm_w_e_3b=1.49;
+double norm_w_mu_3b=1.40;
+double norm_w_e_4b=1.54;
+double norm_w_mu_4b=1.38;
 
 int mass;
 bool shape = true;
@@ -554,7 +554,6 @@ int main(int argc, char* argv[])
     else if(arg.find("--systpostfix")   !=string::npos && i+1<argc)  { systpostfix = argv[i+1];  i++;  printf("systpostfix '%s' will be used\n", systpostfix.Data());  }
     else if(arg.find("--shape")  !=string::npos) { shape=true; printf("shapeBased = True\n");}   
     else if(arg.find("--syst")  !=string::npos) { runSystematics=true; printf("syst = True\n");}     
-    //    else if(arg.find("--modeDD")  !=string::npos) { modeDD=true; printf("modeDD = True\n");} 
     else if(arg.find("--simfit")  !=string::npos) { simfit=true; printf("simfit = True\n");}    
     //    else if(arg.find("--postfit")  !=string::npos) { postfit=true; printf("postfit = True\n");}    
     else if(arg.find("--dirtyFix2")    !=string::npos) { dirtyFix2=true; printf("dirtyFix2 = True\n");}
@@ -566,9 +565,8 @@ int main(int argc, char* argv[])
     else if(arg.find("--statBinByBin")    !=string::npos) { sscanf(argv[i+1],"%f",&statBinByBin); i++; printf("statBinByBin = %f\n", statBinByBin);}
     else if(arg.find("--dropBckgBelow")   !=string::npos) { sscanf(argv[i+1],"%lf",&dropBckgBelow); i++; printf("dropBckgBelow = %f\n", dropBckgBelow);}
     else if(arg.find("--key"          )   !=string::npos && i+1<argc){ keywords.push_back(argv[i+1]); printf("Only samples matching this (regex) expression '%s' are processed\n", argv[i+1]); i++;  }
-    if(arg.find("--modeDD")  !=string::npos) { modeDD=true; printf("modeDD = True\n");}   
+    if(arg.find("--modeDD") !=string::npos) { modeDD=true; printf("modeDD = True\n");} 
     if(arg.find("--postfit")  !=string::npos) { postfit=true; printf("postfit = True\n");}   
-    //    if(arg.find("--mergeproc") !=string::npos) { mergeproc=true; printf("mergeproc = True");}
   }
   if(jsonFile.IsNull()) { printf("No Json file provided\nrun with '--help' for more details\n"); return -1; }
   if(inFileUrl.IsNull()){ printf("No Inputfile provided\nrun with '--help' for more details\n"); return -1; }
@@ -1078,13 +1076,13 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     }
     fprintf(pFile,"\\begin{tabular}{%s|}\\hline\n", Lcol);
     fprintf(pFile,"channel               %s\\\\\\hline\n", Lchan);
-    fprintf(pFile,"$\\alpha$ measured    %s\\\\\n", Lalph1);
-    fprintf(pFile,"yield data            %s\\\\\n", Lyield);
-    fprintf(pFile,"yield MC              %s\\\\\n", LyieldMC);
+    fprintf(pFile,"$\\text{SF}_{qcd}$ measured    %s\\\\\n", Lalph1);
+    fprintf(pFile,"QCD yield predicted (data)            %s\\\\\n", Lyield);
+    fprintf(pFile,"QCD yield observed (MC)              %s\\\\\n", LyieldMC);
     fprintf(pFile,"\\hline\\hline\n");
-    fprintf(pFile,"$\\alpha$ (MC)    %s\\\\\n", LalphMC);
-    fprintf(pFile,"yield predicted (MC)   %s\\\\\n", LyieldPred);
-    fprintf(pFile,"yield MC              %s\\\\\n", LyieldMC); 
+    fprintf(pFile,"$\\text{SF}_{qcd}$ (MC)    %s\\\\\n", LalphMC);
+    fprintf(pFile,"QCD yield predicted (MC)   %s\\\\\n", LyieldPred);
+    fprintf(pFile,"QCD yield observed (MC)  %s\\\\\n", LyieldMC); 
     fprintf(pFile,"ratio MC (syst)        %s\\\\\n", RatioMC); 
     fprintf(pFile,"\\hline\n");   
     fprintf(pFile,"\\end{tabular}\n\\end{center}\n\\end{sidewaystable}\n\\end{document}\n");
@@ -1398,9 +1396,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     double total = map_yields["total"];
     for(std::map<string, double>::iterator Y=map_yields.begin();Y!=map_yields.end();Y++){
       if(Y->first.find("FakeLep")<std::string::npos)continue;//never drop this background
-      if(Y->first.find("VV")<std::string::npos)continue;//never drop this background
-      if(Y->first.find("ZVV")<std::string::npos)continue;//never drop this background   
-      if(Y->first.find("t#bar{t}+#gammaZW")<std::string::npos)continue;//never drop this background         
       if(Y->second/total<threshold){
         printf("Drop %s from the list of backgrounds because of negligible rate (%f%% of total bckq)\n", Y->first.c_str(), Y->second/total);
         for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==Y->first ){sorted_procs.erase(p);break;}}
@@ -1539,23 +1534,37 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     }
     if(map_unc.begin()!=map_unc.end())legA->AddEntry(map_unc.begin()->second, "Syst. + Stat.", "F");
 
-    int NBins = map_data.size()/selCh.size();
-    TCanvas* c1 = new TCanvas("c1","c1",300*NBins,300); //*selCh.size());
-    c1->SetTopMargin(0.00); c1->SetRightMargin(0.00); c1->SetBottomMargin(0.00);  c1->SetLeftMargin(0.00);
-    TPad* t2 = new TPad("t2","t2", 0.03, 0.90, 1.00, 1.00, -1, 1);  t2->Draw();  c1->cd();
-    t2->SetTopMargin(0.00); t2->SetRightMargin(0.00); t2->SetBottomMargin(0.00);  t2->SetLeftMargin(0.00);
-    TPad* t1 = new TPad("t1","t1", 0.03, 0.03, 1.00, 0.90, 4, 1);  t1->Draw();  t1->cd();
-    t1->SetTopMargin(0.00); t1->SetRightMargin(0.00); t1->SetBottomMargin(0.00);  t1->SetLeftMargin(0.00);
-    t1->Divide(NBins, selCh.size(), 0, 0);
-    //t1->Divide(NBins, 1, 0, 0);  
+    // int NBins = map_data.size()/selCh.size();
+    // TCanvas* c1 = new TCanvas("c1","c1",300*NBins,300); //*selCh.size());
+    // c1->SetTopMargin(0.00); c1->SetRightMargin(0.00); c1->SetBottomMargin(0.00);  c1->SetLeftMargin(0.00);
+    // TPad* t2 = new TPad("t2","t2", 0.03, 0.90, 1.00, 1.00, -1, 1);  t2->Draw();  c1->cd();
+    // t2->SetTopMargin(0.00); t2->SetRightMargin(0.00); t2->SetBottomMargin(0.00);  t2->SetLeftMargin(0.00);
+    // TPad* t1 = new TPad("t1","t1", 0.03, 0.03, 1.00, 0.90, 4, 1);  t1->Draw();  t1->cd();
+    // t1->SetTopMargin(0.00); t1->SetRightMargin(0.00); t1->SetBottomMargin(0.00);  t1->SetLeftMargin(0.00);
+    // t1->Divide(NBins, selCh.size(), 0, 0);
+    // //t1->Divide(NBins, 1, 0, 0);  
 
-
+    TCanvas* c[50];
     int I=1;
     for(std::map<string, THStack*>::iterator p = map_stack.begin(); p!=map_stack.end(); p++){
       //init tab
-      TVirtualPad* pad = t1->cd(I);
-      pad->SetTopMargin(0.06); pad->SetRightMargin(0.03); pad->SetBottomMargin(I<=NBins?0.09:0.12);  pad->SetLeftMargin((I-1)%NBins!=0?0.09:0.12);
-      pad->SetLogy(true); 
+      string ires;
+      ostringstream convert;
+      convert << I;   
+      
+      int NBins = map_data.size()/selCh.size();
+      c[I] = new TCanvas("c_"+(char)I,"c_",300*NBins,300); //*selCh.size());
+      c[I]->SetTopMargin(0.00); c[I]->SetRightMargin(0.00); c[I]->SetBottomMargin(0.00);  c[I]->SetLeftMargin(0.00);
+      // TPad* t2 = new TPad("t2","t2", 0.03, 0.90, 1.00, 1.00, -1, 1);  t2->Draw();  c1->cd();
+      // t2->SetTopMargin(0.00); t2->SetRightMargin(0.00); t2->SetBottomMargin(0.00);  t2->SetLeftMargin(0.00);
+      // TPad* t1 = new TPad("t1","t1", 0.03, 0.03, 1.00, 0.90, 4, 1);  t1->Draw();  t1->cd();
+      // t1->SetTopMargin(0.00); t1->SetRightMargin(0.00); t1->SetBottomMargin(0.00);  t1->SetLeftMargin(0.00);
+      // t1->Divide(NBins, selCh.size(), 0, 0);
+      // //t1->Divide(NBins, 1, 0, 0);  
+      
+      // TVirtualPad* pad = t1->cd(I);
+      //pad->SetTopMargin(0.06); pad->SetRightMargin(0.03); pad->SetBottomMargin(I<=NBins?0.09:0.12);  pad->SetLeftMargin((I-1)%NBins!=0?0.09:0.12);
+      //      gPad->SetLogy(true); 
 
       //print histograms
       TH1* axis = (TH1*)map_data[p->first]->Clone("axis");
@@ -1576,6 +1585,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       if((I-1)%NBins!=0)axis->GetYaxis()->SetTitle("");
       if(I<=NBins)axis->GetXaxis()->SetTitle("");
       axis->Draw();
+      /*
+      // Blind SRs
+      if(procs["data"].channels[p->first].bin.find("qcdB")!=string::npos) {
+	for(unsigned int i=p->second->FindBin(20);i<=p->second->GetNbinsX()+1; i++){   
+	  p->second->SetBinContent(i, 0); p->second->SetBinError(i, 0);
+	}
+      }
+      */
       p->second->Draw("same");
       map_unc [p->first]->Draw("2 same");
       for(unsigned int i=0;i<map_signals[p->first].size();i++){
@@ -1620,11 +1637,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       gPad->RedrawAxis();
 
-      I++;
-    }
+    //   I++;
+    // }
 
     //print legend
-    c1->cd(0);
+    // c1->cd(0);
     legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);  legA->SetBorderSize(0); legA->SetHeader("");
     legA->SetNColumns((NLegEntry/2) + 1);
     legA->Draw("same");    legA->SetTextFont(42);
@@ -1642,7 +1659,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 */
 
-    c1->cd(0);
+    // c1->cd(0);
     double L=0.03, R=0.03, T=0.02, B=0.0;
     char LumiText[1024];
     if(systpostfix.Contains('3'))      { double iLumi= 35914;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 13.0);
@@ -1668,10 +1685,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     }
 
     //save canvas
-    c1->SaveAs(SaveName+"_Shape.png");
-    c1->SaveAs(SaveName+"_Shape.pdf");
-    c1->SaveAs(SaveName+"_Shape.C");
-    delete c1;
+    // c[I]->SaveAs(SaveName+"_Shape.png");
+    c[I]->SaveAs(SaveName+convert.str()+"_Shape.pdf");
+    c[I]->SaveAs(SaveName+convert.str()+"_Shape.C");
+    delete c[I];
+
+       I++;
+    }
+
   }
 
 
@@ -2079,17 +2100,17 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         double integral = shapeInfo.histo()->Integral();
 
         //lumi
-        if(!it->second.isData && systpostfix.Contains('3'))shapeInfo.uncScale["lumi_13TeV"] = integral*0.026;
+        if(!it->second.isData && systpostfix.Contains('3'))shapeInfo.uncScale["lumi_13TeV"] = integral*0.025;
         if(!it->second.isData && systpostfix.Contains('8'))shapeInfo.uncScale["lumi_8TeV" ] = integral*0.026;
         if(!it->second.isData && systpostfix.Contains('7'))shapeInfo.uncScale["lumi_7TeV" ] = integral*0.022;
 
         //Id+Trigger efficiencies combined
-	/*
+	
         if(!it->second.isData){
-          if(chbin.Contains("E"  ))  shapeInfo.uncScale["CMS_eff_e"] = integral*0.01; //0.072124;
-          if(chbin.Contains("MU"))  shapeInfo.uncScale["CMS_eff_m"] = integral*0.01; //0.061788;
+          if(chbin.Contains("E"  ))  shapeInfo.uncScale["CMS_eff_e"] = integral*0.02; //0.072124;
+          if(chbin.Contains("MU"))  shapeInfo.uncScale["CMS_eff_m"] = integral*0.02; //0.061788;
         }
-	*/
+	
 	//normalization uncertainties to be applied in small backgrounds
 	
 	//	if(it->second.shortName.find("wlnu")!=string::npos){shapeInfo.uncScale["norm_wlnu"] = integral*0.10;}  
@@ -2097,8 +2118,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	if(it->second.shortName.find("zvv")!=string::npos){shapeInfo.uncScale["norm_zvv"] = integral*0.10;}    
 	if(it->second.shortName.find("vv")!=string::npos && !(it->second.shortName.find("zvv")!=string::npos)){shapeInfo.uncScale["norm_vv"] = integral*0.10;}
 	if(it->second.shortName.find("zll")!=string::npos){shapeInfo.uncScale["norm_zll"] = integral*0.10;}       
-	if(it->second.shortName.find("ttbargam")!=string::npos){shapeInfo.uncScale["norm_TTgzw"] = integral*0.10;} 
-	if(it->second.shortName.find("singleto")!=string::npos){shapeInfo.uncScale["norm_singletop"] = integral*0.10;} 
+	if(it->second.shortName.find("ttbargam")!=string::npos){shapeInfo.uncScale["norm_TTgzw"] = integral*0.20;} 
+	if(it->second.shortName.find("singleto")!=string::npos){shapeInfo.uncScale["norm_singletop"] = integral*0.20;} 
 	if (!subFake){
 	  if(it->second.shortName.find("qcd")!=string::npos){shapeInfo.uncScale["norm_qcd"] = integral*0.50;} 
 	}
@@ -2463,29 +2484,31 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           }
           hshape->Scale(MCRescale);
 	  if (postfit) {
-	    printf("W/Top NORMALIZATIONs: Process = %s and channel = %s\n\n",proc.Data(),ch.Data());
+	    if(!(ch.Contains("qcdB"))) {
+	      printf("W/Top NORMALIZATIONs: Process = %s and channel = %s\n\n",proc.Data(),ch.Data());
 
-	    // Top normalization
-	    if (proc.Contains("t#bar{t}+jets")!=std::string::npos) {   
-	      if (ch.Contains("E")) {  
-		if(ch.Contains("3b")) hshape->Scale(norm_top_e_3b);
-		if(ch.Contains("4b")) hshape->Scale(norm_top_e_4b);   
+	      // Top normalization
+	      if (proc.Contains("t#bar{t}+jets")!=std::string::npos) {   
+		if (ch.Contains("E")) {  
+		  if(ch.Contains("3b")) hshape->Scale(norm_top_e_3b);
+		  if(ch.Contains("4b")) hshape->Scale(norm_top_e_4b);   
+		}
+		if (ch.Contains("MU")) { 
+		  if(ch.Contains("3b")) hshape->Scale(norm_top_mu_3b);
+		  if(ch.Contains("4b")) hshape->Scale(norm_top_mu_4b); 
+		}    
 	      }
-	      if (ch.Contains("MU")) { 
-		if(ch.Contains("3b")) hshape->Scale(norm_top_mu_3b);
-		if(ch.Contains("4b")) hshape->Scale(norm_top_mu_4b); 
-	      }    
-	    }
 	    
 	    // W normalization
-	    if (proc.Contains("W#rightarrow l#nu")!=std::string::npos) {
-	      if (ch.Contains("E")) {  
-		if(ch.Contains("3b")) hshape->Scale(norm_w_e_3b);    
-		if(ch.Contains("4b")) hshape->Scale(norm_w_e_4b);     
-	      }
-	      if (ch.Contains("MU")) {          
-		if(ch.Contains("3b")) hshape->Scale(norm_w_mu_3b);      
-		if(ch.Contains("4b")) hshape->Scale(norm_w_mu_4b);          
+	      if (proc.Contains("W#rightarrow l#nu")!=std::string::npos) {
+		if (ch.Contains("E")) {  
+		  if(ch.Contains("3b")) hshape->Scale(norm_w_e_3b);    
+		  if(ch.Contains("4b")) hshape->Scale(norm_w_e_4b);     
+		}
+		if (ch.Contains("MU")) {          
+		  if(ch.Contains("3b")) hshape->Scale(norm_w_mu_3b);      
+		  if(ch.Contains("4b")) hshape->Scale(norm_w_mu_4b);          
+		}
 	      }
 	    }
 	  }
