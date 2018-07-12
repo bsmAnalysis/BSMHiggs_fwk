@@ -136,15 +136,30 @@ for proc in procList :
 #                print '  Running in resubmit failed jobs mode ' 
                 configList = commands.getstatusoutput('ls ' + outdir +'/'+ dtag + '_' + '*_cfg.py')[1].split('\n')
                 failedList = []
+
+                    ## split jobs by dtag name
+                SCRIPT_DTag = open('/tmp/'+who+'/SCRIPT_Local_'+dtag+'.sh',"w")
+                SCRIPT_DTag.writelines('#!bin/sh \n\n')
+                SCRIPT_DTag.writelines('cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/; \n\n')
+                
                 for cfgfile in configList:
                     if( not os.path.isfile( cfgfile.replace('_cfg.py','.root'))):
                         failedList+= [cfgfile]
                 if(len(failedList)>0):
                     rsegment=0
                     for cfgfile in failedList: 
-                        os.system('submit2batch.sh -q'+queue+' -R"' + requirementtoBatch + '" -J' + dtag + str(rsegment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
-                        rsegment+=1
-#                        os.system('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
+                        os.system('mkdir -p ' + queuelog)
+                        SCRIPT.writelines('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(rsegment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile + '\n\n')
+                        SCRIPT_L.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+str(rsegment)+'.log'+' & \n\n')
+                        count = count + 1
+                        if count % 30 == 0: SCRIPT_L.writelines('sleep 25\n\n')
+                        
+                        SCRIPT_Temp.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' & \n\n')
+                        SCRIPT_DTag.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' & \n\n')
+                        #sys.exit(0)
+                        os.system('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(rsegment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
+                        #                        os.system('submit2batch.sh -q '+queue+' -G'+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(rsegment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
+                        rsegment+=1 
 
             else :    
                 mydtag = dtag
@@ -209,7 +224,7 @@ for proc in procList :
                         
                         SCRIPT_Temp.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' & \n\n')
                         SCRIPT_DTag.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' & \n\n')
-			#sys.exit(0)
+                        #sys.exit(0)
                         os.system('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
 
                     segment += 1 #increment counter for job split
@@ -220,21 +235,19 @@ for proc in procList :
                 os.system('mkdir -p '+queuelog+'/split/')
                 os.system('mv /tmp/'+who+'/SCRIPT_Local_'+mydtag+'.sh '+queuelog+'/split')
             
-            if(not resubmit):    
-                SCRIPT_Temp.writelines('cd -;')
-                SCRIPT_Temp.close()
-                os.system('chmod u+x,g-r,o-r '+'/tmp/'+who+'/SCRIPT_Local_'+mytag+'.sh ')
-                os.system('mkdir -p '+queuelog+'/combine/')
-                os.system('mv /tmp/'+who+'/SCRIPT_Local_'+mytag+'.sh '+queuelog+'/combine/')
+        SCRIPT_Temp.writelines('cd -;')
+        SCRIPT_Temp.close()
+        os.system('chmod u+x,g-r,o-r '+'/tmp/'+who+'/SCRIPT_Local_'+mytag+'.sh ')
+        os.system('mkdir -p '+queuelog+'/combine/')
+        os.system('mv /tmp/'+who+'/SCRIPT_Local_'+mytag+'.sh '+queuelog+'/combine/')
                 
-        if (not resubmit):
-            SCRIPT.close()
-            SCRIPT_L.writelines('cd -;')
-            SCRIPT_L.close()
-            os.system('chmod u+x,g-r,o-r '+'/tmp/'+who+'/SCRIPT_Submit2batch.sh '+'/tmp/'+who+'/SCRIPT_Local.sh ')
-            os.system('mkdir -p '+queuelog+'/all/')
-            os.system('mv /tmp/'+who+'/SCRIPT_Submit2batch.sh '+queuelog+'/all/')
-            os.system('mv /tmp/'+who+'/SCRIPT_Local.sh '+queuelog+'/all/')
-            os.system('cp $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/scripts/splitlocaljobs.py '+queuelog+'/all/')
-            os.system('cp $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/scripts/checkLocaljobs.py '+queuelog+'/all/')
+SCRIPT.close()
+SCRIPT_L.writelines('cd -;')
+SCRIPT_L.close()
+os.system('chmod u+x,g-r,o-r '+'/tmp/'+who+'/SCRIPT_Submit2batch.sh '+'/tmp/'+who+'/SCRIPT_Local.sh ')
+os.system('mkdir -p '+queuelog+'/all/')
+os.system('mv /tmp/'+who+'/SCRIPT_Submit2batch.sh '+queuelog+'/all/')
+os.system('mv /tmp/'+who+'/SCRIPT_Local.sh '+queuelog+'/all/')
+os.system('cp $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/scripts/splitlocaljobs.py '+queuelog+'/all/')
+os.system('cp $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/scripts/checkLocaljobs.py '+queuelog+'/all/')
             
