@@ -33,6 +33,7 @@
 //Load here all the dataformat that we will need
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
@@ -107,8 +108,9 @@ using namespace std;
 // from  edm::one::EDAnalyzer<> and also remove the line from
 // constructor "usesResource("TFileService");"
 // This will improve performance in multithreaded jobs.
+//public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
-class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
+class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
    public:
       explicit mainNtuplizer(const edm::ParameterSet&);
       ~mainNtuplizer();
@@ -144,8 +146,8 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
     edm::EDGetTokenT<GenEventInfoProduct> genInfoTag_;
     edm::EDGetTokenT<edm::View<pat::PackedGenParticle> > packedGenTag_;
   // edm::EDGetTokenT<edm::View<reco::GenJet> > genjetTag_;
-  //  edm::InputTag lheRunInfoTag_;
-  // edm::EDGetTokenT<LHERunInfoProduct> lheRunInfoToken_;
+  edm::InputTag lheRunInfoTag_;
+  edm::EDGetTokenT<LHERunInfoProduct> lheRunInfoToken_;
     edm::EDGetTokenT<double> rhoFastjetAllTag_;
 
   //  EnergyScaleCorrection_class eScaler_;     
@@ -168,12 +170,18 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
   // SmartSelectionMonitor mon_;
   //    double xsecWeight;
-  
-      virtual void beginJob() override;
-      virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
-      virtual void endJob() override;
+  void beginJob() override;
+  void beginRun(edm::Run const& iRun, edm::EventSetup const&) override;
+  void analyze(const edm::Event&, const edm::EventSetup&) override;
+  void endRun(edm::Run const& iRun, edm::EventSetup const&) override {};
+  void endJob() override;
 
-      // ----------member data ---------------------------
+  //virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
+  // virtual void beginJob(const edm::Run& iRun);
+  //virtual void beginJob(edm::Event const&, edm::EventSetup const&);
+  //  virtual void endJob(edm::Event const&, edm::EventSetup const&);
+
+  // ----------member data ---------------------------
     float curAvgInstLumi_;
     float curIntegLumi_;
   
@@ -232,8 +240,8 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
     genInfoTag_(        consumes<GenEventInfoProduct>(iConfig.getParameter<edm::InputTag>("genInfoTag"))                ),
     packedGenTag_(	consumes<edm::View<pat::PackedGenParticle> >(iConfig.getParameter<edm::InputTag>("packedTag"))	),
   //  genjetTag_(		consumes<edm::View<reco::GenJet> >(iConfig.getParameter<edm::InputTag>("genJetsTag"))		),
-  //   lheRunInfoTag_(     iConfig.getParameter<edm::InputTag>("lheInfo")                                                  ),
-  // lheRunInfoToken_(   consumes<LHERunInfoProduct,edm::InRun>(lheRunInfoTag_)						),
+  lheRunInfoTag_(     iConfig.getParameter<edm::InputTag>("lheInfo")                                                  ),
+  lheRunInfoToken_(   consumes<LHERunInfoProduct,edm::InRun>(lheRunInfoTag_)						),
     rhoFastjetAllTag_(  	consumes<double>(iConfig.getParameter<edm::InputTag>("rhoFastjetAll")) 			),
   //  eScaler_(iConfig.getParameter<std::string>("correctionFile") ),
 	   reducedEBRecHitCollectionToken_(     consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>("reducedEcalRecHitsEB")) ),
@@ -306,10 +314,66 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   h_metFilter->GetXaxis()->SetBinLabel(11,"duplicateMuonHIPFilter");
 
   // patUtils::MetFilter metFilter;
-  
-//MC normalization (to 1/pb)
-  // xsecWeight = 1.0;
 
+  // const edm::Run& iRun;
+  // edm::Handle<LHERunInfoProduct> lheRunInfo;
+  // iRun.getByLabel(lheRunInfoTag_,lheRunInfo);
+
+  // if (lheRunInfo.isValid()) {
+
+  //   int pdfidx = lheRunInfo->heprup().PDFSUP.first;
+
+  //   if (pdfidx == 263000) {
+  //     if(verbose_) cout << "NNPDF30_lo_as_0130 (nf5) for LO madgraph samples" << endl;
+  //     //      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_lo_as_0130_hessian_60.csv"));
+  //     firstPdfWeight = 10;
+  //     lastPdfWeight = 109;
+  //     firstAlphasWeight = -1;
+  //     lastAlphasWeight = -1;
+  //   } else if (pdfidx == 263400) {
+  //     if(verbose_) cout << "NNPdf30_lo_as_0130_nf4 for LO madgraph samples" << endl;
+  //     //      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_lo_as_0130_nf_4_hessian_60.csv"));
+  //     firstPdfWeight = 111;
+  //     lastPdfWeight = 210;
+  //     firstAlphasWeight = -1;
+  //     lastAlphasWeight = -1;
+  //   } else if (pdfidx == 260000 || pdfidx == -1) {
+  //     if(verbose_) cout << "NNPdf30_nlo_as_0118 (nf5) for NLO powheg samples" << endl;
+  //     //(work around apparent bug in current powheg samples by catching "-1" as well)
+  //     //      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_nlo_as_0118_hessian_60.csv"));
+  //     firstPdfWeight = 9;
+  //     lastPdfWeight = 108;
+  //     firstAlphasWeight = 109;
+  //     lastAlphasWeight = 110;
+  //   } else if (pdfidx == 292200) {
+  //     if(verbose_) cout << "NNPdf30_nlo_as_0118 (nf5) with built-in alphas variations for NLO aMC@NLO samples" << endl;
+  //     //      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_nlo_as_0118_hessian_60.csv"));
+  //     firstPdfWeight = 9;
+  //     lastPdfWeight = 108;
+  //     firstAlphasWeight = 109;
+  //     lastAlphasWeight = 110;
+  //   } else if (pdfidx == 292000) {
+  //     if(verbose_) cout << "NNPdf30_nlo_as_0118_nf4 with built-in alphas variations for NLO aMC@NLO samples" << endl;
+  //     //      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_nlo_as_0118_nf_4_hessian_60.csv"));
+  //     firstPdfWeight = 9;
+  //     lastPdfWeight = 108;
+  //     firstAlphasWeight = 109;
+  //     lastAlphasWeight = 110;
+  //   } else {
+  //     firstPdfWeight = -1;
+  //     lastPdfWeight = -1;
+  //     firstAlphasWeight = -1;
+  //     lastAlphasWeight = -1;
+  //   }
+
+  // } else {
+  //   firstPdfWeight = -1;
+  //   lastPdfWeight = -1;
+  //   firstAlphasWeight = -1;
+  //   lastAlphasWeight = -1;
+  // }
+
+  
   // Use for Top pt re-weighting
   isMC_ttbar = isMC_ && (string(proc_.c_str()).find("TeV_TTJets") != string::npos);
 
@@ -424,6 +488,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      if(ev.genWeight>0) h_posevents->Fill(0.); // mon_.fillHisto("n_posevents","all",1.0,1); //increment positive event count
      
      //scale variations
+    
      //https://twiki.cern.ch/twiki/bin/viewauth/CMS/LHEReaderCMSSW
      vector< edm::Handle<LHEEventProduct> > EvtHandles; 
      event.getManyByType(EvtHandles);
@@ -474,6 +539,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
              ev.lheNJets++;
            }
          }
+
        }// EvtHandle.isValid
      }
      
@@ -1435,12 +1501,87 @@ bool mainNtuplizer::isAncestor( const reco::Candidate& ancestor, const reco::Can
 
 } // isAncestor
 
- 
 
-// ------------ method called once each job just before starting event loop  ------------
+// // ------------ method called once each job just before starting event loop  ------------
 void 
-mainNtuplizer::beginJob()
+mainNtuplizer::beginJob() 
 {
+}
+
+
+void 
+mainNtuplizer::beginRun(edm::Run const& iRun, edm::EventSetup const&)
+{
+
+  edm::Handle<LHERunInfoProduct> lheRunInfo; 
+  typedef std::vector<LHERunInfoProduct::Header>::const_iterator headers_const_iterator;
+  
+  iRun.getByLabel( "externalLHEProducer", lheRunInfo );
+  LHERunInfoProduct myLHERunInfoProduct = *(lheRunInfo.product());
+  
+  for (headers_const_iterator iter=myLHERunInfoProduct.headers_begin(); iter!=myLHERunInfoProduct.headers_end(); iter++){
+    std::cout << iter->tag() << std::endl;
+    std::vector<std::string> lines = iter->lines();
+    for (unsigned int iLine = 0; iLine<lines.size(); iLine++) {
+      std::cout << lines.at(iLine);
+    }
+  }
+
+  if (lheRunInfo.isValid()) {
+
+    int pdfidx = lheRunInfo->heprup().PDFSUP.first;
+    
+    if (pdfidx == 263000) {
+      if(verbose_) cout << "NNPDF30_lo_as_0130 (nf5) for LO madgraph samples" << endl;
+      //      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_lo_as_0130_hessian_60.csv"));
+      firstPdfWeight = 10;
+      lastPdfWeight = 109;
+      firstAlphasWeight = -1;
+      lastAlphasWeight = -1;
+    } else if (pdfidx == 263400) {
+      if(verbose_) cout << "NNPdf30_lo_as_0130_nf4 for LO madgraph samples" << endl;
+      //      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_lo_as_0130_nf_4_hessian_60.csv"));
+      firstPdfWeight = 111;
+      lastPdfWeight = 210;
+      firstAlphasWeight = -1;
+      lastAlphasWeight = -1;
+    } else if (pdfidx == 260000 || pdfidx == -1) {
+      if(verbose_) cout << "NNPdf30_nlo_as_0118 (nf5) for NLO powheg samples" << endl;
+      //(work around apparent bug in current powheg samples by catching "-1" as well)
+      //      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_nlo_as_0118_hessian_60.csv"));
+      firstPdfWeight = 9;
+      lastPdfWeight = 108;
+      firstAlphasWeight = 109;
+      lastAlphasWeight = 110;
+    } else if (pdfidx == 292200) {
+      if(verbose_) cout << "NNPdf30_nlo_as_0118 (nf5) with built-in alphas variations for NLO aMC@NLO samples" << endl;
+      //      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_nlo_as_0118_hessian_60.csv"));
+      firstPdfWeight = 9;
+      lastPdfWeight = 108;
+      firstAlphasWeight = 109;
+      lastAlphasWeight = 110;
+    } else if (pdfidx == 292000) {
+      if(verbose_) cout << "NNPdf30_nlo_as_0118_nf4 with built-in alphas variations for NLO aMC@NLO samples" << endl;
+      //      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_nlo_as_0118_nf_4_hessian_60.csv"));
+      firstPdfWeight = 9;
+      lastPdfWeight = 108;
+      firstAlphasWeight = 109;
+      lastAlphasWeight = 110;
+    } else {
+      firstPdfWeight = -1;
+      lastPdfWeight = -1;
+      firstAlphasWeight = -1;
+      lastAlphasWeight = -1;
+    }
+
+  } else {
+    firstPdfWeight = -1;
+    lastPdfWeight = -1;
+    firstAlphasWeight = -1;
+    lastAlphasWeight = -1;
+  }
+  
+  
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -1448,6 +1589,7 @@ void
 mainNtuplizer::endJob() 
 {
 }
+
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
