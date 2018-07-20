@@ -1454,75 +1454,84 @@ void
 mainNtuplizer::beginRun(edm::Run const& iRun, edm::EventSetup const&)
 {
 
-  edm::Handle<LHERunInfoProduct> lheRunInfo; 
-  typedef std::vector<LHERunInfoProduct::Header>::const_iterator headers_const_iterator;
-  
-  iRun.getByLabel( "externalLHEProducer", lheRunInfo );
-  LHERunInfoProduct myLHERunInfoProduct = *(lheRunInfo.product());
-  
-  for (headers_const_iterator iter=myLHERunInfoProduct.headers_begin(); iter!=myLHERunInfoProduct.headers_end(); iter++){
-    std::cout << iter->tag() << std::endl;
-    std::vector<std::string> lines = iter->lines();
-    for (unsigned int iLine = 0; iLine<lines.size(); iLine++) {
-      std::cout << lines.at(iLine);
-    }
-  }
+  if (isMC_) {
 
-  if (lheRunInfo.isValid()) {
-
-    int pdfidx = lheRunInfo->heprup().PDFSUP.first;
+    // edm::Handle<LHERunInfoProduct> lheRunInfo; 
+    // typedef std::vector<LHERunInfoProduct::Header>::const_iterator headers_const_iterator;
     
-    if (pdfidx == 263000) {
-      if(verbose_) cout << "NNPDF30_lo_as_0130 (nf5) for LO madgraph samples" << endl;
-      //      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_lo_as_0130_hessian_60.csv"));
-      firstPdfWeight = 10;
-      lastPdfWeight = 109;
-      firstAlphasWeight = -1;
-      lastAlphasWeight = -1;
-    } else if (pdfidx == 263400) {
-      if(verbose_) cout << "NNPdf30_lo_as_0130_nf4 for LO madgraph samples" << endl;
-      //      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_lo_as_0130_nf_4_hessian_60.csv"));
-      firstPdfWeight = 111;
-      lastPdfWeight = 210;
-      firstAlphasWeight = -1;
-      lastAlphasWeight = -1;
-    } else if (pdfidx == 260000 || pdfidx == -1) {
-      if(verbose_) cout << "NNPdf30_nlo_as_0118 (nf5) for NLO powheg samples" << endl;
-      //(work around apparent bug in current powheg samples by catching "-1" as well)
-      //      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_nlo_as_0118_hessian_60.csv"));
-      firstPdfWeight = 9;
-      lastPdfWeight = 108;
-      firstAlphasWeight = 109;
-      lastAlphasWeight = 110;
-    } else if (pdfidx == 292200) {
-      if(verbose_) cout << "NNPdf30_nlo_as_0118 (nf5) with built-in alphas variations for NLO aMC@NLO samples" << endl;
-      //      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_nlo_as_0118_hessian_60.csv"));
-      firstPdfWeight = 9;
-      lastPdfWeight = 108;
-      firstAlphasWeight = 109;
-      lastAlphasWeight = 110;
-    } else if (pdfidx == 292000) {
-      if(verbose_) cout << "NNPdf30_nlo_as_0118_nf4 with built-in alphas variations for NLO aMC@NLO samples" << endl;
-      //      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_nlo_as_0118_nf_4_hessian_60.csv"));
-      firstPdfWeight = 9;
-      lastPdfWeight = 108;
-      firstAlphasWeight = 109;
-      lastAlphasWeight = 110;
+    // iRun.getByLabel( "externalLHEProducer", lheRunInfo );
+    // LHERunInfoProduct myLHERunInfoProduct = *(lheRunInfo.product());
+    
+    // for (headers_const_iterator iter=myLHERunInfoProduct.headers_begin(); iter!=myLHERunInfoProduct.headers_end(); iter++){
+    //   std::cout << iter->tag() << std::endl;
+    //   std::vector<std::string> lines = iter->lines();
+    //   for (unsigned int iLine = 0; iLine<lines.size(); iLine++) {
+    // 	std::cout << lines.at(iLine);
+    //   }
+    // }
+    edm::Handle<LHERunInfoProduct> lheRunInfo;
+    iRun.getByLabel(lheRunInfoTag_,lheRunInfo);
+    
+    if (lheRunInfo.isValid()) {
+      
+      int pdfidx = lheRunInfo->heprup().PDFSUP.first;
+      
+      if (pdfidx == 263000) {
+	if(verbose_) cout << "NNPDF30_lo_as_0130 (nf5) for LO madgraph samples" << endl;
+	//      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_lo_as_0130_hessian_60.csv"));
+	firstPdfWeight = 10;
+	lastPdfWeight = 109;
+	firstAlphasWeight = -1;
+	lastAlphasWeight = -1;
+      } else if (pdfidx == 263400) {
+	if(verbose_) cout << "NNPdf30_lo_as_0130_nf4 for LO madgraph samples" << endl;
+	//      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_lo_as_0130_nf_4_hessian_60.csv"));
+	firstPdfWeight = 111;
+	lastPdfWeight = 210;
+	firstAlphasWeight = -1;
+	lastAlphasWeight = -1;
+      } else if (pdfidx == 260000 || pdfidx == -1) {
+	if(verbose_) cout << "NNPdf30_nlo_as_0118 (nf5) for NLO powheg samples" << endl;
+	//(work around apparent bug in current powheg samples by catching "-1" as well)
+	//      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_nlo_as_0118_hessian_60.csv"));
+	firstPdfWeight = 9;
+	lastPdfWeight = 108;
+	firstAlphasWeight = 109;
+	lastAlphasWeight = 110;
+      } else if (pdfidx == 292200) {
+	if(verbose_) cout << "NNPdf30_nlo_as_0118 (nf5) with built-in alphas variations for NLO aMC@NLO samples" << endl;
+	//      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_nlo_as_0118_hessian_60.csv"));
+	firstPdfWeight = 9;
+	lastPdfWeight = 108;
+	firstAlphasWeight = 109;
+	lastAlphasWeight = 110;
+      } else if (pdfidx == 292000) {
+	if(verbose_) cout << "NNPdf30_nlo_as_0118_nf4 with built-in alphas variations for NLO aMC@NLO samples" << endl;
+	//      pdfweightshelper.Init(100,60,edm::FileInPath("llvvAnalysis/DMAnalysis/data/NNPDF30_nlo_as_0118_nf_4_hessian_60.csv"));
+	firstPdfWeight = 9;
+	lastPdfWeight = 108;
+	firstAlphasWeight = 109;
+	lastAlphasWeight = 110;
+      } else {
+	firstPdfWeight = -1;
+	lastPdfWeight = -1;
+	firstAlphasWeight = -1;
+	lastAlphasWeight = -1;
+      }
+      
     } else {
       firstPdfWeight = -1;
       lastPdfWeight = -1;
       firstAlphasWeight = -1;
       lastAlphasWeight = -1;
     }
-
+    
   } else {
     firstPdfWeight = -1;
     lastPdfWeight = -1;
     firstAlphasWeight = -1;
     lastAlphasWeight = -1;
   }
-  
-  
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
