@@ -461,6 +461,25 @@ int main(int argc, char* argv[])
       h5->GetXaxis()->SetBinLabel(ibin,label);
     }
 
+    // EVent categorization plot
+    TH1F *hevt = (TH1F *)mon.addHistogram( new TH1F("evt_cat",  ";(n-btag, n-jet);Events",15,0,15) );
+    hevt->GetXaxis()->SetBinLabel(1,"(0b, 3j)");
+    hevt->GetXaxis()->SetBinLabel(2,"(0b, 4j)");
+    hevt->GetXaxis()->SetBinLabel(3,"(0b, >=5j)");
+    hevt->GetXaxis()->SetBinLabel(4,"(1b, 3j)");
+    hevt->GetXaxis()->SetBinLabel(5,"(1b, 4j)");
+    hevt->GetXaxis()->SetBinLabel(6,"(1b, >=5j)");
+    hevt->GetXaxis()->SetBinLabel(7,"(2b, 3j)");
+    hevt->GetXaxis()->SetBinLabel(8,"(2b, 4j)");
+    hevt->GetXaxis()->SetBinLabel(9,"(2b, >=5j)");
+    hevt->GetXaxis()->SetBinLabel(10,"(3b, 3j)");
+    hevt->GetXaxis()->SetBinLabel(11,"(3b, 4j)");
+    hevt->GetXaxis()->SetBinLabel(12,"(3b, >=5j)");
+    hevt->GetXaxis()->SetBinLabel(13,"(4b, 3j)");
+    hevt->GetXaxis()->SetBinLabel(14,"(4b, 4j)");
+    hevt->GetXaxis()->SetBinLabel(15,"(4b, >=5j)");
+       
+    
     //--------------------------------------------------------------------------
     //some strings for tagging histograms:
     const char* astr[] = {"_b1","_b2","_b3","_b4"};
@@ -635,7 +654,8 @@ int main(int argc, char* argv[])
     }//is MC
     
     //event categorizer
-    EventCategory eventCategoryInst(1);   
+    EventCategory eventCategoryInst(1);
+    EventCategory eventCategoryPlot(2);   
 
     //Lepton scale factors
     LeptonEfficiencySF lepEff;
@@ -1490,7 +1510,7 @@ int main(int argc, char* argv[])
 		mon.fillHisto("b_discrim",b_tagging_name,btag_dsc,weight);
 		//		if (vJets[ijet].motherid == 36) mon.fillHisto("b_discrim",b_tagging_name+"_true",btag_dsc,weight);
 	      }
-	      hasCSVtag = btag_dsc>MediumWP;
+	      hasCSVtag = btag_dsc>LooseWP;
 	      bool hasCSVtagUp = hasCSVtag;
 	      bool hasCSVtagDown = hasCSVtag;
 	      
@@ -1706,36 +1726,49 @@ int main(int argc, char* argv[])
 
 	  vector<LorentzVector> pseudoGoodIdbJets;
 	  for (auto & i : GoodIdJets) { pseudoGoodIdbJets.push_back(i);}
-	  for (auto & i : SVs) {  pseudoGoodIdbJets.push_back(i); } // hey, have you x-cleaned jets and SVs?
+	  for (auto & i : SVs) {  pseudoGoodIdbJets.push_back(i); } // have you x-cleaned jets and SVs?
 	  
 	  
 	  //#########################################################
 	  //####  RUN PRESELECTION AND CONTROL REGION PLOTS  ########
 	  //#########################################################
 
+	  // Event categorization based on (n-btag, n-jet) after leptonic selection
+	  int evtCatPlot = eventCategoryPlot.Get(phys,&GoodIdbJets, &pseudoGoodIdbJets);
+
+	  mon.fillHisto("evt_cat","sel1", evtCatPlot,weight);
+	  
 	  // //Define ABCD regions
-	  TString tag_qcd;
-	  tag_qcd="";
+	  TString tag_qcd; tag_qcd="";
 	  
 	  if (passMet25 && passMt) {
+
+	    mon.fillHisto("evt_cat","sel2", evtCatPlot,weight);
+	    
 	    if (!runQCD) {tag_qcd="_A_";} // region A
 	    else {tag_qcd="_B_";} // region B
-	  } //else
-	  if (!passMet25 && sqrt(tMass)<50.) {
+	  } else if (!passMet25 && sqrt(tMass)<50.) {
 	    if (!runQCD) {tag_qcd="_C_";} // region C
 	    else {tag_qcd="_D_";} // region D
-	  }
-	
+	  } else { continue; }
+	 
+	  
 	  //Define event category according to Nb multiplicity: Nb=0->W CR, Nb=1,2->top CR, Nb=3,4->SR
 	  //event category
 	  int eventSubCat  = eventCategoryInst.Get(phys,&GoodIdbJets, &pseudoGoodIdbJets);
+	  // remove events other than the Signal and Control regions.
+	  if (eventSubCat<0) continue; 
+	  
 	  TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
 
+	  if (tag_subcat.Contains("SR") &&  nCSVMtags<=0) continue; // SR: at least 1 MediumWP b-tag
+	  if (tag_subcat.Contains("CR") && !(tag_subcat.Contains("CR_nonTT")) &&  nCSVTtags<=0) continue; // CR: at least 1 TightWP b-tag
+	  
 	  tags.push_back(tag_cat+tag_qcd+tag_subcat); // add jet binning category
 
 	  bool isSignalRegion(false);
-	  if(tag_subcat=="SR") { isSignalRegion=true; }
-	  else if (tag_subcat=="CR_3b" || tag_subcat=="CR_4b"  || tag_subcat=="CR_nonTT_3b" || tag_subcat=="CR_nonTT_4b") {
+	  if(tag_subcat.Contains("SR")) { isSignalRegion=true; }
+	  else if (tag_subcat.Contains("CR") ||  tag_subcat.Contains("CR_nonTT")) {
 
 	    GoodIdbJets.clear();
 	    for (auto & i : GoodIdJets) { GoodIdbJets.push_back(i);}
