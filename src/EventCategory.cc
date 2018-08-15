@@ -16,10 +16,23 @@ EventCategory::EventCategory(int mode_)
         EvtCategoryLabel[4] = "SR_3b"; // Nb=3,4
 	EvtCategoryLabel[5] = "SR_4b"; // Nb=3,4
     } else if(mode==2) {
-        NStates = 2;
+        NStates = 15;
         EvtCategoryLabel = new TString[NStates];
-        EvtCategoryLabel[0] = "lesq1jets";
-        EvtCategoryLabel[1] = "geq2jets";
+        EvtCategoryLabel[0] = "0b_3j";
+        EvtCategoryLabel[1] = "0b_4j";
+	EvtCategoryLabel[2] = "0b_geq5j";
+	EvtCategoryLabel[3] = "1b_3j";
+        EvtCategoryLabel[4] = "1b_4j";
+	EvtCategoryLabel[5] = "1b_geq5j";
+	EvtCategoryLabel[6] = "2b_3j";
+        EvtCategoryLabel[7] = "2b_4j";
+	EvtCategoryLabel[8] = "2b_geq5j";
+	EvtCategoryLabel[9] = "3b_3j";
+        EvtCategoryLabel[10] = "3b_4j";
+	EvtCategoryLabel[11] = "3b_geq5j";
+	EvtCategoryLabel[12] = "4b_3j";
+        EvtCategoryLabel[13] = "4b_4j";
+	EvtCategoryLabel[14] = "4b_geq5j";
     } else {
         mode = 0;
         NStates = 1;
@@ -33,53 +46,70 @@ EventCategory::~EventCategory() {}
 //
 int EventCategory::Get(const PhysicsEvent_t& phys, std::vector<LorentzVector>* bJetsP4, std::vector<LorentzVector>* JetsP4)
 {
-    if(!JetsP4) {
+    if(!JetsP4 || !bJetsP4) {
         printf("NoJetCollection given to EventCategory::Get\n");
         exit(0);
     }
-
-    //Nb jets
-    // NbJets = 0;
-    std::vector<LorentzVector> bjets = *bJetsP4;
-    NbJets=bjets.size();
     
-    // for(size_t ijet=0; ijet<bjets.size(); ijet++) {
-    //     if(bjets[ijet].pt()<=20)continue;
-    //     NbJets++;
-    // }
-
     //Nj jets
     //NJets = 0;
     std::vector<LorentzVector> jets = *JetsP4;
     NJets=jets.size();
     
-    // for(size_t ijet=0; ijet<jets.size(); ijet++) {
-    //     if(jets[ijet].pt()<=20)continue;
-    //     NJets++;
-    // }
-    
+    //Nb jets
+    // NbJets = 0;
+    std::vector<LorentzVector> bjets = *bJetsP4;
+    NbJets=bjets.size();
+
     switch(mode) {
     case 1: {
       if(NbJets==4) {
-	if (NJets==4) return 5;
+	//	if (NJets==4)
+	return 5;
       }
       if(NbJets==3) {
-	if (NJets==3 || NJets==4) return 4;
+	//if (NJets==3 || NJets==4)
+	return 4;
       }
       if(NbJets==2) { // Top CR
-	if (NJets==4) { return 3;}
+	if (NJets>=4) { return 3;}
 	else if (NJets==3) { return 2; }
       }
       if(NbJets==0) { // W CR
-	if (NJets==4) { return 1;}
+	if (NJets>=4) { return 1;}
 	else if (NJets==3) {return 0;}
       }
       return -1;
     }
     break;
     case 2: {
-        if(NJets>=2) return 1;
-        return 0;
+      //  if(NJets>=2) return 1;
+      if (NbJets==0) {
+	if (NJets==3) return 0;
+	if (NJets==4) return 1;
+	if (NJets>=5) return 2;
+      }
+      if (NbJets==1) {
+	if (NJets==3) return 3;
+	if (NJets==4) return 4;
+	if (NJets>=5) return 5;
+      }
+      if (NbJets==2) {
+	if (NJets==3) return 6;
+	if (NJets==4) return 7;
+	if (NJets>=5) return 8;
+      }
+      if (NbJets==3) {
+	if (NJets==3) return 9;
+	if (NJets==4) return 10;
+	if (NJets>=5) return 11;
+      }
+      if (NbJets==4) {
+	if (NJets==3) return 12;
+	if (NJets==4) return 13;
+	if (NJets>=5) return 14;
+      }
+      return -1;
     }
     break;
     case 0:
