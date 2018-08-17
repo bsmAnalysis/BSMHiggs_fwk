@@ -698,22 +698,23 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    // float triggerPrescale(1.0),triggerThreshold(0), triggerThresholdHigh(99999);
    bool mumuTrigger(true); bool muTrigger(true);
    bool eeTrigger(true); bool eTrigger(true); bool emuTrigger(true);
-   bool highPTeeTrigger(true);
+   bool highPTeTrigger(true);
    
    mumuTrigger        = utils::passTriggerPatterns(tr, "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*" , "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
-   muTrigger          = utils::passTriggerPatterns(tr, "HLT_IsoMu22_v*","HLT_IsoTkMu22_v*", "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*");
+   muTrigger          = utils::passTriggerPatterns(tr, "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*", "HLT_Mu50_v*", "HLT_TkMu50_v*");
    eeTrigger          = utils::passTriggerPatterns(tr, "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_v*");
-   highPTeeTrigger    = utils::passTriggerPatterns(tr, "HLT_ECALHT800_v*");
-   eTrigger           = utils::passTriggerPatterns(tr, "HLT_Ele27_eta2p1_WPLoose_Gsf_v*","HLT_Ele27_WPTight_Gsf_v*") ;
+   //   highPTeeTrigger    = utils::passTriggerPatterns(tr, "HLT_Ele115_CaloIdVT_GsfTrkIdT_v*"); //"HLT_ECALHT800_v*");
+   highPTeTrigger    = utils::passTriggerPatterns(tr, "HLT_Ele115_CaloIdVT_GsfTrkIdT_v*");
+   eTrigger           = utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") ;
    emuTrigger         = utils::passTriggerPatterns(tr, "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*" , "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
    
-   ev.hasTrigger  = ( mumuTrigger||muTrigger||eeTrigger||highPTeeTrigger||eTrigger||emuTrigger );
+   ev.hasTrigger  = ( mumuTrigger||muTrigger||eeTrigger||highPTeTrigger||eTrigger||emuTrigger );
    //ev.hasTrigger  = ( muTrigger||eTrigger||emuTrigger ); 
    
    ev.triggerType = ( mumuTrigger  << 0 )
      | ( muTrigger  << 1 )
      | ( eeTrigger << 2 )
-     | ( highPTeeTrigger << 3 )
+     | ( highPTeTrigger << 3 )
      | ( eTrigger << 4 )
      | ( emuTrigger << 5 ) ;
    

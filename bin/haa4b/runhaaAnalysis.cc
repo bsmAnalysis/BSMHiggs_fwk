@@ -1450,7 +1450,7 @@ int main(int argc, char* argv[])
 	    if (abs(selLeptons[0].id)==11) {
 	      mon.fillHisto("leadlep_pt_raw","e",selLeptons[0].pt(),weight);
 	      mon.fillHisto("leadlep_eta_raw","e",selLeptons[0].eta(),weight);
-	        mon.fillHisto("leadlep_eta_raw","e_SC",selLeptons[0].en_EtaSC,weight);
+	      mon.fillHisto("leadlep_eta_raw","e_SC",selLeptons[0].en_EtaSC,weight);
 	    } else if (abs(selLeptons[0].id)==13) {
 	      mon.fillHisto("leadlep_pt_raw","mu",selLeptons[0].pt(),weight);
 	      mon.fillHisto("leadlep_eta_raw","mu",selLeptons[0].eta(),weight);
@@ -1728,6 +1728,21 @@ int main(int argc, char* argv[])
 	  for (auto & i : GoodIdJets) { pseudoGoodIdbJets.push_back(i);}
 	  for (auto & i : SVs) {  pseudoGoodIdbJets.push_back(i); } // have you x-cleaned jets and SVs?
 	  
+
+	  if (ivar==0) {
+	    if (passMet25) {
+	      mon.fillHisto("eventflow","all",3,weight);
+	      
+	      if (passMt) {
+		mon.fillHisto("eventflow","all",4,weight);
+		
+		if (passNJ2) {
+		  mon.fillHisto("eventflow","all",5,weight);
+		}
+	      }
+	    }
+	  }
+
 	  
 	  //#########################################################
 	  //####  RUN PRESELECTION AND CONTROL REGION PLOTS  ########
@@ -1763,6 +1778,8 @@ int main(int argc, char* argv[])
 
 	  if (tag_subcat.Contains("SR") &&  nCSVMtags<=0) continue; // SR: at least 1 MediumWP b-tag
 	  if (tag_subcat.Contains("CR") && !(tag_subcat.Contains("CR_nonTT")) &&  nCSVTtags<=0) continue; // CR: at least 1 TightWP b-tag
+
+	   mon.fillHisto("evt_cat","sel3", evtCatPlot,weight);
 	  
 	  tags.push_back(tag_cat+tag_qcd+tag_subcat); // add jet binning category
 
@@ -1776,22 +1793,9 @@ int main(int argc, char* argv[])
 	  }
 
 	  if (ivar==0) {
-	    if (passMet25) {
-	      mon.fillHisto("eventflow","all",3,weight);
-	      
-	      if (passMt) {
-		mon.fillHisto("eventflow","all",4,weight);
-		
-		if (passNJ2) {
-		  mon.fillHisto("eventflow","all",5,weight);
-		  
-		  if (tag_subcat="SR_3b") mon.fillHisto("eventflow","all",6,weight);
-		  if (tag_subcat="SR_4b") mon.fillHisto("eventflow","all",7,weight);
-		}
-	      }
-	    }
+	    if (tag_subcat=="SR_3b") mon.fillHisto("eventflow","all",6,weight);
+	    if (tag_subcat=="SR_4b") mon.fillHisto("eventflow","all",7,weight);
 	  }
-
 	  
 	  //##############################################
 	  //########  Main Event Selection        ########
@@ -1879,10 +1883,6 @@ int main(int argc, char* argv[])
 	  if (ivar==0) {
 
 	    if (passNJ2) {
-	    //   mon.fillHisto("eventflow","all",5,weight);
-	      
-	    //   if (tag_subcat="SR_3b") mon.fillHisto("eventflow","all",6,weight);
-	    //   if (tag_subcat="SR_4b") mon.fillHisto("eventflow","all",7,weight);
 	      
 	      // Reject QCD with Dphi(jet,MET)
 	      float dphij1met=fabs(deltaPhi(GoodIdJets[0].phi(),metP4.phi()));       
@@ -1947,11 +1947,7 @@ int main(int argc, char* argv[])
 	      }
 	      
 	    } // passNJ2
-	    
-	    //  } //passMt
-	  
-	    //}//passMet25
-	
+
 	  } // ivar==0
 	  
 	  //##############################################################################
