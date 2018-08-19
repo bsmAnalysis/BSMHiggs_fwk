@@ -153,11 +153,12 @@ int main(int argc, char* argv[])
     
     TString url = runProcess.getParameter<std::string>("input");
     TString outFileUrl( dtag ); //gSystem->BaseName(url));
-    //outFileUrl.ReplaceAll(".root","");
+    /*
     if(mctruthmode!=0) {
-        outFileUrl += "_filt";
-        outFileUrl += mctruthmode;
+      outFileUrl += "_filt";
+      outFileUrl += mctruthmode;
     }
+    */
     TString outdir = runProcess.getParameter<std::string>("outdir");
     TString outUrl( outdir );
     gSystem->Exec("mkdir -p " + outUrl);
@@ -846,6 +847,7 @@ int main(int argc, char* argv[])
         bool hasMtrigger  = (ev.triggerType >> 1 ) & 0x1;
         bool hasEEtrigger = (ev.triggerType >> 2 ) & 0x1;
         // type 3 is high-pT eeTrigger (safety)
+	bool hasHighPtEtrigger  = (ev.triggerType >> 3 ) & 0x1;
         bool hasEtrigger  = (ev.triggerType >> 4 ) & 0x1;
         bool hasEMtrigger = (ev.triggerType >> 5 ) & 0x1;
 
@@ -863,7 +865,7 @@ int main(int argc, char* argv[])
 
 	METUtils::computeVariation(phys.jets, phys.leptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
 
-	//PhysicsObjectJetCollection &corrJets = phys.jets; 
+	PhysicsObjectJetCollection &corrJets = phys.jets; 
         PhysicsObjectFatJetCollection &fatJets = phys.fatjets;
         PhysicsObjectSVCollection &secVs = phys.svs;
 
@@ -1109,20 +1111,70 @@ int main(int argc, char* argv[])
 	} else {
 	  if (!passOneLepton) continue;
 	}
-	
-	// All:(Trigger + 1-lepton)
-	mon.fillHisto("eventflow","all",1,weight);
-	
-	// split inclusive TTJets POWHEG sample into tt+LF and tt+HF
-	if (isMC_ttbar && verbose) {
-	  for (auto igen : phys.genparticles) {
-	    printf("gen particle id: %d, mom id: %d, mom idx: %d, status: %d\n",
-		   igen.id,
-		   igen.momid,
-		   igen.momidx,
-		   igen.status
-		   );
+
+	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------
+	if (isMC_ttbar) { //split inclusive TTJets POWHEG sample into tt+bb, tt+cc and tt+light
+	//-------------------------------------------------------------------------------------
+	  
+	  if (verbose) {
+	    printf("\n\n");
+	    for (auto igen : phys.genparticles) {
+	      printf("gen particle id: %d, mom id: %d, mom idx: %d, status: %d\n",
+		     igen.id, igen.momid, igen.momidx, igen.status);
+	    }
 	  }
+
+	  int nHF, nHFc, nLF;
+	  nHF=nHFc=nLF=0;
+	    
+	  for(size_t ijet=0; ijet<corrJets.size(); ijet++) {
+	    if(corrJets[ijet].pt()<jet_threshold_) continue;
+	    if(fabs(corrJets[ijet].eta())>2.5) continue;
+
+	    //jet ID
+	    if(!corrJets[ijet].isPFLoose) continue;
+	    
+	     // //check overlaps with selected leptons
+	    bool hasOverlap(false);
+	    for(size_t ilep=0; ilep<selLeptons.size(); ilep++) {
+	      double dR = deltaR( corrJets[ijet], selLeptons[ilep] );
+	      
+	      if (abs(selLeptons[ilep].id)==11) hasOverlap = (dR<0.2); // within 0.2 for electrons
+	      if (abs(selLeptons[ilep].id)==13) hasOverlap = (dR<0.4); // within 0.4 for muons
+	    }
+	    if(hasOverlap) continue;
+
+	    //  bool isMatched=isMatched(corrJets[ijet]);
+	    bool isMatched(false);
+  
+	    for (auto igen : phys.genparticles) {
+	      if(igen.status==62) continue;
+	      //only check matching with a b-hadron from the top decay
+	      if(fabs(igen.id)!=5) continue; 
+	      double dR = deltaR( corrJets[ijet], igen );
+	      if (dR<0.4) { isMatched=true; break; }
+	    }
+
+	    
+	    if(abs(corrJets[ijet].flavid)==5) {
+	      if(!isMatched) { nHF++; }
+	    } else if (abs(corrJets[ijet].flavid)==4) {
+	      nHFc++;// if(!isMatched) { nHFc++; }
+	    } 
+	    
+	  } // end corrJets
+
+	  if(mctruthmode==5) { // only keep events with nHF>0.
+	    if (!(nHF>0)) continue;
+	  }
+	  if(mctruthmode==4) { //only keep events with nHFc>0 and nHF==0.
+	    if (!(nHFc>0 && nHF==0)) continue;
+	  }
+	  if(mctruthmode==1) {
+	    if (nHF>0 || (nHFc>0 && nHF==0)) continue;
+	  }
+	  
 	}
         /*
         //split inclusive DY sample into DYToLL and DYToTauTau
@@ -1135,6 +1187,12 @@ int main(int argc, char* argv[])
             if(!isDYToTauTau(phys.genleptons[0].id, phys.genleptons[1].id) ) continue;
         }
         */
+
+
+
+	
+	// All:(Trigger + 1-lepton)
+	mon.fillHisto("eventflow","all",1,weight);
 
         bool hasTrigger(false);
 
@@ -1150,26 +1208,20 @@ int main(int argc, char* argv[])
 	      if(!hasMtrigger) continue;
 		//                if(hasMtrigger && hasMMtrigger) continue;
             }
-            // if(isDoubleMuPD) {
-            //     if(!hasMMtrigger) continue;
-            // }
-
+  
             //this is a safety veto for the single Ele PD
             if(isSingleElePD) {
-	      if(!hasEtrigger) continue;
+	      if(!hasEtrigger && !hasHighPtEtrigger) continue;
 		//    if(hasEtrigger && hasEEtrigger) continue;
             }
-            // if(isDoubleElePD) {
-            //     if(!hasEEtrigger) continue;
-            // }
-
+    
             hasTrigger=true;
 
         } else { // isMC
 	  // if(evcat==E   && hasEtrigger ) hasTrigger=true;
 	  // if(evcat==MU && hasMtrigger ) hasTrigger=true;
 	  // if(evcat==EMU  && ( hasEtrigger || hasMtrigger)) hasTrigger=true;
-	  hasTrigger = (hasEtrigger || hasMtrigger);
+	  hasTrigger = (hasEtrigger || hasHighPtEtrigger || hasMtrigger);
 	  if(!hasTrigger) continue;
         }
 

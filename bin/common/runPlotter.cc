@@ -154,7 +154,8 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
           bool isSign ( !isData &&  Process[ip].getBoolFromKeyword(matchingKeyword, "spimpose", false));
           bool isMC   = !isData && !isSign; 
           string filtExt("");
-          if(Process[ip].isTagFromKeyword(matchingKeyword, "mctruthmode") ) { char buf[255]; sprintf(buf,"_filt%d",(int)Process[ip].getIntFromKeyword(matchingKeyword, "mctruthmode")); filtExt += buf; }
+          if(Process[ip].isTagFromKeyword(matchingKeyword, "mctruthmode") ) { 
+	    char buf[255]; sprintf(buf,"_filt%d",(int)Process[ip].getIntFromKeyword(matchingKeyword, "mctruthmode")); filtExt += buf; }
           string procSuffix = Process[ip].getStringFromKeyword(matchingKeyword, "suffix", "");
 
           std::vector<JSONWrapper::Object> Samples = (Process[ip])["data"].daughters();
@@ -166,7 +167,8 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
               int fileProcessed=0;
               for(int s=0; s<(split>0?split:999); s++){                 
                  char buf[255]; sprintf(buf,"_%i",s); string segmentExt = buf;                 
-                 string FileName = RootDir + dtag +  suffix + segmentExt + filtExt; 
+		 //                 string FileName = RootDir + dtag +  suffix + segmentExt + filtExt; 
+		 string FileName = RootDir + dtag +  suffix + filtExt + segmentExt;   
 
                  if(split<0){ //autosplitting --> check if there is a cfg file before checking if there is a .root file
                     FILE* pFile = fopen((FileName+"_cfg.py").c_str(), "r");
