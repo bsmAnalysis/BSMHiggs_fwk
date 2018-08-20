@@ -284,17 +284,7 @@
                     ],
                     "dtag": "MC13TeV_WZ_ext1_2016",
                     "xsec": 47.13 
-                }
-            ],
-            "isdata": false,
-            "keys": [
-                "haa_mcbased"
-            ],
-            "tag": "VV"
-        },
-        {
-            "color": 17,
-            "data": [
+                },
                 {
                     "br": [
                         1.0
@@ -344,10 +334,10 @@
             "keys": [
                 "haa_mcbased"
             ],
-            "tag": "ZVV"
+            "tag": "(Z)VV"
         },
         {
-            "color": 831,
+            "color": 424,
             "data": [
                 {
                     "br": [
@@ -434,7 +424,7 @@
             "tag": "t#bar{t} + b#bar{b}"
        },
 	{
-            "color": 407,
+            "color": 831,
             "data": [
                 {
                     "br": [
@@ -478,7 +468,7 @@
             "tag": "t#bar{t} + light"
         }, 
         {
-            "color": 424,
+            "color": 17,
             "data": [
                 {
                     "br": [

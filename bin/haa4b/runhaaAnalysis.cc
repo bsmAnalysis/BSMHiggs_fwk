@@ -153,12 +153,11 @@ int main(int argc, char* argv[])
     
     TString url = runProcess.getParameter<std::string>("input");
     TString outFileUrl( dtag ); //gSystem->BaseName(url));
-    /*
-    if(mctruthmode!=0) {
-      outFileUrl += "_filt";
-      outFileUrl += mctruthmode;
-    }
-    */
+
+    // if(mctruthmode!=0) {
+    //     outFileUrl += "_filt";
+    //     outFileUrl += mctruthmode;
+    // }
     TString outdir = runProcess.getParameter<std::string>("outdir");
     TString outUrl( outdir );
     gSystem->Exec("mkdir -p " + outUrl);
@@ -367,8 +366,8 @@ int main(int argc, char* argv[])
 
     TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";;Events", 9,0,9) );
     h->GetXaxis()->SetBinLabel(1,"Raw");
-    h->GetXaxis()->SetBinLabel(2,"1 lepton");
-    h->GetXaxis()->SetBinLabel(3,"Trigger");
+    h->GetXaxis()->SetBinLabel(2,"Trigger");
+    h->GetXaxis()->SetBinLabel(3,"1 lepton");
     h->GetXaxis()->SetBinLabel(4,"E_{T}^{miss}>25");
     h->GetXaxis()->SetBinLabel(5,"50<M_{T}^{W}<250");
     h->GetXaxis()->SetBinLabel(6,">=2-jets");
@@ -463,7 +462,7 @@ int main(int argc, char* argv[])
     }
 
     // EVent categorization plot
-    TH1F *hevt = (TH1F *)mon.addHistogram( new TH1F("evt_cat",  ";(n-btag, n-jet);Events",15,0,15) );
+    TH1F *hevt = (TH1F *)mon.addHistogram( new TH1F("evt_cat",  ";(n-btag, n-jet);Events",18,0,18) );
     hevt->GetXaxis()->SetBinLabel(1,"(0b, 3j)");
     hevt->GetXaxis()->SetBinLabel(2,"(0b, 4j)");
     hevt->GetXaxis()->SetBinLabel(3,"(0b, >=5j)");
@@ -479,7 +478,9 @@ int main(int argc, char* argv[])
     hevt->GetXaxis()->SetBinLabel(13,"(4b, 3j)");
     hevt->GetXaxis()->SetBinLabel(14,"(4b, 4j)");
     hevt->GetXaxis()->SetBinLabel(15,"(4b, >=5j)");
-       
+    hevt->GetXaxis()->SetBinLabel(16,"(5b, 3j)");
+    hevt->GetXaxis()->SetBinLabel(17,"(5b, 4j)");
+    hevt->GetXaxis()->SetBinLabel(18,"(5b, >=5j)");
     
     //--------------------------------------------------------------------------
     //some strings for tagging histograms:
@@ -1103,14 +1104,14 @@ int main(int argc, char* argv[])
         }
 
 
-	// Exactly 1 good lepton
-	bool passOneLepton(selLeptons.size()==1); 
-	bool passOneLepton_anti(selLeptons.size()>=1);
-	if (runQCD) {
-	  if (!passOneLepton_anti) continue;
-	} else {
-	  if (!passOneLepton) continue;
-	}
+	// // Exactly 1 good lepton
+	// bool passOneLepton(selLeptons.size()==1); 
+	// bool passOneLepton_anti(selLeptons.size()>=1);
+	// if (runQCD) {
+	//   if (!passOneLepton_anti) continue;
+	// } else {
+	//   if (!passOneLepton) continue;
+	// }
 
 	//-------------------------------------------------------------------------------------
 	//-------------------------------------------------------------------------------------
@@ -1188,12 +1189,6 @@ int main(int argc, char* argv[])
         }
         */
 
-
-
-	
-	// All:(Trigger + 1-lepton)
-	mon.fillHisto("eventflow","all",1,weight);
-
         bool hasTrigger(false);
 
         if(!isMC) {
@@ -1227,9 +1222,29 @@ int main(int argc, char* argv[])
 
 	
 	// Trigger
-	mon.fillHisto("eventflow","all",2,weight);
+	mon.fillHisto("eventflow","all",1,weight);
 
+	// Inclusive lepton kinematics
+	for(size_t ilep=0; ilep<selLeptons.size(); ilep++) {
+	  if (abs(selLeptons[ilep].id)==11) {
+	      mon.fillHisto("leadlep_pt_raw","e_presel",selLeptons[ilep].pt(),weight);
+	      mon.fillHisto("leadlep_eta_raw","e_presel",selLeptons[ilep].eta(),weight);
+	    } else if (abs(selLeptons[ilep].id)==13) {
+	      mon.fillHisto("leadlep_pt_raw","mu_presel",selLeptons[ilep].pt(),weight);
+	      mon.fillHisto("leadlep_eta_raw","mu_presel",selLeptons[ilep].eta(),weight);
+	    }
+	}
 	
+	// Exactly 1 good lepton
+	bool passOneLepton(selLeptons.size()==1); 
+	bool passOneLepton_anti(selLeptons.size()>=1);
+	if (runQCD) {
+	  if (!passOneLepton_anti) continue;
+	} else {
+	  if (!passOneLepton) continue;
+	}
+	// 1-lepton
+	mon.fillHisto("eventflow","all",2,weight);
 	//tags.push_back(tag_cat); //add ee, mumu, emu category
 
         //prepare the tag's vectors for histo filling
@@ -1464,12 +1479,11 @@ int main(int argc, char* argv[])
 	  if(ivar==0) {
 	    // Lepton kinematics before e/mu SFs from the POGs
 	    if (abs(selLeptons[0].id)==11) {
-	      mon.fillHisto("leadlep_pt_raw","e_pre",selLeptons[0].pt(),weight);
-	      mon.fillHisto("leadlep_eta_raw","e_pre",selLeptons[0].eta(),weight);
-	      mon.fillHisto("leadlep_eta_raw","e_pre_SC",selLeptons[0].en_EtaSC,weight);
+	      mon.fillHisto("leadlep_pt_raw","e_presf",selLeptons[0].pt(),weight);
+	      mon.fillHisto("leadlep_eta_raw","e_presf",selLeptons[0].eta(),weight);
 	    } else if (abs(selLeptons[0].id)==13) {
-	      mon.fillHisto("leadlep_pt_raw","mu_pre",selLeptons[0].pt(),weight);
-	      mon.fillHisto("leadlep_eta_raw","mu_pre",selLeptons[0].eta(),weight);
+	      mon.fillHisto("leadlep_pt_raw","mu_presf",selLeptons[0].pt(),weight);
+	      mon.fillHisto("leadlep_eta_raw","mu_presf",selLeptons[0].eta(),weight);
 	    }
 	  }
 	  
@@ -1502,7 +1516,6 @@ int main(int argc, char* argv[])
 	    if (abs(selLeptons[0].id)==11) {
 	      mon.fillHisto("leadlep_pt_raw","e",selLeptons[0].pt(),weight);
 	      mon.fillHisto("leadlep_eta_raw","e",selLeptons[0].eta(),weight);
-	      mon.fillHisto("leadlep_eta_raw","e_SC",selLeptons[0].en_EtaSC,weight);
 	    } else if (abs(selLeptons[0].id)==13) {
 	      mon.fillHisto("leadlep_pt_raw","mu",selLeptons[0].pt(),weight);
 	      mon.fillHisto("leadlep_eta_raw","mu",selLeptons[0].eta(),weight);
@@ -1829,9 +1842,9 @@ int main(int argc, char* argv[])
 	  TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
 
 	  if (tag_subcat.Contains("SR") &&  nCSVMtags<=0) continue; // SR: at least 1 MediumWP b-tag
-	  if (tag_subcat.Contains("CR") && !(tag_subcat.Contains("CR_nonTT")) &&  nCSVTtags<=0) continue; // CR: at least 1 TightWP b-tag
+	  if (tag_subcat.Contains("CR_4b") &&  nCSVTtags<=0) continue; // CR: at least 1 TightWP b-tag
 
-	   mon.fillHisto("evt_cat","sel3", evtCatPlot,weight);
+	  mon.fillHisto("evt_cat","sel3", evtCatPlot,weight);
 	  
 	  tags.push_back(tag_cat+tag_qcd+tag_subcat); // add jet binning category
 
