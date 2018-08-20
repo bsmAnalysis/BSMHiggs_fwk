@@ -7,7 +7,7 @@ EventCategory::EventCategory(int mode_)
 {
     mode = mode_;
     if(mode==1) {
-        NStates = 6;
+        NStates = 7;
         EvtCategoryLabel = new TString[NStates];
         EvtCategoryLabel[0] = "CR_nonTT_3b"; // Nb=0
 	EvtCategoryLabel[1] = "CR_nonTT_4b"; // Nb=0
@@ -15,8 +15,9 @@ EventCategory::EventCategory(int mode_)
 	EvtCategoryLabel[3] = "CR_4b"; // Nb=1,2
         EvtCategoryLabel[4] = "SR_3b"; // Nb=3,4
 	EvtCategoryLabel[5] = "SR_4b"; // Nb=3,4
+	EvtCategoryLabel[6] = "CR_5b"; // Nb=3,4
     } else if(mode==2) {
-        NStates = 15;
+        NStates = 18;
         EvtCategoryLabel = new TString[NStates];
         EvtCategoryLabel[0] = "0b_3j";
         EvtCategoryLabel[1] = "0b_4j";
@@ -33,6 +34,9 @@ EventCategory::EventCategory(int mode_)
 	EvtCategoryLabel[12] = "4b_3j";
         EvtCategoryLabel[13] = "4b_4j";
 	EvtCategoryLabel[14] = "4b_geq5j";
+	EvtCategoryLabel[15] = "5b_3j";
+        EvtCategoryLabel[16] = "5b_4j";
+	EvtCategoryLabel[17] = "5b_geq5j";
     } else {
         mode = 0;
         NStates = 1;
@@ -63,6 +67,9 @@ int EventCategory::Get(const PhysicsEvent_t& phys, std::vector<LorentzVector>* b
 
     switch(mode) {
     case 1: {
+      if (NbJets==5) {
+	return 6;
+      }
       if(NbJets==4) {
 	//	if (NJets==4)
 	return 5;
@@ -108,6 +115,11 @@ int EventCategory::Get(const PhysicsEvent_t& phys, std::vector<LorentzVector>* b
 	if (NJets==3) return 12;
 	if (NJets==4) return 13;
 	if (NJets>=5) return 14;
+      }
+      if (NbJets==5) {
+	if (NJets==3) return 15;
+	if (NJets==4) return 16;
+	if (NJets>=5) return 17;
       }
       return -1;
     }
