@@ -1711,7 +1711,10 @@ int main(int argc, char* argv[])
 	    // AK4 + CSV jets
 	    //-------------------------------------------------------------------
 	    mon.fillHisto("nbjets_raw","nb", CSVLoosebJets.size(),weight);
-	     
+	    mon.fillHisto("nbjets_raw","nb_LOOSE", nCSVLtags, weight);
+	    mon.fillHisto("nbjets_raw","nb_MEDIUM", nCSVMtags, weight);
+	    mon.fillHisto("nbjets_raw","nb_TIGHT", nCSVTtags, weight);
+
 	    is=0; 
 	    for (auto & jet : CSVLoosebJets) {
 	      mon.fillHisto("jet_pt_raw", b_tagging_name+htag[is], jet.pt(),weight); 
@@ -1844,7 +1847,9 @@ int main(int argc, char* argv[])
 	  if (tag_subcat.Contains("SR") &&  nCSVMtags<=0) continue; // SR: at least 1 MediumWP b-tag
 	  if (tag_subcat.Contains("CR_4b") &&  nCSVTtags<=0) continue; // CR: at least 1 TightWP b-tag
 
-	  mon.fillHisto("evt_cat","sel3", evtCatPlot,weight);
+	  if (passMet25 && passMt) {
+	    mon.fillHisto("evt_cat","sel3", evtCatPlot,weight);
+	  }
 	  
 	  tags.push_back(tag_cat+tag_qcd+tag_subcat); // add jet binning category
 
@@ -1948,6 +1953,15 @@ int main(int argc, char* argv[])
 	  if (ivar==0) {
 
 	    if (passNJ2) {
+
+	        // Lepton kinematics
+	      if (abs(selLeptons[0].id)==11) {
+		mon.fillHisto("leadlep_pt_raw","e_nj2",selLeptons[0].pt(),weight);
+		mon.fillHisto("leadlep_eta_raw","e_nj2",selLeptons[0].eta(),weight);
+	      } else if (abs(selLeptons[0].id)==13) {
+		mon.fillHisto("leadlep_pt_raw","mu_nj2",selLeptons[0].pt(),weight);
+		mon.fillHisto("leadlep_eta_raw","mu_nj2",selLeptons[0].eta(),weight);
+	      }
 	      
 	      // Reject QCD with Dphi(jet,MET)
 	      float dphij1met=fabs(deltaPhi(GoodIdJets[0].phi(),metP4.phi()));       
