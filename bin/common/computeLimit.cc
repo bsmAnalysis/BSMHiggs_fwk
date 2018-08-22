@@ -2191,8 +2191,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     TString mucrcard = "";
 
     for(std::map<string, bool>::iterator C=allChannels.begin(); C!=allChannels.end();C++){
-      // REmove A,C,D regions from the datacard
-      if(modeDD && ((C->first.find("qcdA")!=string::npos) || (C->first.find("qcdC")!=string::npos) ||(C->first.find("qcdD")!=string::npos)))continue;  
+      // REmove B,C,D control regions from the datacard
+      if(modeDD && ((C->first.find("B_")!=string::npos) || (C->first.find("C_")!=string::npos) ||(C->first.find("D_")!=string::npos)))continue;  
 
       TString dcName=url;              
       dcName.ReplaceAll(".root","_"+TString(C->first.c_str())+".dat");
