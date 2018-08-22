@@ -982,7 +982,6 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
   for(std::map<string, ChannelInfo_t>::iterator chData = dataProcIt->second.channels.begin(); chData!=dataProcIt->second.channels.end(); chData++){
     if(std::find(selCh.begin(), selCh.end(), chData->second.channel)==selCh.end())continue;
 
-    printf("Channel2 is: %s\n",chData->first.c_str());
     if(!(chData->first.find("_A_")!=string::npos))continue; // replace only in regions A...   
 
     std::map<string, ChannelInfo_t>::iterator chDD = procInfo_DD.channels.find(chData->first); 
@@ -1013,7 +1012,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     binName.ReplaceAll("D_","B_");    
     TH1* hDD_B = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();  
     
-    binName.ReplaceAll("C_","");   
+    binName.ReplaceAll("B_","");   
 
     //compute alpha
     double alpha=0 ,alpha_err=0;
