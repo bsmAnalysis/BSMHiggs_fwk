@@ -658,10 +658,10 @@ int main(int argc, char* argv[])
     ch.push_back("e_C_SR"); ch.push_back("mu_C_SR");   
     ch.push_back("e_D_SR"); ch.push_back("mu_D_SR");   
     if (simfit) {
-      ch.push_back("e_A_CR"); ch.push_back("mu_A_SR");  
-      ch.push_back("e_B_SR"); ch.push_back("mu_B_SR"); 
-      ch.push_back("e_C_SR"); ch.push_back("mu_C_SR"); 
-      ch.push_back("e_D_SR"); ch.push_back("mu_D_SR"); 
+      ch.push_back("e_A_CR"); ch.push_back("mu_A_CR");  
+      ch.push_back("e_B_CR"); ch.push_back("mu_B_CR"); 
+      ch.push_back("e_C_CR"); ch.push_back("mu_C_CR"); 
+      ch.push_back("e_D_CR"); ch.push_back("mu_D_CR"); 
       /*
       ch.push_back("E_CR_nonTT_qcdA"); ch.push_back("MU_CR_nonTT_qcdA");  
       ch.push_back("E_CR_nonTT_qcdB"); ch.push_back("MU_CR_nonTT_qcdB");
@@ -908,12 +908,13 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
   for(std::map<string, ProcessInfo_t>::iterator it=procs.begin(); it!=procs.end();it++){
     if(it->second.isData)continue;
     TString procName = it->first.c_str();
-    if(!( procName.Contains("ZVV") || procName.Contains("Single Top") || procName.Contains("t#bar{t}+#gammaZW") || procName.Contains("Z#rightarrow") || procName.Contains("VV") || procName.Contains("t#bar{t}+jets") || procName.Contains("W#rightarrow")))continue;
+    if(!(procName.Contains("Single Top") || procName.Contains("t#bar{t}+#gammaZW") || procName.Contains("Z#rightarrow") || procName.Contains("VV") || procName.Contains("t#bar{t}") || procName.Contains("W#rightarrow")))continue;
       
     addProc(procInfo_NRB, it->second, false);
   }
 
   for(std::map<string, ChannelInfo_t>::iterator chData = dataProcIt->second.channels.begin(); chData!=dataProcIt->second.channels.end(); chData++){
+ 
     if(std::find(selCh.begin(), selCh.end(), chData->second.channel)==selCh.end())continue;
 
     if(chData->first.find("_A_")!=string::npos)continue; // do not subtract nonQCD MC in regions A...
@@ -977,7 +978,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     toBeDelete.push_back(it->first);
   }
   for(std::vector<string>::iterator p=toBeDelete.begin();p!=toBeDelete.end();p++){procs.erase(procs.find((*p)));}
-       
+
   for(std::map<string, ChannelInfo_t>::iterator chData = dataProcIt->second.channels.begin(); chData!=dataProcIt->second.channels.end(); chData++){
     if(std::find(selCh.begin(), selCh.end(), chData->second.channel)==selCh.end())continue;
 
@@ -992,21 +993,27 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     }
 
     TString binName;
-    binName=chData->second.channel.c_str(); // e.g. E_SR_qcdB
-    //    binName.ReplaceAll("A","");
-
+    binName=chData->second.channel.c_str(); // e.g. e_A_SR
     //load data histograms in the QCD control regions
-    TH1* hCtrl_SB = dataProcIt->second.channels[(binName+"D_"+chData->second.bin.c_str()).Data()].shapes[mainHisto.Data()].histo(); // Region D  
-    TH1* hCtrl_SI = dataProcIt->second.channels[(binName+"B_"+chData->second.bin.c_str()).Data()].shapes[mainHisto.Data()].histo();  // Region B 
-    TH1* hChan_SB = dataProcIt->second.channels[(binName+"C_"+chData->second.bin.c_str()).Data()].shapes[mainHisto.Data()].histo(); // Region C
+    binName.ReplaceAll("A_","D_");           
+    TH1* hCtrl_SB = dataProcIt->second.channels[(binName+"_"+chData->second.bin.c_str()).Data()].shapes[mainHisto.Data()].histo(); // Region D  
+    binName.ReplaceAll("D_","B_");    
+    TH1* hCtrl_SI = dataProcIt->second.channels[(binName+"_"+chData->second.bin.c_str()).Data()].shapes[mainHisto.Data()].histo();  // Region B 
+    binName.ReplaceAll("B_","C_");       
+    TH1* hChan_SB = dataProcIt->second.channels[(binName+"_"+chData->second.bin.c_str()).Data()].shapes[mainHisto.Data()].histo(); // Region C
 
     TH1* hDD     =  chDD->second.shapes[mainHisto.Data()].histo(); // Region B
     
     // load MC histograms in the QCD control regions
-    TH1* hDD_D = procInfo_DD.channels.find((binName+"D_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();
-    TH1* hDD_B = procInfo_DD.channels.find((binName+"B_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();  
-    TH1* hDD_C = procInfo_DD.channels.find((binName+"C_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();  
+    //    binName.ReplaceAll("C_","B_");
+    TH1* hDD_C = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo(); 
+    binName.ReplaceAll("C_","D_");  
+    TH1* hDD_D = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();
+    binName.ReplaceAll("D_","B_");    
+    TH1* hDD_B = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();  
     
+    binName.ReplaceAll("B_","");   
+
     //compute alpha
     double alpha=0 ,alpha_err=0;
     double alphaMC=0, alphaMC_err=0;
@@ -2183,8 +2190,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     TString mucrcard = "";
 
     for(std::map<string, bool>::iterator C=allChannels.begin(); C!=allChannels.end();C++){
-      // REmove A,C,D regions from the datacard
-      if(modeDD && ((C->first.find("qcdA")!=string::npos) || (C->first.find("qcdC")!=string::npos) ||(C->first.find("qcdD")!=string::npos)))continue;  
+      // REmove B,C,D control regions from the datacard
+      if(modeDD && ((C->first.find("B_")!=string::npos) || (C->first.find("C_")!=string::npos) ||(C->first.find("D_")!=string::npos)))continue;  
 
       TString dcName=url;              
       dcName.ReplaceAll(".root","_"+TString(C->first.c_str())+".dat");

@@ -683,7 +683,19 @@ int main(int argc, char* argv[])
     TString muTRG_sf = runProcess.getParameter<std::string>("mu_trgSF"); 
     gSystem->ExpandPathName(muTRG_sf);   
     TFile *MU_TRG_SF_file = TFile::Open(muTRG_sf);  
-    TH2F* MU_TRG_SF_h = (TH2F*) MU_TRG_SF_file->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/pt_abseta_ratio");   
+    TH2F* MU_TRG_SF_h = (TH2F*) MU_TRG_SF_file->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/pt_abseta_ratio");
+
+     // mu ID SFs
+    TString muID_sf = runProcess.getParameter<std::string>("mu_idSF"); 
+    gSystem->ExpandPathName(muID_sf);   
+    TFile *MU_ID_SF_file = TFile::Open(muID_sf);  
+    TH2F* MU_ID_SF_h = (TH2F*) MU_ID_SF_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio");
+    
+    // mu ISO SFs
+    TString muISO_sf = runProcess.getParameter<std::string>("mu_isoSF"); 
+    gSystem->ExpandPathName(muISO_sf);   
+    TFile *MU_ISO_SF_file = TFile::Open(muISO_sf);  
+    TH2F* MU_ISO_SF_h = (TH2F*) MU_ISO_SF_file->Get("TightISO_TightID_pt_eta/pt_abseta_ratio");
 
     //####################################################################################################################
     //###########################################           MVAHandler         ###########################################
@@ -907,7 +919,7 @@ int main(int argc, char* argv[])
 	  } else if (abs(lepid)==13) {
 	    lep_threshold=mu_threshold_;
             hasTightIdandIso &= ilep.passIdMu;
-             if ( !runQCD ) hasTightIdandIso &= ilep.passIsoMu;
+	    if ( !runQCD ) hasTightIdandIso &= (ilep.mn_relIso<0.15);
 	  } else continue;
 
 	  bool hasExtraLepton(false);
@@ -1036,7 +1048,7 @@ int main(int argc, char* argv[])
 		if(!runQCD){
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
 		} else {
-		  if(!(ilep.passIsoMu)) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
+		  if(!(ilep.mn_relIso<0.15)) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
 		}
 	      }
 	    }
@@ -1048,7 +1060,7 @@ int main(int argc, char* argv[])
 	    if (abs(lepid)==11) {
 	      hasExtraLepton = (ilep.passIdLooseEl && ilep.passIsoEl && ilep.pt()>10.);
 	    } else if (abs(lepid)==13) {
-	      hasExtraLepton = ( (ilep.passIdLooseMu && ilep.passIsoMu && ilep.pt()>10.) || (ilep.passSoftMuon) );
+	      hasExtraLepton = ( (ilep.passIdLooseMu && (ilep.mn_relIso<0.15) && ilep.pt()>10.) || (ilep.passSoftMuon) );
 	    }
 
 	  }
@@ -1103,15 +1115,6 @@ int main(int argc, char* argv[])
 	//   continue;
         }
 
-
-	// // Exactly 1 good lepton
-	// bool passOneLepton(selLeptons.size()==1); 
-	// bool passOneLepton_anti(selLeptons.size()>=1);
-	// if (runQCD) {
-	//   if (!passOneLepton_anti) continue;
-	// } else {
-	//   if (!passOneLepton) continue;
-	// }
 
 	//-------------------------------------------------------------------------------------
 	//-------------------------------------------------------------------------------------
@@ -1223,17 +1226,6 @@ int main(int argc, char* argv[])
 	
 	// Trigger
 	mon.fillHisto("eventflow","all",1,weight);
-
-	// Inclusive lepton kinematics
-	for(size_t ilep=0; ilep<selLeptons.size(); ilep++) {
-	  if (abs(selLeptons[ilep].id)==11) {
-	      mon.fillHisto("leadlep_pt_raw","e_presel",selLeptons[ilep].pt(),weight);
-	      mon.fillHisto("leadlep_eta_raw","e_presel",selLeptons[ilep].eta(),weight);
-	    } else if (abs(selLeptons[ilep].id)==13) {
-	      mon.fillHisto("leadlep_pt_raw","mu_presel",selLeptons[ilep].pt(),weight);
-	      mon.fillHisto("leadlep_eta_raw","mu_presel",selLeptons[ilep].eta(),weight);
-	    }
-	}
 	
 	// Exactly 1 good lepton
 	bool passOneLepton(selLeptons.size()==1); 
@@ -1265,7 +1257,7 @@ int main(int argc, char* argv[])
 	//###########################################################
 	// The AK8 fat jets configuration
 	//###########################################################
-
+	/*
 	//AK8 + double-b tagger fat-jet collection
 	PhysicsObjectFatJetCollection DBfatJets; // collection of AK8 fat jets
 
@@ -1335,6 +1327,7 @@ int main(int argc, char* argv[])
 	   is++;
 	   if (is>3) break; // plot only up to 4 b-jets ?
 	}
+	*/
 	//--------------------------------------------------------------------------
 
 	//###########################################################
@@ -1492,7 +1485,6 @@ int main(int argc, char* argv[])
 	    if (evcat==E) {
 	      // TRG
 	      weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
-	      //	    printf("Ele TRG SFs for pt= %lf and eta= %lf , is SF= %lf\n",selLeptons[0].pt(), selLeptons[0].en_EtaSC,getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1));
 	      //	      weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h2); 
 	      // ID + ISO
 	      weight *= getSFfrom2DHist(selLeptons[0].en_EtaSC, selLeptons[0].pt(), E_RECO_SF_h );
@@ -1503,11 +1495,10 @@ int main(int argc, char* argv[])
 	    } else if (evcat==MU) {
 	      // TRG
 	      weight *= getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h );
-	      //printf("Mu TRG SF for pt= %lf and eta= %lf , is SF= %lf\n",selLeptons[0].pt(), selLeptons[0].eta(),getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h ));
 	      // TRK + ID + ISO
 	      weight *= lepEff.getTrackingEfficiency( selLeptons[0].eta(), 13).first; //Tracking eff
-	      weight *= lepEff.getLeptonEfficiency( selLeptons[0].pt(), selLeptons[0].eta(), 13, "tight" ,patUtils::CutVersion::ICHEP16Cut ).first ; //ID
-	      if (!runQCD) weight *= lepEff.getLeptonEfficiency( selLeptons[0].pt(), selLeptons[0].eta(), 13, "tightiso",patUtils::CutVersion::ICHEP16Cut ).first; //ISO w.r.t ID
+	      weight *= getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h );
+	      weight *= getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h  );
 	    }
 	  }
 	  
@@ -1637,8 +1628,9 @@ int main(int argc, char* argv[])
 	    } // b-jet loop
 	    
 	  } // jet loop
-	  
-	  
+	  //	  if (nCSVMtags<=0) continue; // at least 1 MediumWP b-tag  
+	  if (CSVLoosebJets.size()>0 && nCSVMtags<=0) continue; // at least 1 MediumWP b-tag  
+
 	  //--------------------------------------------------------------------------
 	  // 	  // AK4 jets:
 	  //--------------------------------------------------------------------------
@@ -1648,7 +1640,7 @@ int main(int argc, char* argv[])
 	    mon.fillHisto("njets_raw","nj", GoodIdJets.size(),weight);
 	    
 	    // AK4 jets pt:
-	    is=0;
+	    int is(0);     //	    is=0;
 	    for (auto & jet : GoodIdJets) {
 	      mon.fillHisto("jet_pt_raw", "jet"+htag[is], jet.pt(),weight); 
 	      mon.fillHisto("jet_eta_raw", "jet"+htag[is], jet.eta(),weight); 
@@ -1715,7 +1707,7 @@ int main(int argc, char* argv[])
 	    mon.fillHisto("nbjets_raw","nb_MEDIUM", nCSVMtags, weight);
 	    mon.fillHisto("nbjets_raw","nb_TIGHT", nCSVTtags, weight);
 
-	    is=0; 
+	    int is(0);   //is=0; 
 	    for (auto & jet : CSVLoosebJets) {
 	      mon.fillHisto("jet_pt_raw", b_tagging_name+htag[is], jet.pt(),weight); 
 	      mon.fillHisto("jet_eta_raw", b_tagging_name+htag[is], jet.eta(),weight); 
@@ -1844,8 +1836,8 @@ int main(int argc, char* argv[])
 	  
 	  TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
 
-	  if (tag_subcat.Contains("SR") &&  nCSVMtags<=0) continue; // SR: at least 1 MediumWP b-tag
-	  if (tag_subcat.Contains("CR_4b") &&  nCSVTtags<=0) continue; // CR: at least 1 TightWP b-tag
+	  //if (tag_subcat.Contains("SR") &&  nCSVMtags<=0) continue; // SR: at least 1 MediumWP b-tag
+	  //	  if (tag_subcat.Contains("CR_4b") &&  nCSVTtags<=0) continue; // CR: at least 1 TightWP b-tag
 
 	  if (passMet25 && passMt) {
 	    mon.fillHisto("evt_cat","sel3", evtCatPlot,weight);
@@ -1855,7 +1847,7 @@ int main(int argc, char* argv[])
 
 	  bool isSignalRegion(false);
 	  if(tag_subcat.Contains("SR")) { isSignalRegion=true; }
-	  else if (tag_subcat.Contains("CR") ||  tag_subcat.Contains("CR_nonTT")) {
+	  else if (tag_subcat.Contains("CR_")) { // ||  tag_subcat.Contains("CR_nonTT")) {
 
 	    GoodIdbJets.clear();
 	    for (auto & i : GoodIdJets) { GoodIdbJets.push_back(i);}

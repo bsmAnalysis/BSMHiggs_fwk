@@ -15,8 +15,8 @@ EventCategory::EventCategory(int mode_)
 	EvtCategoryLabel[3] = "CR_4b"; // Nb=2 -> tt+light CR
         EvtCategoryLabel[4] = "SR_3b"; // Nb=3,4
 	EvtCategoryLabel[5] = "SR_4b"; // Nb=3,4
-	EvtCategoryLabel[6] = "CR_3b5j"; // Nb=3,4 -> tt+light CR
-	EvtCategoryLabel[7] = "CR_4b5j"; // Nb=3,4 -> tt+HF CR
+	EvtCategoryLabel[6] = "CR5j_3b"; // Nb=3,4 -> tt+light CR
+	EvtCategoryLabel[7] = "CR5j_4b"; // Nb=3,4 -> tt+HF CR
 	EvtCategoryLabel[8] = "CR_5b"; // Nb=3,4
     } else if(mode==2) {
         NStates = 18;
