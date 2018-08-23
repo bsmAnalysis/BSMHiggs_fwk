@@ -1811,14 +1811,14 @@ int main(int argc, char* argv[])
 	  // Event categorization based on (n-btag, n-jet) after leptonic selection
 	  int evtCatPlot = eventCategoryPlot.Get(phys,&GoodIdbJets, &pseudoGoodIdbJets);
 
-	  mon.fillHisto("evt_cat","sel1", evtCatPlot,weight);
+	  if (ivar==0) mon.fillHisto("evt_cat","sel1", evtCatPlot,weight);
 	  
 	  // //Define ABCD regions
 	  TString tag_qcd; tag_qcd="";
 	  
 	  if (passMet25 && passMt) {
 
-	    mon.fillHisto("evt_cat","sel2", evtCatPlot,weight);
+	    if (ivar==0) mon.fillHisto("evt_cat","sel2", evtCatPlot,weight);
 	    
 	    if (!runQCD) {tag_qcd="_A_";} // region A
 	    else {tag_qcd="_B_";} // region B
@@ -1840,7 +1840,7 @@ int main(int argc, char* argv[])
 	  //	  if (tag_subcat.Contains("CR_4b") &&  nCSVTtags<=0) continue; // CR: at least 1 TightWP b-tag
 
 	  if (passMet25 && passMt) {
-	    mon.fillHisto("evt_cat","sel3", evtCatPlot,weight);
+	    if (ivar==0) mon.fillHisto("evt_cat","sel3", evtCatPlot,weight);
 	  }
 	  
 	  tags.push_back(tag_cat+tag_qcd+tag_subcat); // add jet binning category
