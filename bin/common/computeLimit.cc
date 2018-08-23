@@ -588,7 +588,12 @@ int main(int argc, char* argv[])
 	Channels.push_back("e_A_CR");Channels.push_back("mu_A_CR"); // Top CR
 	Channels.push_back("e_B_CR");Channels.push_back("mu_B_CR"); // Top CR 
 	Channels.push_back("e_C_CR");Channels.push_back("mu_C_CR"); // Top CR 
-	Channels.push_back("e_D_CR");Channels.push_back("mu_D_CR"); // Top CR 
+	Channels.push_back("e_D_CR");Channels.push_back("mu_D_CR"); // Top CR
+
+	Channels.push_back("e_A_CR5j");Channels.push_back("mu_A_CR5j"); // tt+bb CR
+	Channels.push_back("e_B_CR5j");Channels.push_back("mu_B_CR5j"); // tt+bb CR 
+	Channels.push_back("e_C_CR5j");Channels.push_back("mu_C_CR5j"); // tt+bb CR 
+	Channels.push_back("e_D_CR5j");Channels.push_back("mu_D_CR5j"); // tt+bb CR 
 	/*
 	Channels.push_back("E_CR_nonTT_qcdA");Channels.push_back("MU_CR_nonTT_qcdA"); // nonTop CR 
 	Channels.push_back("E_CR_nonTT_qcdB");Channels.push_back("MU_CR_nonTT_qcdB"); // nonTop CR   
@@ -596,7 +601,8 @@ int main(int argc, char* argv[])
 	Channels.push_back("E_CR_nonTT_qcdD");Channels.push_back("MU_CR_nonTT_qcdD"); // nonTop CR   
 	*/
       } else {
-	Channels.push_back("e_A_CR");Channels.push_back("mu_A_CR"); // Top CR   
+	Channels.push_back("e_A_CR");Channels.push_back("mu_A_CR"); // Top CR
+	Channels.push_back("e_A_CR5j");Channels.push_back("mu_A_CR5j"); // tt+bb CR   
 	//	Channels.push_back("E_CR_nonTT_qcdB");Channels.push_back("MU_CR_nonTT_qcdB"); // nonTop CR 
       }
     }
@@ -661,7 +667,12 @@ int main(int argc, char* argv[])
       ch.push_back("e_A_CR"); ch.push_back("mu_A_CR");  
       ch.push_back("e_B_CR"); ch.push_back("mu_B_CR"); 
       ch.push_back("e_C_CR"); ch.push_back("mu_C_CR"); 
-      ch.push_back("e_D_CR"); ch.push_back("mu_D_CR"); 
+      ch.push_back("e_D_CR"); ch.push_back("mu_D_CR");
+
+      ch.push_back("e_A_CR5j"); ch.push_back("mu_A_CR5j");  
+      ch.push_back("e_B_CR5j"); ch.push_back("mu_B_CR5j"); 
+      ch.push_back("e_C_CR5j"); ch.push_back("mu_C_CR5j"); 
+      ch.push_back("e_D_CR5j"); ch.push_back("mu_D_CR5j"); 
       /*
       ch.push_back("E_CR_nonTT_qcdA"); ch.push_back("MU_CR_nonTT_qcdA");  
       ch.push_back("E_CR_nonTT_qcdB"); ch.push_back("MU_CR_nonTT_qcdB");
@@ -672,7 +683,8 @@ int main(int argc, char* argv[])
   } else {
     ch.push_back("e_A_SR"); ch.push_back("mu_A_SR");
     if (simfit) { 
-      ch.push_back("e_A_CR"); ch.push_back("mu_A_CR"); 
+      ch.push_back("e_A_CR"); ch.push_back("mu_A_CR");
+      ch.push_back("e_A_CR5j"); ch.push_back("mu_A_CR5j"); 
       // ch.push_back("E_CR_nonTT_qcdB"); ch.push_back("MU_CR_nonTT_qcdB");
     }
   }

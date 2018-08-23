@@ -176,8 +176,7 @@ for proc in procList :
                 SCRIPT_DTag.writelines('cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/; \n\n')
                 
             # Loop over files for given dtag name:
-                ntplpath = '/eos/cms/store/user/sghiasis/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
-                #            ntplpath = '/eos/cms/store/user/georgia/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
+                ntplpath = '/eos/cms/store/user/georgia/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
                 # FileList = [file for file in glob.glob(ntplpath+'analysis_*.root')] 
                 
                 segment=0
