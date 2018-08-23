@@ -2,7 +2,7 @@ rm -rf TEST
 mkdir -p TEST;
 cd TEST;
 
-computeLimit --m 60 --histo bdt_shapes --in $PWD/../../plotter_2018_08_17_forLimits.root --syst --shape --index 1 --json $PWD/../../samples2016.json  --shapeMin -9999 --shapeMax 9999 --bins 3b,4b --systpostfix _13TeV --subFake --modeDD --dropBckgBelow 0.00001 ;
+computeLimit --m 60 --histo bdt_shapes --in $PWD/../../plotter_2018_08_17_forLimits.root --syst --simfit --shape --index 1 --json $PWD/../../samples2016.json  --shapeMin -9999 --shapeMax 9999 --bins 3b,4b --systpostfix _13TeV --subFake --modeDD --dropBckgBelow 0.00001 ;
 sh combineCards.sh;
 
 ## Only Top:
