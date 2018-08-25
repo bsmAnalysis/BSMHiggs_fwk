@@ -1291,9 +1291,11 @@ int main(int argc, char* argv[])
 	if (abs(selLeptons[0].id)==11) {
 	  // TRG
 	  //custom_trgsf=getSFfrom1DHist(selLeptons[0].pt(),h_E_cor);
-	  if(isMC) trgsf=getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
-	  weight *= trgsf;
-	  //	    weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
+	  if(isMC) {
+	    trgsf=getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
+	    weight *= trgsf;
+	  }
+	    //	    weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	  //weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h2);
 	  
 	  mon.fillHisto("lep_pt_raw","e",selLeptons[0].pt(),weight);   
@@ -1307,9 +1309,10 @@ int main(int argc, char* argv[])
 	} else if (abs(selLeptons[0].id)==13) {
 	    // TRG
 	    //custom_trgsf=getSFfrom1DHist(selLeptons[0].pt(),h_Mu_cor);
-	  if(isMC)trgsf=getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h );
-	  weight *= trgsf;
-	  
+	  if(isMC) {
+	    trgsf=getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h );
+	    weight *= trgsf;
+	  }
 	  mon.fillHisto("lep_pt_raw","mu",selLeptons[0].pt(),weight);
 
 	  if(isMC)custom_trgsf=getSFfrom1DHist(selLeptons[0].pt(),h_Mu_cor);
