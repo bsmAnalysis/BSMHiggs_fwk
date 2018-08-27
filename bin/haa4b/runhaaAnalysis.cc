@@ -1290,11 +1290,9 @@ int main(int argc, char* argv[])
 
 	// TRG Scale Factors
 	float trgsf=1.;
-	float custom_trgsf=1.;
 	
 	if (abs(selLeptons[0].id)==11) {
 	  // TRG
-	  //custom_trgsf=getSFfrom1DHist(selLeptons[0].pt(),h_E_cor);
 	  if(isMC) {
 	    trgsf=getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	    weight *= trgsf;
@@ -1306,7 +1304,6 @@ int main(int argc, char* argv[])
 	  
 	} else if (abs(selLeptons[0].id)==13) {
 	    // TRG
-	    //custom_trgsf=getSFfrom1DHist(selLeptons[0].pt(),h_Mu_cor);
 	  if(isMC) {
 	    trgsf=getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h );
 	    weight *= trgsf;
