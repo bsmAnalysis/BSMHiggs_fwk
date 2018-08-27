@@ -276,9 +276,9 @@ int main(int argc, char* argv[])
 	  varNames.push_back("_umetdown");//6
 	  varNames.push_back("_lesup"); 	//7
 	  varNames.push_back("_lesdown"); //8
-	  varNames.push_back("_btag5up"); varNames.push_back("_btag5down");//11, 12
-	  varNames.push_back("_btag4up"); varNames.push_back("_btag4down");//13, 14
-	  varNames.push_back("_btag1up"); varNames.push_back("_btag1down");//15, 16
+	  varNames.push_back("_btagup"); varNames.push_back("_btagdown");//11, 12
+	  varNames.push_back("_ctagup"); varNames.push_back("_ctagdown");//13, 14
+	  varNames.push_back("_ltagup"); varNames.push_back("_ltagdown");//15, 16
 
 	  //
 	  //varNames.push_back("_scale_mup");    varNames.push_back("_scale_mdown");  //muon energy scale
@@ -669,13 +669,6 @@ int main(int argc, char* argv[])
     //Lepton scale factors
     LeptonEfficiencySF lepEff;
 
-    //Owen's TRG efficiency corrections
-    TString lep_cor = runProcess.getParameter<std::string>("lep_eff");
-    gSystem->ExpandPathName(lep_cor);
-    TFile *lep_TRG_cor = TFile::Open(lep_cor);
-    TH1F *h_E_cor = (TH1F*) lep_TRG_cor->Get("h_pt_all__HLT_Ele_or_eff_data_over_mc");
-    TH1F *h_Mu_cor = (TH1F*) lep_TRG_cor->Get("h_pt_all__HLT_Mu_or_eff_data_over_mc");     
-
     // e TRG eff SF 2Dhisto
     TString eTRG_sf = runProcess.getParameter<std::string>("ele_trgSF");
     gSystem->ExpandPathName(eTRG_sf);
@@ -908,8 +901,8 @@ int main(int argc, char* argv[])
 	int nGoodLeptons(0);
 	
 	std::map<string, std::vector<PhysicsObject_Lepton> > selLeptonsVar;
-	std::vector<std::pair<int,LorentzVector> > goodLeptons;
-	//std::vector<PhysicsObject_Lepton> goodLeptons;  
+	//	std::vector<std::pair<int,LorentzVector> > goodLeptons;
+	std::vector<PhysicsObject_Lepton> goodLeptons;  
 
 	LorentzVector muDiff(0,0,0,0);
 	LorentzVector elDiff(0,0,0,0);
@@ -1073,10 +1066,15 @@ int main(int argc, char* argv[])
 	    }
 	    
 	    nGoodLeptons++;
-	    std::pair <int,LorentzVector> goodlep;
-            goodlep = std::make_pair(lepid,ilep);
-	    goodLeptons.push_back(goodlep);
+	    // std::pair <int,LorentzVector> goodlep;
+	    // goodlep = std::make_pair(lepid,ilep);
+	    if (abs(lepid)==11) {
+	      if (ilep.passIsoEl) goodLeptons.push_back(ilep);
+	    } else if (abs(lepid)==13) {
+	      if (ilep.mn_relIso<0.15) goodLeptons.push_back(ilep);
+	    }
 
+	    
 	  } else { // extra loose leptons
 
 	    if (abs(lepid)==11) {
@@ -1105,6 +1103,7 @@ int main(int argc, char* argv[])
 	bool passOneLepton_anti(selLeptons.size()>=1);
 	if (runQCD) {
 	  if (!passOneLepton_anti) continue;
+	  // if (goodLeptons.size()==1) continue;
 	} else {
 	  if (!passOneLepton) continue;
 	}
@@ -1121,7 +1120,7 @@ int main(int argc, char* argv[])
 	    // TRK + ID + ISO
 	    weight *= lepEff.getTrackingEfficiency( selLeptons[0].eta(), 13).first; //Tracking eff
 	    weight *= getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h );
-	    weight *= getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h  );
+	    if (!runQCD) weight *= getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h  );
 	  }
 	}
 
@@ -1163,7 +1162,7 @@ int main(int argc, char* argv[])
 	    for(size_t ilep=0; ilep<selLeptons.size(); ilep++) {
 	      double dR = deltaR( corrJets[ijet], selLeptons[ilep] );
 	      
-	      if (abs(selLeptons[ilep].id)==11) hasOverlap = (dR<0.2); // within 0.2 for electrons
+	      if (abs(selLeptons[ilep].id)==11) hasOverlap = (dR<0.4); // within 0.2 for electrons
 	      if (abs(selLeptons[ilep].id)==13) hasOverlap = (dR<0.4); // within 0.4 for muons
 	    }
 	    if(hasOverlap) continue;
@@ -1214,14 +1213,19 @@ int main(int argc, char* argv[])
 	
 	// 1-lepton
 	mon.fillHisto("eventflow","all",1,weight);
-	if ((abs(selLeptons[0].id)==11)) mon.fillHisto("eventflow","all_e",1,weight);
-	if ((abs(selLeptons[0].id)==13)) mon.fillHisto("eventflow","all_mu",1,weight);
-
+	if ((abs(selLeptons[0].id)==11)) {
+	  mon.fillHisto("eventflow","all_e",1,weight);
+	}
+	if ((abs(selLeptons[0].id)==13)) {
+	  mon.fillHisto("eventflow","all_mu",1,weight);
+	}
 	
-	//	sort(goodLeptons.begin(), goodLeptons.end(), ptsort());
+	sort(goodLeptons.begin(), goodLeptons.end(), ptsort());
 	sort(vetoLeptons.begin(), vetoLeptons.end(), ptsort());
 	
 	mon.fillHisto("nleptons","raw", selLeptons.size(),weight);
+	mon.fillHisto("ngoodleptons","raw", goodLeptons.size(),weight);
+	
         mon.fillHisto("nleptons","raw_extra", extraLeptons.size(),weight);
 
 	
@@ -1297,14 +1301,8 @@ int main(int argc, char* argv[])
 	  }
 	    //	    weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	  //weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h2);
-	  
 	  mon.fillHisto("lep_pt_raw","e",selLeptons[0].pt(),weight);   
-	  
-	  if(isMC)custom_trgsf=getSFfrom1DHist(selLeptons[0].pt(),h_E_cor);
-	  mon.fillHisto("lep_pt_raw","owen_e",selLeptons[0].pt(),(weight/trgsf)*custom_trgsf);
-	  
 	  mon.fillHisto("lep_eta_raw","e",selLeptons[0].eta(),weight);     
-	  mon.fillHisto("lep_eta_raw","owen_e",selLeptons[0].eta(),(weight/trgsf)*custom_trgsf);
 	  
 	} else if (abs(selLeptons[0].id)==13) {
 	    // TRG
@@ -1314,12 +1312,7 @@ int main(int argc, char* argv[])
 	    weight *= trgsf;
 	  }
 	  mon.fillHisto("lep_pt_raw","mu",selLeptons[0].pt(),weight);
-
-	  if(isMC)custom_trgsf=getSFfrom1DHist(selLeptons[0].pt(),h_Mu_cor);
-	  mon.fillHisto("lep_pt_raw","owen_mu",selLeptons[0].pt(),(weight/trgsf)*custom_trgsf);
-	  
 	  mon.fillHisto("lep_eta_raw","mu",selLeptons[0].eta(),weight);
-	  mon.fillHisto("lep_eta_raw","owen_mu",selLeptons[0].eta(),(weight/trgsf)*custom_trgsf);
 	}
 	
 	    
@@ -1579,9 +1572,9 @@ int main(int argc, char* argv[])
 	    bool hasOverlap(false);
 	    for(size_t ilep=0; ilep<selLeptons.size(); ilep++) {
 	      double dR = deltaR( vJets[ijet], selLeptons[ilep] );
-	      if (ivar==0) mon.fillHisto("dRlj_raw","all",dR,weight);
-	      
-	      if (abs(selLeptons[ilep].id)==11) hasOverlap = (dR<0.2); // within 0.2 for electrons
+	      if (ivar==0) mon.fillHisto("dRlj_raw",tag_cat,dR,weight);
+
+	      if (abs(selLeptons[ilep].id)==11) hasOverlap = (dR<0.4); // within 0.2 for electrons
 	      if (abs(selLeptons[ilep].id)==13) hasOverlap = (dR<0.4); // within 0.4 for muons
 	    }
 	    if(hasOverlap) continue;
@@ -1616,10 +1609,10 @@ int main(int argc, char* argv[])
 		
 		if(abs(vJets[ijet].flavid)==5) {
 		  //  80X recommendation
-		  if (varNames[ivar]=="_btag5up") {
+		  if (varNames[ivar]=="_btagup") {
 		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_B ,
 											  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagUp;
-		  } else if ( varNames[ivar]=="_btag5down") {
+		  } else if ( varNames[ivar]=="_btagdown") {
 		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_B ,
 											  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagDown;
 		  } else {
@@ -1628,10 +1621,10 @@ int main(int argc, char* argv[])
 		  }
 		} else if(abs(vJets[ijet].flavid)==4) {
 		  //  80X recommendation
-		   if (varNames[ivar]=="_btag4up") {
+		   if (varNames[ivar]=="_ctagup") {
 		     btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_C , 
 											   vJets[ijet].eta(), vJets[ijet].pt()), beff);hasCSVtag=hasCSVtagUp;
-		   } else if ( varNames[ivar]=="_btag4down") {
+		   } else if ( varNames[ivar]=="_ctagdown") {
 		     btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_C , 
 		  								      vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagDown;
 		   } else {
@@ -1640,10 +1633,10 @@ int main(int argc, char* argv[])
 		   }
 		} else {
 		  //  80X recommendation
-		  if (varNames[ivar]=="_btag1up") {
+		  if (varNames[ivar]=="_ltagup") {
 		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_UDSG   , 
 		  								      vJets[ijet].eta(), vJets[ijet].pt()), leff);hasCSVtag=hasCSVtagUp;
-		  } else if ( varNames[ivar]=="_btag1down") {
+		  } else if ( varNames[ivar]=="_ltagdown") {
 		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_UDSG   , 
 		  								      vJets[ijet].eta(), vJets[ijet].pt()), leff);hasCSVtag=hasCSVtagDown;
 		  } else {
@@ -1704,7 +1697,70 @@ int main(int argc, char* argv[])
 	    
 	  }
 
+	  // JET KINEMATICS
+	  if(ivar==0){
 
+	    // Jet kinematics
+	    mon.fillHisto("njets_raw",tag_cat+"_"+"nj", GoodIdJets.size(),weight);
+	    
+	    // AK4 jets pt:
+	    int is(0);     //	    is=0;
+	    for (auto & jet : GoodIdJets) {
+	      mon.fillHisto("jet_pt_raw", tag_cat+"_"+"jet"+htag[is], jet.pt(),weight); 
+	      mon.fillHisto("jet_eta_raw", tag_cat+"_"+"jet"+htag[is], jet.eta(),weight); 
+	      mon.fillHisto("jet_phi_raw",tag_cat+"_"+"jet"+htag[is], jet.phi(),weight); 
+	      
+	      if (use_DeepCSV) { mon.fillHisto("b_discrim",tag_cat+"_"+b_tagging_name+htag[is],jet.btag1,weight); }
+	      else { mon.fillHisto("b_discrim",tag_cat+"_"+b_tagging_name+htag[is],jet.btag0,weight); }
+	      
+	      is++; 
+	      if (is>3) break;
+	    }
+	    
+	    
+	    //-------------------------------------------------------------------
+	    // AK4 + DeepCSV jets
+	    //-------------------------------------------------------------------
+	    mon.fillHisto("nbjets_raw",tag_cat+"_"+"nb", CSVLoosebJets.size(),weight);
+	    mon.fillHisto("nbjets_raw",tag_cat+"_"+"nb_LOOSE", nCSVLtags, weight);
+	    mon.fillHisto("nbjets_raw",tag_cat+"_"+"nb_MEDIUM", nCSVMtags, weight);
+	    mon.fillHisto("nbjets_raw",tag_cat+"_"+"nb_TIGHT", nCSVTtags, weight);
+	    
+	    is=0; 
+	    for (auto & jet : CSVLoosebJets) {
+	      mon.fillHisto("jet_pt_raw", tag_cat+"_"+b_tagging_name+htag[is], jet.pt(),weight); 
+	      mon.fillHisto("jet_eta_raw", tag_cat+"_"+b_tagging_name+htag[is], jet.eta(),weight); 
+	      mon.fillHisto("jet_phi_raw", tag_cat+"_"+b_tagging_name+htag[is], jet.phi(),weight);
+	      
+	      is++;
+	      if (is>3) break; // plot only up to 4 b-jets ?
+	    }
+	    
+	    //--------------------------------------------------------------------------
+	    // Soft-b tagging properties
+	    //--------------------------------------------------------------------------
+	    mon.fillHisto("nbjets_raw",tag_cat+"_"+"nb_soft",SVs.size(),weight);
+	    
+	    is=0;
+	    for (auto & isv : SVs) {
+	      mon.fillHisto("softjet_pt_raw", tag_cat+"_"+"softb"+htag[is], isv.pt(),weight);
+	      mon.fillHisto("jet_eta_raw", tag_cat+"_"+"softb"+htag[is], isv.eta(),weight);
+	      is++;
+	      if (is>3) break;
+	    }
+	    
+	    // DR between 2 SVs
+	    if (SVs.size()>1) {
+	      double dR=deltaR(SVs[0], SVs[1]);
+	      mon.fillHisto("dR_raw",tag_cat+"_"+"svs",dR,weight);
+	    }
+	    
+	    // dphi(jet,MET)
+	    mon.fillHisto("dphijmet",tag_cat+"_"+"raw",mindphijmet,weight);
+	  } //ivar=0
+	  
+	  
+	  
 	  //#########################################################
 	  //####  RUN PRESELECTION AND CONTROL REGION PLOTS  ########
 	  //#########################################################
@@ -1713,9 +1769,9 @@ int main(int argc, char* argv[])
 	  // mtW
 	  double tMass = 2.*selLeptons[0].pt()*metP4.pt()*(1.-TMath::Cos(deltaPhi(selLeptons[0].phi(),metP4.phi())));
 	  if(ivar==0) {
-	    mon.fillHisto("pfmet","raw",metP4.pt(),weight);
-	    mon.fillHisto("mtw","raw",sqrt(tMass),weight);
-	    mon.fillHisto("ptw","raw",wsum.pt(),weight);
+	    mon.fillHisto("pfmet","raw"+tag_cat,metP4.pt(),weight);
+	    mon.fillHisto("mtw","raw"+tag_cat,sqrt(tMass),weight);
+	    mon.fillHisto("ptw","raw"+tag_cat,wsum.pt(),weight);
 	  }
 	  
 	  //-------------------------------------------------------------------
@@ -1765,74 +1821,12 @@ int main(int argc, char* argv[])
 		  mon.fillHisto("lep_pt_raw","e_metmt",selLeptons[0].pt(),weight);
 		  mon.fillHisto("lep_eta_raw","e_metmt",selLeptons[0].eta(),weight);
 
-		  mon.fillHisto("lep_pt_raw","owen_e_metmt",selLeptons[0].pt(),(weight/trgsf)*custom_trgsf);
-		  mon.fillHisto("lep_eta_raw","owen_e_metmt",selLeptons[0].eta(),(weight/trgsf)*custom_trgsf);
 		}
 		if (evcat==MU) {
 		  mon.fillHisto("lep_pt_raw","mu_metmt",selLeptons[0].pt(),weight);
 		  mon.fillHisto("lep_eta_raw","mu_metmt",selLeptons[0].eta(),weight);
 
-		  mon.fillHisto("lep_pt_raw","owen_mu_metmt",selLeptons[0].pt(),(weight/trgsf)*custom_trgsf);
-		  mon.fillHisto("lep_eta_raw","owen_mu_metmt",selLeptons[0].eta(),(weight/trgsf)*custom_trgsf);
 		}
-
-		// Jet kinematics
-		 mon.fillHisto("njets_raw","nj", GoodIdJets.size(),weight);
-	    
-		 // AK4 jets pt:
-		 int is(0);     //	    is=0;
-		 for (auto & jet : GoodIdJets) {
-		   mon.fillHisto("jet_pt_raw", "jet"+htag[is], jet.pt(),weight); 
-		   mon.fillHisto("jet_eta_raw", "jet"+htag[is], jet.eta(),weight); 
-		   mon.fillHisto("jet_phi_raw","jet"+htag[is], jet.phi(),weight); 
-
-		   if (use_DeepCSV) { mon.fillHisto("b_discrim",b_tagging_name+htag[is],jet.btag1,weight); }
-		   else { mon.fillHisto("b_discrim",b_tagging_name+htag[is],jet.btag0,weight); }
-		     
-		   is++; 
-		   if (is>3) break;
-		 }
-		
-
-		 //-------------------------------------------------------------------
-		 // AK4 + DeepCSV jets
-		 //-------------------------------------------------------------------
-		 mon.fillHisto("nbjets_raw","nb", CSVLoosebJets.size(),weight);
-		 mon.fillHisto("nbjets_raw","nb_LOOSE", nCSVLtags, weight);
-		 mon.fillHisto("nbjets_raw","nb_MEDIUM", nCSVMtags, weight);
-		 mon.fillHisto("nbjets_raw","nb_TIGHT", nCSVTtags, weight);
-		 
-		 is=0; 
-		 for (auto & jet : CSVLoosebJets) {
-		   mon.fillHisto("jet_pt_raw", b_tagging_name+htag[is], jet.pt(),weight); 
-		   mon.fillHisto("jet_eta_raw", b_tagging_name+htag[is], jet.eta(),weight); 
-		   mon.fillHisto("jet_phi_raw", b_tagging_name+htag[is], jet.phi(),weight);
-
-		   is++;
-		   if (is>3) break; // plot only up to 4 b-jets ?
-		 }
-
-		 //--------------------------------------------------------------------------
-		 // Soft-b tagging properties
-		 //--------------------------------------------------------------------------
-		 mon.fillHisto("nbjets_raw","nb_soft",SVs.size(),weight);
-	    
-		 is=0;
-		 for (auto & isv : SVs) {
-		   mon.fillHisto("softjet_pt_raw", "softb"+htag[is], isv.pt(),weight);
-		   mon.fillHisto("jet_eta_raw", "softb"+htag[is], isv.eta(),weight);
-		   is++;
-		   if (is>3) break;
-		 }
-		 
-		 // DR between 2 SVs
-		 if (SVs.size()>1) {
-		   double dR=deltaR(SVs[0], SVs[1]);
-		   mon.fillHisto("dR_raw","svs",dR,weight);
-		 }
-	    
-		 // dphi(jet,MET)
-		 mon.fillHisto("dphijmet","raw",mindphijmet,weight);
 		 
 		   // NJET CUT
 		 if (passNJ2) {
@@ -1863,13 +1857,13 @@ int main(int argc, char* argv[])
 	  // Event categorization based on (n-btag, n-jet) after leptonic selection
 	  int evtCatPlot = eventCategoryPlot.Get(phys,&GoodIdbJets, &pseudoGoodIdbJets);
 
-	  if (ivar==0) mon.fillHisto("evt_cat","sel1", evtCatPlot,weight);
+	  if (ivar==0) mon.fillHisto("evt_cat",tag_cat+"_"+"sel1", evtCatPlot,weight);
 	  
 	  // //Define ABCD regions
 	  TString tag_qcd; tag_qcd="";
 	  
 	  if (passMet25 && passMt) {
-	    if (ivar==0) mon.fillHisto("evt_cat","sel2", evtCatPlot,weight);
+	    if (ivar==0) mon.fillHisto("evt_cat",tag_cat+"_"+"sel2", evtCatPlot,weight);
 	    
 	    if (!runQCD) {tag_qcd="_A_";} // region A
 	    else {tag_qcd="_B_";} // region B
