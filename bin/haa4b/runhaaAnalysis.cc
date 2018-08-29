@@ -1167,7 +1167,6 @@ int main(int argc, char* argv[])
 	    }
 	    if(hasOverlap) continue;
 
-	    //  bool isMatched=isMatched(corrJets[ijet]);
 	    bool isMatched(false);
   
 	    for (auto igen : phys.genparticles) {
@@ -1198,17 +1197,17 @@ int main(int argc, char* argv[])
 	  }
 	  
 	}
-        /*
+
         //split inclusive DY sample into DYToLL and DYToTauTau
-        if(isMC && mctruthmode==1) {
+        if(isMC && mctruthmode==1113) {
             //if(phys.genleptons.size()!=2) continue;
             if(phys.genleptons.size()==2 && isDYToTauTau(phys.genleptons[0].id, phys.genleptons[1].id) ) continue;
         }
-        if(isMC && mctruthmode==2) {
+        if(isMC && mctruthmode==15) {
             if(phys.genleptons.size()!=2) continue;
             if(!isDYToTauTau(phys.genleptons[0].id, phys.genleptons[1].id) ) continue;
         }
-        */
+
 
 	
 	// 1-lepton

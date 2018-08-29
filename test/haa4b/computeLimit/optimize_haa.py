@@ -39,7 +39,7 @@ BINS = ["3b","4b","3b,4b"] # list individual analysis bins to consider as well a
 MASS = [12, 15, 20, 25, 30, 40, 50, 60]
 SUBMASS = [12, 15, 20, 25, 30, 40, 50, 60]
 
-LandSArgCommonOptions=" --dropBckgBelow 0.00001" # --statBinByBin 0.00001"      
+LandSArgCommonOptions=" --dropBckgBelow 0.00001 --statBinByBin 0.00001"      
 #LandSArgCommonOptions="  --BackExtrapol --statBinByBin 0.00001 --dropBckgBelow 0.00001 --blind"
 
 for model in MODELS:
@@ -370,15 +370,15 @@ for signalSuffix in signalSuffixVec :
 
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
            SCRIPT.writelines('mkdir -p out;\ncd out;\n') #--blind instead of --simfit
-#           SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + LandSArg + cutStr  +" ;\n")
-	   SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --simfit --index 1 --rebin 2 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --subFake --modeDD " + " " + LandSArg + cutStr  +" ;\n")
+#           SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --blind --index 1 --rebin 2 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --subFake --modeDD " + LandSArg + cutStr  +" ;\n")
+	   SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --simfit --index 1 --rebin 2 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --subFake --modeDD" + " " + LandSArg + cutStr  +" ;\n")
            SCRIPT.writelines("sh combineCards.sh;\n"); 
 #           SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root --PO verbose --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n") 
            SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n")  
            #compute pvalue
            #  -t -1 --toysFreq --expectSignal=1
            SCRIPT.writelines("combine -M ProfileLikelihood --signif --pvalue -m " +  str(m) + " workspace.root > COMB.log;\n")
-#           SCRIPT.writelines("combine -M FitDiagnostics workspace.root --plots --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --rMin=-2 --rMax=2 --robustFit 1 > log.txt \n")
+#           SCRIPT.writelines("combine -M FitDiagnostics workspace.root --plots --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --rMin=-5 --rMax=5 --robustFit 1 > log.txt \n")
            # -t -1 --expectSignal=1
            SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " --plots --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --stepSize=0.05 --rMin=-5 --rMax=5 --robustFit 1 --setParameters mask_e_A_SR_3b=1,mask_mu_A_SR_3b=1,mask_e_A_SR_4b=1,mask_mu_A_SR_4b=1 > log.txt \n") 
            # save likelihood fit info
@@ -390,7 +390,6 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("tt=`cat simfit_m"+ str(m) +".txt | grep 'tt_norm' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("w=`cat simfit_m"+ str(m) +".txt | grep 'w_norm' | awk '{print $4;}'`;\n") 
 #              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root --run blind -v 3 >  COMB.log;\n") 
-#              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root --run blind --setParameters tt_norm_e=$tt_e,tt_norm_mu=$tt_mu,w_norm_3b_e=$w_3b_e,w_norm_3b_mu=$w_3b_mu,w_norm_4b_e=$w_4b_e,w_norm_4b_mu=$w_4b_mu >  COMB.log;\n")       
               SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root -t -1 --setParameters tt_norm=$tt,w_norm=$w > COMB.log;\n")  
 
            ### THIS is for toy (hybridNew) fit
