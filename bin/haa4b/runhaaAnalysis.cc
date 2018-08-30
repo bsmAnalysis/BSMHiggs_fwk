@@ -262,8 +262,8 @@ int main(int argc, char* argv[])
 	  eleVarNames.push_back("_stat_edown");
 	  eleVarNames.push_back("_sys_eup");
 	  eleVarNames.push_back("_sys_edown");
-	  eleVarNames.push_back("_GS_eup");
-	  eleVarNames.push_back("_GS_edown");
+	  // eleVarNames.push_back("_GS_eup");
+	  // eleVarNames.push_back("_GS_edown");
 	  eleVarNames.push_back("_resRho_eup");
 	  eleVarNames.push_back("_resRho_edown");
 	  eleVarNames.push_back("_resPhi_edown");
@@ -284,7 +284,7 @@ int main(int argc, char* argv[])
 	  //varNames.push_back("_scale_mup");    varNames.push_back("_scale_mdown");  //muon energy scale
 	  varNames.push_back("_stat_eup");    varNames.push_back("_stat_edown");  //electron energy scale
 	  varNames.push_back("_sys_eup");    varNames.push_back("_sys_edown");  //electron energy scale
-	  varNames.push_back("_GS_eup");    varNames.push_back("_GS_edown");  //electron energy scale
+	  //  varNames.push_back("_GS_eup");    varNames.push_back("_GS_edown");  //electron energy scale
 	  varNames.push_back("_resRho_eup");    varNames.push_back("_resRho_edown");  //electron energy resolution
 	  varNames.push_back("_resPhi_edown");     //electron energy resolution
 	  //	varNames.push_back("_eff_bup"); varNames.push_back("_eff_bdown"); //btag SFs
@@ -506,7 +506,7 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "pfmet",    ";E_{T}^{miss} [GeV];Events", 100,0.,800.) );
     mon.addHistogram( new TH1F( "ht",    ";H_{T} [GeV];Events", 40,0.,800.) );
     mon.addHistogram( new TH1F( "mtw",       ";#it{m}_{T}^{W} [GeV];Events", 80,0.,800.) );
-    mon.addHistogram( new TH1F( "ptw",       ";#it{p}_{T}^{W} [GeV];Events",50,0.,800.) );
+    mon.addHistogram( new TH1F( "ptw",       ";#it{p}_{T}^{W} [GeV];Events",30,0.,500.) );
     mon.addHistogram( new TH1F( "dphiWh", ";#Delta#it{#phi}(#it{W},h);Events", 20,0,TMath::Pi()) );
     mon.addHistogram( new TH1F( "dRave",";#Delta R(b,b)_{ave};Events",50,0.,5.));
     mon.addHistogram( new TH1F( "dmmin",";#Delta m_{b,b}^{min};Events",25,0.,250.));
@@ -887,7 +887,7 @@ int main(int argc, char* argv[])
 	std::vector<PhysicsObjectJetCollection> variedJets;
 	LorentzVectorCollection variedMET;
 
-	METUtils::computeVariation(phys.jets, phys.leptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
+	//	METUtils::computeVariation(phys.jets, phys.leptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
 
 	PhysicsObjectJetCollection &corrJets = phys.jets; 
         PhysicsObjectFatJetCollection &fatJets = phys.fatjets;
@@ -1095,7 +1095,8 @@ int main(int argc, char* argv[])
 	} // leptons
 
 	
-	std::vector<PhysicsObject_Lepton> selLeptons = selLeptonsVar[""]; 
+	//	std::vector<PhysicsObject_Lepton> selLeptons = selLeptonsVar[""];
+	PhysicsObjectLeptonCollection selLeptons = selLeptonsVar[""];
 	sort(selLeptons.begin(), selLeptons.end(), ptsort());          
 	
 	// Exactly 1 good lepton
@@ -1109,7 +1110,7 @@ int main(int argc, char* argv[])
 	}
 
        	// lepton TRG + ID + ISO scale factors 
-	if(isMC) {
+	if(isMC && !isQCD) {
 	  if (abs(selLeptons[0].id)==11) {
 	      // ID + ISO
 	    weight *= getSFfrom2DHist(selLeptons[0].en_EtaSC, selLeptons[0].pt(), E_RECO_SF_h );
@@ -1127,13 +1128,13 @@ int main(int argc, char* argv[])
 
 	//-------------------------------------------------------------------------------------
 	// Remove QCD overlaps
-	//-------------------------------------------------------------------------------------
-	if (isMC_QCD_MuEnr) { 
-	  if (abs(selLeptons[0].id)==11) { continue; }
-	}
-	if (isMC_QCD_EMEnr) {
-	  if (abs(selLeptons[0].id)==13) { continue; }
-	}
+	// //-------------------------------------------------------------------------------------
+	// if (isMC_QCD_MuEnr) { 
+	//   if (abs(selLeptons[0].id)==11) { continue; }
+	// }
+	// if (isMC_QCD_EMEnr) {
+	//   if (abs(selLeptons[0].id)==13) { continue; }
+	// }
 
 	//-------------------------------------------------------------------------------------
 	//-------------------------------------------------------------------------------------
@@ -1167,7 +1168,6 @@ int main(int argc, char* argv[])
 	    }
 	    if(hasOverlap) continue;
 
-	    //  bool isMatched=isMatched(corrJets[ijet]);
 	    bool isMatched(false);
   
 	    for (auto igen : phys.genparticles) {
@@ -1198,17 +1198,18 @@ int main(int argc, char* argv[])
 	  }
 	  
 	}
-        /*
+
+	/*
         //split inclusive DY sample into DYToLL and DYToTauTau
-        if(isMC && mctruthmode==1) {
+        if(isMC && mctruthmode==1113) {
             //if(phys.genleptons.size()!=2) continue;
             if(phys.genleptons.size()==2 && isDYToTauTau(phys.genleptons[0].id, phys.genleptons[1].id) ) continue;
         }
-        if(isMC && mctruthmode==2) {
+        if(isMC && mctruthmode==15) {
             if(phys.genleptons.size()!=2) continue;
             if(!isDYToTauTau(phys.genleptons[0].id, phys.genleptons[1].id) ) continue;
         }
-        */
+	*/
 
 	
 	// 1-lepton
@@ -1293,7 +1294,7 @@ int main(int argc, char* argv[])
 	
 	if (abs(selLeptons[0].id)==11) {
 	  // TRG
-	  if(isMC) {
+	  if(isMC && !isQCD) {
 	    trgsf=getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	    weight *= trgsf;
 	  }
@@ -1304,7 +1305,7 @@ int main(int argc, char* argv[])
 	  
 	} else if (abs(selLeptons[0].id)==13) {
 	    // TRG
-	  if(isMC) {
+	  if(isMC && !isQCD) {
 	    trgsf=getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h );
 	    weight *= trgsf;
 	  }
@@ -1325,9 +1326,12 @@ int main(int argc, char* argv[])
 	// ---------------------------------------------------------------------------
 	
         //
-        //JET AND BTAGGING ANALYSIS
+        //JETMET AND BTAGGING ANALYSIS
         //
+	//	METUtils::computeVariation(phys.jets, phys.leptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
+	METUtils::computeVariation(phys.jets, selLeptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
 
+	
 	//###########################################################
 	// The AK8 fat jets configuration
 	//###########################################################
@@ -1499,6 +1503,17 @@ int main(int argc, char* argv[])
 	  
 	  weight = iweight; // reset to nominal weight
 
+	  LorentzVector metP4 = variedMET[0];
+	  if(varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || varNames[ivar]=="_jesup" || varNames[ivar]=="_jesdown" ||
+	     varNames[ivar]=="_umetup" || varNames[ivar]=="_umetdown" || varNames[ivar]=="_lesup" || varNames[ivar]=="_lesdown") {
+	    metP4 = variedMET[ivar];
+	  }
+	
+	  PhysicsObjectJetCollection &vJets = variedJets[0];
+	  if(varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || varNames[ivar]=="_jesup" || varNames[ivar]=="_jesdown") {
+	    vJets = variedJets[ivar];
+	  }
+	  
             //pileup
 	  if(varNames[ivar]=="_puup") weight *= ( TotalWeight_plus/puWeight ); //pu up
 	  if(varNames[ivar]=="_pudown") weight *= ( TotalWeight_minus/puWeight ); //pu down
@@ -1517,17 +1532,6 @@ int main(int argc, char* argv[])
 	    } else { continue; }
 	  } else {
 	    selLeptons = selLeptonsVar[varNames[0].Data()]; 
-	  }
-	  
-	  LorentzVector metP4 = variedMET[0];
-	  if(varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || varNames[ivar]=="_jesup" || varNames[ivar]=="_jesdown" ||
-	     varNames[ivar]=="_umetup" || varNames[ivar]=="_umetdown" || varNames[ivar]=="_lesup" || varNames[ivar]=="_lesdown") {
-	    metP4 = variedMET[ivar];
-	  }
-	
-	  PhysicsObjectJetCollection &vJets = variedJets[0];
-	  if(varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || varNames[ivar]=="_jesup" || varNames[ivar]=="_jesdown") {
-	    vJets = variedJets[ivar];
 	  }
 
 	  if ( verbose ) {
@@ -1853,7 +1857,8 @@ int main(int argc, char* argv[])
 
 	  // Event categorization based on (n-btag, n-jet) after leptonic selection
 	  int evtCatPlot = eventCategoryPlot.Get(phys,&GoodIdbJets, &pseudoGoodIdbJets);
-
+	  if (evtCatPlot<3) continue;
+	  
 	  if (ivar==0) mon.fillHisto("evt_cat",tag_cat+"_"+"sel1", evtCatPlot,weight);
 	  
 	  // //Define ABCD regions

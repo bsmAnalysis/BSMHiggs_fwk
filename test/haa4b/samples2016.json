@@ -402,7 +402,7 @@
             "tag": "Single Top"
         },
        {
-            "color": 408,
+            "color": 833,
             "data": [
                 {
                     "br": [
@@ -424,7 +424,7 @@
             "tag": "t#bar{t} + b#bar{b}"
        },
 	{
-            "color": 831,
+            "color": 408,
             "data": [
                 {
                     "br": [
@@ -532,7 +532,7 @@
             ],
             "tag": "t#bar{t}+#gammaZW"
         },
-        {
+	{
             "color": 624,
             "data": [
                 {
@@ -831,7 +831,7 @@
                     "dtag": "MC13TeV_QCD_Pt300ToInf_EMEnr_2016",
                     "xsec": 1350
                 },
-               {
+	          {
                     "br": [
                         1.0
                     ],
@@ -1072,7 +1072,7 @@
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_QCD_Pt1000toInf_MuEnrPt5_ext1_2016",
                     "xsec": 1.62131692
-                },
+		},     
                 {
                     "br": [
                         0.0002
