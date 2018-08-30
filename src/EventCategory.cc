@@ -78,8 +78,8 @@ int EventCategory::Get(const PhysicsEvent_t& phys, std::vector<LorentzVector>* b
 	if (NJets==3 || NJets==4) return 4;
 	if (NJets>=5) return 6;
       }
-      if(NbJets==2) { // Top CR
-	if (NJets>=4) { return 3;}
+      if(NbJets==2) { // tt+light CR
+	if (NJets==4) { return 3;}
 	else if (NJets==3) { return 2; }
       }
       if(NbJets==0) { // W CR
