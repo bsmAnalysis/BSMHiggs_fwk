@@ -1007,7 +1007,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     binName=chData->second.channel.c_str(); // e.g. e_A_SR
     //load data histograms in the QCD control regions
     binName.ReplaceAll("A_","D_");         
-    printf("binName= %s\n",binName.Data());  
+    //    printf("binName= %s\n",binName.Data());  
     TH1* hCtrl_SB = dataProcIt->second.channels[(binName+"_"+chData->second.bin.c_str()).Data()].shapes[mainHisto.Data()].histo(); // Region D  
     binName.ReplaceAll("D_","B_");    
     TH1* hCtrl_SI = dataProcIt->second.channels[(binName+"_"+chData->second.bin.c_str()).Data()].shapes[mainHisto.Data()].histo();  // Region B 
@@ -1033,20 +1033,16 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     double errC,errD;
     double errMC_C, errMC_D;
 
-    //  if(hCtrl_SB->Integral()>0){
-    if (hCtrl_SB!=NULL) {
-      if(hCtrl_SB->Integral()>0){
-	alpha     = hChan_SB->IntegralAndError(1,hChan_SB->GetXaxis()->GetNbins(),errC) / hCtrl_SB->IntegralAndError(1,hCtrl_SB->GetXaxis()->GetNbins(),errD);
-	alpha_err = ( fabs( hChan_SB->Integral() * errD ) + fabs(errC * errD )  ) / pow(hCtrl_SB->Integral(), 2);        
-      }
+ 
+    if(hCtrl_SB->Integral()>0){
+      alpha     = hChan_SB->IntegralAndError(1,hChan_SB->GetXaxis()->GetNbins(),errC) / hCtrl_SB->IntegralAndError(1,hCtrl_SB->GetXaxis()->GetNbins(),errD);
+      alpha_err = ( fabs( hChan_SB->Integral() * errD ) + fabs(errC * errD )  ) / pow(hCtrl_SB->Integral(), 2);        
     }
     
     // alpha in MC
-    if (hDD_D!=NULL) {
-      if(hDD_D->Integral()>0){
-	alphaMC = hDD_C->IntegralAndError(1,hDD_C->GetXaxis()->GetNbins(),errMC_C) / hDD_D->IntegralAndError(1,hDD_D->GetXaxis()->GetNbins(),errMC_D);
-	alphaMC_err =  ( fabs( hDD_C->Integral() * errMC_D ) + fabs(errMC_C * errMC_D )  ) / pow(hDD_D->Integral(), 2);  
-      }
+    if(hDD_D->Integral()>0){
+      alphaMC = hDD_C->IntegralAndError(1,hDD_C->GetXaxis()->GetNbins(),errMC_C) / hDD_D->IntegralAndError(1,hDD_D->GetXaxis()->GetNbins(),errMC_D);
+      alphaMC_err =  ( fabs( hDD_C->Integral() * errMC_D ) + fabs(errMC_C * errMC_D )  ) / pow(hDD_D->Integral(), 2);  
     }
     
     double valMC, valMC_err;
@@ -1216,8 +1212,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       TH1* h = ch->second.shapes[histoName].histo();
       double valerr = 0.;
-      double val = 0.;
-      if (h!=NULL) val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+      double val  = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
 
       if(procName.find("Instr. MET")!=std::string::npos) valerr =0.0; //Our systematics on the Instr. MET already includes stat unc. We would want to change that in the future
       double syst_scale = std::max(0.0, ch->second.shapes[histoName].getScaleUncertainty());
@@ -1419,9 +1414,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	//	if(ch->first.find("CR5j")!=string::npos)continue;
 	
         if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
-	TH1 *h=ch->second.shapes[histoName].histo();
-        if (h!=NULL) { map_yields[it->first] += h->Integral();}
-	else {map_yields[it->first] += 0.;}
+	map_yields[it->first] += ch->second.shapes[histoName].histo()->Integral();
       }
     }
 
@@ -1473,7 +1466,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if(ch->second.shapes.find(histoName.Data())==(ch->second.shapes).end())continue;
 
         TH1* h = ch->second.shapes[histoName.Data()].histo();
-	if (h==NULL) continue;
+	//	if (h==NULL) continue;
 	
         //if(process.Contains("SOnly_S") ) h->Scale(10);  
         if(it->first=="total"){
@@ -1617,8 +1610,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         axis->SetMinimum(1E-1);
         axis->SetMaximum(std::max(axis->GetMaximum(), 5E1));
       }
-      //      if((I-1)%NBins!=0)axis->GetYaxis()->SetTitle("");
-      //      if(I<=NBins)axis->GetXaxis()->SetTitle("");
+      if((I-1)%NBins!=0)axis->GetYaxis()->SetTitle("");
+      if(I<=NBins)axis->GetXaxis()->SetTitle("");
       axis->Draw();
       /*
       // Blind SRs
@@ -1781,10 +1774,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         TVirtualPad* pad = t1->cd(I); 
         pad->SetTopMargin(0.06); pad->SetRightMargin(0.03); pad->SetBottomMargin(0.07);  pad->SetLeftMargin(0.06);
 				//                 pad->SetLogy(true); 
-	TH1* hh = ch->second.shapes[histoName.Data()].histo();
-	if (hh==NULL) continue;
-	
-        TH1* h = (TH1*)(hh->Clone((it->first+ch->first+"Nominal").c_str())); 
+	TH1* h = (TH1*)(ch->second.shapes[histoName.Data()].histo()->Clone((it->first+ch->first+"Nominal").c_str())); 
+
         double yield = h->Integral();
         toDelete.push_back(h);
         mapYieldPerBin[""][ch->first] = yield;
@@ -2133,9 +2124,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
         TString chbin = ch->first;
         if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
-        ShapeData_t& shapeInfo = ch->second.shapes[histoName];
-	TH1 * hh = shapeInfo.histo();
-        double integral = 0.; if (hh!=NULL) integral = hh->Integral();
+	ShapeData_t& shapeInfo = ch->second.shapes[histoName];      
+        double integral = shapeInfo.histo()->Integral();
 
         //lumi
         if(!it->second.isData && systpostfix.Contains('3'))shapeInfo.uncScale["lumi_13TeV"] = integral*0.025;

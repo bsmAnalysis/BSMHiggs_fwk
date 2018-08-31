@@ -2009,6 +2009,10 @@ int main(int argc, char* argv[])
 	      // pu reweighting
 	      mon.fillHisto("nvtx_raw",   tags, phys.nvtx,      xsecWeight*genWeight);
 	      mon.fillHisto("nvtxwgt_raw",tags, phys.nvtx,      weight);
+
+	     // Lepton kinematics
+	      mon.fillHisto("lep_pt_raw",tags,selLeptons[0].pt(),weight);
+	      mon.fillHisto("lep_eta_raw",tags,selLeptons[0].eta(),weight);
 	      
 	      // higgs mass
 	      mon.fillHisto("higgsMass",tags,allHadronic.mass(),weight);
