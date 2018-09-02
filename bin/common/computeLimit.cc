@@ -1436,8 +1436,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
   void AllInfo_t::showShape(std::vector<TString>& selCh , TString histoName, TString SaveName)
   {
     int NLegEntry = 0;
+    
     std::map<string, THStack*          > map_stack;
+    std::map<string, TH1*              > map_mc;
     std::map<string, TGraphAsymmErrors*     > map_unc;
+    std::map<string, TH1*              > map_uncH;
     std::map<string, TH1*              > map_data;
     std::map<string, TGraphAsymmErrors*> map_dataE;
     std::map<string, std::vector<TH1*> > map_signals;
@@ -1445,7 +1448,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		//           TLegend* legA  = new TLegend(0.6,0.5,0.99,0.85, "NDC");
 		//           TLegend* legA  = new TLegend(0.03,0.00,0.97,0.70, "NDC");
 		//           TLegend* legA  = new TLegend(0.03,0.99,0.97,0.89, "NDC");
-    TLegend* legA  = new TLegend(0.08,0.89,0.97,0.95, "");
+    //  TLegend* legA  = new TLegend(0.08,0.89,0.97,0.95, "");
+    TLegend *legA = new TLegend(0.30,0.74,0.93,0.96, "NDC");
+    legA->SetHeader("");
+    legA->SetNColumns(3);   
+    legA->SetBorderSize(0);
+    legA->SetTextFont(42);   legA->SetTextSize(0.03);
+    legA->SetLineColor(0);   legA->SetLineStyle(1);   legA->SetLineWidth(1);
+    legA->SetFillColor(0); legA->SetFillStyle(0);//blind>-1E99?1001:0);
     std::vector<TLegendEntry*> legEntries;  //needed to have the entry in reverse order
 
     //order the proc first
@@ -1466,8 +1476,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if(ch->second.shapes.find(histoName.Data())==(ch->second.shapes).end())continue;
 
         TH1* h = ch->second.shapes[histoName.Data()].histo();
-	//	if (h==NULL) continue;
-	
+
         //if(process.Contains("SOnly_S") ) h->Scale(10);  
         if(it->first=="total"){
           //double Uncertainty = std::max(0.0, ch->second.shapes[histoName.Data()].getScaleUncertainty() / h->Integral() );;
@@ -1476,7 +1485,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           //double syst = sqrt(pow(syst_scale,2)+pow(syst_shape,2)); //On perd de l'info ici car on considere l'ecart constant au lieu d'y aller bin par bin
           //double Uncertainty = syst / h->Integral();
           double Uncertainty_scale=syst_scale / h->Integral();
-	  
+
           double Maximum = 0;
           TGraphAsymmErrors* errors = new TGraphAsymmErrors(h->GetXaxis()->GetNbins());
 					//                    errors->SetFillStyle(3427);
@@ -1496,10 +1505,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    double syst_binDown = sqrt(pow(Uncertainty_scale*h->GetBinContent(ibin), 2) + pow(syst_shape_binDown,2));
 	    double Uncertainty_binUp = syst_binUp / h->GetBinContent(ibin);
 	    double Uncertainty_binDown = syst_binDown / h->GetBinContent(ibin);
-	    
 
             //errors->SetPointError(icutg,h->GetXaxis()->GetBinWidth(ibin)/2.0, sqrt(pow(h->GetBinContent(ibin)*Uncertainty_bin,2) + pow(h->GetBinError(ibin),2) ) );
-            errors->SetPointError(icutg,h->GetXaxis()->GetBinWidth(ibin)/2.0,h->GetXaxis()->GetBinWidth(ibin)/2.0, sqrt(pow(h->GetBinContent(ibin)*Uncertainty_binDown,2) + pow(h->GetBinError(ibin),2) ), sqrt(pow(h->GetBinContent(ibin)*Uncertainty_binUp,2) + pow(h->GetBinError(ibin),2) ) );
+	    errors->SetPointError(icutg,h->GetXaxis()->GetBinWidth(ibin)/2.0,h->GetXaxis()->GetBinWidth(ibin)/2.0, sqrt(pow(h->GetBinContent(ibin)*Uncertainty_binDown,2) + pow(h->GetBinError(ibin),2) ), sqrt(pow(h->GetBinContent(ibin)*Uncertainty_binUp,2) + pow(h->GetBinError(ibin),2) ) );
+	    
 	    //                        printf("Unc=%6.2f  X=%6.2f Y=%6.2f+-%6.2f+-%6.2f=%6.2f\n", Uncertainty, h->GetXaxis()->GetBinCenter(ibin), h->GetBinContent(ibin), h->GetBinContent(ibin)*Uncertainty, h->GetBinError(ibin), sqrt(pow(h->GetBinContent(ibin)*Uncertainty,2) + pow(h->GetBinError(ibin),2) ) );
 	    //                        errors->SetPointError(icutg,h->GetXaxis()->GetBinWidth(ibin)/2.0, 0 );
             Maximum =  std::max(Maximum , h->GetBinContent(ibin) + errors->GetErrorYhigh(icutg));
@@ -1507,12 +1516,30 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           }errors->Set(icutg);
           errors->SetMaximum(Maximum);
           map_unc[ch->first] = errors;
+
+	  // TH1* hE; // the histogram (you should set the number of bins, the title etc)
+	  // hE=(TH1*)h->Clone((ch->first+"histPlusSyst").c_str());
+	  // hE->Reset();
+	  // auto nPoints = errors->GetN(); // number of points in your TGraph
+	  // for(int i=0; i < nPoints; ++i) {
+	  //   double x,y, dx, dylo, dyhi; dx=0.; 
+	  //   errors->GetPoint(i, x, y);
+	  //   dylo=errors->GetErrorYlow(i); dyhi=errors->GetErrorYhigh(i);
+	  //   hE->SetBinContent(i,y); // ?
+	  //   hE->SetBinError(i,(dylo+dyhi)/2.);
+	  // }
+	  map_uncH[ch->first]=h;
+	  
+	  // map_uncH[ch->first] = (TH1D*)h->Clone((ch->first+"histPlusSyst").c_str());utils::root::checkSumw2((ch->first+"histPlusSyst").c_str());
           continue;//otherwise it will fill the legend
         }else if(it->second.isBckg){                 
           if(map_stack.find(ch->first)==map_stack.end()){
-            map_stack[ch->first] = new THStack((ch->first+"stack").c_str(),(ch->first+"stack").c_str());                    
+            map_stack[ch->first] = new THStack((ch->first+"stack").c_str(),(ch->first+"stack").c_str());
+	    map_mc   [ch->first] = (TH1D*)h->Clone((ch->first+"mc").c_str()); //utils::root::checkSumw2((ch->first+"mc").c_str());
           }
           map_stack   [ch->first]->Add(h,"HIST");
+	  map_mc   [ch->first]->Add(h);
+	  // if(!map_mc){map_mc   [ch->first] = (TH1D*)h->Clone((ch->first+"mc").c_str());utils::root::checkSumw2((ch->first+"mc").c_str());}else{map_mc   [ch->first]->Add(h);}
 
         }else if(it->second.isSign){                    
           map_signals [ch->first].push_back(h);
@@ -1529,7 +1556,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           //poisson error bars
           const double alpha = 1 - 0.6827;
           TGraphAsymmErrors * g = new TGraphAsymmErrors(h);
-          g->SetMarkerSize(0.5);
+          g->SetMarkerSize(0.7);
           g->SetMarkerStyle (20);
 
           for (int i = 0; i < g->GetN(); ++i) {
@@ -1563,15 +1590,16 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     if(map_unc.begin()!=map_unc.end())legA->AddEntry(map_unc.begin()->second, "Syst. + Stat.", "F");
 
     // int NBins = map_data.size()/selCh.size();
-    // TCanvas* c1 = new TCanvas("c1","c1",300*NBins,300); //*selCh.size());
-    // c1->SetTopMargin(0.00); c1->SetRightMargin(0.00); c1->SetBottomMargin(0.00);  c1->SetLeftMargin(0.00);
-    // TPad* t2 = new TPad("t2","t2", 0.03, 0.90, 1.00, 1.00, -1, 1);  t2->Draw();  c1->cd();
-    // t2->SetTopMargin(0.00); t2->SetRightMargin(0.00); t2->SetBottomMargin(0.00);  t2->SetLeftMargin(0.00);
-    // TPad* t1 = new TPad("t1","t1", 0.03, 0.03, 1.00, 0.90, 4, 1);  t1->Draw();  t1->cd();
-    // t1->SetTopMargin(0.00); t1->SetRightMargin(0.00); t1->SetBottomMargin(0.00);  t1->SetLeftMargin(0.00);
+    /*
+    TCanvas* c1 = new TCanvas("c1","c1",300,300); //selCh.size());
+    c1->SetTopMargin(0.00); c1->SetRightMargin(0.00); c1->SetBottomMargin(0.00);  c1->SetLeftMargin(0.00);
+    TPad* t2 = new TPad("t2","t2", 0.03, 0.90, 1.00, 1.00, -1, 1);  t2->Draw();  c1->cd();
+    t2->SetTopMargin(0.00); t2->SetRightMargin(0.00); t2->SetBottomMargin(0.00);  t2->SetLeftMargin(0.00);
+    TPad* t1 = new TPad("t1","t1", 0.03, 0.03, 1.00, 0.90, 4, 1);  t1->Draw();  t1->cd();
+    t1->SetTopMargin(0.00); t1->SetRightMargin(0.00); t1->SetBottomMargin(0.00);  t1->SetLeftMargin(0.00);
     // t1->Divide(NBins, selCh.size(), 0, 0);
     // //t1->Divide(NBins, 1, 0, 0);  
-
+    */
     TCanvas* c[50];
     int I=1;
     for(std::map<string, THStack*>::iterator p = map_stack.begin(); p!=map_stack.end(); p++){
@@ -1579,19 +1607,39 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       string ires;
       ostringstream convert;
       convert << I;   
+
+      // Only draw BDT in regions A
+      //      if(!(procs["data"].channels[p->first].bin.find("_A_")!=string::npos)) { continue; }    
       
       int NBins = map_data.size()/selCh.size();
-      c[I] = new TCanvas("c_"+(char)I,"c_",300*NBins,300); //*selCh.size());
-      c[I]->SetTopMargin(0.00); c[I]->SetRightMargin(0.00); c[I]->SetBottomMargin(0.00);  c[I]->SetLeftMargin(0.00);
-      // TPad* t2 = new TPad("t2","t2", 0.03, 0.90, 1.00, 1.00, -1, 1);  t2->Draw();  c1->cd();
-      // t2->SetTopMargin(0.00); t2->SetRightMargin(0.00); t2->SetBottomMargin(0.00);  t2->SetLeftMargin(0.00);
-      // TPad* t1 = new TPad("t1","t1", 0.03, 0.03, 1.00, 0.90, 4, 1);  t1->Draw();  t1->cd();
-      // t1->SetTopMargin(0.00); t1->SetRightMargin(0.00); t1->SetBottomMargin(0.00);  t1->SetLeftMargin(0.00);
-      // t1->Divide(NBins, selCh.size(), 0, 0);
+      c[I] = new TCanvas("c_"+(char)I,"c_",800,800); //selCh.size());
+      //   c[I]->SetTopMargin(0.00); c[I]->SetRightMargin(0.00); c[I]->SetBottomMargin(0.00);  c[I]->SetLeftMargin(0.00);
+      //   TPad* t1 = new TPad("t1","t1", 0.03, 0.03, 1.00, 0.90, 4, 1);  t1->Draw();  t1->cd();
+      //  t1->SetTopMargin(0.07); t1->SetRightMargin(0.07); t1->SetBottomMargin(0.07);  t1->SetLeftMargin(0.12);
+      //t1->SetFillColor(0);
+      TPad* t1 = new TPad("t1","t1", 0.0, 0.2, 1.0, 1.0);
+      t1->SetFillColor(0);
+      t1->SetBorderMode(0);
+      t1->SetBorderSize(2);
+      t1->SetTickx(1);
+      t1->SetTicky(1);
+      t1->SetLeftMargin(0.10);
+      t1->SetRightMargin(0.05);
+      t1->SetTopMargin(0.05);
+      t1->SetBottomMargin(0.10);
+      t1->SetFrameFillStyle(0);
+      t1->SetFrameBorderMode(0);
+      t1->SetFrameFillStyle(0);
+      t1->SetFrameBorderMode(0);
+
+      
+      t1->Draw();
+      t1->cd();
+      //t1->Divide(NBins, selCh.size(), 0, 0);
       // //t1->Divide(NBins, 1, 0, 0);  
       
-      // TVirtualPad* pad = t1->cd(I);
-      //pad->SetTopMargin(0.06); pad->SetRightMargin(0.03); pad->SetBottomMargin(I<=NBins?0.09:0.12);  pad->SetLeftMargin((I-1)%NBins!=0?0.09:0.12);
+      //      TVirtualPad* pad = t1->cd(I);
+      //      pad->SetTopMargin(0.06); pad->SetRightMargin(0.03); pad->SetBottomMargin(0.09);  pad->SetLeftMargin(0.09);
       //      gPad->SetLogy(true); 
 
       //print histograms
@@ -1610,18 +1658,42 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         axis->SetMinimum(1E-1);
         axis->SetMaximum(std::max(axis->GetMaximum(), 5E1));
       }
-      if((I-1)%NBins!=0)axis->GetYaxis()->SetTitle("");
-      if(I<=NBins)axis->GetXaxis()->SetTitle("");
+
+      axis->GetXaxis()->SetLabelOffset(0.007);
+      axis->GetXaxis()->SetLabelSize(0.04);
+      axis->GetXaxis()->SetTitleOffset(1.2);
+      axis->GetXaxis()->SetTitleFont(42);
+      axis->GetXaxis()->SetTitleSize(0.04);
+      axis->GetYaxis()->SetLabelFont(42);
+      axis->GetYaxis()->SetLabelOffset(0.007);
+      axis->GetYaxis()->SetLabelSize(0.04);
+      axis->GetYaxis()->SetTitleOffset(1.35);
+      axis->GetYaxis()->SetTitleFont(42);
+      axis->GetYaxis()->SetTitleSize(0.04);
+
+      
+      //if((I-1)%NBins!=0)
+      axis->GetYaxis()->SetTitle("Events");
+      //if(I<=NBins)
+      axis->GetXaxis()->SetTitle("BDT");
       axis->Draw();
-      /*
+
+      t1->Update();
+      
       // Blind SRs
-      if(procs["data"].channels[p->first].bin.find("qcdB")!=string::npos) {
+      /*
+      if(procs["data"].channels[p->first].bin.find("SR")!=string::npos) {
 	for(unsigned int i=p->second->FindBin(20);i<=p->second->GetNbinsX()+1; i++){   
 	  p->second->SetBinContent(i, 0); p->second->SetBinError(i, 0);
 	}
-      }
+
+	//	TPave* blinding_box = new TPave(data->GetBinLowEdge(data->FindBin(blind)),  hist->GetMinimum(), data->GetXaxis()->GetXmax(), hist->GetMaximum(), 0, "NB" );  
+	//	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
+
+      } 
       */
-      p->second->Draw("same");
+
+      p->second->Draw("same"); // MC stack histogram
       map_unc [p->first]->Draw("2 same");
       for(unsigned int i=0;i<map_signals[p->first].size();i++){
         map_signals[p->first][i]->Draw("HIST same");
@@ -1656,24 +1728,22 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       }
 
       //print tab channel header
-      TPaveText* Label = new TPaveText(0.1,0.81,0.94,0.89, "NDC");
+      TPaveText* Label = new TPaveText(0.2,0.81,0.84,0.89, "NDC");
       Label->SetFillColor(0);  Label->SetFillStyle(0);  Label->SetLineColor(0); Label->SetBorderSize(0);  Label->SetTextAlign(31);
       TString LabelText = procs["data"].channels[p->first].channel+"  "+procs["data"].channels[p->first].bin;
-      LabelText.ReplaceAll("eq","="); LabelText.ReplaceAll("l=","#leq");LabelText.ReplaceAll("g=","#geq"); 
-      LabelText.ReplaceAll("_OS","OS "); LabelText.ReplaceAll("el","e"); LabelText.ReplaceAll("mu","#mu");  LabelText.ReplaceAll("ha","#tau_{had}");
-      Label->AddText(LabelText);  Label->Draw();
+      LabelText.ReplaceAll("e_","e "); 
+      //LabelText.ReplaceAll("l=","#leq");LabelText.ReplaceAll("g=","#geq"); 
+      //      LabelText.ReplaceAll("_OS","OS "); LabelText.ReplaceAll("el","e"); LabelText.ReplaceAll("mu","#mu");  LabelText.ReplaceAll("ha","#tau_{had}");
+      //  Label->AddText(LabelText);  Label->Draw();
 
       gPad->RedrawAxis();
 
-    //   I++;
-    // }
-
     //print legend
     // c1->cd(0);
-    legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);  legA->SetBorderSize(0); legA->SetHeader("");
-    legA->SetNColumns((NLegEntry/2) + 1);
-    legA->Draw("same");    legA->SetTextFont(42);
-
+      legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);  legA->SetBorderSize(0); legA->SetHeader(LabelText);
+      legA->SetNColumns((NLegEntry/2) + 1);
+      legA->Draw("same");    legA->SetTextFont(42);
+      
     //print canvas header
 		/*
        t2->cd(0);
@@ -1688,37 +1758,128 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 */
 
     // c1->cd(0);
-    double L=0.03, R=0.03, T=0.02, B=0.0;
-    char LumiText[1024];
-    if(systpostfix.Contains('3'))      { double iLumi= 35914;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 13.0);
-    }else if(systpostfix.Contains('8')){ double iLumi=20000;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 8.0);
-    }else{                               double iLumi= 5000;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 7.0); 
-    }
-    TPaveText* T1 = new TPaveText(1.0-R-0.50, 1.0-T-0.05, 1.02-R, 1.0-T-0.005, "NDC");
-    T1->SetTextFont(43); T1->SetTextSize(23);   T1->SetTextAlign(31);
-    T1->SetFillColor(0); T1->SetFillStyle(0);   T1->SetBorderSize(0);
-    T1->AddText(LumiText);  T1->Draw();
+      double L=0.03, R=0.03, T=0.02, B=0.0;
+      char LumiText[1024];
+      if(systpostfix.Contains('3'))      { double iLumi= 35914;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 13.0);
+      }else if(systpostfix.Contains('8')){ double iLumi=20000;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 8.0);
+      }else{                               double iLumi= 5000;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 7.0); 
+      }
+      TPaveText* T1 = new TPaveText(1.0-R-0.50, 1.0-T-0.05, 1.02-R, 1.0-T-0.005, "NDC");
+      T1->SetTextFont(43); T1->SetTextSize(22);   T1->SetTextAlign(31);
+      T1->SetFillColor(0); T1->SetFillStyle(0);   T1->SetBorderSize(0);
+      T1->AddText(LumiText);  T1->Draw();
+      
+      //TOP LEFT IN-FRAME
+      TPaveText* T2 = new TPaveText(L+0.005, 1.0-T-0.05, L+0.20, 1.0-T-0.005, "NDC");
+      T2->SetTextFont(63); T2->SetTextSize(22);   T2->SetTextAlign(11);
+      T2->SetFillColor(0); T2->SetFillStyle(0);   T2->SetBorderSize(0);
+      T2->AddText("CMS"); T2->Draw();
+      
+      if(true){ //Right to CMS
+	TPaveText* T3 = new TPaveText(L+0.095, 1.0-T-0.05, L+0.50, 1.0-T-0.005, "NDC");
+	T3->SetTextFont(53); T3->SetTextSize(22);   T3->SetTextAlign(11);
+	T3->SetFillColor(0); T3->SetFillStyle(0);   T3->SetBorderSize(0);
+	T3->AddText("Preliminary"); T3->Draw();
+      }
 
-    //TOP LEFT IN-FRAME
-    TPaveText* T2 = new TPaveText(L+0.005, 1.0-T-0.05, L+0.20, 1.0-T-0.005, "NDC");
-    T2->SetTextFont(63); T2->SetTextSize(30);   T2->SetTextAlign(11);
-    T2->SetFillColor(0); T2->SetFillStyle(0);   T2->SetBorderSize(0);
-    T2->AddText("CMS"); T2->Draw();
+      // TPad* t2 = new TPad("t2","t2", 0.03, 0.90, 1.00, 1.00, -1, 1);  t2->Draw();  c[I]->cd();
+      //   t2->SetTopMargin(0.00); t2->SetRightMargin(0.00); t2->SetBottomMargin(0.00);  t2->SetLeftMargin(0.00);
+      c[I]->cd();
+      
+      TPad *t2 = new TPad("t2", "t2",0.0,0.0, 1.0,0.2);
+      t2->SetFillColor(0);
+      t2->SetBorderMode(0);
+      t2->SetBorderSize(2);
+      t2->SetGridy();
+      t2->SetTickx(1);
+      t2->SetTicky(1);
+      t2->SetLeftMargin(0.10);
+      t2->SetRightMargin(0.05);
+      t2->SetTopMargin(0.0);
+      t2->SetBottomMargin(0.20);
+      t2->SetFrameFillStyle(0);
+      t2->SetFrameBorderMode(0);
+      t2->SetFrameFillStyle(0);
+      t2->SetFrameBorderMode(0);
+      t2->Draw();
+      t2->cd();
+      t2->SetGridy(true);
+      t2->SetPad(0,0.0,1.0,0.2);
 
-    if(true){ //Right to CMS
-      TPaveText* T3 = new TPaveText(L+0.095, 1.0-T-0.05, L+0.50, 1.0-T-0.005, "NDC");
-      T3->SetTextFont(53); T3->SetTextSize(23);   T3->SetTextAlign(11);
-      T3->SetFillColor(0); T3->SetFillStyle(0);   T3->SetBorderSize(0);
-      T3->AddText("Preliminary"); T3->Draw();
-    }
 
-    //save canvas
-    // c[I]->SaveAs(SaveName+"_Shape.png");
-    c[I]->SaveAs(SaveName+convert.str()+"_Shape.pdf");
-    c[I]->SaveAs(SaveName+convert.str()+"_Shape.C");
-    delete c[I];
+      TGraphAsymmErrors *denSystUnc = (TGraphAsymmErrors*)map_unc[p->first];
+      TH1D* denSystUncH = (TH1D*)map_uncH[p->first];
+      //   utils::root::checkSumw2(denSystUncH); 
+      denSystUnc->SetLineColor(1);
+      denSystUnc->SetFillStyle(3004);
+      denSystUnc->SetFillColor(kGray+2);
+      denSystUnc->SetMarkerColor(1);
+      denSystUnc->SetMarkerStyle(1);
+      denSystUncH->Reset("ICE");       
+      denSystUncH->SetTitle("");
+      denSystUncH->SetStats(kFALSE);
+      denSystUncH->Draw("E3");
+      denSystUnc->Draw("2 0 SAME");
+      float yscale = (1.0-0.2)/(0.2);       
+      denSystUncH->GetYaxis()->SetTitle("Data/#Sigma Bkg.");
+      denSystUncH->GetXaxis()->SetTitle(""); //drop the tile to gain space
+      //denSystUncH->GetYaxis()->CenterTitle(true);
+      denSystUncH->SetMinimum(0.4);
+      denSystUncH->SetMaximum(1.6);
+      
+      denSystUncH->GetXaxis()->SetLabelFont(42);
+      denSystUncH->GetXaxis()->SetLabelOffset(0.007);
+      denSystUncH->GetXaxis()->SetLabelSize(0.04 * yscale);
+      denSystUncH->GetXaxis()->SetTitleFont(42);
+      denSystUncH->GetXaxis()->SetTitleSize(0.035 * yscale);
+      denSystUncH->GetXaxis()->SetTitleOffset(0.8);
+      denSystUncH->GetYaxis()->SetLabelFont(42);
+      denSystUncH->GetYaxis()->SetLabelOffset(0.007);
+      denSystUncH->GetYaxis()->SetLabelSize(0.03 * yscale);
+      denSystUncH->GetYaxis()->SetTitleFont(42);
+      denSystUncH->GetYaxis()->SetTitleSize(0.035 * yscale);
+      denSystUncH->GetYaxis()->SetTitleOffset(0.3);
+       
 
-       I++;
+
+         //add comparisons
+      //  for(size_t icd=0; icd<compDists.size(); icd++){
+      TString name("CompHistogram"); //name+=icd;
+      TH1 *dataToObsH = (TH1D*)map_data[p->first]->Clone(name);
+      utils::root::checkSumw2(dataToObsH);
+
+      TH1 *mc = (TH1D*)map_mc[p->first]->Clone("mc");
+      utils::root::checkSumw2(mc);
+      dataToObsH->Divide(mc);
+      TGraphErrors* dataToObs = new TGraphErrors(dataToObsH);
+      dataToObs->SetMarkerColor(1);
+      dataToObs->SetMarkerStyle(20);
+      dataToObs->SetMarkerSize(0.7);
+      dataToObs->Draw("P 0 SAME");
+      dataToObs->Draw("E2 same");
+      
+      TLegend *legR = new TLegend(0.56,0.78,0.93,0.96, "NDC");
+      legR->SetHeader("");
+      legR->SetNColumns(2);
+      legR->SetBorderSize(1);
+      legR->SetTextFont(42);   legR->SetTextSize(0.03 * yscale);
+      legR->SetLineColor(1);   legR->SetLineStyle(1);   legR->SetLineWidth(1);
+      legR->SetFillColor(0);   legR->SetFillStyle(1001);//blind>-1E99?1001:0);
+      //legR->AddEntry(denRelUnc, "Stat. Unc.", "F");
+      legR->AddEntry(denSystUnc, "Syst. + Stat.", "F");
+      //legR->Draw("same");
+      //  gPad->RedrawAxis();
+      // t1->cd();
+      c[I]->cd();
+      
+      //save canvas
+      LabelText.ReplaceAll(" ","_"); 
+      // c[I]->SaveAs(SaveName+"_Shape.png");
+      c[I]->SaveAs(LabelText+"_Shape.pdf");
+      c[I]->SaveAs(LabelText+"_Shape.C");
+      delete c[I];
+      
+      I++;
     }
 
   }
@@ -2294,18 +2455,16 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       fprintf(pFile, "-------------------------------\n");  
       fprintf(pFile,"\n");
       if(C->first.find("e" )!=string::npos) {
-	fprintf(pFile,"tt_norm rateParam bin1 ttbarbba 1\n");
-	fprintf(pFile,"tt_norm rateParam bin1 ttbarcba 1\n"); 
+	fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");
+	fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n"); 
 	//if (C->first.find("3b")!=string::npos)
-	fprintf(pFile,"w_norm rateParam bin1 wlnu 1 \n");    
-	//	  if (C->first.find("4b")!=string::npos)fprintf(pFile,"w_norm_4b_e rateParam bin1 wlnu 1 \n");
+	fprintf(pFile,"w_norm_e rateParam bin1 wlnu 1 \n");    
       }
       if(C->first.find("mu")!=string::npos) {
-	fprintf(pFile,"tt_norm rateParam bin1 ttbarbba 1\n");
-	fprintf(pFile,"tt_norm rateParam bin1 ttbarcba 1\n");  
+	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");
+	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");  
 	//if (C->first.find("3b")!=string::npos)
-	fprintf(pFile,"w_norm rateParam bin1 wlnu 1 \n"); 
-	//  if (C->first.find("4b")!=string::npos)fprintf(pFile,"w_norm_4b_mu rateParam bin1 wlnu 1 \n");     
+	fprintf(pFile,"w_norm_mu rateParam bin1 wlnu 1 \n"); 
       }
       fprintf(pFile, "-------------------------------\n");  
       //}
@@ -2464,7 +2623,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  //  if(shapeName==histo && histoVBF!="" && ch.Contains("vbf"))histoName = ch+"_"+histoVBF+(isSignal?signalSufix:"")+varName ;
           //if(isSignal && ivar==1)printf("Syst %i = %s\n", ivar, varName.Data()); 
 
-          TH2* hshape2D = (TH2*)pdir->Get(histoName );
+          TH2* hshape2D = (TH2*)pdir->Get(histoName ); 
+	  //	  else {hshape = (TH1D*)pdir->Get(histoName ); }
           if(!hshape2D){
 	    //	    printf("Histo %s is NULL for syst:%s\n", histoName.Data(), varName.Data());   
             if(shapeName==histo && histoVBF!="" && ch.Contains("vbf")){   hshape2D = (TH2*)pdir->Get(TString("all_")+histoVBF+(isSignal?signalSufix:"")+varName);
@@ -2477,7 +2637,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	      //              printf("Histo %s does not exist for syst:%s\n", histoName.Data(), varName.Data());
               continue;
             }
-          } 
+	  }
 
           //special treatment for side mass points
           int cutBinUsed = cutBin;
@@ -2485,11 +2645,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if(shapeName == histo && !ch.Contains("vbf") && procMass==massR)cutBinUsed = indexcutMR[channelInfo.bin];
 
           histoName.ReplaceAll(ch,ch+"_proj"+procCtr);
-	  //	  printf("histoName= %s, cutBinUsed= %d\n",histoName.Data(), cutBinUsed);
           hshape   = hshape2D->ProjectionY(histoName,cutBinUsed,cutBinUsed);
+	  //  else {hshape = hshape2D; }
           filterBinContent(hshape);
-	  //          printf("%s %s %s Integral = %f\n\n", ch.Data(), shortName.Data(), varName.Data(), hshape->Integral() );
-          //if(hshape->Integral()<=0 && varName=="" && !isData){hshape->Reset(); hshape->SetBinContent(1, 1E-10);} //TEST FOR HIGGS WIDTH MEASUREMENTS, MUST BE UNCOMMENTED ASAP
 
           if(isnan((float)hshape->Integral())){hshape->Reset();}
           hshape->SetDirectory(0);
