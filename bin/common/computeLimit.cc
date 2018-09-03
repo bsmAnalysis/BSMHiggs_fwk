@@ -569,35 +569,27 @@ int main(int argc, char* argv[])
   if(AnalysisBins.size()==0)AnalysisBins.push_back("all");
   if(Channels.size()==0){ 
     if (modeDD) {
-      Channels.push_back("e_A_SR"); Channels.push_back("mu_A_SR");
-      Channels.push_back("e_B_SR"); Channels.push_back("mu_B_SR");  
-      Channels.push_back("e_C_SR"); Channels.push_back("mu_C_SR");  
-      Channels.push_back("e_D_SR"); Channels.push_back("mu_D_SR");  
+      Channels.push_back("e_A_passDPHI_SR"); Channels.push_back("mu_A_passDPHI_SR");
+      Channels.push_back("e_B_passDPHI_SR"); Channels.push_back("mu_B_passDPHI_SR");  
+      Channels.push_back("e_C_passDPHI_SR"); Channels.push_back("mu_C_passDPHI_SR");  
+      Channels.push_back("e_D_passDPHI_SR"); Channels.push_back("mu_D_passDPHI_SR");  
     } else {
-      Channels.push_back("e_A_SR"); Channels.push_back("mu_A_SR");
+      Channels.push_back("e_A_passDPHI_SR"); Channels.push_back("mu_A_passDPHI_SR");
     }
     if(simfit){
       if (modeDD) {
-	Channels.push_back("e_A_CR");Channels.push_back("mu_A_CR"); // Top CR
-	Channels.push_back("e_B_CR");Channels.push_back("mu_B_CR"); // Top CR 
-	Channels.push_back("e_C_CR");Channels.push_back("mu_C_CR"); // Top CR 
-	Channels.push_back("e_D_CR");Channels.push_back("mu_D_CR"); // Top CR
+	Channels.push_back("e_A_passDPHI_CR");Channels.push_back("mu_A_passDPHI_CR"); // Top CR
+	Channels.push_back("e_B_passDPHI_CR");Channels.push_back("mu_B_passDPHI_CR"); // Top CR 
+	Channels.push_back("e_C_passDPHI_CR");Channels.push_back("mu_C_passDPHI_CR"); // Top CR 
+	Channels.push_back("e_D_passDPHI_CR");Channels.push_back("mu_D_passDPHI_CR"); // Top CR
 
-	Channels.push_back("e_A_CR5j");Channels.push_back("mu_A_CR5j"); // tt+bb CR
-	Channels.push_back("e_B_CR5j");Channels.push_back("mu_B_CR5j"); // tt+bb CR 
-	Channels.push_back("e_C_CR5j");Channels.push_back("mu_C_CR5j"); // tt+bb CR 
-	Channels.push_back("e_D_CR5j");Channels.push_back("mu_D_CR5j"); // tt+bb CR 
-
-	/*
-	Channels.push_back("E_CR_nonTT_qcdA");Channels.push_back("MU_CR_nonTT_qcdA"); // nonTop CR 
-	Channels.push_back("E_CR_nonTT_qcdB");Channels.push_back("MU_CR_nonTT_qcdB"); // nonTop CR   
-	Channels.push_back("E_CR_nonTT_qcdC");Channels.push_back("MU_CR_nonTT_qcdC"); // nonTop CR   
-	Channels.push_back("E_CR_nonTT_qcdD");Channels.push_back("MU_CR_nonTT_qcdD"); // nonTop CR   
-	*/
+	Channels.push_back("e_A_passDPHI_CR5j");Channels.push_back("mu_A_passDPHI_CR5j"); // tt+bb CR
+	Channels.push_back("e_B_passDPHI_CR5j");Channels.push_back("mu_B_passDPHI_CR5j"); // tt+bb CR 
+	Channels.push_back("e_C_passDPHI_CR5j");Channels.push_back("mu_C_passDPHI_CR5j"); // tt+bb CR 
+	Channels.push_back("e_D_passDPHI_CR5j");Channels.push_back("mu_D_passDPHI_CR5j"); // tt+bb CR 
       } else {
-	Channels.push_back("e_A_CR");Channels.push_back("mu_A_CR"); // Top CR
-	Channels.push_back("e_A_CR5j");Channels.push_back("mu_A_CR5j"); // tt+bb CR   
-	//	Channels.push_back("E_CR_nonTT_qcdB");Channels.push_back("MU_CR_nonTT_qcdB"); // nonTop CR 
+	Channels.push_back("e_A_passDPHI_CR");Channels.push_back("mu_A_passDPHI_CR"); // Top CR
+	Channels.push_back("e_A_passDPHI_CR5j");Channels.push_back("mu_A_passDPHI_CR5j"); // tt+bb CR   
       }
     }
   }
@@ -653,35 +645,27 @@ int main(int argc, char* argv[])
 
   std::vector<TString> ch;
   if (modeDD) {
-    ch.push_back("e_A_SR"); ch.push_back("mu_A_SR");  
-    ch.push_back("e_B_SR"); ch.push_back("mu_B_SR");   
-    ch.push_back("e_C_SR"); ch.push_back("mu_C_SR");   
-    ch.push_back("e_D_SR"); ch.push_back("mu_D_SR");   
+    ch.push_back("e_A_passDPHI_SR"); ch.push_back("mu_A_passDPHI_SR");  
+    ch.push_back("e_B_passDPHI_SR"); ch.push_back("mu_B_passDPHI_SR");   
+    ch.push_back("e_C_passDPHI_SR"); ch.push_back("mu_C_passDPHI_SR");   
+    ch.push_back("e_D_passDPHI_SR"); ch.push_back("mu_D_passDPHI_SR");   
     if (simfit) {
-      ch.push_back("e_A_CR"); ch.push_back("mu_A_CR");  
-      ch.push_back("e_B_CR"); ch.push_back("mu_B_CR"); 
-      ch.push_back("e_C_CR"); ch.push_back("mu_C_CR"); 
-      ch.push_back("e_D_CR"); ch.push_back("mu_D_CR");
+      ch.push_back("e_A_passDPHI_CR"); ch.push_back("mu_A_passDPHI_CR");  
+      ch.push_back("e_B_passDPHI_CR"); ch.push_back("mu_B_passDPHI_CR"); 
+      ch.push_back("e_C_passDPHI_CR"); ch.push_back("mu_C_passDPHI_CR"); 
+      ch.push_back("e_D_passDPHI_CR"); ch.push_back("mu_D_passDPHI_CR");
 
-      ch.push_back("e_A_CR5j"); ch.push_back("mu_A_CR5j");  
-      ch.push_back("e_B_CR5j"); ch.push_back("mu_B_CR5j"); 
-      ch.push_back("e_C_CR5j"); ch.push_back("mu_C_CR5j"); 
-      ch.push_back("e_D_CR5j"); ch.push_back("mu_D_CR5j"); 
-
-      /*
-      ch.push_back("E_CR_nonTT_qcdA"); ch.push_back("MU_CR_nonTT_qcdA");  
-      ch.push_back("E_CR_nonTT_qcdB"); ch.push_back("MU_CR_nonTT_qcdB");
-      ch.push_back("E_CR_nonTT_qcdC"); ch.push_back("MU_CR_nonTT_qcdC"); 
-      ch.push_back("E_CR_nonTT_qcdD"); ch.push_back("MU_CR_nonTT_qcdD");
-      */
+      ch.push_back("e_A_passDPHI_CR5j"); ch.push_back("mu_A_passDPHI_CR5j");  
+      ch.push_back("e_B_passDPHI_CR5j"); ch.push_back("mu_B_passDPHI_CR5j"); 
+      ch.push_back("e_C_passDPHI_CR5j"); ch.push_back("mu_C_passDPHI_CR5j"); 
+      ch.push_back("e_D_passDPHI_CR5j"); ch.push_back("mu_D_passDPHI_CR5j"); 
     }
   } else {
-    ch.push_back("e_A_SR"); ch.push_back("mu_A_SR");
+    ch.push_back("e_A_passDPHI_SR"); ch.push_back("mu_A_passDPHI_SR");
     if (simfit) { 
-      ch.push_back("e_A_CR"); ch.push_back("mu_A_CR");
-      ch.push_back("e_A_CR5j"); ch.push_back("mu_A_CR5j"); 
-      // ch.push_back("E_CR_nonTT_qcdB"); ch.push_back("MU_CR_nonTT_qcdB");
-    }
+      ch.push_back("e_A_passDPHI_CR"); ch.push_back("mu_A_passDPHI_CR");
+      ch.push_back("e_A_passDPHI_CR5j"); ch.push_back("mu_A_passDPHI_CR5j"); 
+     }
   }
   //TString ch[]={"SR"}; //"mumu","ee","emu"};
   const size_t nch=ch.size(); //sizeof(ch)/sizeof(TString);
@@ -1205,7 +1189,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
 
       // Only get yields from shapes for regions B 
-      if(modeDD && ((ch->first.find("qcdA")!=string::npos) || (ch->first.find("qcdC")!=string::npos) ||(ch->first.find("qcdD")!=string::npos)))continue;   
+      if(modeDD && ((ch->first.find("_B_")!=string::npos) || (ch->first.find("_C_")!=string::npos) ||(ch->first.find("_D_")!=string::npos)))continue;   
 
       printf("Get yields from shapes:\n");
       printf("Process: %s , channel: %s \n",procName.c_str(),ch->first.c_str());
@@ -1414,7 +1398,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	//	if(ch->first.find("CR5j")!=string::npos)continue;
 	
         if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
-	map_yields[it->first] += ch->second.shapes[histoName].histo()->Integral();
+	//	map_yields[it->first] += ch->second.shapes[histoName].histo()->Integral();
+	TH1 *h=ch->second.shapes[histoName].histo();
+        if (h!=NULL) { map_yields[it->first] += h->Integral();}
+	else {map_yields[it->first] += 0.;}
       }
     }
 
@@ -1647,9 +1634,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       axis->Reset();      
       //      axis->GetXaxis()->SetRangeUser(axis->GetXaxis()->FindBin(0.), axis->GetXaxis()->GetXmax());
       axis->GetXaxis()->SetRangeUser(axis->GetXaxis()->GetXmin(),axis->GetXaxis()->GetXmax());
-      double signalHeight=0; for(unsigned int s=0;s<map_signals[p->first].size();s++){signalHeight = std::max(signalHeight, map_signals[p->first][s]->GetMaximum());}
-      axis->SetMaximum(1.5*std::max(signalHeight , std::max( map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum())));
-
+      //double signalHeight=0;
+      //for(unsigned int s=0;s<map_signals[p->first].size();s++){signalHeight = std::max(signalHeight, map_signals[p->first][s]->GetMaximum());}
+      //  axis->SetMaximum(1.5*std::max(signalHeight , std::max( map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum())));
+      axis->SetMaximum(1.5*std::max(map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum()));
+      
       //hard code range
       if(procs["data"].channels[p->first].bin.find("vbf")!=string::npos){
         axis->SetMinimum(1E-1);
@@ -1679,27 +1668,27 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       axis->Draw();
 
       t1->Update();
-      
-      // Blind SRs
-      /*
-      if(procs["data"].channels[p->first].bin.find("SR")!=string::npos) {
-	for(unsigned int i=p->second->FindBin(20);i<=p->second->GetNbinsX()+1; i++){   
-	  p->second->SetBinContent(i, 0); p->second->SetBinError(i, 0);
-	}
-
-	//	TPave* blinding_box = new TPave(data->GetBinLowEdge(data->FindBin(blind)),  hist->GetMinimum(), data->GetXaxis()->GetXmax(), hist->GetMaximum(), 0, "NB" );  
-	//	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
-
-      } 
-      */
 
       p->second->Draw("same"); // MC stack histogram
       map_unc [p->first]->Draw("2 same");
       for(unsigned int i=0;i<map_signals[p->first].size();i++){
-        map_signals[p->first][i]->Draw("HIST same");
+	TH1* hs= map_signals[p->first][i];
+        if (hs) hs->Draw("HIST same");
       }
+      // if(!blindData) map_dataE[p->first]->Draw("P0 same");
+      /*
+      if ( ((p->first).find("mu_A_passDPHI_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_passDPHI_SR_4b")!=std::string::npos) ||
+	   ((p->first).find("e_A_passDPHI_SR_3b")!=std::string::npos) || ((p->first).find("e_A_passDPHI_SR_4b")!=std::string::npos) ) {
+	for(int i=20;i<=(int)map_dataE[p->first]->GetN(); i++){   
+	  map_dataE[p->first]->RemovePoint(i);// map_dataE[p->first]->SetPointEYlow(i, 0); map_dataE[p->first]->SetPointEYhigh(i, 0);
+	}
+	
+	TPave* blinding_box = new TPave(map_data[p->first]->GetBinLowEdge(map_data[p->first]->FindBin(0.1)), map_data[p->first]->GetMinimum(),map_data[p->first]->GetXaxis()->GetXmax(), map_data[p->first]->GetMaximum(), 0, "NB" );  
+	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
+      }
+      */
       if(!blindData) map_dataE[p->first]->Draw("P0 same");
-
+      
       bool printBinContent = false;
       if(printBinContent){
         TLatex* tex = new TLatex();
@@ -1934,9 +1923,13 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         else ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );
         TVirtualPad* pad = t1->cd(I); 
         pad->SetTopMargin(0.06); pad->SetRightMargin(0.03); pad->SetBottomMargin(0.07);  pad->SetLeftMargin(0.06);
-				//                 pad->SetLogy(true); 
-	TH1* h = (TH1*)(ch->second.shapes[histoName.Data()].histo()->Clone((it->first+ch->first+"Nominal").c_str())); 
-
+	//                 pad->SetLogy(true); 
+	//TH1* h = (TH1*)(ch->second.shapes[histoName.Data()].histo()->Clone((it->first+ch->first+"Nominal").c_str())); 
+	TH1* hh = ch->second.shapes[histoName.Data()].histo();
+	if (hh==NULL) continue;
+	
+        TH1* h = (TH1*)(hh->Clone((it->first+ch->first+"Nominal").c_str())); 
+	
         double yield = h->Integral();
         toDelete.push_back(h);
         mapYieldPerBin[""][ch->first] = yield;
@@ -2135,9 +2128,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
         TString chbin = ch->first;
         if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
-        ShapeData_t& shapeInfo = ch->second.shapes[histoName];      
-        TH1* h = shapeInfo.histo();
-
+	//   ShapeData_t& shapeInfo = ch->second.shapes[histoName];      
+	// TH1* h = shapeInfo.histo();
+	ShapeData_t& shapeInfo = ch->second.shapes[histoName];
+	TH1 * hh = shapeInfo.histo();
+        double integral = 0.; if (hh!=NULL) integral = hh->Integral();
+	
         TString proc = it->second.shortName.c_str();
         for(std::map<string, TH1*  >::iterator unc=shapeInfo.uncShape.begin();unc!=shapeInfo.uncShape.end();unc++){
           TString syst   = unc->first.c_str();
@@ -2260,23 +2256,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
   //
   void AllInfo_t::addHardCodedUncertainties(string histoName){
     
-    //13TeV values  
-    double QCDScaleMass        [] = {  200,   300,   400,   600,   800,  1000,  1500,  2000,  2500,  3000,  9999};
-    double QCDScaleggHeq0jets  [] = {2.042, 1.416, 1.283, 1.335, 1.352, 1.425, 1.542, 1.627, 1.659, 1.638, 1.638};
-    double QCDScaleggHgeq1jets [] = {1.305, 1.219, 1.181, 1.168, 1.172, 1.183, 1.201, 1.219, 1.220, 1.219, 1.219};
-    double QCDScaleggHvbf      [] = {1.217, 1.282, 1.200, 1.215, 1.178, 1.195, 1.201, 1.226, 1.232, 1.199, 1.199};
-
-    double UEPSf0 []         = {0.952, 0.955, 0.958, 0.964, 0.966, 0.954, 0.946, 0.931, 0.920, 0.920, 0.920, 0.920, 0.920};
-    double UEPSf1 []         = {1.055, 1.058, 1.061, 1.068, 1.078, 1.092, 1.102, 1.117, 1.121, 1.121, 1.121, 1.121, 1.121};
-    double UEPSf2 []         = {1.059, 0.990, 0.942, 0.889, 0.856, 0.864, 0.868, 0.861, 0.872, 0.872, 0.872, 0.872, 0.872}; 
-
-    TGraph* TG_QCDScaleggHeq0jets  = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass,  QCDScaleggHeq0jets);
-    TGraph* TG_QCDScaleggHgeq1jets = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, QCDScaleggHgeq1jets);
-    TGraph* TG_QCDScaleggHvbf      = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass,      QCDScaleggHvbf);
-    TGraph* TG_UEPSf0         = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, UEPSf0);
-    TGraph* TG_UEPSf1         = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, UEPSf1);
-    TGraph* TG_UEPSf2         = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, UEPSf2);
-    
 
     for(unsigned int p=0;p<sorted_procs.size();p++){
       string procName = sorted_procs[p];
@@ -2286,7 +2265,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         TString chbin = ch->first;
         if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
 	ShapeData_t& shapeInfo = ch->second.shapes[histoName];      
-        double integral = shapeInfo.histo()->Integral();
+        double integral = 0.;
+
+	TH1* h=shapeInfo.histo(); if (h) integral=h->Integral();
 
         //lumi
         if(!it->second.isData && systpostfix.Contains('3'))shapeInfo.uncScale["lumi_13TeV"] = integral*0.025;
@@ -2316,10 +2297,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	}
         //uncertainties to be applied only in higgs analyses
         if(mass>0){
-          //bin migration at th level
-          if(it->second.shortName.find("ggH")!=string::npos && chbin.Contains("eq0jet" )){shapeInfo.uncScale["QCDscale_ggH"]    = integral*(TG_QCDScaleggHeq0jets->Eval(mass,NULL,"S")-1);}
-          if(it->second.shortName.find("ggH")!=string::npos && chbin.Contains("eq1jet" )){shapeInfo.uncScale["QCDscale_ggH"] = integral*(TG_QCDScaleggHgeq1jets->Eval(mass,NULL,"S")-1);} 
-          if(it->second.shortName.find("ggH")!=string::npos && chbin.Contains("vbf"    )){shapeInfo.uncScale["QCDscale_ggH"] = integral*(TG_QCDScaleggHvbf->Eval(mass,NULL,"S")-1);}
+          //bin migration at theory level
+	  // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt13TeV#WH_Process
+          if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["QCDscale_wh"]  = integral*0.006;} //QCD scale
+	  if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["PDFscale_wh"]  = integral*0.019;} //PDF+as scale
 
         }//end of uncertainties to be applied only in higgs analyses
 
@@ -2383,8 +2364,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       if(C->first.find("e"  )!=string::npos)eecard   += (C->first+"=").c_str()+dcName+" ";
       if(C->first.find("mu")!=string::npos)mumucard += (C->first+"=").c_str()+dcName+" ";
 
-      if(C->first.find("e_A_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";  
-      if(C->first.find("mu_A_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" "; 
+      if(C->first.find("e_A_passDPHI_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";  
+      if(C->first.find("mu_A_passDPHI_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" "; 
 
       bool TTcontrolregion(false);  
       bool nonTTcontrolregion(false); 
