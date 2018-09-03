@@ -1883,11 +1883,12 @@ int main(int argc, char* argv[])
 	  
 	  TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
 	  tags.push_back(tag_cat+tag_qcd+tag_subcat); // add jet binning category
-
+	  if (fabs(mindphijmet)>0.5) tags.push_back(tag_cat+tag_qcd+"passDPHI_"+tag_subcat);
+	  
 	  bool isSignalRegion(false);
 	  if(tag_subcat.Contains("SR")) { isSignalRegion=true; }
 	  else if (tag_subcat.Contains("CR_")) { // ||  tag_subcat.Contains("CR_nonTT")) {
-
+	    // contains (2b,3j) and (2b, 4j)
 	    GoodIdbJets.clear();
 	    for (auto & i : GoodIdJets) { GoodIdbJets.push_back(i);}
 	    for (auto & i : SVs) {  GoodIdbJets.push_back(i); }
