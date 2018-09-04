@@ -119,7 +119,7 @@ int indexvbf = -1;
 int massL=-1, massR=-1;
 
 
-double dropBckgBelow=0.01;
+double dropBckgBelow=0.01; //0.01;
 
 bool matchKeyword(JSONWrapper::Object& process, std::vector<string>& keywords){
   if(keywords.size()<=0)return true;
@@ -1504,21 +1504,16 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           errors->SetMaximum(Maximum);
           map_unc[ch->first] = errors;
 
-	  // TH1* hE; // the histogram (you should set the number of bins, the title etc)
-	  // hE=(TH1*)h->Clone((ch->first+"histPlusSyst").c_str());
-	  // hE->Reset();
-	  // auto nPoints = errors->GetN(); // number of points in your TGraph
-	  // for(int i=0; i < nPoints; ++i) {
-	  //   double x,y, dx, dylo, dyhi; dx=0.; 
-	  //   errors->GetPoint(i, x, y);
-	  //   dylo=errors->GetErrorYlow(i); dyhi=errors->GetErrorYhigh(i);
-	  //   hE->SetBinContent(i,y); // ?
-	  //   hE->SetBinError(i,(dylo+dyhi)/2.);
-	  // }
-	  map_uncH[ch->first]=h;
-	  
-	  // map_uncH[ch->first] = (TH1D*)h->Clone((ch->first+"histPlusSyst").c_str());utils::root::checkSumw2((ch->first+"histPlusSyst").c_str());
-          continue;//otherwise it will fill the legend
+	  map_uncH[ch->first] = (TH1D*)h->Clone((ch->first+"histPlusSyst").c_str()); //utils::root::checkSumw2((ch->first+"histPlusSyst").c_str());
+	  // loop over hist to set the stat+syst errors on map_uncH
+	  icutg=0;
+	  for(int ibin=1; ibin<=map_uncH[ch->first]->GetXaxis()->GetNbins(); ibin++){
+	    double ierr=errors->GetErrorY(icutg);
+	    map_uncH[ch->first]->SetBinError(ibin,ierr);
+	    icutg++;
+	  }
+
+	  continue;//otherwise it will fill the legend
         }else if(it->second.isBckg){                 
           if(map_stack.find(ch->first)==map_stack.end()){
             map_stack[ch->first] = new THStack((ch->first+"stack").c_str(),(ch->first+"stack").c_str());
@@ -1576,17 +1571,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     }
     if(map_unc.begin()!=map_unc.end())legA->AddEntry(map_unc.begin()->second, "Syst. + Stat.", "F");
 
-    // int NBins = map_data.size()/selCh.size();
-    /*
-    TCanvas* c1 = new TCanvas("c1","c1",300,300); //selCh.size());
-    c1->SetTopMargin(0.00); c1->SetRightMargin(0.00); c1->SetBottomMargin(0.00);  c1->SetLeftMargin(0.00);
-    TPad* t2 = new TPad("t2","t2", 0.03, 0.90, 1.00, 1.00, -1, 1);  t2->Draw();  c1->cd();
-    t2->SetTopMargin(0.00); t2->SetRightMargin(0.00); t2->SetBottomMargin(0.00);  t2->SetLeftMargin(0.00);
-    TPad* t1 = new TPad("t1","t1", 0.03, 0.03, 1.00, 0.90, 4, 1);  t1->Draw();  t1->cd();
-    t1->SetTopMargin(0.00); t1->SetRightMargin(0.00); t1->SetBottomMargin(0.00);  t1->SetLeftMargin(0.00);
-    // t1->Divide(NBins, selCh.size(), 0, 0);
-    // //t1->Divide(NBins, 1, 0, 0);  
-    */
+   
     TCanvas* c[50];
     int I=1;
     for(std::map<string, THStack*>::iterator p = map_stack.begin(); p!=map_stack.end(); p++){
@@ -1622,13 +1607,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       
       t1->Draw();
       t1->cd();
-      //t1->Divide(NBins, selCh.size(), 0, 0);
-      // //t1->Divide(NBins, 1, 0, 0);  
-      
-      //      TVirtualPad* pad = t1->cd(I);
-      //      pad->SetTopMargin(0.06); pad->SetRightMargin(0.03); pad->SetBottomMargin(0.09);  pad->SetLeftMargin(0.09);
-      //      gPad->SetLogy(true); 
-
+ 
       //print histograms
       TH1* axis = (TH1*)map_data[p->first]->Clone("axis");
       axis->Reset();      
@@ -1675,18 +1654,30 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	TH1* hs= map_signals[p->first][i];
         if (hs) hs->Draw("HIST same");
       }
-      // if(!blindData) map_dataE[p->first]->Draw("P0 same");
-      /*
-      if ( ((p->first).find("mu_A_passDPHI_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_passDPHI_SR_4b")!=std::string::npos) ||
-	   ((p->first).find("e_A_passDPHI_SR_3b")!=std::string::npos) || ((p->first).find("e_A_passDPHI_SR_4b")!=std::string::npos) ) {
-	for(int i=20;i<=(int)map_dataE[p->first]->GetN(); i++){   
-	  map_dataE[p->first]->RemovePoint(i);// map_dataE[p->first]->SetPointEYlow(i, 0); map_dataE[p->first]->SetPointEYhigh(i, 0);
-	}
+      
+      // if ( ((p->first).find("mu_A_passDPHI_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_passDPHI_SR_4b")!=std::string::npos) ||
+      // 	   ((p->first).find("e_A_passDPHI_SR_3b")!=std::string::npos) || ((p->first).find("e_A_passDPHI_SR_4b")!=std::string::npos) ) {
+
+      // 	for(unsigned int i=map_data[p->first]->FindBin(0.1);i<=map_data[p->first]->GetNbinsX()+1; i++){   
+      // 	  map_data[p->first]->SetBinContent(i, 0); map_data[p->first]->SetBinError(i, 0);
+      // 	}
+
+      // 	for (int i=20; i<=map_dataE[p->first]->GetN()+1; i++){
+      // 	  // map_dataE[p->first]->RemovePoint(i);
+      // 	  double x,y;
+      // 	  map_dataE[p->first]->GetPoint(i,x,y);
+
+      // 	  map_dataE[p->first]->SetPoint(i,x,0.);
+      // 	  map_dataE[p->first]->SetPointEYlow(i,0);
+      // 	  map_dataE[p->first]->SetPointEYhigh(i,0);
+      // 	}
 	
-	TPave* blinding_box = new TPave(map_data[p->first]->GetBinLowEdge(map_data[p->first]->FindBin(0.1)), map_data[p->first]->GetMinimum(),map_data[p->first]->GetXaxis()->GetXmax(), map_data[p->first]->GetMaximum(), 0, "NB" );  
-	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
-      }
-      */
+      // 	TH1 *hist=(TH1*)p->second->GetHistogram();
+	
+      // 	TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), hist->GetMinimum(),axis->GetXaxis()->GetXmax(), hist->GetMaximum(), 0, "NB" );  
+      // 	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
+      // }
+      
       if(!blindData) map_dataE[p->first]->Draw("P0 same");
       
       bool printBinContent = false;
@@ -1771,8 +1762,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	T3->AddText("Preliminary"); T3->Draw();
       }
 
-      // TPad* t2 = new TPad("t2","t2", 0.03, 0.90, 1.00, 1.00, -1, 1);  t2->Draw();  c[I]->cd();
-      //   t2->SetTopMargin(0.00); t2->SetRightMargin(0.00); t2->SetBottomMargin(0.00);  t2->SetLeftMargin(0.00);
+   
       c[I]->cd();
       
       TPad *t2 = new TPad("t2", "t2",0.0,0.0, 1.0,0.2);
@@ -1796,9 +1786,22 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       t2->SetPad(0,0.0,1.0,0.2);
 
 
-      TGraphAsymmErrors *denSystUnc = (TGraphAsymmErrors*)map_unc[p->first];
       TH1D* denSystUncH = (TH1D*)map_uncH[p->first];
-      //   utils::root::checkSumw2(denSystUncH); 
+      utils::root::checkSumw2(denSystUncH);
+
+      int GPoint=0;
+      TGraphErrors *denSystUnc=new TGraphErrors(denSystUncH->GetXaxis()->GetNbins()); 
+      for(int xbin=1; xbin<=denSystUncH->GetXaxis()->GetNbins(); xbin++){
+	denSystUnc->SetPoint(GPoint, denSystUncH->GetBinCenter(xbin), 1.0);
+	denSystUnc->SetPointError(GPoint,  denSystUncH->GetBinWidth(xbin)/2, denSystUncH->GetBinContent(xbin)!=0?denSystUncH->GetBinError(xbin)/denSystUncH->GetBinContent(xbin):0);
+	GPoint++;
+	
+      	if(denSystUncH->GetBinContent(xbin)==0) continue;
+      	Double_t err=denSystUncH->GetBinError(xbin)/denSystUncH->GetBinContent(xbin);
+      	denSystUncH->SetBinContent(xbin,1);
+      	denSystUncH->SetBinError(xbin,err);
+      }denSystUnc->Set(GPoint);
+      
       denSystUnc->SetLineColor(1);
       denSystUnc->SetFillStyle(3004);
       denSystUnc->SetFillColor(kGray+2);
@@ -1807,7 +1810,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       denSystUncH->Reset("ICE");       
       denSystUncH->SetTitle("");
       denSystUncH->SetStats(kFALSE);
-      denSystUncH->Draw("E3");
+      denSystUncH->Draw();
       denSystUnc->Draw("2 0 SAME");
       float yscale = (1.0-0.2)/(0.2);       
       denSystUncH->GetYaxis()->SetTitle("Data/#Sigma Bkg.");
@@ -1845,8 +1848,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       dataToObs->SetMarkerStyle(20);
       dataToObs->SetMarkerSize(0.7);
       dataToObs->Draw("P 0 SAME");
-      dataToObs->Draw("E2 same");
-      
+
+      // if ( ((p->first).find("mu_A_passDPHI_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_passDPHI_SR_4b")!=std::string::npos) ||
+      // 	   ((p->first).find("e_A_passDPHI_SR_3b")!=std::string::npos) || ((p->first).find("e_A_passDPHI_SR_4b")!=std::string::npos) ) {
+	
+      // 	TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), 0.4,axis->GetXaxis()->GetXmax(), 1.6, 0, "NB" );  
+      // 	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
+      // }
+  
       TLegend *legR = new TLegend(0.56,0.78,0.93,0.96, "NDC");
       legR->SetHeader("");
       legR->SetNColumns(2);
