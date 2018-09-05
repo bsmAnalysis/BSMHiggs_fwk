@@ -56,15 +56,8 @@ double datadriven_qcd_Syst = 0.50;
 
 bool postfit=false;
 
-double norm_top_e_3b=1.;
-double norm_top_mu_3b=1.;
-double norm_top_e_4b=1.;
-double norm_top_mu_4b=1.;
-
-double norm_w_e_3b=1.;
-double norm_w_mu_3b=1.;
-double norm_w_e_4b=1.;
-double norm_w_mu_4b=1.;
+double norm_top=1.12;
+double norm_w=2.24;
 
 int mass;
 bool shape = true;
@@ -126,7 +119,7 @@ int indexvbf = -1;
 int massL=-1, massR=-1;
 
 
-double dropBckgBelow=0.01;
+double dropBckgBelow=0.01; //0.01;
 
 bool matchKeyword(JSONWrapper::Object& process, std::vector<string>& keywords){
   if(keywords.size()<=0)return true;
@@ -554,7 +547,6 @@ int main(int argc, char* argv[])
     else if(arg.find("--systpostfix")   !=string::npos && i+1<argc)  { systpostfix = argv[i+1];  i++;  printf("systpostfix '%s' will be used\n", systpostfix.Data());  }
     else if(arg.find("--shape")  !=string::npos) { shape=true; printf("shapeBased = True\n");}   
     else if(arg.find("--syst")  !=string::npos) { runSystematics=true; printf("syst = True\n");}     
-    //    else if(arg.find("--modeDD")  !=string::npos) { modeDD=true; printf("modeDD = True\n");} 
     else if(arg.find("--simfit")  !=string::npos) { simfit=true; printf("simfit = True\n");}    
     //    else if(arg.find("--postfit")  !=string::npos) { postfit=true; printf("postfit = True\n");}    
     else if(arg.find("--dirtyFix2")    !=string::npos) { dirtyFix2=true; printf("dirtyFix2 = True\n");}
@@ -566,9 +558,8 @@ int main(int argc, char* argv[])
     else if(arg.find("--statBinByBin")    !=string::npos) { sscanf(argv[i+1],"%f",&statBinByBin); i++; printf("statBinByBin = %f\n", statBinByBin);}
     else if(arg.find("--dropBckgBelow")   !=string::npos) { sscanf(argv[i+1],"%lf",&dropBckgBelow); i++; printf("dropBckgBelow = %f\n", dropBckgBelow);}
     else if(arg.find("--key"          )   !=string::npos && i+1<argc){ keywords.push_back(argv[i+1]); printf("Only samples matching this (regex) expression '%s' are processed\n", argv[i+1]); i++;  }
-    if(arg.find("--modeDD")  !=string::npos) { modeDD=true; printf("modeDD = True\n");}   
+    if(arg.find("--modeDD") !=string::npos) { modeDD=true; printf("modeDD = True\n");} 
     if(arg.find("--postfit")  !=string::npos) { postfit=true; printf("postfit = True\n");}   
-    //    if(arg.find("--mergeproc") !=string::npos) { mergeproc=true; printf("mergeproc = True");}
   }
   if(jsonFile.IsNull()) { printf("No Json file provided\nrun with '--help' for more details\n"); return -1; }
   if(inFileUrl.IsNull()){ printf("No Inputfile provided\nrun with '--help' for more details\n"); return -1; }
@@ -578,27 +569,27 @@ int main(int argc, char* argv[])
   if(AnalysisBins.size()==0)AnalysisBins.push_back("all");
   if(Channels.size()==0){ 
     if (modeDD) {
-      Channels.push_back("E_SR_qcdA_notMt"); Channels.push_back("MU_SR_qcdA_notMt");
-      Channels.push_back("E_SR_qcdB_Mt"); Channels.push_back("MU_SR_qcdB_Mt");  
-      Channels.push_back("E_SR_qcdC_notMt"); Channels.push_back("MU_SR_qcdC_notMt");  
-      Channels.push_back("E_SR_qcdD_Mt"); Channels.push_back("MU_SR_qcdD_Mt");  
+      Channels.push_back("e_A_passDPHI_SR"); Channels.push_back("mu_A_passDPHI_SR");
+      Channels.push_back("e_B_passDPHI_SR"); Channels.push_back("mu_B_passDPHI_SR");  
+      Channels.push_back("e_C_passDPHI_SR"); Channels.push_back("mu_C_passDPHI_SR");  
+      Channels.push_back("e_D_passDPHI_SR"); Channels.push_back("mu_D_passDPHI_SR");  
     } else {
-      Channels.push_back("E_SR_qcdB_Mt"); Channels.push_back("MU_SR_qcdB_Mt");
+      Channels.push_back("e_A_passDPHI_SR"); Channels.push_back("mu_A_passDPHI_SR");
     }
     if(simfit){
       if (modeDD) {
-	Channels.push_back("E_CR_qcdA_notMt");Channels.push_back("MU_CR_qcdA_notMt"); // Top CR
-	Channels.push_back("E_CR_qcdB_Mt");Channels.push_back("MU_CR_qcdB_Mt"); // Top CR 
-	Channels.push_back("E_CR_qcdC_notMt");Channels.push_back("MU_CR_qcdC_notMt"); // Top CR 
-	Channels.push_back("E_CR_qcdD_Mt");Channels.push_back("MU_CR_qcdD_Mt"); // Top CR 
+	Channels.push_back("e_A_passDPHI_CR");Channels.push_back("mu_A_passDPHI_CR"); // Top CR
+	Channels.push_back("e_B_passDPHI_CR");Channels.push_back("mu_B_passDPHI_CR"); // Top CR 
+	Channels.push_back("e_C_passDPHI_CR");Channels.push_back("mu_C_passDPHI_CR"); // Top CR 
+	Channels.push_back("e_D_passDPHI_CR");Channels.push_back("mu_D_passDPHI_CR"); // Top CR
 
-	Channels.push_back("E_CR_nonTT_qcdA_notMt");Channels.push_back("MU_CR_nonTT_qcdA_notMt"); // nonTop CR 
-	Channels.push_back("E_CR_nonTT_qcdB_Mt");Channels.push_back("MU_CR_nonTT_qcdB_Mt"); // nonTop CR   
-	Channels.push_back("E_CR_nonTT_qcdC_notMt");Channels.push_back("MU_CR_nonTT_qcdC_notMt"); // nonTop CR   
-	Channels.push_back("E_CR_nonTT_qcdD_Mt");Channels.push_back("MU_CR_nonTT_qcdD_Mt"); // nonTop CR   
+	Channels.push_back("e_A_passDPHI_CR5j");Channels.push_back("mu_A_passDPHI_CR5j"); // tt+bb CR
+	Channels.push_back("e_B_passDPHI_CR5j");Channels.push_back("mu_B_passDPHI_CR5j"); // tt+bb CR 
+	Channels.push_back("e_C_passDPHI_CR5j");Channels.push_back("mu_C_passDPHI_CR5j"); // tt+bb CR 
+	Channels.push_back("e_D_passDPHI_CR5j");Channels.push_back("mu_D_passDPHI_CR5j"); // tt+bb CR 
       } else {
-	Channels.push_back("E_CR_qcdB_Mt");Channels.push_back("MU_CR_qcdB_Mt"); // Top CR   
-	Channels.push_back("E_CR_nonTT_qcdB_Mt");Channels.push_back("MU_CR_nonTT_qcdB_Mt"); // nonTop CR 
+	Channels.push_back("e_A_passDPHI_CR");Channels.push_back("mu_A_passDPHI_CR"); // Top CR
+	Channels.push_back("e_A_passDPHI_CR5j");Channels.push_back("mu_A_passDPHI_CR5j"); // tt+bb CR   
       }
     }
   }
@@ -654,27 +645,27 @@ int main(int argc, char* argv[])
 
   std::vector<TString> ch;
   if (modeDD) {
-    ch.push_back("E_SR_qcdA_notMt"); ch.push_back("MU_SR_qcdA_notMt");  
-    ch.push_back("E_SR_qcdB_Mt"); ch.push_back("MU_SR_qcdB_Mt");   
-    ch.push_back("E_SR_qcdC_notMt"); ch.push_back("MU_SR_qcdC_notMt");   
-    ch.push_back("E_SR_qcdD_Mt"); ch.push_back("MU_SR_qcdD_Mt");   
+    ch.push_back("e_A_passDPHI_SR"); ch.push_back("mu_A_passDPHI_SR");  
+    ch.push_back("e_B_passDPHI_SR"); ch.push_back("mu_B_passDPHI_SR");   
+    ch.push_back("e_C_passDPHI_SR"); ch.push_back("mu_C_passDPHI_SR");   
+    ch.push_back("e_D_passDPHI_SR"); ch.push_back("mu_D_passDPHI_SR");   
     if (simfit) {
-      ch.push_back("E_CR_qcdA_notMt"); ch.push_back("MU_CR_qcdA_notMt");  
-      ch.push_back("E_CR_qcdB_Mt"); ch.push_back("MU_CR_qcdB_Mt"); 
-      ch.push_back("E_CR_qcdC_notMt"); ch.push_back("MU_CR_qcdC_notMt"); 
-      ch.push_back("E_CR_qcdD_Mt"); ch.push_back("MU_CR_qcdD_Mt"); 
+      ch.push_back("e_A_passDPHI_CR"); ch.push_back("mu_A_passDPHI_CR");  
+      ch.push_back("e_B_passDPHI_CR"); ch.push_back("mu_B_passDPHI_CR"); 
+      ch.push_back("e_C_passDPHI_CR"); ch.push_back("mu_C_passDPHI_CR"); 
+      ch.push_back("e_D_passDPHI_CR"); ch.push_back("mu_D_passDPHI_CR");
 
-      ch.push_back("E_CR_nonTT_qcdA_notMt"); ch.push_back("MU_CR_nonTT_qcdA_notMt");  
-      ch.push_back("E_CR_nonTT_qcdB_Mt"); ch.push_back("MU_CR_nonTT_qcdB_Mt");
-      ch.push_back("E_CR_nonTT_qcdC_notMt"); ch.push_back("MU_CR_nonTT_qcdC_notMt"); 
-      ch.push_back("E_CR_nonTT_qcdD_Mt"); ch.push_back("MU_CR_nonTT_qcdD_Mt");
+      ch.push_back("e_A_passDPHI_CR5j"); ch.push_back("mu_A_passDPHI_CR5j");  
+      ch.push_back("e_B_passDPHI_CR5j"); ch.push_back("mu_B_passDPHI_CR5j"); 
+      ch.push_back("e_C_passDPHI_CR5j"); ch.push_back("mu_C_passDPHI_CR5j"); 
+      ch.push_back("e_D_passDPHI_CR5j"); ch.push_back("mu_D_passDPHI_CR5j"); 
     }
   } else {
-    ch.push_back("E_SR_qcdB_Mt"); ch.push_back("MU_SR_qcdB_Mt");
+    ch.push_back("e_A_passDPHI_SR"); ch.push_back("mu_A_passDPHI_SR");
     if (simfit) { 
-      ch.push_back("E_CR_qcdB_Mt"); ch.push_back("MU_CR_qcdB_Mt"); 
-      ch.push_back("E_CR_nonTT_qcdB_Mt"); ch.push_back("MU_CR_nonTT_qcdB_Mt");
-    }
+      ch.push_back("e_A_passDPHI_CR"); ch.push_back("mu_A_passDPHI_CR");
+      ch.push_back("e_A_passDPHI_CR5j"); ch.push_back("mu_A_passDPHI_CR5j"); 
+     }
   }
   //TString ch[]={"SR"}; //"mumu","ee","emu"};
   const size_t nch=ch.size(); //sizeof(ch)/sizeof(TString);
@@ -902,21 +893,23 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
   procInfo_NRB.isSign = false;
   procInfo_NRB.isBckg = true;
   procInfo_NRB.xsec = 0.0;
-  procInfo_NRB.br     = 1.0;
+  procInfo_NRB.br = 1.0;
 
   //create an histogram containing all the nonQCD MC backgrounds
   for(std::map<string, ProcessInfo_t>::iterator it=procs.begin(); it!=procs.end();it++){
     if(it->second.isData)continue;
     TString procName = it->first.c_str();
-    if(!( procName.Contains("ZVV") || procName.Contains("Single Top") || procName.Contains("t#bar{t}+#gammaZW") || procName.Contains("Z#rightarrow") || procName.Contains("VV") || procName.Contains("t#bar{t}+jets") || procName.Contains("W#rightarrow")))continue;
-      
+    if(!(procName.Contains("Single Top") || procName.Contains("t#bar{t}+#gammaZW") || procName.Contains("Z#rightarrow") || procName.Contains("VV") || procName.Contains("t#bar{t}") || procName.Contains("W#rightarrow")))continue;
+    //    printf("Subtracting nonQCD process from data: %s \n",procName.Data()); 
     addProc(procInfo_NRB, it->second, false);
   }
 
   for(std::map<string, ChannelInfo_t>::iterator chData = dataProcIt->second.channels.begin(); chData!=dataProcIt->second.channels.end(); chData++){
     if(std::find(selCh.begin(), selCh.end(), chData->second.channel)==selCh.end())continue;
 
-    if(chData->first.find("qcdB")!=string::npos)continue; // do not subtract nonQCD MC in regions B...
+    printf("Channels=%s\n",chData->first.c_str());
+    // if(chData->first.find("CR5j"))continue;
+    if(chData->first.find("_A_")!=string::npos)continue; // do not subtract nonQCD MC in regions A...
 
     // now look at the channels in the nonQCD MC process
     std::map<string, ChannelInfo_t>::iterator chNRB = procInfo_NRB.channels.find(chData->first); 
@@ -946,10 +939,10 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
       }
     }
   
-    // Now here all the data channels A,C,D have subtracted NonQCD components
+    // Now here all the data channels B,C,D have subtracted NonQCD components
   } // end data channels
 
-  // Replace shape qcdD_Mt*(qcdA/qcdC) with qcd shape B     
+  // Replace shape qcdD*(qcdA/qcdC) with qcd shape B     
 
   //create a new proc for DD QCD backgrounds
   TString DDProcName = "ddqcd";
@@ -977,12 +970,15 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     toBeDelete.push_back(it->first);
   }
   for(std::vector<string>::iterator p=toBeDelete.begin();p!=toBeDelete.end();p++){procs.erase(procs.find((*p)));}
-       
+
   for(std::map<string, ChannelInfo_t>::iterator chData = dataProcIt->second.channels.begin(); chData!=dataProcIt->second.channels.end(); chData++){
     if(std::find(selCh.begin(), selCh.end(), chData->second.channel)==selCh.end())continue;
 
-    if(!(chData->first.find("qcdB")!=string::npos))continue; // replace only in regions B...   
+    if(!(chData->first.find("_A_")!=string::npos))continue; // replace only in regions A...
 
+    //   printf("Channel 2:%s\n",chData->first.c_str());
+    //  if (chData->second.channel.find("CR5j")) continue;
+    
     std::map<string, ChannelInfo_t>::iterator chDD = procInfo_DD.channels.find(chData->first); 
     if(chDD==procInfo_DD.channels.end()){  //this channel does not exist, create it
       procInfo_DD.channels[chData->first] = ChannelInfo_t();     
@@ -992,37 +988,45 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     }
 
     TString binName;
-    binName=chData->second.channel.c_str(); // e.g. E_SR_qcdB
-    binName.ReplaceAll("qcdB_Mt","");
-
+    binName=chData->second.channel.c_str(); // e.g. e_A_SR
     //load data histograms in the QCD control regions
-    TH1* hCtrl_SB = dataProcIt->second.channels[(binName+"qcdC_notMt_"+chData->second.bin.c_str()).Data()].shapes[mainHisto.Data()].histo(); // Region C  
-    TH1* hCtrl_SI = dataProcIt->second.channels[(binName+"qcdD_Mt_"+chData->second.bin.c_str()).Data()].shapes[mainHisto.Data()].histo();  // Region D 
-    TH1* hChan_SB = dataProcIt->second.channels[(binName+"qcdA_notMt_"+chData->second.bin.c_str()).Data()].shapes[mainHisto.Data()].histo(); // Region A
+    binName.ReplaceAll("A_","D_");         
+    //    printf("binName= %s\n",binName.Data());  
+    TH1* hCtrl_SB = dataProcIt->second.channels[(binName+"_"+chData->second.bin.c_str()).Data()].shapes[mainHisto.Data()].histo(); // Region D  
+    binName.ReplaceAll("D_","B_");    
+    TH1* hCtrl_SI = dataProcIt->second.channels[(binName+"_"+chData->second.bin.c_str()).Data()].shapes[mainHisto.Data()].histo();  // Region B 
+    binName.ReplaceAll("B_","C_");       
+    TH1* hChan_SB = dataProcIt->second.channels[(binName+"_"+chData->second.bin.c_str()).Data()].shapes[mainHisto.Data()].histo(); // Region C
 
     TH1* hDD     =  chDD->second.shapes[mainHisto.Data()].histo(); // Region B
     
     // load MC histograms in the QCD control regions
-    TH1* hDD_C = procInfo_DD.channels.find((binName+"qcdC_notMt_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();
-    TH1* hDD_D = procInfo_DD.channels.find((binName+"qcdD_Mt_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();  
-    TH1* hDD_A = procInfo_DD.channels.find((binName+"qcdA_notMt_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();  
+    //    binName.ReplaceAll("C_","B_");
+    TH1* hDD_C = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo(); 
+    binName.ReplaceAll("C_","D_");  
+    TH1* hDD_D = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();
+    binName.ReplaceAll("D_","B_");    
+    TH1* hDD_B = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();  
     
+    binName.ReplaceAll("B_","");   
+
     //compute alpha
     double alpha=0 ,alpha_err=0;
     double alphaMC=0, alphaMC_err=0;
 
-    double errA,errC;
-    double errMC_A, errMC_C;
+    double errC,errD;
+    double errMC_C, errMC_D;
 
+ 
     if(hCtrl_SB->Integral()>0){
-      alpha     = hChan_SB->IntegralAndError(1,hChan_SB->GetXaxis()->GetNbins(),errA) / hCtrl_SB->IntegralAndError(1,hCtrl_SB->GetXaxis()->GetNbins(),errC);
-      alpha_err = ( fabs( hChan_SB->Integral() * errC ) + fabs(errA * errC )  ) / pow(hCtrl_SB->Integral(), 2);        
+      alpha     = hChan_SB->IntegralAndError(1,hChan_SB->GetXaxis()->GetNbins(),errC) / hCtrl_SB->IntegralAndError(1,hCtrl_SB->GetXaxis()->GetNbins(),errD);
+      alpha_err = ( fabs( hChan_SB->Integral() * errD ) + fabs(errC * errD )  ) / pow(hCtrl_SB->Integral(), 2);        
     }
     
     // alpha in MC
-    if(hDD_C->Integral()>0){
-      alphaMC = hDD_A->IntegralAndError(1,hDD_A->GetXaxis()->GetNbins(),errMC_A) / hDD_C->IntegralAndError(1,hDD_C->GetXaxis()->GetNbins(),errMC_C);
-      alphaMC_err =  ( fabs( hDD_A->Integral() * errMC_C ) + fabs(errMC_A * errMC_C )  ) / pow(hDD_C->Integral(), 2);  
+    if(hDD_D->Integral()>0){
+      alphaMC = hDD_C->IntegralAndError(1,hDD_C->GetXaxis()->GetNbins(),errMC_C) / hDD_D->IntegralAndError(1,hDD_D->GetXaxis()->GetNbins(),errMC_D);
+      alphaMC_err =  ( fabs( hDD_C->Integral() * errMC_D ) + fabs(errMC_C * errMC_D )  ) / pow(hDD_D->Integral(), 2);  
     }
     
     double valMC, valMC_err;
@@ -1078,13 +1082,13 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     }
     fprintf(pFile,"\\begin{tabular}{%s|}\\hline\n", Lcol);
     fprintf(pFile,"channel               %s\\\\\\hline\n", Lchan);
-    fprintf(pFile,"$\\alpha$ measured    %s\\\\\n", Lalph1);
-    fprintf(pFile,"yield data            %s\\\\\n", Lyield);
-    fprintf(pFile,"yield MC              %s\\\\\n", LyieldMC);
+    fprintf(pFile,"$\\text{SF}_{qcd}$ measured    %s\\\\\n", Lalph1);
+    fprintf(pFile,"QCD yield predicted (data)            %s\\\\\n", Lyield);
+    fprintf(pFile,"QCD yield observed (MC)              %s\\\\\n", LyieldMC);
     fprintf(pFile,"\\hline\\hline\n");
-    fprintf(pFile,"$\\alpha$ (MC)    %s\\\\\n", LalphMC);
-    fprintf(pFile,"yield predicted (MC)   %s\\\\\n", LyieldPred);
-    fprintf(pFile,"yield MC              %s\\\\\n", LyieldMC); 
+    fprintf(pFile,"$\\text{SF}_{qcd}$ (MC)    %s\\\\\n", LalphMC);
+    fprintf(pFile,"QCD yield predicted (MC)   %s\\\\\n", LyieldPred);
+    fprintf(pFile,"QCD yield observed (MC)  %s\\\\\n", LyieldMC); 
     fprintf(pFile,"ratio MC (syst)        %s\\\\\n", RatioMC); 
     fprintf(pFile,"\\hline\n");   
     fprintf(pFile,"\\end{tabular}\n\\end{center}\n\\end{sidewaystable}\n\\end{document}\n");
@@ -1185,13 +1189,13 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
 
       // Only get yields from shapes for regions B 
-      if(modeDD && ((ch->first.find("qcdA")!=string::npos) || (ch->first.find("qcdC")!=string::npos) ||(ch->first.find("qcdD")!=string::npos)))continue;   
+      if(modeDD && ((ch->first.find("_B_")!=string::npos) || (ch->first.find("_C_")!=string::npos) ||(ch->first.find("_D_")!=string::npos)))continue;   
 
       printf("Get yields from shapes:\n");
       printf("Process: %s , channel: %s \n",procName.c_str(),ch->first.c_str());
 
       TH1* h = ch->second.shapes[histoName].histo();
-      double valerr;
+      double valerr = 0.;
       double val  = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
 
       if(procName.find("Instr. MET")!=std::string::npos) valerr =0.0; //Our systematics on the Instr. MET already includes stat unc. We would want to change that in the future
@@ -1348,8 +1352,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if(std::find(selCh.begin(), selCh.end(), ch->second.channel)==selCh.end())continue;
         if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
         TH1* h = ch->second.shapes[histoName].histo();
-        double valerr;
-        double val  = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+        double valerr = 0.;
+        double val = 0.;
+	if (h!=NULL) val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
         fprintf(pFile,"%30s %30s %4.0f %6.2E %6.2E %6.2E %6.2E\n",ch->first.c_str(), it->first.c_str(), it->second.mass, it->second.xsec, it->second.br, val/(it->second.xsec*it->second.br), valerr/(it->second.xsec*it->second.br));
       }
     }
@@ -1389,18 +1394,21 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       map_yields[it->first] = 0;
       for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
         if(std::find(selCh.begin(), selCh.end(), ch->second.channel)==selCh.end())continue;
-	//	if(!(ch->first.find("qcdB")!=string::npos))continue;  // check only in regions B...
+
+	//	if(ch->first.find("CR5j")!=string::npos)continue;
+	
         if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
-        map_yields[it->first] += ch->second.shapes[histoName].histo()->Integral();
+	//	map_yields[it->first] += ch->second.shapes[histoName].histo()->Integral();
+	TH1 *h=ch->second.shapes[histoName].histo();
+        if (h!=NULL) { map_yields[it->first] += h->Integral();}
+	else {map_yields[it->first] += 0.;}
       }
     }
 
     double total = map_yields["total"];
     for(std::map<string, double>::iterator Y=map_yields.begin();Y!=map_yields.end();Y++){
       if(Y->first.find("FakeLep")<std::string::npos)continue;//never drop this background
-      if(Y->first.find("VV")<std::string::npos)continue;//never drop this background
-      if(Y->first.find("ZVV")<std::string::npos)continue;//never drop this background   
-      if(Y->first.find("t#bar{t}+#gammaZW")<std::string::npos)continue;//never drop this background         
+      //  if(Y->first.find("ddqcd")<std::string::npos)continue;//never drop this background
       if(Y->second/total<threshold){
         printf("Drop %s from the list of backgrounds because of negligible rate (%f%% of total bckq)\n", Y->first.c_str(), Y->second/total);
         for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==Y->first ){sorted_procs.erase(p);break;}}
@@ -1415,8 +1423,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
   void AllInfo_t::showShape(std::vector<TString>& selCh , TString histoName, TString SaveName)
   {
     int NLegEntry = 0;
+    
     std::map<string, THStack*          > map_stack;
+    std::map<string, TH1*              > map_mc;
     std::map<string, TGraphAsymmErrors*     > map_unc;
+    std::map<string, TH1*              > map_uncH;
     std::map<string, TH1*              > map_data;
     std::map<string, TGraphAsymmErrors*> map_dataE;
     std::map<string, std::vector<TH1*> > map_signals;
@@ -1424,7 +1435,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		//           TLegend* legA  = new TLegend(0.6,0.5,0.99,0.85, "NDC");
 		//           TLegend* legA  = new TLegend(0.03,0.00,0.97,0.70, "NDC");
 		//           TLegend* legA  = new TLegend(0.03,0.99,0.97,0.89, "NDC");
-    TLegend* legA  = new TLegend(0.08,0.89,0.97,0.95, "");
+    //  TLegend* legA  = new TLegend(0.08,0.89,0.97,0.95, "");
+    TLegend *legA = new TLegend(0.30,0.74,0.93,0.96, "NDC");
+    legA->SetHeader("");
+    legA->SetNColumns(3);   
+    legA->SetBorderSize(0);
+    legA->SetTextFont(42);   legA->SetTextSize(0.03);
+    legA->SetLineColor(0);   legA->SetLineStyle(1);   legA->SetLineWidth(1);
+    legA->SetFillColor(0); legA->SetFillStyle(0);//blind>-1E99?1001:0);
     std::vector<TLegendEntry*> legEntries;  //needed to have the entry in reverse order
 
     //order the proc first
@@ -1445,6 +1463,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if(ch->second.shapes.find(histoName.Data())==(ch->second.shapes).end())continue;
 
         TH1* h = ch->second.shapes[histoName.Data()].histo();
+
         //if(process.Contains("SOnly_S") ) h->Scale(10);  
         if(it->first=="total"){
           //double Uncertainty = std::max(0.0, ch->second.shapes[histoName.Data()].getScaleUncertainty() / h->Integral() );;
@@ -1452,7 +1471,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           //double syst_shape = std::max(0.0, ch->second.shapes[histoName.Data()].getBinShapeUncertainty((it->first+ch->first).c_str()));
           //double syst = sqrt(pow(syst_scale,2)+pow(syst_shape,2)); //On perd de l'info ici car on considere l'ecart constant au lieu d'y aller bin par bin
           //double Uncertainty = syst / h->Integral();
-          double Uncertainty_scale = syst_scale / h->Integral();
+          double Uncertainty_scale=syst_scale / h->Integral();
 
           double Maximum = 0;
           TGraphAsymmErrors* errors = new TGraphAsymmErrors(h->GetXaxis()->GetNbins());
@@ -1473,10 +1492,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    double syst_binDown = sqrt(pow(Uncertainty_scale*h->GetBinContent(ibin), 2) + pow(syst_shape_binDown,2));
 	    double Uncertainty_binUp = syst_binUp / h->GetBinContent(ibin);
 	    double Uncertainty_binDown = syst_binDown / h->GetBinContent(ibin);
-	    
 
             //errors->SetPointError(icutg,h->GetXaxis()->GetBinWidth(ibin)/2.0, sqrt(pow(h->GetBinContent(ibin)*Uncertainty_bin,2) + pow(h->GetBinError(ibin),2) ) );
-            errors->SetPointError(icutg,h->GetXaxis()->GetBinWidth(ibin)/2.0,h->GetXaxis()->GetBinWidth(ibin)/2.0, sqrt(pow(h->GetBinContent(ibin)*Uncertainty_binDown,2) + pow(h->GetBinError(ibin),2) ), sqrt(pow(h->GetBinContent(ibin)*Uncertainty_binUp,2) + pow(h->GetBinError(ibin),2) ) );
+	    errors->SetPointError(icutg,h->GetXaxis()->GetBinWidth(ibin)/2.0,h->GetXaxis()->GetBinWidth(ibin)/2.0, sqrt(pow(h->GetBinContent(ibin)*Uncertainty_binDown,2) + pow(h->GetBinError(ibin),2) ), sqrt(pow(h->GetBinContent(ibin)*Uncertainty_binUp,2) + pow(h->GetBinError(ibin),2) ) );
+	    
 	    //                        printf("Unc=%6.2f  X=%6.2f Y=%6.2f+-%6.2f+-%6.2f=%6.2f\n", Uncertainty, h->GetXaxis()->GetBinCenter(ibin), h->GetBinContent(ibin), h->GetBinContent(ibin)*Uncertainty, h->GetBinError(ibin), sqrt(pow(h->GetBinContent(ibin)*Uncertainty,2) + pow(h->GetBinError(ibin),2) ) );
 	    //                        errors->SetPointError(icutg,h->GetXaxis()->GetBinWidth(ibin)/2.0, 0 );
             Maximum =  std::max(Maximum , h->GetBinContent(ibin) + errors->GetErrorYhigh(icutg));
@@ -1484,12 +1503,25 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           }errors->Set(icutg);
           errors->SetMaximum(Maximum);
           map_unc[ch->first] = errors;
-          continue;//otherwise it will fill the legend
+
+	  map_uncH[ch->first] = (TH1D*)h->Clone((ch->first+"histPlusSyst").c_str()); //utils::root::checkSumw2((ch->first+"histPlusSyst").c_str());
+	  // loop over hist to set the stat+syst errors on map_uncH
+	  icutg=0;
+	  for(int ibin=1; ibin<=map_uncH[ch->first]->GetXaxis()->GetNbins(); ibin++){
+	    double ierr=errors->GetErrorY(icutg);
+	    map_uncH[ch->first]->SetBinError(ibin,ierr);
+	    icutg++;
+	  }
+
+	  continue;//otherwise it will fill the legend
         }else if(it->second.isBckg){                 
           if(map_stack.find(ch->first)==map_stack.end()){
-            map_stack[ch->first] = new THStack((ch->first+"stack").c_str(),(ch->first+"stack").c_str());                    
+            map_stack[ch->first] = new THStack((ch->first+"stack").c_str(),(ch->first+"stack").c_str());
+	    map_mc   [ch->first] = (TH1D*)h->Clone((ch->first+"mc").c_str()); //utils::root::checkSumw2((ch->first+"mc").c_str());
           }
           map_stack   [ch->first]->Add(h,"HIST");
+	  map_mc   [ch->first]->Add(h);
+	  // if(!map_mc){map_mc   [ch->first] = (TH1D*)h->Clone((ch->first+"mc").c_str());utils::root::checkSumw2((ch->first+"mc").c_str());}else{map_mc   [ch->first]->Add(h);}
 
         }else if(it->second.isSign){                    
           map_signals [ch->first].push_back(h);
@@ -1506,7 +1538,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           //poisson error bars
           const double alpha = 1 - 0.6827;
           TGraphAsymmErrors * g = new TGraphAsymmErrors(h);
-          g->SetMarkerSize(0.5);
+          g->SetMarkerSize(0.7);
           g->SetMarkerStyle (20);
 
           for (int i = 0; i < g->GetN(); ++i) {
@@ -1539,32 +1571,53 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     }
     if(map_unc.begin()!=map_unc.end())legA->AddEntry(map_unc.begin()->second, "Syst. + Stat.", "F");
 
-    int NBins = map_data.size()/selCh.size();
-    TCanvas* c1 = new TCanvas("c1","c1",300*NBins,300); //*selCh.size());
-    c1->SetTopMargin(0.00); c1->SetRightMargin(0.00); c1->SetBottomMargin(0.00);  c1->SetLeftMargin(0.00);
-    TPad* t2 = new TPad("t2","t2", 0.03, 0.90, 1.00, 1.00, -1, 1);  t2->Draw();  c1->cd();
-    t2->SetTopMargin(0.00); t2->SetRightMargin(0.00); t2->SetBottomMargin(0.00);  t2->SetLeftMargin(0.00);
-    TPad* t1 = new TPad("t1","t1", 0.03, 0.03, 1.00, 0.90, 4, 1);  t1->Draw();  t1->cd();
-    t1->SetTopMargin(0.00); t1->SetRightMargin(0.00); t1->SetBottomMargin(0.00);  t1->SetLeftMargin(0.00);
-    t1->Divide(NBins, selCh.size(), 0, 0);
-    //t1->Divide(NBins, 1, 0, 0);  
-
-
+   
+    TCanvas* c[50];
     int I=1;
     for(std::map<string, THStack*>::iterator p = map_stack.begin(); p!=map_stack.end(); p++){
       //init tab
-      TVirtualPad* pad = t1->cd(I);
-      pad->SetTopMargin(0.06); pad->SetRightMargin(0.03); pad->SetBottomMargin(I<=NBins?0.09:0.12);  pad->SetLeftMargin((I-1)%NBins!=0?0.09:0.12);
-      pad->SetLogy(true); 
+      string ires;
+      ostringstream convert;
+      convert << I;   
 
+      // Only draw BDT in regions A
+      //      if(!(procs["data"].channels[p->first].bin.find("_A_")!=string::npos)) { continue; }    
+      
+      int NBins = map_data.size()/selCh.size();
+      c[I] = new TCanvas("c_"+(char)I,"c_",800,800); //selCh.size());
+      //   c[I]->SetTopMargin(0.00); c[I]->SetRightMargin(0.00); c[I]->SetBottomMargin(0.00);  c[I]->SetLeftMargin(0.00);
+      //   TPad* t1 = new TPad("t1","t1", 0.03, 0.03, 1.00, 0.90, 4, 1);  t1->Draw();  t1->cd();
+      //  t1->SetTopMargin(0.07); t1->SetRightMargin(0.07); t1->SetBottomMargin(0.07);  t1->SetLeftMargin(0.12);
+      //t1->SetFillColor(0);
+      TPad* t1 = new TPad("t1","t1", 0.0, 0.2, 1.0, 1.0);
+      t1->SetFillColor(0);
+      t1->SetBorderMode(0);
+      t1->SetBorderSize(2);
+      t1->SetTickx(1);
+      t1->SetTicky(1);
+      t1->SetLeftMargin(0.10);
+      t1->SetRightMargin(0.05);
+      t1->SetTopMargin(0.05);
+      t1->SetBottomMargin(0.10);
+      t1->SetFrameFillStyle(0);
+      t1->SetFrameBorderMode(0);
+      t1->SetFrameFillStyle(0);
+      t1->SetFrameBorderMode(0);
+
+      
+      t1->Draw();
+      t1->cd();
+ 
       //print histograms
       TH1* axis = (TH1*)map_data[p->first]->Clone("axis");
       axis->Reset();      
       //      axis->GetXaxis()->SetRangeUser(axis->GetXaxis()->FindBin(0.), axis->GetXaxis()->GetXmax());
       axis->GetXaxis()->SetRangeUser(axis->GetXaxis()->GetXmin(),axis->GetXaxis()->GetXmax());
-      double signalHeight=0; for(unsigned int s=0;s<map_signals[p->first].size();s++){signalHeight = std::max(signalHeight, map_signals[p->first][s]->GetMaximum());}
-      axis->SetMaximum(1.5*std::max(signalHeight , std::max( map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum())));
-
+      //double signalHeight=0;
+      //for(unsigned int s=0;s<map_signals[p->first].size();s++){signalHeight = std::max(signalHeight, map_signals[p->first][s]->GetMaximum());}
+      //  axis->SetMaximum(1.5*std::max(signalHeight , std::max( map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum())));
+      axis->SetMaximum(1.5*std::max(map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum()));
+      
       //hard code range
       if(procs["data"].channels[p->first].bin.find("vbf")!=string::npos){
         axis->SetMinimum(1E-1);
@@ -1573,16 +1626,60 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         axis->SetMinimum(1E-1);
         axis->SetMaximum(std::max(axis->GetMaximum(), 5E1));
       }
-      if((I-1)%NBins!=0)axis->GetYaxis()->SetTitle("");
-      if(I<=NBins)axis->GetXaxis()->SetTitle("");
+
+      axis->GetXaxis()->SetLabelOffset(0.007);
+      axis->GetXaxis()->SetLabelSize(0.04);
+      axis->GetXaxis()->SetTitleOffset(1.2);
+      axis->GetXaxis()->SetTitleFont(42);
+      axis->GetXaxis()->SetTitleSize(0.04);
+      axis->GetYaxis()->SetLabelFont(42);
+      axis->GetYaxis()->SetLabelOffset(0.007);
+      axis->GetYaxis()->SetLabelSize(0.04);
+      axis->GetYaxis()->SetTitleOffset(1.35);
+      axis->GetYaxis()->SetTitleFont(42);
+      axis->GetYaxis()->SetTitleSize(0.04);
+
+      
+      //if((I-1)%NBins!=0)
+      axis->GetYaxis()->SetTitle("Events");
+      //if(I<=NBins)
+      axis->GetXaxis()->SetTitle("BDT");
       axis->Draw();
-      p->second->Draw("same");
+
+      t1->Update();
+
+      p->second->Draw("same"); // MC stack histogram
       map_unc [p->first]->Draw("2 same");
       for(unsigned int i=0;i<map_signals[p->first].size();i++){
-        map_signals[p->first][i]->Draw("HIST same");
+	TH1* hs= map_signals[p->first][i];
+        if (hs) hs->Draw("HIST same");
       }
-      if(!blindData) map_dataE[p->first]->Draw("P0 same");
+      
+      // if ( ((p->first).find("mu_A_passDPHI_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_passDPHI_SR_4b")!=std::string::npos) ||
+      // 	   ((p->first).find("e_A_passDPHI_SR_3b")!=std::string::npos) || ((p->first).find("e_A_passDPHI_SR_4b")!=std::string::npos) ) {
 
+      // 	for(unsigned int i=map_data[p->first]->FindBin(0.1);i<=map_data[p->first]->GetNbinsX()+1; i++){   
+      // 	  map_data[p->first]->SetBinContent(i, 0); map_data[p->first]->SetBinError(i, 0);
+      // 	}
+
+      // 	for (int i=20; i<=map_dataE[p->first]->GetN()+1; i++){
+      // 	  // map_dataE[p->first]->RemovePoint(i);
+      // 	  double x,y;
+      // 	  map_dataE[p->first]->GetPoint(i,x,y);
+
+      // 	  map_dataE[p->first]->SetPoint(i,x,0.);
+      // 	  map_dataE[p->first]->SetPointEYlow(i,0);
+      // 	  map_dataE[p->first]->SetPointEYhigh(i,0);
+      // 	}
+	
+      // 	TH1 *hist=(TH1*)p->second->GetHistogram();
+	
+      // 	TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), hist->GetMinimum(),axis->GetXaxis()->GetXmax(), hist->GetMaximum(), 0, "NB" );  
+      // 	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
+      // }
+      
+      if(!blindData) map_dataE[p->first]->Draw("P0 same");
+      
       bool printBinContent = false;
       if(printBinContent){
         TLatex* tex = new TLatex();
@@ -1611,24 +1708,22 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       }
 
       //print tab channel header
-      TPaveText* Label = new TPaveText(0.1,0.81,0.94,0.89, "NDC");
+      TPaveText* Label = new TPaveText(0.2,0.81,0.84,0.89, "NDC");
       Label->SetFillColor(0);  Label->SetFillStyle(0);  Label->SetLineColor(0); Label->SetBorderSize(0);  Label->SetTextAlign(31);
       TString LabelText = procs["data"].channels[p->first].channel+"  "+procs["data"].channels[p->first].bin;
-      LabelText.ReplaceAll("eq","="); LabelText.ReplaceAll("l=","#leq");LabelText.ReplaceAll("g=","#geq"); 
-      LabelText.ReplaceAll("_OS","OS "); LabelText.ReplaceAll("el","e"); LabelText.ReplaceAll("mu","#mu");  LabelText.ReplaceAll("ha","#tau_{had}");
-      Label->AddText(LabelText);  Label->Draw();
+      LabelText.ReplaceAll("e_","e "); 
+      //LabelText.ReplaceAll("l=","#leq");LabelText.ReplaceAll("g=","#geq"); 
+      //      LabelText.ReplaceAll("_OS","OS "); LabelText.ReplaceAll("el","e"); LabelText.ReplaceAll("mu","#mu");  LabelText.ReplaceAll("ha","#tau_{had}");
+      //  Label->AddText(LabelText);  Label->Draw();
 
       gPad->RedrawAxis();
 
-      I++;
-    }
-
     //print legend
-    c1->cd(0);
-    legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);  legA->SetBorderSize(0); legA->SetHeader("");
-    legA->SetNColumns((NLegEntry/2) + 1);
-    legA->Draw("same");    legA->SetTextFont(42);
-
+    // c1->cd(0);
+      legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);  legA->SetBorderSize(0); legA->SetHeader(LabelText);
+      legA->SetNColumns((NLegEntry/2) + 1);
+      legA->Draw("same");    legA->SetTextFont(42);
+      
     //print canvas header
 		/*
        t2->cd(0);
@@ -1642,36 +1737,149 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 */
 
-    c1->cd(0);
-    double L=0.03, R=0.03, T=0.02, B=0.0;
-    char LumiText[1024];
-    if(systpostfix.Contains('3'))      { double iLumi= 35914;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 13.0);
-    }else if(systpostfix.Contains('8')){ double iLumi=20000;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 8.0);
-    }else{                               double iLumi= 5000;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 7.0); 
+    // c1->cd(0);
+      double L=0.03, R=0.03, T=0.02, B=0.0;
+      char LumiText[1024];
+      if(systpostfix.Contains('3'))      { double iLumi= 35914;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 13.0);
+      }else if(systpostfix.Contains('8')){ double iLumi=20000;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 8.0);
+      }else{                               double iLumi= 5000;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 7.0); 
+      }
+      TPaveText* T1 = new TPaveText(1.0-R-0.50, 1.0-T-0.05, 1.02-R, 1.0-T-0.005, "NDC");
+      T1->SetTextFont(43); T1->SetTextSize(22);   T1->SetTextAlign(31);
+      T1->SetFillColor(0); T1->SetFillStyle(0);   T1->SetBorderSize(0);
+      T1->AddText(LumiText);  T1->Draw();
+      
+      //TOP LEFT IN-FRAME
+      TPaveText* T2 = new TPaveText(L+0.005, 1.0-T-0.05, L+0.20, 1.0-T-0.005, "NDC");
+      T2->SetTextFont(63); T2->SetTextSize(22);   T2->SetTextAlign(11);
+      T2->SetFillColor(0); T2->SetFillStyle(0);   T2->SetBorderSize(0);
+      T2->AddText("CMS"); T2->Draw();
+      
+      if(true){ //Right to CMS
+	TPaveText* T3 = new TPaveText(L+0.095, 1.0-T-0.05, L+0.50, 1.0-T-0.005, "NDC");
+	T3->SetTextFont(53); T3->SetTextSize(22);   T3->SetTextAlign(11);
+	T3->SetFillColor(0); T3->SetFillStyle(0);   T3->SetBorderSize(0);
+	T3->AddText("Preliminary"); T3->Draw();
+      }
+
+   
+      c[I]->cd();
+      
+      TPad *t2 = new TPad("t2", "t2",0.0,0.0, 1.0,0.2);
+      t2->SetFillColor(0);
+      t2->SetBorderMode(0);
+      t2->SetBorderSize(2);
+      t2->SetGridy();
+      t2->SetTickx(1);
+      t2->SetTicky(1);
+      t2->SetLeftMargin(0.10);
+      t2->SetRightMargin(0.05);
+      t2->SetTopMargin(0.0);
+      t2->SetBottomMargin(0.20);
+      t2->SetFrameFillStyle(0);
+      t2->SetFrameBorderMode(0);
+      t2->SetFrameFillStyle(0);
+      t2->SetFrameBorderMode(0);
+      t2->Draw();
+      t2->cd();
+      t2->SetGridy(true);
+      t2->SetPad(0,0.0,1.0,0.2);
+
+
+      TH1D* denSystUncH = (TH1D*)map_uncH[p->first];
+      utils::root::checkSumw2(denSystUncH);
+
+      int GPoint=0;
+      TGraphErrors *denSystUnc=new TGraphErrors(denSystUncH->GetXaxis()->GetNbins()); 
+      for(int xbin=1; xbin<=denSystUncH->GetXaxis()->GetNbins(); xbin++){
+	denSystUnc->SetPoint(GPoint, denSystUncH->GetBinCenter(xbin), 1.0);
+	denSystUnc->SetPointError(GPoint,  denSystUncH->GetBinWidth(xbin)/2, denSystUncH->GetBinContent(xbin)!=0?denSystUncH->GetBinError(xbin)/denSystUncH->GetBinContent(xbin):0);
+	GPoint++;
+	
+      	if(denSystUncH->GetBinContent(xbin)==0) continue;
+      	Double_t err=denSystUncH->GetBinError(xbin)/denSystUncH->GetBinContent(xbin);
+      	denSystUncH->SetBinContent(xbin,1);
+      	denSystUncH->SetBinError(xbin,err);
+      }denSystUnc->Set(GPoint);
+      
+      denSystUnc->SetLineColor(1);
+      denSystUnc->SetFillStyle(3004);
+      denSystUnc->SetFillColor(kGray+2);
+      denSystUnc->SetMarkerColor(1);
+      denSystUnc->SetMarkerStyle(1);
+      denSystUncH->Reset("ICE");       
+      denSystUncH->SetTitle("");
+      denSystUncH->SetStats(kFALSE);
+      denSystUncH->Draw();
+      denSystUnc->Draw("2 0 SAME");
+      float yscale = (1.0-0.2)/(0.2);       
+      denSystUncH->GetYaxis()->SetTitle("Data/#Sigma Bkg.");
+      denSystUncH->GetXaxis()->SetTitle(""); //drop the tile to gain space
+      //denSystUncH->GetYaxis()->CenterTitle(true);
+      denSystUncH->SetMinimum(0.4);
+      denSystUncH->SetMaximum(1.6);
+      
+      denSystUncH->GetXaxis()->SetLabelFont(42);
+      denSystUncH->GetXaxis()->SetLabelOffset(0.007);
+      denSystUncH->GetXaxis()->SetLabelSize(0.04 * yscale);
+      denSystUncH->GetXaxis()->SetTitleFont(42);
+      denSystUncH->GetXaxis()->SetTitleSize(0.035 * yscale);
+      denSystUncH->GetXaxis()->SetTitleOffset(0.8);
+      denSystUncH->GetYaxis()->SetLabelFont(42);
+      denSystUncH->GetYaxis()->SetLabelOffset(0.007);
+      denSystUncH->GetYaxis()->SetLabelSize(0.03 * yscale);
+      denSystUncH->GetYaxis()->SetTitleFont(42);
+      denSystUncH->GetYaxis()->SetTitleSize(0.035 * yscale);
+      denSystUncH->GetYaxis()->SetTitleOffset(0.3);
+       
+
+
+         //add comparisons
+      //  for(size_t icd=0; icd<compDists.size(); icd++){
+      TString name("CompHistogram"); //name+=icd;
+      TH1 *dataToObsH = (TH1D*)map_data[p->first]->Clone(name);
+      utils::root::checkSumw2(dataToObsH);
+
+      TH1 *mc = (TH1D*)map_mc[p->first]->Clone("mc");
+      utils::root::checkSumw2(mc);
+      dataToObsH->Divide(mc);
+      TGraphErrors* dataToObs = new TGraphErrors(dataToObsH);
+      dataToObs->SetMarkerColor(1);
+      dataToObs->SetMarkerStyle(20);
+      dataToObs->SetMarkerSize(0.7);
+      dataToObs->Draw("P 0 SAME");
+
+      // if ( ((p->first).find("mu_A_passDPHI_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_passDPHI_SR_4b")!=std::string::npos) ||
+      // 	   ((p->first).find("e_A_passDPHI_SR_3b")!=std::string::npos) || ((p->first).find("e_A_passDPHI_SR_4b")!=std::string::npos) ) {
+	
+      // 	TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), 0.4,axis->GetXaxis()->GetXmax(), 1.6, 0, "NB" );  
+      // 	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
+      // }
+  
+      TLegend *legR = new TLegend(0.56,0.78,0.93,0.96, "NDC");
+      legR->SetHeader("");
+      legR->SetNColumns(2);
+      legR->SetBorderSize(1);
+      legR->SetTextFont(42);   legR->SetTextSize(0.03 * yscale);
+      legR->SetLineColor(1);   legR->SetLineStyle(1);   legR->SetLineWidth(1);
+      legR->SetFillColor(0);   legR->SetFillStyle(1001);//blind>-1E99?1001:0);
+      //legR->AddEntry(denRelUnc, "Stat. Unc.", "F");
+      legR->AddEntry(denSystUnc, "Syst. + Stat.", "F");
+      //legR->Draw("same");
+      //  gPad->RedrawAxis();
+      // t1->cd();
+      c[I]->cd();
+      
+      //save canvas
+      LabelText.ReplaceAll(" ","_"); 
+      // c[I]->SaveAs(SaveName+"_Shape.png");
+      c[I]->SaveAs(LabelText+"_Shape.pdf");
+      c[I]->SaveAs(LabelText+"_Shape.C");
+      delete c[I];
+      
+      I++;
     }
-    TPaveText* T1 = new TPaveText(1.0-R-0.50, 1.0-T-0.05, 1.02-R, 1.0-T-0.005, "NDC");
-    T1->SetTextFont(43); T1->SetTextSize(23);   T1->SetTextAlign(31);
-    T1->SetFillColor(0); T1->SetFillStyle(0);   T1->SetBorderSize(0);
-    T1->AddText(LumiText);  T1->Draw();
 
-    //TOP LEFT IN-FRAME
-    TPaveText* T2 = new TPaveText(L+0.005, 1.0-T-0.05, L+0.20, 1.0-T-0.005, "NDC");
-    T2->SetTextFont(63); T2->SetTextSize(30);   T2->SetTextAlign(11);
-    T2->SetFillColor(0); T2->SetFillStyle(0);   T2->SetBorderSize(0);
-    T2->AddText("CMS"); T2->Draw();
-
-    if(true){ //Right to CMS
-      TPaveText* T3 = new TPaveText(L+0.095, 1.0-T-0.05, L+0.50, 1.0-T-0.005, "NDC");
-      T3->SetTextFont(53); T3->SetTextSize(23);   T3->SetTextAlign(11);
-      T3->SetFillColor(0); T3->SetFillStyle(0);   T3->SetBorderSize(0);
-      T3->AddText("Preliminary"); T3->Draw();
-    }
-
-    //save canvas
-    c1->SaveAs(SaveName+"_Shape.png");
-    c1->SaveAs(SaveName+"_Shape.pdf");
-    c1->SaveAs(SaveName+"_Shape.C");
-    delete c1;
   }
 
 
@@ -1724,9 +1932,13 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         else ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );
         TVirtualPad* pad = t1->cd(I); 
         pad->SetTopMargin(0.06); pad->SetRightMargin(0.03); pad->SetBottomMargin(0.07);  pad->SetLeftMargin(0.06);
-				//                 pad->SetLogy(true); 
-
-        TH1* h = (TH1*)(ch->second.shapes[histoName.Data()].histo()->Clone((it->first+ch->first+"Nominal").c_str())); 
+	//                 pad->SetLogy(true); 
+	//TH1* h = (TH1*)(ch->second.shapes[histoName.Data()].histo()->Clone((it->first+ch->first+"Nominal").c_str())); 
+	TH1* hh = ch->second.shapes[histoName.Data()].histo();
+	if (hh==NULL) continue;
+	
+        TH1* h = (TH1*)(hh->Clone((it->first+ch->first+"Nominal").c_str())); 
+	
         double yield = h->Integral();
         toDelete.push_back(h);
         mapYieldPerBin[""][ch->first] = yield;
@@ -1925,9 +2137,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
         TString chbin = ch->first;
         if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
-        ShapeData_t& shapeInfo = ch->second.shapes[histoName];      
-        TH1* h = shapeInfo.histo();
-
+	//   ShapeData_t& shapeInfo = ch->second.shapes[histoName];      
+	// TH1* h = shapeInfo.histo();
+	ShapeData_t& shapeInfo = ch->second.shapes[histoName];
+	TH1 * hh = shapeInfo.histo();
+        double integral = 0.; if (hh!=NULL) integral = hh->Integral();
+	
         TString proc = it->second.shortName.c_str();
         for(std::map<string, TH1*  >::iterator unc=shapeInfo.uncShape.begin();unc!=shapeInfo.uncShape.end();unc++){
           TString syst   = unc->first.c_str();
@@ -2050,23 +2265,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
   //
   void AllInfo_t::addHardCodedUncertainties(string histoName){
     
-    //13TeV values  
-    double QCDScaleMass        [] = {  200,   300,   400,   600,   800,  1000,  1500,  2000,  2500,  3000,  9999};
-    double QCDScaleggHeq0jets  [] = {2.042, 1.416, 1.283, 1.335, 1.352, 1.425, 1.542, 1.627, 1.659, 1.638, 1.638};
-    double QCDScaleggHgeq1jets [] = {1.305, 1.219, 1.181, 1.168, 1.172, 1.183, 1.201, 1.219, 1.220, 1.219, 1.219};
-    double QCDScaleggHvbf      [] = {1.217, 1.282, 1.200, 1.215, 1.178, 1.195, 1.201, 1.226, 1.232, 1.199, 1.199};
-
-    double UEPSf0 []         = {0.952, 0.955, 0.958, 0.964, 0.966, 0.954, 0.946, 0.931, 0.920, 0.920, 0.920, 0.920, 0.920};
-    double UEPSf1 []         = {1.055, 1.058, 1.061, 1.068, 1.078, 1.092, 1.102, 1.117, 1.121, 1.121, 1.121, 1.121, 1.121};
-    double UEPSf2 []         = {1.059, 0.990, 0.942, 0.889, 0.856, 0.864, 0.868, 0.861, 0.872, 0.872, 0.872, 0.872, 0.872}; 
-
-    TGraph* TG_QCDScaleggHeq0jets  = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass,  QCDScaleggHeq0jets);
-    TGraph* TG_QCDScaleggHgeq1jets = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, QCDScaleggHgeq1jets);
-    TGraph* TG_QCDScaleggHvbf      = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass,      QCDScaleggHvbf);
-    TGraph* TG_UEPSf0         = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, UEPSf0);
-    TGraph* TG_UEPSf1         = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, UEPSf1);
-    TGraph* TG_UEPSf2         = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, UEPSf2);
-    
 
     for(unsigned int p=0;p<sorted_procs.size();p++){
       string procName = sorted_procs[p];
@@ -2075,48 +2273,45 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
         TString chbin = ch->first;
         if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
-        ShapeData_t& shapeInfo = ch->second.shapes[histoName];      
-        double integral = shapeInfo.histo()->Integral();
+	ShapeData_t& shapeInfo = ch->second.shapes[histoName];      
+        double integral = 0.;
+
+	TH1* h=shapeInfo.histo(); if (h) integral=h->Integral();
 
         //lumi
-        if(!it->second.isData && systpostfix.Contains('3'))shapeInfo.uncScale["lumi_13TeV"] = integral*0.026;
+        if(!it->second.isData && systpostfix.Contains('3'))shapeInfo.uncScale["lumi_13TeV"] = integral*0.025;
         if(!it->second.isData && systpostfix.Contains('8'))shapeInfo.uncScale["lumi_8TeV" ] = integral*0.026;
         if(!it->second.isData && systpostfix.Contains('7'))shapeInfo.uncScale["lumi_7TeV" ] = integral*0.022;
 
         //Id+Trigger efficiencies combined
-	/*
-        if(!it->second.isData){
-          if(chbin.Contains("E"  ))  shapeInfo.uncScale["CMS_eff_e"] = integral*0.01; //0.072124;
-          if(chbin.Contains("MU"))  shapeInfo.uncScale["CMS_eff_m"] = integral*0.01; //0.061788;
-        }
-	*/
-	//normalization uncertainties to be applied in small backgrounds
 	
+        if(!it->second.isData){
+          if(chbin.Contains("e"  ))  shapeInfo.uncScale["CMS_eff_e"] = integral*0.02; //0.072124;
+          if(chbin.Contains("mu"))  shapeInfo.uncScale["CMS_eff_m"] = integral*0.02; //0.061788;
+        }
+	
+	//Normalization uncertainties 
 	//	if(it->second.shortName.find("wlnu")!=string::npos){shapeInfo.uncScale["norm_wlnu"] = integral*0.10;}  
 	//      if(it->second.shortName.find("ttbarjet")!=string::npos){shapeInfo.uncScale["norm_tt"] = integral*0.10;}  
-	if(it->second.shortName.find("zvv")!=string::npos){shapeInfo.uncScale["norm_zvv"] = integral*0.10;}    
-	if(it->second.shortName.find("vv")!=string::npos && !(it->second.shortName.find("zvv")!=string::npos)){shapeInfo.uncScale["norm_vv"] = integral*0.10;}
-	if(it->second.shortName.find("zll")!=string::npos){shapeInfo.uncScale["norm_zll"] = integral*0.10;}       
-	if(it->second.shortName.find("ttbargam")!=string::npos){shapeInfo.uncScale["norm_TTgzw"] = integral*0.10;} 
-	if(it->second.shortName.find("singleto")!=string::npos){shapeInfo.uncScale["norm_singletop"] = integral*0.10;} 
+
+	if(it->second.shortName.find("zvv")!=string::npos){shapeInfo.uncScale["norm_zvv"] = integral*0.50;}    
+	if(it->second.shortName.find("zll")!=string::npos){shapeInfo.uncScale["norm_zll"] = integral*0.02;}
+
+	if(it->second.shortName.find("ttbarlig")!=string::npos){shapeInfo.uncScale["norm_toplight"] = integral*0.06;} 
+	//	if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_topcc"] = integral*0.50;} 
+	if(it->second.shortName.find("ttbargam")!=string::npos){shapeInfo.uncScale["norm_topgzw"] = integral*0.15;} 
+	if(it->second.shortName.find("singleto")!=string::npos){shapeInfo.uncScale["norm_singletop"] = integral*0.05;}
 	if (!subFake){
 	  if(it->second.shortName.find("qcd")!=string::npos){shapeInfo.uncScale["norm_qcd"] = integral*0.50;} 
 	}
         //uncertainties to be applied only in higgs analyses
         if(mass>0){
-          //bin migration at th level
-          if(it->second.shortName.find("ggH")!=string::npos && chbin.Contains("eq0jet" )){shapeInfo.uncScale["QCDscale_ggH"]    = integral*(TG_QCDScaleggHeq0jets->Eval(mass,NULL,"S")-1);}
-          if(it->second.shortName.find("ggH")!=string::npos && chbin.Contains("eq1jet" )){shapeInfo.uncScale["QCDscale_ggH"] = integral*(TG_QCDScaleggHgeq1jets->Eval(mass,NULL,"S")-1);} 
-          if(it->second.shortName.find("ggH")!=string::npos && chbin.Contains("vbf"    )){shapeInfo.uncScale["QCDscale_ggH"] = integral*(TG_QCDScaleggHvbf->Eval(mass,NULL,"S")-1);}
+          //bin migration at theory level
+	  // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt13TeV#WH_Process
+          if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["QCDscale_wh"]  = integral*0.006;} //QCD scale
+	  if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["PDFscale_wh"]  = integral*0.019;} //PDF+as scale
 
         }//end of uncertainties to be applied only in higgs analyses
-
-        if(it->second.shortName.find("zz")!=string::npos && chbin.Contains("eq0jet" )){shapeInfo.uncScale["QCDscale_ZZ"]    = integral*0.063;}
-        if(it->second.shortName.find("zz")!=string::npos && chbin.Contains("eq1jet" )){shapeInfo.uncScale["QCDscale_ZZ"]    = integral*0.054;}
-        if(it->second.shortName.find("zz")!=string::npos && chbin.Contains("vbf" )){shapeInfo.uncScale["QCDscale_ZZ"]    = integral*0.40;}
-        if(it->second.shortName.find("wz")!=string::npos && chbin.Contains("eq0jet" )){shapeInfo.uncScale["QCDscale_WZ"]    = integral*0.095;}
-        if(it->second.shortName.find("wz")!=string::npos && chbin.Contains("eq1jet" )){shapeInfo.uncScale["QCDscale_WZ"]    = integral*0.051;}
-        if(it->second.shortName.find("wz")!=string::npos && chbin.Contains("vbf" )){shapeInfo.uncScale["QCDscale_WZ"]    = integral*0.40;}
 
       }
     }
@@ -2165,22 +2360,21 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     TString mucrcard = "";
 
     for(std::map<string, bool>::iterator C=allChannels.begin(); C!=allChannels.end();C++){
-      // REmove A,C,D regions from the datacard
-      if(modeDD && ((C->first.find("qcdA")!=string::npos) || (C->first.find("qcdC")!=string::npos) ||(C->first.find("qcdD")!=string::npos)))continue;  
-      /*      
-      TString chName = C->first.c_str(); 
-      chName.ReplaceAll("_qcdB_Mt","_qcdB");    
-      */
+      // REmove B,C,D control regions from the datacard
+      if(modeDD && ((C->first.find("B_")!=string::npos) || (C->first.find("C_")!=string::npos) ||(C->first.find("D_")!=string::npos)))continue;  
+      // Remove CR5j_3b channel
+      //      if (C->first.find("CR5j_3b")!=string::npos) continue;
+
       TString dcName=url;              
       dcName.ReplaceAll(".root","_"+TString(C->first.c_str())+".dat");
-      dcName.ReplaceAll("_qcdB_Mt","_qcdB");  
+      //      dcName.ReplaceAll("_qcdB","_qcdB");  
 
       combinedcard += (C->first+"=").c_str()+dcName+" ";
-      if(C->first.find("E"  )!=string::npos)eecard   += (C->first+"=").c_str()+dcName+" ";
-      if(C->first.find("MU")!=string::npos)mumucard += (C->first+"=").c_str()+dcName+" ";
+      if(C->first.find("e"  )!=string::npos)eecard   += (C->first+"=").c_str()+dcName+" ";
+      if(C->first.find("mu")!=string::npos)mumucard += (C->first+"=").c_str()+dcName+" ";
 
-      if(C->first.find("E_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";  
-      if(C->first.find("MU_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" "; 
+      if(C->first.find("e_A_passDPHI_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";  
+      if(C->first.find("mu_A_passDPHI_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" "; 
 
       bool TTcontrolregion(false);  
       bool nonTTcontrolregion(false); 
@@ -2247,21 +2441,23 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       }
 
       // Add lines for simultaneous fit in the CRs:  
-      if (simfit) {
-	fprintf(pFile, "-------------------------------\n");  
-	fprintf(pFile,"\n");
-	if(C->first.find("E" )!=string::npos) {
-	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarjet 1\n");
-	  if (C->first.find("3b")!=string::npos)fprintf(pFile,"w_norm_3b_e rateParam bin1 wlnu 1\n");    
-	  if (C->first.find("4b")!=string::npos)fprintf(pFile,"w_norm_4b_e rateParam bin1 wlnu 1\n");
-	}
-	if(C->first.find("MU")!=string::npos) {
-	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarjet 1\n");
-	  if (C->first.find("3b")!=string::npos)fprintf(pFile,"w_norm_3b_mu rateParam bin1 wlnu 1\n"); 
-	  if (C->first.find("4b")!=string::npos)fprintf(pFile,"w_norm_4b_mu rateParam bin1 wlnu 1\n");     
-	}
-	fprintf(pFile, "-------------------------------\n");  
+      //      if (simfit) {
+      fprintf(pFile, "-------------------------------\n");  
+      fprintf(pFile,"\n");
+      if(C->first.find("e" )!=string::npos) {
+	fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");
+	fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n"); 
+	//if (C->first.find("3b")!=string::npos)
+	fprintf(pFile,"w_norm_e rateParam bin1 wlnu 1 \n");    
       }
+      if(C->first.find("mu")!=string::npos) {
+	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");
+	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");  
+	//if (C->first.find("3b")!=string::npos)
+	fprintf(pFile,"w_norm_mu rateParam bin1 wlnu 1 \n"); 
+      }
+      fprintf(pFile, "-------------------------------\n");  
+      //}
       
       fclose(pFile);
     }
@@ -2402,14 +2598,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         TString shapeName = (channelsAndShapes[c].substr(channelsAndShapes[c].rfind(";")+1)).c_str();
         TString ch        = chName+TString("_")+binName;
 
-	printf("channel= %s, bin= %s, shape name= %s, ch name= %s\n",chName.Data(), binName.Data(), shapeName.Data(), ch.Data());
+	//	printf("channel= %s, bin= %s, shape name= %s, ch name= %s\n",chName.Data(), binName.Data(), shapeName.Data(), ch.Data());
 
         ChannelInfo_t& channelInfo = procInfo.channels[ch.Data()];
         channelInfo.bin        = binName.Data();
         channelInfo.channel    = chName.Data();
         ShapeData_t& shapeInfo = channelInfo.shapes[shapeName.Data()];
 
-        printf("%s SYST SIZE=%i\n", (ch+"_"+shapeName).Data(), syst->GetNbinsX() );
+	//   printf("%s SYST SIZE=%i\n", (ch+"_"+shapeName).Data(), syst->GetNbinsX() );
         for(int ivar = 1; ivar<=syst->GetNbinsX();ivar++){                
           TH1D* hshape   = NULL;
           TString varName   = syst->GetXaxis()->GetBinLabel(ivar);
@@ -2417,9 +2613,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  //  if(shapeName==histo && histoVBF!="" && ch.Contains("vbf"))histoName = ch+"_"+histoVBF+(isSignal?signalSufix:"")+varName ;
           //if(isSignal && ivar==1)printf("Syst %i = %s\n", ivar, varName.Data()); 
 
-          TH2* hshape2D = (TH2*)pdir->Get(histoName );
+          TH2* hshape2D = (TH2*)pdir->Get(histoName ); 
+	  //	  else {hshape = (TH1D*)pdir->Get(histoName ); }
           if(!hshape2D){
-	    printf("Histo %s is NULL for syst:%s\n", histoName.Data(), varName.Data());   
+	    //	    printf("Histo %s is NULL for syst:%s\n", histoName.Data(), varName.Data());   
             if(shapeName==histo && histoVBF!="" && ch.Contains("vbf")){   hshape2D = (TH2*)pdir->Get(TString("all_")+histoVBF+(isSignal?signalSufix:"")+varName);
             }else{                                                        hshape2D = (TH2*)pdir->Get(TString("all_")+shapeName+varName);
             }
@@ -2427,10 +2624,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             if(hshape2D){
               hshape2D->Reset();
             }else{  //if still no histo, skip this proc...
-              printf("Histo %s does not exist for syst:%s\n", histoName.Data(), varName.Data());
+	      //              printf("Histo %s does not exist for syst:%s\n", histoName.Data(), varName.Data());
               continue;
             }
-          } 
+	  }
 
           //special treatment for side mass points
           int cutBinUsed = cutBin;
@@ -2438,11 +2635,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if(shapeName == histo && !ch.Contains("vbf") && procMass==massR)cutBinUsed = indexcutMR[channelInfo.bin];
 
           histoName.ReplaceAll(ch,ch+"_proj"+procCtr);
-	  printf("histoName= %s, cutBinUsed= %d\n",histoName.Data(), cutBinUsed);
           hshape   = hshape2D->ProjectionY(histoName,cutBinUsed,cutBinUsed);
+	  //  else {hshape = hshape2D; }
           filterBinContent(hshape);
-          printf("%s %s %s Integral = %f\n\n", ch.Data(), shortName.Data(), varName.Data(), hshape->Integral() );
-          //if(hshape->Integral()<=0 && varName=="" && !isData){hshape->Reset(); hshape->SetBinContent(1, 1E-10);} //TEST FOR HIGGS WIDTH MEASUREMENTS, MUST BE UNCOMMENTED ASAP
 
           if(isnan((float)hshape->Integral())){hshape->Reset();}
           hshape->SetDirectory(0);
@@ -2463,29 +2658,32 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           }
           hshape->Scale(MCRescale);
 	  if (postfit) {
-	    printf("W/Top NORMALIZATIONs: Process = %s and channel = %s\n\n",proc.Data(),ch.Data());
+	    if(!(ch.Contains("_A_"))) {
+	      printf("W/Top NORMALIZATIONs: Process = %s and channel = %s\n\n",proc.Data(),ch.Data());
 
-	    // Top normalization
-	    if (proc.Contains("t#bar{t}+jets")!=std::string::npos) {   
-	      if (ch.Contains("E")) {  
-		if(ch.Contains("3b")) hshape->Scale(norm_top_e_3b);
-		if(ch.Contains("4b")) hshape->Scale(norm_top_e_4b);   
+	      // Top normalization
+	      if ( (proc.Contains("t#bar{t} + b#bar{b}")!=std::string::npos) ||
+		   (proc.Contains("t#bar{t} + c#bar{c}")!=std::string::npos) ){   
+		if (ch.Contains("e")) {  
+		  if(ch.Contains("3b")) hshape->Scale(norm_top);
+		  if(ch.Contains("4b")) hshape->Scale(norm_top);   
+		}
+		if (ch.Contains("mu")) { 
+		 if(ch.Contains("3b")) hshape->Scale(norm_top);
+		 if(ch.Contains("4b")) hshape->Scale(norm_top);   
+		}    
 	      }
-	      if (ch.Contains("MU")) { 
-		if(ch.Contains("3b")) hshape->Scale(norm_top_mu_3b);
-		if(ch.Contains("4b")) hshape->Scale(norm_top_mu_4b); 
-	      }    
-	    }
 	    
 	    // W normalization
-	    if (proc.Contains("W#rightarrow l#nu")!=std::string::npos) {
-	      if (ch.Contains("E")) {  
-		if(ch.Contains("3b")) hshape->Scale(norm_w_e_3b);    
-		if(ch.Contains("4b")) hshape->Scale(norm_w_e_4b);     
-	      }
-	      if (ch.Contains("MU")) {          
-		if(ch.Contains("3b")) hshape->Scale(norm_w_mu_3b);      
-		if(ch.Contains("4b")) hshape->Scale(norm_w_mu_4b);          
+	      if (proc.Contains("W#rightarrow l#nu")!=std::string::npos) {
+		if (ch.Contains("e")) {  
+		  if(ch.Contains("3b")) hshape->Scale(norm_w);    
+		  if(ch.Contains("4b")) hshape->Scale(norm_w);     
+		}
+		if (ch.Contains("mu")) {          
+		  if(ch.Contains("3b")) hshape->Scale(norm_w);      
+		  if(ch.Contains("4b")) hshape->Scale(norm_w);          
+		}
 	      }
 	    }
 	  }
@@ -2499,9 +2697,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           }else if(varName.BeginsWith("_jes")){varName.ReplaceAll("_jes","_CMS_scale_j");
           }else if(varName.BeginsWith("_jer")){varName.ReplaceAll("_jer","_CMS_res_j"); // continue;//skip res for now
           }else if(varName.BeginsWith("_les")){ 
-            if(ch.Contains("E"  ))varName.ReplaceAll("_les","_CMS_scale_e");
-            if(ch.Contains("MU"))varName.ReplaceAll("_les","_CMS_scale_m");
-          }else if(varName.BeginsWith("_btag"  )){varName.ReplaceAll("_btag","_CMS_eff_b"); 
+            if(ch.Contains("e"  ))varName.ReplaceAll("_les","_CMS_scale_e");
+            if(ch.Contains("mu"))varName.ReplaceAll("_les","_CMS_scale_m");
+          }else if(varName.BeginsWith("_btag"  )){varName.ReplaceAll("_btag","_CMS_eff_b");
+	    //  }else if(varName.BeginsWith("_ctag"  )){varName.ReplaceAll("_ctag","_CMS_eff_c");
+	    // }else if(varName.BeginsWith("_ltag"  )){varName.ReplaceAll("_ltag","_CMS_eff_lj");
           }else if(varName.BeginsWith("_pu"    )){varName.ReplaceAll("_pu", "_CMS_haa4b_pu");
           }else if(varName.BeginsWith("_ren"   )){continue;   //already accounted for in QCD scales
           }else if(varName.BeginsWith("_fact"  )){continue; //skip this one

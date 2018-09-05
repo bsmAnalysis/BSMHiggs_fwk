@@ -20,6 +20,7 @@ def usage() :
     print '  -p : extra parameters configure'
     print '  -t : tag to match sample'
     print '  -g : log file from submitting to queue' #RJ
+    print '  -r : resubmit failed jobs'
     print ' '
     exit(-1)
 
@@ -37,7 +38,7 @@ def getByLabel(desc,key,defaultVal=None) :
 #parse the options
 try:
      # retrive command line options
-     shortopts  = "s:e:j:d:o:c:l:p:t:h:g:?" #RJ
+     shortopts  = "s:e:j:d:o:c:l:p:t:g:r:?" #RJ
      opts, args = getopt.getopt( sys.argv[1:], shortopts )
 except getopt.GetoptError:
      # print help information and exit:
@@ -58,6 +59,7 @@ segment=0
 params=''
 onlytag='all'
 queuelog=''
+resubmit=False
 
 count=0
 who = commands.getstatusoutput('whoami')[1]
@@ -83,6 +85,7 @@ for o,a in opts:
     elif o in('-p'): params = a
     elif o in('-t'): onlytag = a
     elif o in('-g'): queuelog = a #RJ
+    elif o in('-r'): resubmit = a
 
 #open the file which describes the sample
 jsonFile = open(samplesDB,'r')
@@ -97,18 +100,18 @@ for proc in procList :
         #run over items in process
         isdata=getByLabel(desc,'isdata',False)
         mctruthmode=getByLabel(desc,'mctruthmode',0)
-	tag = getByLabel(desc,'tag','') #RJ
-	print tag
+        tag = getByLabel(desc,'tag','') #RJ
+        print tag
 
-	mytag = tag
-	mytag = mytag.replace("#","")
-	mytag = mytag.replace(" ","")
-	mytag = mytag.replace("(","")
-	mytag = mytag.replace(")","")
-	mytag = mytag.replace("{","")
-	mytag = mytag.replace("}","")
-	mytag = mytag.replace("+","")
-        ## split jobs by tag name
+        mytag = tag
+        mytag = mytag.replace("#","")
+        mytag = mytag.replace(" ","")
+        mytag = mytag.replace("(","")
+        mytag = mytag.replace(")","")
+        mytag = mytag.replace("{","")
+        mytag = mytag.replace("}","")
+        mytag = mytag.replace("+","")
+    ## split jobs by tag name
         SCRIPT_Temp = open('/tmp/'+who+'/SCRIPT_Local_'+mytag+'.sh',"w")
         SCRIPT_Temp.writelines('#!bin/sh \n\n')
         SCRIPT_Temp.writelines('cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/; \n\n')
@@ -128,86 +131,115 @@ for proc in procList :
                 for ibr in br :  xsec = xsec*ibr
             split=getByLabel(d,'split',1)
 
+            ## submit or resubmit
+            if(resubmit) :      
+#                print '  Running in resubmit failed jobs mode ' 
+                configList = commands.getstatusoutput('ls ' + outdir +'/'+ dtag + '_' + '*_cfg.py')[1].split('\n')
+                failedList = []
 
-            mydtag = dtag
-            mydtag = mydtag.replace("#","")
-            mydtag = mydtag.replace(" ","")
-            mydtag = mydtag.replace("(","")
-            mydtag = mydtag.replace(")","")
-            mydtag = mydtag.replace("{","")
-            mydtag = mydtag.replace("}","")
-            mydtag = mydtag.replace("+","")
-            ## split jobs by dtag name
-            SCRIPT_DTag = open('/tmp/'+who+'/SCRIPT_Local_'+mydtag+'.sh',"w")
-            SCRIPT_DTag.writelines('#!bin/sh \n\n')
-            SCRIPT_DTag.writelines('cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/; \n\n')
-
-            # Loop over files for given dtag name:
-            ntplpath = '/eos/cms/store/user/georgia/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
-            # FileList = [file for file in glob.glob(ntplpath+'analysis_*.root')] 
-
-            segment=0
-            for file in glob.glob(ntplpath+'analysis_*.root'):
-                eventsFile = file
-#            eventsFile = ', \n '.join('"' + item + '"' for item in FileList)
-         
-                sedcmd = 'sed \"s%"@input"%' +eventsFile +'%;'
-                sedcmd += 's%"@outdir"%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
-                sedcmd += 's%"@suffix"%' + suffix + '%;'
-                sedcmd += 's%"@proc"%' + dtag + '%;'
-                sedcmd += 's%"@tag"%' +(dtag + suffix + '_' + str(segment))+'%;'#RJ
-#                sedcmd += 's%"@tag"%' +str(getByLabel(desc,'tag',-1))+'%;'#RJ
-                if(params.find('@useMVA')<0) :          params = '@useMVA=False ' + params
-                if(params.find('@evStart')<0) :         params = '@evStart=0 ' + params
-                if(params.find('@evEnd')<0) :           params = '@evEnd=-1 ' + params
-                if(params.find('@saveSummaryTree')<0) : params = '@saveSummaryTree=False ' + params
-                if(params.find('@runSystematics')<0) :  params = '@runSystematics=False ' + params
-                if(params.find('@usemetNoHF')<0) :  	params = '@usemetNoHF=False ' + params
-                if(params.find('@useDeepCSV')<0) :      params = '@useDeepCSV=False ' + params
-                if(params.find('@runQCD')<0) :          params = '@runQCD=False ' + params
-                if(params.find('@runMVA')<0) :          params = '@runMVA=False ' + params
-                if(len(params)>0) :
-                    extracfgs = params.split(' ')
-                    for icfg in extracfgs :
-                        varopt=icfg.split('=')
-                        if(len(varopt)<2) : continue
-                        sedcmd += 's%' + varopt[0] + '%' + varopt[1] + '%;'
-                sedcmd += '\"'
-
-
-                cfgfile=outdir +'/'+ dtag + suffix + '_' + str(segment) + '_cfg.py'
-                print cfgfile    
-                os.system('cat ' + cfg_file + ' | ' + sedcmd + ' > ' + cfgfile)
-
-                if(not subtoBatch) :
-                    os.system(theExecutable + ' ' + cfgfile)
-                else :
-                    os.system('mkdir -p ' + queuelog)
-#                    print('\033[33m submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile + '\033[0m')
-                    SCRIPT.writelines('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile + '\n\n')
-                    SCRIPT_L.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+str(segment)+'.log'+' & \n\n')
-                    count = count + 1
-                    if count % 30 == 0: SCRIPT_L.writelines('sleep 25\n\n')
+                    ## split jobs by dtag name
+                SCRIPT_DTag = open('/tmp/'+who+'/SCRIPT_Local_'+dtag+'.sh',"w")
+                SCRIPT_DTag.writelines('#!bin/sh \n\n')
+                SCRIPT_DTag.writelines('cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/; \n\n')
                 
-                    SCRIPT_Temp.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' & \n\n')
-                    SCRIPT_DTag.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' & \n\n')
-			#sys.exit(0)
-                    os.system('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
+                for cfgfile in configList:
+                    if( not os.path.isfile( cfgfile.replace('_cfg.py','.root'))):
+                        failedList+= [cfgfile]
+                if(len(failedList)>0):
+                    rsegment=0
+                    for cfgfile in failedList: 
+                        os.system('mkdir -p ' + queuelog)
+                        SCRIPT.writelines('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(rsegment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile + '\n\n')
+                        SCRIPT_L.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+str(rsegment)+'.log'+' & \n\n')
+                        count = count + 1
+                        if count % 30 == 0: SCRIPT_L.writelines('sleep 25\n\n')
+                        
+                        SCRIPT_Temp.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' & \n\n')
+                        SCRIPT_DTag.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' & \n\n')
+                        #sys.exit(0)
+                        os.system('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(rsegment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
+                        #                        os.system('submit2batch.sh -q '+queue+' -G'+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(rsegment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
+                        rsegment+=1 
 
-                segment += 1 #increment counter for job split
+            else :    
+                mydtag = dtag
+                mydtag = mydtag.replace("#","")
+                mydtag = mydtag.replace(" ","")
+                mydtag = mydtag.replace("(","")
+                mydtag = mydtag.replace(")","")
+                mydtag = mydtag.replace("{","")
+                mydtag = mydtag.replace("}","")
+                mydtag = mydtag.replace("+","")
+            ## split jobs by dtag name
+                SCRIPT_DTag = open('/tmp/'+who+'/SCRIPT_Local_'+mydtag+'.sh',"w")
+                SCRIPT_DTag.writelines('#!bin/sh \n\n')
+                SCRIPT_DTag.writelines('cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/; \n\n')
+                
+            # Loop over files for given dtag name:
+                ntplpath = '/eos/cms/store/user/georgia/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
+                # FileList = [file for file in glob.glob(ntplpath+'analysis_*.root')] 
+                
+                segment=0
+                for file in glob.glob(ntplpath+'analysis_*.root'):
+                    eventsFile = file
+#            eventsFile = ', \n '.join('"' + item + '"' for item in FileList)
+                    
+                    sedcmd = 'sed \"s%"@input"%' +eventsFile +'%;'
+                    sedcmd += 's%"@outdir"%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
+                    sedcmd += 's%"@suffix"%' + suffix + '%;'
+                    sedcmd += 's%"@proc"%' + dtag + '%;'
+                    sedcmd += 's%"@tag"%' +(dtag + suffix + '_' + str(segment))+'%;'#RJ
+                #                sedcmd += 's%"@tag"%' +str(getByLabel(desc,'tag',-1))+'%;'#RJ
+                    if(params.find('@useMVA')<0) :          params = '@useMVA=False ' + params
+                    if(params.find('@evStart')<0) :         params = '@evStart=0 ' + params
+                    if(params.find('@evEnd')<0) :           params = '@evEnd=-1 ' + params
+                    if(params.find('@saveSummaryTree')<0) : params = '@saveSummaryTree=False ' + params
+                    if(params.find('@runSystematics')<0) :  params = '@runSystematics=False ' + params
+                    if(params.find('@usemetNoHF')<0) :  	params = '@usemetNoHF=False ' + params
+                    if(params.find('@useDeepCSV')<0) :      params = '@useDeepCSV=False ' + params
+                    if(params.find('@runQCD')<0) :          params = '@runQCD=False ' + params
+                    if(params.find('@runMVA')<0) :          params = '@runMVA=False ' + params
+                    if(len(params)>0) :
+                        extracfgs = params.split(' ')
+                        for icfg in extracfgs :
+                            varopt=icfg.split('=')
+                            if(len(varopt)<2) : continue
+                            sedcmd += 's%' + varopt[0] + '%' + varopt[1] + '%;'
+                    sedcmd += '\"'
+                        
+                    
+                    cfgfile=outdir +'/'+ dtag + suffix + '_' + str(segment) + '_cfg.py'
+                    print cfgfile    
+                    os.system('cat ' + cfg_file + ' | ' + sedcmd + ' > ' + cfgfile)
 
-            SCRIPT_DTag.writelines('cd -;')
-            SCRIPT_DTag.close()
-            os.system('chmod u+x,g-r,o-r '+'/tmp/'+who+'/SCRIPT_Local_'+mydtag+'.sh ')
-	    os.system('mkdir -p '+queuelog+'/split/')
-            os.system('mv /tmp/'+who+'/SCRIPT_Local_'+mydtag+'.sh '+queuelog+'/split')
+                    if(not subtoBatch) :
+                        os.system(theExecutable + ' ' + cfgfile)
+                    else :
+                        os.system('mkdir -p ' + queuelog)
+                        SCRIPT.writelines('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile + '\n\n')
+                        SCRIPT_L.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+str(segment)+'.log'+' & \n\n')
+                        count = count + 1
+                        if count % 30 == 0: SCRIPT_L.writelines('sleep 25\n\n')
+                        
+                        SCRIPT_Temp.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' & \n\n')
+                        SCRIPT_DTag.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' & \n\n')
+                        #sys.exit(0)
+                        os.system('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
 
+                    segment += 1 #increment counter for job split
+
+                SCRIPT_DTag.writelines('cd -;')
+                SCRIPT_DTag.close()
+                os.system('chmod u+x,g-r,o-r '+'/tmp/'+who+'/SCRIPT_Local_'+mydtag+'.sh ')
+                os.system('mkdir -p '+queuelog+'/split/')
+                os.system('mv /tmp/'+who+'/SCRIPT_Local_'+mydtag+'.sh '+queuelog+'/split')
+            
         SCRIPT_Temp.writelines('cd -;')
         SCRIPT_Temp.close()
-	os.system('chmod u+x,g-r,o-r '+'/tmp/'+who+'/SCRIPT_Local_'+mytag+'.sh ')
-	os.system('mkdir -p '+queuelog+'/combine/')
+        os.system('chmod u+x,g-r,o-r '+'/tmp/'+who+'/SCRIPT_Local_'+mytag+'.sh ')
+        os.system('mkdir -p '+queuelog+'/combine/')
         os.system('mv /tmp/'+who+'/SCRIPT_Local_'+mytag+'.sh '+queuelog+'/combine/')
-
+                
 SCRIPT.close()
 SCRIPT_L.writelines('cd -;')
 SCRIPT_L.close()
@@ -217,4 +249,4 @@ os.system('mv /tmp/'+who+'/SCRIPT_Submit2batch.sh '+queuelog+'/all/')
 os.system('mv /tmp/'+who+'/SCRIPT_Local.sh '+queuelog+'/all/')
 os.system('cp $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/scripts/splitlocaljobs.py '+queuelog+'/all/')
 os.system('cp $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/scripts/checkLocaljobs.py '+queuelog+'/all/')
-
+            

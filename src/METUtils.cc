@@ -39,7 +39,7 @@ double response(LorentzVector &Z, LorentzVector &MET)
 }
 
 
-//Jet energy resoltuion, 13TeV scale factors, updated on 12/18/2015
+//Jet energy resoltuion, 13TeV scale factors, updated on 30/08/2018
 PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, int mode)
 {
     if(genJetPt<=0) return origJet;
@@ -48,59 +48,60 @@ PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, 
     double eta=fabs(origJet.eta());
 
     //https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
+    // Spring16_25nsV10 (80X, 2016, BCD+GH PromtReco) DATA/MC SFs 
     double ptSF(1.0), ptSF_up(1.0), ptSF_down(1.0);
     if(eta<0.5)			   {
-        ptSF=1.095;
-        ptSF_up=ptSF+0.018;
-        ptSF_down=ptSF-0.018;
+        ptSF=1.109;
+        ptSF_up=ptSF+0.008;
+        ptSF_down=ptSF-0.008;
     } else if(eta>=0.5 && eta<0.8) {
-        ptSF=1.120;
-        ptSF_up=ptSF+0.028;
-        ptSF_down=ptSF-0.028;
+        ptSF=1.138;
+        ptSF_up=ptSF+0.013;
+        ptSF_down=ptSF-0.013;
     } else if(eta>=0.8 && eta<1.1) {
-        ptSF=1.097;
-        ptSF_up=ptSF+0.017;
-        ptSF_down=ptSF-0.017;
+        ptSF=1.114;
+        ptSF_up=ptSF+0.013;
+        ptSF_down=ptSF-0.013;
     } else if(eta>=1.1 && eta<1.3) {
-        ptSF=1.103;
-        ptSF_up=ptSF+0.033;
-        ptSF_down=ptSF-0.033;
+        ptSF=1.123;
+        ptSF_up=ptSF+0.024;
+        ptSF_down=ptSF-0.024;
     } else if(eta>=1.3 && eta<1.7) {
-        ptSF=1.118;
-        ptSF_up=ptSF+0.014;
-        ptSF_down=ptSF-0.014;
+        ptSF=1.084;
+        ptSF_up=ptSF+0.011;
+        ptSF_down=ptSF-0.011;
     } else if(eta>=1.7 && eta<1.9) {
-        ptSF=1.100;
-        ptSF_up=ptSF+0.033;
-        ptSF_down=ptSF-0.033;
+        ptSF=1.082;
+        ptSF_up=ptSF+0.035;
+        ptSF_down=ptSF-0.035;
     } else if(eta>=1.9 && eta<2.1) {
-        ptSF=1.162;
-        ptSF_up=ptSF+0.044;
-        ptSF_down=ptSF-0.044;
+        ptSF=1.140;
+        ptSF_up=ptSF+0.047;
+        ptSF_down=ptSF-0.047;
     } else if(eta>=2.1 && eta<2.3) {
-        ptSF=1.160;
-        ptSF_up=ptSF+0.048;
-        ptSF_down=ptSF-0.048;
+        ptSF=1.067;
+        ptSF_up=ptSF+0.053;
+        ptSF_down=ptSF-0.053;
     } else if(eta>=2.3 && eta<2.5) {
-        ptSF=1.161;
-        ptSF_up=ptSF+0.060;
-        ptSF_down=ptSF-0.060;
+        ptSF=1.177;
+        ptSF_up=ptSF+0.041;
+        ptSF_down=ptSF-0.041;
     } else if(eta>=2.5 && eta<2.8) {
-        ptSF=1.209;
-        ptSF_up=ptSF+0.059;
-        ptSF_down=ptSF-0.059;
+        ptSF=1.364;
+        ptSF_up=ptSF+0.039;
+        ptSF_down=ptSF-0.039;
     } else if(eta>=2.8 && eta<3.0) {
-        ptSF=1.564;
-        ptSF_up=ptSF+0.321;
-        ptSF_down=ptSF-0.321;
+        ptSF=1.857;
+        ptSF_up=ptSF+0.071;
+        ptSF_down=ptSF-0.071;
     } else if(eta>=3.0 && eta<3.2) {
-        ptSF=1.384;
-        ptSF_up=ptSF+0.033;
-        ptSF_down=ptSF-0.033;
+        ptSF=1.328;
+        ptSF_up=ptSF+0.022;
+        ptSF_down=ptSF-0.022;
     } else if(eta>=3.2 && eta<5.0) {
-        ptSF=1.216;
-        ptSF_up=ptSF+0.050;
-        ptSF_down=ptSF-0.050;
+        ptSF=1.16;
+        ptSF_up=ptSF+0.029;
+        ptSF_down=ptSF-0.029;
     }
 
     if(mode==1) ptSF = ptSF_up;
@@ -164,10 +165,10 @@ void computeVariation(PhysicsObjectJetCollection& jets,
                 else if(ivar==LES_UP  || ivar==LES_DOWN) {
                     LorentzVector iScaleLepton=leptons[ilep];
                     double varSign=(ivar==LES_UP ? 1.0 : -1.0);
-                    if(fabs(leptons[ilep].id)==13)          iScaleLepton *= (1.0+varSign*0.01);
+                    if(fabs(leptons[ilep].id)==13)          iScaleLepton *= (1.0+varSign*0.002);
                     else if(fabs(leptons[ilep].id)==11) {
-                        if(fabs(leptons[ilep].eta())<1.442) iScaleLepton *= (1.0+varSign*0.02);
-                        else                                iScaleLepton *= (1.0+varSign*0.05);
+                        if(fabs(leptons[ilep].eta())<1.442) iScaleLepton *= (1.0+varSign*0.006);
+                        else                                iScaleLepton *= (1.0+varSign*0.015);
                     }
                     lepDiff += (iScaleLepton-leptons[ilep]);
                 }
