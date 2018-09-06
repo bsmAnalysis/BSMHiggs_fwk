@@ -834,6 +834,8 @@ int main(int argc, char* argv[])
 	
 	// All: "Raw" (+Trigger)
 	mon.fillHisto("eventflow","all",0,weight);
+	mon.fillHisto("eventflow","e",0,weight); 
+	mon.fillHisto("eventflow","mu",0,weight); 
 
         //only take up and down from pileup effect
         double TotalWeight_plus = 1.0;
@@ -930,7 +932,7 @@ int main(int argc, char* argv[])
 	  } else if (abs(lepid)==13) {
 	    lep_threshold=mu_threshold_;
             hasTightIdandIso &= ilep.passIdMu;
-	    if ( !runQCD ) hasTightIdandIso &= (ilep.mn_relIso<0.15);
+	    if ( !runQCD ) hasTightIdandIso &= ilep.passIsoMu; //mn_relIso<0.15);
 	  } else continue;
 
 	  bool hasExtraLepton(false);
@@ -1056,11 +1058,12 @@ int main(int argc, char* argv[])
 		  }
 		}
 		
-	      } if (abs(lepid)==13) { // endif ele
+	      } if (abs(lepid)==13) { // if mu
 		if(!runQCD){
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
 		} else {
-		  if(!(ilep.mn_relIso<0.15)) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
+		  if(!(ilep.passIsoMu)) selLeptonsVar[eleVarNames[ivar]].push_back(ilep); 
+		  //		  if(!(ilep.mn_relIso<0.15)) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
 		}
 	      }
 	    }
@@ -1071,7 +1074,7 @@ int main(int argc, char* argv[])
 	    if (abs(lepid)==11) {
 	      if (ilep.passIsoEl) goodLeptons.push_back(ilep);
 	    } else if (abs(lepid)==13) {
-	      if (ilep.mn_relIso<0.15) goodLeptons.push_back(ilep);
+	      if (ilep.passIsoMu) goodLeptons.push_back(ilep);
 	    }
 
 	    
@@ -1080,7 +1083,7 @@ int main(int argc, char* argv[])
 	    if (abs(lepid)==11) {
 	      hasExtraLepton = (ilep.passIdLooseEl && ilep.passIsoEl && ilep.pt()>10.);
 	    } else if (abs(lepid)==13) {
-	      hasExtraLepton = ( (ilep.passIdLooseMu && (ilep.mn_relIso<0.15) && ilep.pt()>10.) || (ilep.passSoftMuon) );
+	      hasExtraLepton = ( (ilep.passIdLooseMu && (ilep.passIsoMu) && ilep.pt()>10.) || (ilep.passSoftMuon) );
 	    }
 
 	  }
@@ -1121,7 +1124,7 @@ int main(int argc, char* argv[])
 	    // TRK + ID + ISO
 	    weight *= lepEff.getTrackingEfficiency( selLeptons[0].eta(), 13).first; //Tracking eff
 	    weight *= getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h );
-	    if (!runQCD) weight *= getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h  );
+	    weight *= getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h  );
 	  }
 	}
 
@@ -1215,10 +1218,10 @@ int main(int argc, char* argv[])
 	// 1-lepton
 	mon.fillHisto("eventflow","all",1,weight);
 	if ((abs(selLeptons[0].id)==11)) {
-	  mon.fillHisto("eventflow","all_e",1,weight);
+	  mon.fillHisto("eventflow","e",1,weight);
 	}
 	if ((abs(selLeptons[0].id)==13)) {
-	  mon.fillHisto("eventflow","all_mu",1,weight);
+	  mon.fillHisto("eventflow","mu",1,weight);
 	}
 	
 	sort(goodLeptons.begin(), goodLeptons.end(), ptsort());
@@ -1316,8 +1319,8 @@ int main(int argc, char* argv[])
 	    
 	    // Trigger
 	mon.fillHisto("eventflow","all",2,weight);
-	if (evcat==E) mon.fillHisto("eventflow","all_e",2,weight);
-	if (evcat==MU) mon.fillHisto("eventflow","all_mu",2,weight);
+	if (evcat==E) mon.fillHisto("eventflow","e",2,weight);
+	if (evcat==MU) mon.fillHisto("eventflow","mu",2,weight);
 	
         // pielup reweightiing
         mon.fillHisto("nvtx_raw",   "all", phys.nvtx,      xsecWeight*genWeight);
@@ -1808,14 +1811,14 @@ int main(int argc, char* argv[])
 	  if (ivar==0) {
 	    if (passMet25) {
 	      mon.fillHisto("eventflow","all",3,weight);
-	      if (evcat==E) mon.fillHisto("eventflow","all_e",3,weight);
-	      if (evcat==MU) mon.fillHisto("eventflow","all_mu",3,weight);
+	      if (evcat==E) mon.fillHisto("eventflow","e",3,weight);
+	      if (evcat==MU) mon.fillHisto("eventflow","mu",3,weight);
 
 	      // MT CUT
 	      if (passMt) {
 		mon.fillHisto("eventflow","all",4,weight);
-		if (evcat==E) mon.fillHisto("eventflow","all_e",4,weight);
-		if (evcat==MU) mon.fillHisto("eventflow","all_mu",4,weight);
+		if (evcat==E) mon.fillHisto("eventflow","e",4,weight);
+		if (evcat==MU) mon.fillHisto("eventflow","mu",4,weight);
 
 		// Lepton kinematics
 		if (evcat==E) {
@@ -1832,8 +1835,8 @@ int main(int argc, char* argv[])
 		   // NJET CUT
 		 if (passNJ2) {
 		  mon.fillHisto("eventflow","all",5,weight);
-		  if (evcat==E) mon.fillHisto("eventflow","all_e",5,weight);
-		  if (evcat==MU) mon.fillHisto("eventflow","all_mu",5,weight);
+		  if (evcat==E) mon.fillHisto("eventflow","e",5,weight);
+		  if (evcat==MU) mon.fillHisto("eventflow","mu",5,weight);
 
 		      // Lepton kinematics
 		  if (abs(selLeptons[0].id)==11) {
@@ -1857,7 +1860,7 @@ int main(int argc, char* argv[])
 
 	  // Event categorization based on (n-btag, n-jet) after leptonic selection
 	  int evtCatPlot = eventCategoryPlot.Get(phys,&GoodIdbJets, &pseudoGoodIdbJets);
-	  if (evtCatPlot<3) continue;
+	  //	  if (evtCatPlot<3) continue;
 	  
 	  if (ivar==0) mon.fillHisto("evt_cat",tag_cat+"_"+"sel1", evtCatPlot,weight);
 	  
@@ -1897,13 +1900,13 @@ int main(int argc, char* argv[])
 	  if (ivar==0) {
 	    if (tag_subcat=="SR_3b") {
 	      mon.fillHisto("eventflow","all",6,weight);
-	      if (evcat==E) mon.fillHisto("eventflow","all_e",6,weight);
-	      if (evcat==MU) mon.fillHisto("eventflow","all_mu",6,weight);
+	      if (evcat==E) mon.fillHisto("eventflow","e",6,weight);
+	      if (evcat==MU) mon.fillHisto("eventflow","mu",6,weight);
 	    }
 	    if (tag_subcat=="SR_4b") {
 	      mon.fillHisto("eventflow","all",7,weight);
-	      if (evcat==E) mon.fillHisto("eventflow","all_e",7,weight);
-	      if (evcat==MU) mon.fillHisto("eventflow","all_mu",7,weight);
+	      if (evcat==E) mon.fillHisto("eventflow","e",7,weight);
+	      if (evcat==MU) mon.fillHisto("eventflow","mu",7,weight);
 	    }
 	  }
 	  
