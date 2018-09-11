@@ -42,6 +42,8 @@ double response(LorentzVector &Z, LorentzVector &MET)
 //Jet energy resoltuion, 13TeV scale factors, updated on 30/08/2018
 PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, int mode)
 {
+  if (mode==0) return origJet;
+
     if(genJetPt<=0) return origJet;
 
     //smearing factors are described in https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
@@ -51,55 +53,55 @@ PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, 
     // Spring16_25nsV10 (80X, 2016, BCD+GH PromtReco) DATA/MC SFs 
     double ptSF(1.0), ptSF_up(1.0), ptSF_down(1.0);
     if(eta<0.5)			   {
-        ptSF=1.109;
+      //        ptSF=1.109;
         ptSF_up=ptSF+0.008;
         ptSF_down=ptSF-0.008;
     } else if(eta>=0.5 && eta<0.8) {
-        ptSF=1.138;
+      // ptSF=1.138;
         ptSF_up=ptSF+0.013;
         ptSF_down=ptSF-0.013;
     } else if(eta>=0.8 && eta<1.1) {
-        ptSF=1.114;
+      //ptSF=1.114;
         ptSF_up=ptSF+0.013;
         ptSF_down=ptSF-0.013;
     } else if(eta>=1.1 && eta<1.3) {
-        ptSF=1.123;
+      //ptSF=1.123;
         ptSF_up=ptSF+0.024;
         ptSF_down=ptSF-0.024;
     } else if(eta>=1.3 && eta<1.7) {
-        ptSF=1.084;
+      //ptSF=1.084;
         ptSF_up=ptSF+0.011;
         ptSF_down=ptSF-0.011;
     } else if(eta>=1.7 && eta<1.9) {
-        ptSF=1.082;
+      //ptSF=1.082;
         ptSF_up=ptSF+0.035;
         ptSF_down=ptSF-0.035;
     } else if(eta>=1.9 && eta<2.1) {
-        ptSF=1.140;
+      //ptSF=1.140;
         ptSF_up=ptSF+0.047;
         ptSF_down=ptSF-0.047;
     } else if(eta>=2.1 && eta<2.3) {
-        ptSF=1.067;
+      //ptSF=1.067;
         ptSF_up=ptSF+0.053;
         ptSF_down=ptSF-0.053;
     } else if(eta>=2.3 && eta<2.5) {
-        ptSF=1.177;
+      //ptSF=1.177;
         ptSF_up=ptSF+0.041;
         ptSF_down=ptSF-0.041;
     } else if(eta>=2.5 && eta<2.8) {
-        ptSF=1.364;
+      //ptSF=1.364;
         ptSF_up=ptSF+0.039;
         ptSF_down=ptSF-0.039;
     } else if(eta>=2.8 && eta<3.0) {
-        ptSF=1.857;
+      //ptSF=1.857;
         ptSF_up=ptSF+0.071;
         ptSF_down=ptSF-0.071;
     } else if(eta>=3.0 && eta<3.2) {
-        ptSF=1.328;
+      //ptSF=1.328;
         ptSF_up=ptSF+0.022;
         ptSF_down=ptSF-0.022;
     } else if(eta>=3.2 && eta<5.0) {
-        ptSF=1.16;
+      //ptSF=1.16;
         ptSF_up=ptSF+0.029;
         ptSF_down=ptSF-0.029;
     }
@@ -138,9 +140,10 @@ void computeVariation(PhysicsObjectJetCollection& jets,
         PhysicsObjectJetCollection newJets;
         LorentzVector newMET(met), jetDiff(0,0,0,0), lepDiff(0,0,0,0), unclustDiff(0,0,0,0), clusteredFlux(0,0,0,0);
         for(size_t ijet=0; ijet<jets.size(); ijet++) {
-            if(ivar==JER || ivar==JER_UP || ivar==JER_DOWN) {
+	  if(ivar==JER || ivar==JER_UP || ivar==JER_DOWN) {  
                 PhysicsObject_Jet iSmearJet=METUtils::smearedJet(jets[ijet],jets[ijet].genPt,ivar);
                 jetDiff += (iSmearJet-jets[ijet]);
+		//		if (ivar==JER && jetDiff.pt()!=0) printf("Something WRONG with variedJets[0]\n");
                 newJets.push_back( iSmearJet );
             } else if(ivar==JES_UP || ivar==JES_DOWN) {
                 double varSign=(ivar==JES_UP ? 1.0 : -1.0 );
@@ -157,6 +160,12 @@ void computeVariation(PhysicsObjectJetCollection& jets,
                 jetDiff += (iScaleJet-jets[ijet]);
                 newJets.push_back(iScaleJet);
             } else if(ivar==UMET_UP || ivar==UMET_DOWN)  clusteredFlux += jets[ijet];
+	  
+	  if(ivar==UMET_UP || ivar==UMET_DOWN || ivar==LES_UP || ivar==LES_DOWN) {    
+	    // Reset jets  
+	    PhysicsObject_Jet iScaleJet(jets[ijet]); 
+	    newJets.push_back(iScaleJet);      
+	  }
         }
 
         if(ivar==UMET_UP || ivar==UMET_DOWN || ivar==LES_UP || ivar==LES_DOWN) {

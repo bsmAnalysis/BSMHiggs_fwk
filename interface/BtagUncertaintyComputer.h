@@ -37,6 +37,7 @@ class BTagSFUtil{
   ~BTagSFUtil();
     
   void SetSeed(int seed=0);
+  float getBTagEff(double pt, TString key);
   void modifyBTagsWithSF( bool& isBTagged, float Btag_SF = 0.98, float Btag_eff = 1.0);
 
 
@@ -64,6 +65,28 @@ BTagSFUtil::~BTagSFUtil() {
 void BTagSFUtil::SetSeed( int seed ) {
 
   rand_ = new TRandom3(seed);
+
+}
+
+float BTagSFUtil::getBTagEff(double pt, TString key) {
+  //  AN2017_018_v9: Appendix C -> Parameterization functions for the efficiency of the DeepCSV as a functions of the jet pt
+  double btag_eff = 1.;
+
+  if (key=="bLOOSE") {
+    if (pt>20 && pt<100) btag_eff=0.491+0.0191*pt-0.0004172*pt*pt+4.893*0.000001*pt*pt*pt-3.266*0.00000001*pt*pt*pt*pt+
+		      1.238*0.0000000001*pt*pt*pt*pt*pt-2.474*0.0000000000001*pt*pt*pt*pt*pt*pt+2.021*0.0000000000000001*pt*pt*pt*pt*pt*pt*pt;
+    else if (pt>=100 && pt<300) btag_eff=0.912-0.0001846*pt+2.479*0.00001*pt*pt-1.417*0.0000001*pt*pt*pt+3.617*0.0000000001*pt*pt*pt*pt-
+				  3.433*0.0000000000001*pt*pt*pt*pt*pt;
+    else if (pt>=300 && pt<1000) btag_eff=0.892-0.00014*pt+1.011*0.0000001*pt*pt;
+  } else if (key=="cLOOSE") {
+    if (pt>20 && pt<220) btag_eff=0.421-0.000563*pt+5.096*0.000001*pt*pt-1.4*0.00000001*pt*pt*pt+1.709*0.00000000001*pt*pt*pt*pt-7.627*0.000000000000001*pt*pt*pt*pt*pt;
+    else if (pt>=220 && pt<1000) btag_eff=0.383+0.000217*pt-1.997*0.00000001*pt*pt;
+  } else if (key=="lLOOSE") {
+    if (pt>20 && pt<250) btag_eff=0.2407-0.00593*pt+8.5*0.00001*pt*pt-5.658*0.0000001*pt*pt*pt+1.828*0.000000001*pt*pt*pt*pt-2.287*0.000000000001*pt*pt*pt*pt*pt;
+    else if (pt>=250 && pt<1000) btag_eff=0.0541+0.00036*pt-7.392*0.00000001*pt*pt;
+  }
+
+  return btag_eff;
 
 }
 
