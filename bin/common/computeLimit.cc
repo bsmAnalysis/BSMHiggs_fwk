@@ -56,8 +56,11 @@ double datadriven_qcd_Syst = 0.50;
 
 bool postfit=false;
 
-double norm_top=1.12;
-double norm_w=2.24;
+double norm_top=1.1;
+double enorm_3b_w=1.61;
+double enorm_4b_w=1.39;
+double munorm_3b_w=2.02;
+double munorm_4b_w=1.96;
 
 int mass;
 bool shape = true;
@@ -569,27 +572,27 @@ int main(int argc, char* argv[])
   if(AnalysisBins.size()==0)AnalysisBins.push_back("all");
   if(Channels.size()==0){ 
     if (modeDD) {
-      Channels.push_back("e_A_passDPHI_SR"); Channels.push_back("mu_A_passDPHI_SR");
-      Channels.push_back("e_B_passDPHI_SR"); Channels.push_back("mu_B_passDPHI_SR");  
-      Channels.push_back("e_C_passDPHI_SR"); Channels.push_back("mu_C_passDPHI_SR");  
-      Channels.push_back("e_D_passDPHI_SR"); Channels.push_back("mu_D_passDPHI_SR");  
+      Channels.push_back("e_A_SR"); Channels.push_back("mu_A_SR");
+      Channels.push_back("e_B_SR"); Channels.push_back("mu_B_SR");  
+      Channels.push_back("e_C_SR"); Channels.push_back("mu_C_SR");  
+      Channels.push_back("e_D_SR"); Channels.push_back("mu_D_SR");  
     } else {
-      Channels.push_back("e_A_passDPHI_SR"); Channels.push_back("mu_A_passDPHI_SR");
+      Channels.push_back("e_A_SR"); Channels.push_back("mu_A_SR");
     }
     if(simfit){
       if (modeDD) {
-	Channels.push_back("e_A_passDPHI_CR");Channels.push_back("mu_A_passDPHI_CR"); // Top CR
-	Channels.push_back("e_B_passDPHI_CR");Channels.push_back("mu_B_passDPHI_CR"); // Top CR 
-	Channels.push_back("e_C_passDPHI_CR");Channels.push_back("mu_C_passDPHI_CR"); // Top CR 
-	Channels.push_back("e_D_passDPHI_CR");Channels.push_back("mu_D_passDPHI_CR"); // Top CR
+	Channels.push_back("e_A_CR");Channels.push_back("mu_A_CR"); // Top CR
+	Channels.push_back("e_B_CR");Channels.push_back("mu_B_CR"); // Top CR 
+	Channels.push_back("e_C_CR");Channels.push_back("mu_C_CR"); // Top CR 
+	Channels.push_back("e_D_CR");Channels.push_back("mu_D_CR"); // Top CR
 
-	Channels.push_back("e_A_passDPHI_CR5j");Channels.push_back("mu_A_passDPHI_CR5j"); // tt+bb CR
-	Channels.push_back("e_B_passDPHI_CR5j");Channels.push_back("mu_B_passDPHI_CR5j"); // tt+bb CR 
-	Channels.push_back("e_C_passDPHI_CR5j");Channels.push_back("mu_C_passDPHI_CR5j"); // tt+bb CR 
-	Channels.push_back("e_D_passDPHI_CR5j");Channels.push_back("mu_D_passDPHI_CR5j"); // tt+bb CR 
+	Channels.push_back("e_A_CR5j");Channels.push_back("mu_A_CR5j"); // tt+bb CR
+	Channels.push_back("e_B_CR5j");Channels.push_back("mu_B_CR5j"); // tt+bb CR 
+	Channels.push_back("e_C_CR5j");Channels.push_back("mu_C_CR5j"); // tt+bb CR 
+	Channels.push_back("e_D_CR5j");Channels.push_back("mu_D_CR5j"); // tt+bb CR 
       } else {
-	Channels.push_back("e_A_passDPHI_CR");Channels.push_back("mu_A_passDPHI_CR"); // Top CR
-	Channels.push_back("e_A_passDPHI_CR5j");Channels.push_back("mu_A_passDPHI_CR5j"); // tt+bb CR   
+	Channels.push_back("e_A_CR");Channels.push_back("mu_A_CR"); // Top CR
+	Channels.push_back("e_A_CR5j");Channels.push_back("mu_A_CR5j"); // tt+bb CR   
       }
     }
   }
@@ -645,26 +648,26 @@ int main(int argc, char* argv[])
 
   std::vector<TString> ch;
   if (modeDD) {
-    ch.push_back("e_A_passDPHI_SR"); ch.push_back("mu_A_passDPHI_SR");  
-    ch.push_back("e_B_passDPHI_SR"); ch.push_back("mu_B_passDPHI_SR");   
-    ch.push_back("e_C_passDPHI_SR"); ch.push_back("mu_C_passDPHI_SR");   
-    ch.push_back("e_D_passDPHI_SR"); ch.push_back("mu_D_passDPHI_SR");   
+    ch.push_back("e_A_SR"); ch.push_back("mu_A_SR");  
+    ch.push_back("e_B_SR"); ch.push_back("mu_B_SR");   
+    ch.push_back("e_C_SR"); ch.push_back("mu_C_SR");   
+    ch.push_back("e_D_SR"); ch.push_back("mu_D_SR");   
     if (simfit) {
-      ch.push_back("e_A_passDPHI_CR"); ch.push_back("mu_A_passDPHI_CR");  
-      ch.push_back("e_B_passDPHI_CR"); ch.push_back("mu_B_passDPHI_CR"); 
-      ch.push_back("e_C_passDPHI_CR"); ch.push_back("mu_C_passDPHI_CR"); 
-      ch.push_back("e_D_passDPHI_CR"); ch.push_back("mu_D_passDPHI_CR");
+      ch.push_back("e_A_CR"); ch.push_back("mu_A_CR");  
+      ch.push_back("e_B_CR"); ch.push_back("mu_B_CR"); 
+      ch.push_back("e_C_CR"); ch.push_back("mu_C_CR"); 
+      ch.push_back("e_D_CR"); ch.push_back("mu_D_CR");
 
-      ch.push_back("e_A_passDPHI_CR5j"); ch.push_back("mu_A_passDPHI_CR5j");  
-      ch.push_back("e_B_passDPHI_CR5j"); ch.push_back("mu_B_passDPHI_CR5j"); 
-      ch.push_back("e_C_passDPHI_CR5j"); ch.push_back("mu_C_passDPHI_CR5j"); 
-      ch.push_back("e_D_passDPHI_CR5j"); ch.push_back("mu_D_passDPHI_CR5j"); 
+      ch.push_back("e_A_CR5j"); ch.push_back("mu_A_CR5j");  
+      ch.push_back("e_B_CR5j"); ch.push_back("mu_B_CR5j"); 
+      ch.push_back("e_C_CR5j"); ch.push_back("mu_C_CR5j"); 
+      ch.push_back("e_D_CR5j"); ch.push_back("mu_D_CR5j"); 
     }
   } else {
-    ch.push_back("e_A_passDPHI_SR"); ch.push_back("mu_A_passDPHI_SR");
+    ch.push_back("e_A_SR"); ch.push_back("mu_A_SR");
     if (simfit) { 
-      ch.push_back("e_A_passDPHI_CR"); ch.push_back("mu_A_passDPHI_CR");
-      ch.push_back("e_A_passDPHI_CR5j"); ch.push_back("mu_A_passDPHI_CR5j"); 
+      ch.push_back("e_A_CR"); ch.push_back("mu_A_CR");
+      ch.push_back("e_A_CR5j"); ch.push_back("mu_A_CR5j"); 
      }
   }
   //TString ch[]={"SR"}; //"mumu","ee","emu"};
@@ -907,7 +910,6 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
   for(std::map<string, ChannelInfo_t>::iterator chData = dataProcIt->second.channels.begin(); chData!=dataProcIt->second.channels.end(); chData++){
     if(std::find(selCh.begin(), selCh.end(), chData->second.channel)==selCh.end())continue;
 
-    printf("Channels=%s\n",chData->first.c_str());
     // if(chData->first.find("CR5j"))continue;
     if(chData->first.find("_A_")!=string::npos)continue; // do not subtract nonQCD MC in regions A...
 
@@ -1603,10 +1605,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       t1->SetFrameBorderMode(0);
       t1->SetFrameFillStyle(0);
       t1->SetFrameBorderMode(0);
-
       
       t1->Draw();
       t1->cd();
+
+      t1->SetLogy(true);         
  
       //print histograms
       TH1* axis = (TH1*)map_data[p->first]->Clone("axis");
@@ -1616,7 +1619,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       //double signalHeight=0;
       //for(unsigned int s=0;s<map_signals[p->first].size();s++){signalHeight = std::max(signalHeight, map_signals[p->first][s]->GetMaximum());}
       //  axis->SetMaximum(1.5*std::max(signalHeight , std::max( map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum())));
-      axis->SetMaximum(1.5*std::max(map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum()));
+      axis->SetMaximum(5000.5*std::max(map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum()));
       
       //hard code range
       if(procs["data"].channels[p->first].bin.find("vbf")!=string::npos){
@@ -1655,8 +1658,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if (hs) hs->Draw("HIST same");
       }
       
-      // if ( ((p->first).find("mu_A_passDPHI_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_passDPHI_SR_4b")!=std::string::npos) ||
-      // 	   ((p->first).find("e_A_passDPHI_SR_3b")!=std::string::npos) || ((p->first).find("e_A_passDPHI_SR_4b")!=std::string::npos) ) {
+      // if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
+      // 	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ) {
 
       // 	for(unsigned int i=map_data[p->first]->FindBin(0.1);i<=map_data[p->first]->GetNbinsX()+1; i++){   
       // 	  map_data[p->first]->SetBinContent(i, 0); map_data[p->first]->SetBinError(i, 0);
@@ -1787,7 +1790,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 
       TH1D* denSystUncH = (TH1D*)map_uncH[p->first];
-      utils::root::checkSumw2(denSystUncH);
+      //   utils::root::checkSumw2(denSystUncH);
 
       int GPoint=0;
       TGraphErrors *denSystUnc=new TGraphErrors(denSystUncH->GetXaxis()->GetNbins()); 
@@ -1849,8 +1852,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       dataToObs->SetMarkerSize(0.7);
       dataToObs->Draw("P 0 SAME");
 
-      // if ( ((p->first).find("mu_A_passDPHI_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_passDPHI_SR_4b")!=std::string::npos) ||
-      // 	   ((p->first).find("e_A_passDPHI_SR_3b")!=std::string::npos) || ((p->first).find("e_A_passDPHI_SR_4b")!=std::string::npos) ) {
+      // if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
+      // 	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ) {
 	
       // 	TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), 0.4,axis->GetXaxis()->GetXmax(), 1.6, 0, "NB" );  
       // 	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
@@ -1926,13 +1929,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         //add the stat uncertainty is there;
         //ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );//add stat uncertainty to the uncertainty map;
 
-        //Li Fix
         if((it->second.shortName).find("ggH")!=std::string::npos)ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_ggH")).Data(),systpostfix.Data(), false );// attention
 	else if((it->second.shortName).find("qqH")!=std::string::npos)ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_qqH")).Data(),systpostfix.Data(), false );
         else ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );
         TVirtualPad* pad = t1->cd(I); 
         pad->SetTopMargin(0.06); pad->SetRightMargin(0.03); pad->SetBottomMargin(0.07);  pad->SetLeftMargin(0.06);
-	//                 pad->SetLogy(true); 
+	//pad->SetLogy(true); 
 	//TH1* h = (TH1*)(ch->second.shapes[histoName.Data()].histo()->Clone((it->first+ch->first+"Nominal").c_str())); 
 	TH1* hh = ch->second.shapes[histoName.Data()].histo();
 	if (hh==NULL) continue;
@@ -2373,8 +2375,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       if(C->first.find("e"  )!=string::npos)eecard   += (C->first+"=").c_str()+dcName+" ";
       if(C->first.find("mu")!=string::npos)mumucard += (C->first+"=").c_str()+dcName+" ";
 
-      if(C->first.find("e_A_passDPHI_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";  
-      if(C->first.find("mu_A_passDPHI_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" "; 
+      if(C->first.find("e_A_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";  
+      if(C->first.find("mu_A_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" "; 
 
       bool TTcontrolregion(false);  
       bool nonTTcontrolregion(false); 
@@ -2447,14 +2449,18 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       if(C->first.find("e" )!=string::npos) {
 	fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");
 	fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n"); 
-	//if (C->first.find("3b")!=string::npos)
-	fprintf(pFile,"w_norm_e rateParam bin1 wlnu 1 \n");    
+	//	if (modeDD) fprintf(pFile,"qcd_norm_e rateParam bin1 ddqcd 1\n"); 
+	//	else fprintf(pFile,"qcd_norm_e rateParam bin1 qcd 1\n");  
+	if (C->first.find("3b")!=string::npos) fprintf(pFile,"w_norm_3b_e rateParam bin1 wlnu 1 \n");    
+	if (C->first.find("4b")!=string::npos) fprintf(pFile,"w_norm_4b_e rateParam bin1 wlnu 1 \n"); 
       }
       if(C->first.find("mu")!=string::npos) {
 	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");
 	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");  
-	//if (C->first.find("3b")!=string::npos)
-	fprintf(pFile,"w_norm_mu rateParam bin1 wlnu 1 \n"); 
+	//	if (modeDD) fprintf(pFile,"qcd_norm_mu rateParam bin1 ddqcd 1\n");  
+	//	else fprintf(pFile,"qcd_norm_mu rateParam bin1 qcd 1\n");    
+	if (C->first.find("3b")!=string::npos) fprintf(pFile,"w_norm_3b_mu rateParam bin1 wlnu 1 \n"); 
+	if (C->first.find("4b")!=string::npos) fprintf(pFile,"w_norm_4b_mu rateParam bin1 wlnu 1 \n"); 
       }
       fprintf(pFile, "-------------------------------\n");  
       //}
@@ -2677,12 +2683,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    // W normalization
 	      if (proc.Contains("W#rightarrow l#nu")!=std::string::npos) {
 		if (ch.Contains("e")) {  
-		  if(ch.Contains("3b")) hshape->Scale(norm_w);    
-		  if(ch.Contains("4b")) hshape->Scale(norm_w);     
+		  if(ch.Contains("3b")) hshape->Scale(enorm_3b_w);    
+		  if(ch.Contains("4b")) hshape->Scale(enorm_4b_w);     
 		}
 		if (ch.Contains("mu")) {          
-		  if(ch.Contains("3b")) hshape->Scale(norm_w);      
-		  if(ch.Contains("4b")) hshape->Scale(norm_w);          
+		  if(ch.Contains("3b")) hshape->Scale(munorm_3b_w);      
+		  if(ch.Contains("4b")) hshape->Scale(munorm_4b_w);          
 		}
 	      }
 	    }
