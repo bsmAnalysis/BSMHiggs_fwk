@@ -720,12 +720,12 @@ int main(int argc, char* argv[])
     myTribTMVAReader.InitTMVAReader();
     std::string TribMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/Haa4bSBClassificationTribMVA_BDT.weights.xml";
     myTribTMVAReader.SetupMVAReader( "Haa4bSBClassificationTribMVA", TribMVA_xml_path );
-
+    /*
     TMVAReader myQuabTMVAReader;
     myQuabTMVAReader.InitTMVAReader();
     std::string QuabMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/Haa4bSBClassificationQuabMVA_BDT.weights.xml"; 
     myQuabTMVAReader.SetupMVAReader( "Haa4bSBClassificationQuabMVA", QuabMVA_xml_path );
-    
+    */
     
     //####################################################################################################################
     //###########################################           EVENT LOOP         ###########################################
@@ -889,6 +889,7 @@ int main(int argc, char* argv[])
 	std::vector<PhysicsObjectJetCollection> variedJets;
 	LorentzVectorCollection variedMET;
 
+	LorentzVector &metP4 = phys.met;
 	//	METUtils::computeVariation(phys.jets, phys.leptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
 
 	PhysicsObjectJetCollection &corrJets = phys.jets; 
@@ -899,12 +900,10 @@ int main(int argc, char* argv[])
         // LEPTON ANALYSIS
         //
         PhysicsObjectLeptonCollection &leps = phys.leptons;
-
-	int nGoodLeptons(0);
 	
 	std::map<string, std::vector<PhysicsObject_Lepton> > selLeptonsVar;
 	//	std::vector<std::pair<int,LorentzVector> > goodLeptons;
-	std::vector<PhysicsObject_Lepton> goodLeptons;  
+	std::vector<PhysicsObject_Lepton> allLeptons;  
 
 	LorentzVector muDiff(0,0,0,0);
 	LorentzVector elDiff(0,0,0,0);
@@ -928,10 +927,12 @@ int main(int argc, char* argv[])
 	  if (abs(lepid)==11) {
 	    lep_threshold=ele_threshold_;
             hasTightIdandIso &= ilep.passIdEl;
+	    if (hasTightIdandIso && (ilep.pt()>lep_threshold) ) allLeptons.push_back(ilep);
 	    if ( !runQCD ) hasTightIdandIso &= ilep.passIsoEl;
 	  } else if (abs(lepid)==13) {
 	    lep_threshold=mu_threshold_;
             hasTightIdandIso &= ilep.passIdMu;
+	    if (hasTightIdandIso && (ilep.pt()>lep_threshold) ) allLeptons.push_back(ilep);  
 	    if ( !runQCD ) hasTightIdandIso &= ilep.passIsoMu; //mn_relIso<0.15);
 	  } else continue;
 
@@ -1067,7 +1068,7 @@ int main(int argc, char* argv[])
 		}
 	      }
 	    }
-	    
+	    /*
 	    nGoodLeptons++;
 	    // std::pair <int,LorentzVector> goodlep;
 	    // goodlep = std::make_pair(lepid,ilep);
@@ -1076,7 +1077,7 @@ int main(int argc, char* argv[])
 	    } else if (abs(lepid)==13) {
 	      if (ilep.passIsoMu) goodLeptons.push_back(ilep);
 	    }
-
+	    */
 	    
 	  } else { // extra loose leptons
 
@@ -1118,8 +1119,7 @@ int main(int argc, char* argv[])
 	      // ID + ISO
 	    weight *= getSFfrom2DHist(selLeptons[0].en_EtaSC, selLeptons[0].pt(), E_RECO_SF_h );
 	    //lepEff.getRecoEfficiency( selLeptons[0].en_EtaSC, 11).first;
-	    weight *= getSFfrom2DHist(selLeptons[0].en_EtaSC, selLeptons[0].pt(), E_TIGHTID_SF_h); ; 
-	    
+	    weight *= getSFfrom2DHist(selLeptons[0].en_EtaSC, selLeptons[0].pt(), E_TIGHTID_SF_h);
 	  } else if (abs(selLeptons[0].id)==13) {
 	    // TRK + ID + ISO
 	    weight *= lepEff.getTrackingEfficiency( selLeptons[0].eta(), 13).first; //Tracking eff
@@ -1127,17 +1127,6 @@ int main(int argc, char* argv[])
 	    weight *= getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h  );
 	  }
 	}
-
-
-	//-------------------------------------------------------------------------------------
-	// Remove QCD overlaps
-	// //-------------------------------------------------------------------------------------
-	// if (isMC_QCD_MuEnr) { 
-	//   if (abs(selLeptons[0].id)==11) { continue; }
-	// }
-	// if (isMC_QCD_EMEnr) {
-	//   if (abs(selLeptons[0].id)==13) { continue; }
-	// }
 
 	//-------------------------------------------------------------------------------------
 	//-------------------------------------------------------------------------------------
@@ -1224,11 +1213,11 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("eventflow","mu",1,weight);
 	}
 	
-	sort(goodLeptons.begin(), goodLeptons.end(), ptsort());
+	sort(allLeptons.begin(), allLeptons.end(), ptsort());
 	sort(vetoLeptons.begin(), vetoLeptons.end(), ptsort());
 	
 	mon.fillHisto("nleptons","raw", selLeptons.size(),weight);
-	mon.fillHisto("ngoodleptons","raw", goodLeptons.size(),weight);
+	mon.fillHisto("ngoodleptons","raw", allLeptons.size(),weight);
 	
         mon.fillHisto("nleptons","raw_extra", extraLeptons.size(),weight);
 
@@ -1331,8 +1320,15 @@ int main(int argc, char* argv[])
         //
         //JETMET AND BTAGGING ANALYSIS
         //
-	//	METUtils::computeVariation(phys.jets, phys.leptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
-	METUtils::computeVariation(phys.jets, selLeptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
+	if ( verbose ) { printf("\nMissing  pt=%6.1f\n", metP4.pt()); }
+
+	//update the met for lepton energy scales              
+	metP4 -= (muDiff - elDiff);
+	if ( verbose ) { printf("\nMissing  pt (after lepton energy scale cor.) =%6.1f\n", metP4.pt()); }
+
+	//note this also propagates to all MET uncertainties
+	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc); 
+	//	METUtils::computeVariation(phys.jets, selLeptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
 
 	
 	//###########################################################
@@ -1506,17 +1502,20 @@ int main(int argc, char* argv[])
 	  
 	  weight = iweight; // reset to nominal weight
 
-	  LorentzVector metP4 = variedMET[0];
-	  if(varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || varNames[ivar]=="_jesup" || varNames[ivar]=="_jesdown" ||
-	     varNames[ivar]=="_umetup" || varNames[ivar]=="_umetdown" || varNames[ivar]=="_lesup" || varNames[ivar]=="_lesdown") {
-	    metP4 = variedMET[ivar];
+	  LorentzVector imet = variedMET[0];
+	  PhysicsObjectJetCollection &vJets = variedJets[0];   
+	  if(varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || varNames[ivar]=="_jesup" || varNames[ivar]=="_jesdown" || varNames[ivar]=="_umetup" || varNames[ivar]=="_umetdown" || varNames[ivar]=="_lesup" || varNames[ivar]=="_lesdown") {
+	    imet = variedMET[ivar];
+	    vJets = variedJets[ivar];   
+	  } else { // reset Jet/MET to nominal
+	    imet = variedMET[0];
 	  }
-	
+	  /*
 	  PhysicsObjectJetCollection &vJets = variedJets[0];
 	  if(varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || varNames[ivar]=="_jesup" || varNames[ivar]=="_jesdown") {
 	    vJets = variedJets[ivar];
-	  }
-	  
+	  } //else {vJets = variedJets[0]; }
+	  */
             //pileup
 	  if(varNames[ivar]=="_puup") weight *= ( TotalWeight_plus/puWeight ); //pu up
 	  if(varNames[ivar]=="_pudown") weight *= ( TotalWeight_minus/puWeight ); //pu down
@@ -1532,13 +1531,13 @@ int main(int argc, char* argv[])
 	      varNames[ivar]=="_resRho_eup" || varNames[ivar]=="_resRho_edown" || varNames[ivar]=="_resPhi_edown")  {
 	    if (evcat==E) {
 	      selLeptons = selLeptonsVar[varNames[ivar].Data()];
-	    } else { continue; }
+	    } else { selLeptonsVar[varNames[0].Data()]; }
 	  } else {
 	    selLeptons = selLeptonsVar[varNames[0].Data()]; 
 	  }
 
 	  if ( verbose ) {
-	    printf("\nMissing  pt=%6.1f\n", metP4.pt());
+	    printf("\nMissing  pt=%6.1f\n", imet.pt());
 	    
 	    printf("selLetpon is %s, and has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",   
 		   (abs(selLeptons[0].id)==11 ? "ELE" : "MUON") ,
@@ -1587,7 +1586,7 @@ int main(int argc, char* argv[])
 	    if(vJets[ijet].pt()>30) nJetsGood30++;
 	    
 	    // Dphi (j,met)
-	    float dphijmet=fabs(deltaPhi(vJets[ijet].phi(),metP4.phi()));
+	    float dphijmet=fabs(deltaPhi(vJets[ijet].phi(),imet.phi()));
 	    if (dphijmet<mindphijmet) mindphijmet=dphijmet;
 
 	    
@@ -1612,6 +1611,7 @@ int main(int argc, char* argv[])
 		btsfutil.SetSeed(ev.event*10 + ijet*10000 + ivar*10);
 		
 		if(abs(vJets[ijet].flavid)==5) {
+		  if(use_DeepCSV) beff=btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE");   
 		  //  80X recommendation
 		  if (varNames[ivar]=="_btagup") {
 		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_B ,
@@ -1624,6 +1624,7 @@ int main(int argc, char* argv[])
 										       vJets[ijet].eta(), vJets[ijet].pt()), beff); 
 		  }
 		} else if(abs(vJets[ijet].flavid)==4) {
+		  if(use_DeepCSV) beff=btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE");      
 		  //  80X recommendation
 		   if (varNames[ivar]=="_ctagup") {
 		     btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_C , 
@@ -1636,6 +1637,7 @@ int main(int argc, char* argv[])
 										     vJets[ijet].eta(), vJets[ijet].pt()), beff);
 		   }
 		} else {
+		  if(use_DeepCSV) leff=btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE");      
 		  //  80X recommendation
 		  if (varNames[ivar]=="_ltagup") {
 		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_UDSG   , 
@@ -1651,8 +1653,8 @@ int main(int argc, char* argv[])
 		
 	      } // isMC
 
-	       if ( verbose ) {
-		 printf("AK4 jet has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",   
+	       if ( verbose && hasCSVtag) {
+		 printf(" B-jet has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",   
 			vJets[ijet].pt(),
 			vJets[ijet].eta(),
 			vJets[ijet].phi(),
@@ -1769,18 +1771,18 @@ int main(int argc, char* argv[])
 	  //####  RUN PRESELECTION AND CONTROL REGION PLOTS  ########
 	  //#########################################################
 	  
-	  LorentzVector wsum=metP4+selLeptons[0];
+	  LorentzVector wsum=imet+selLeptons[0];
 	  // mtW
-	  double tMass = 2.*selLeptons[0].pt()*metP4.pt()*(1.-TMath::Cos(deltaPhi(selLeptons[0].phi(),metP4.phi())));
+	  double tMass = 2.*selLeptons[0].pt()*imet.pt()*(1.-TMath::Cos(deltaPhi(selLeptons[0].phi(),imet.phi())));
 	  if(ivar==0) {
-	    mon.fillHisto("pfmet","raw"+tag_cat,metP4.pt(),weight);
+	    mon.fillHisto("pfmet","raw"+tag_cat,imet.pt(),weight);
 	    mon.fillHisto("mtw","raw"+tag_cat,sqrt(tMass),weight);
 	    mon.fillHisto("ptw","raw"+tag_cat,wsum.pt(),weight);
 	  }
 	  
 	  //-------------------------------------------------------------------
 	  //MET>25 GeV 
-	  bool passMet25(metP4.pt()>25);
+	  bool passMet25(imet.pt()>25);
 
 	  //-------------------------------------------------------------------
 	  //mtW >50 GeV
@@ -1974,7 +1976,7 @@ int main(int argc, char* argv[])
 	  //############ MVA Reader #####################################################
 	  //##############################################################################
 	  float mvaBDT(-10.0);
-	  if (GoodIdbJets.size() == 3)
+	  if (GoodIdbJets.size() >= 3)
 	    {
 	      mvaBDT = myTribTMVAReader.GenReMVAReader
 		(
@@ -1982,6 +1984,7 @@ int main(int argc, char* argv[])
 		 "Haa4bSBClassificationTribMVA"
 		 );
 	    }
+	  /*
 	  else if (GoodIdbJets.size() >= 4)
 	    {
 	      mvaBDT = myQuabTMVAReader.GenReMVAReader
@@ -1990,6 +1993,7 @@ int main(int argc, char* argv[])
 		 "Haa4bSBClassificationQuabMVA"
 		 );
 	    }
+	  */
 	  //##############################################################################
 	  //##############################################################################
 
@@ -1998,10 +2002,10 @@ int main(int argc, char* argv[])
 	    if (passNJ2) {
 
 	      // Reject QCD with Dphi(jet,MET) ?
-	      float dphij1met=fabs(deltaPhi(GoodIdJets[0].phi(),metP4.phi()));       
+	      float dphij1met=fabs(deltaPhi(GoodIdJets[0].phi(),imet.phi()));       
 	      // mon.fillHisto("dphijmet1","raw_j1",dphij1met,weight);
 	      // min Df(j,MET) considering the two leading jets
-	      float dphij2met=fabs(deltaPhi(GoodIdJets[1].phi(),metP4.phi()));
+	      float dphij2met=fabs(deltaPhi(GoodIdJets[1].phi(),imet.phi()));
 	      float min_dphijmet=min(dphij1met,dphij2met);
 	      //mon.fillHisto("dphijmet12","raw_minj1j2",min_dphijmet,weight);
 	      
@@ -2025,9 +2029,9 @@ int main(int argc, char* argv[])
 	      // HT from all CSV + soft b's
 	      mon.fillHisto("ht",tags,ht,weight);
 	      // MET
-	      mon.fillHisto("pfmet",tags,metP4.pt(),weight);
+	      mon.fillHisto("pfmet",tags,imet.pt(),weight);
 	      // pTW
-	      //LorentzVector wsum=metP4+selLeptons[0];
+	      //LorentzVector wsum=imet+selLeptons[0];
 	      mon.fillHisto("ptw",tags,wsum.pt(),weight);
 	      // mtW 
 	      mon.fillHisto("mtw",tags,sqrt(tMass),weight);
