@@ -1190,7 +1190,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       if(std::find(selCh.begin(), selCh.end(), ch->second.channel)==selCh.end())continue;
       if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
 
-      // Only get yields from shapes for regions B 
+      // Only get yields from shapes for regions A 
       if(modeDD && ((ch->first.find("_B_")!=string::npos) || (ch->first.find("_C_")!=string::npos) ||(ch->first.find("_D_")!=string::npos)))continue;   
 
       printf("Get yields from shapes:\n");
@@ -1295,7 +1295,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 
     //All Channels
-  fprintf(pFile,"\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{rotating}\n\begin{document}\n\\begin{sidewaystable}[htp]\n\\begin{center}\n\\caption{Event yields expected for background and signal processes and observed in data.}\n\\label{tab:table}\n");
+  fprintf(pFile,"\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{rotating}\n\\begin{document}\n\\begin{sidewaystable}[htp]\n\\begin{center}\n\\caption{Event yields expected for background and signal processes and observed in data.}\n\\label{tab:table}\n");
   fprintf(pFile, "\\begin{tabular}{|c|"); for(auto ch = MapChannel.begin(); ch!=MapChannel.end();ch++){ fprintf(pFile, "c|"); } fprintf(pFile, "}\\\\\n");
   fprintf(pFile, "channel");   for(auto ch = MapChannel.begin(); ch!=MapChannel.end();ch++){ fprintf(pFile, " & %s", ch->first.c_str()); } fprintf(pFile, "\\\\\\hline\n");
   for(auto proc = VectorProc.begin();proc!=VectorProc.end(); proc++){
@@ -1396,9 +1396,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       map_yields[it->first] = 0;
       for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
         if(std::find(selCh.begin(), selCh.end(), ch->second.channel)==selCh.end())continue;
-
-	//	if(ch->first.find("CR5j")!=string::npos)continue;
-	
         if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
 	//	map_yields[it->first] += ch->second.shapes[histoName].histo()->Integral();
 	TH1 *h=ch->second.shapes[histoName].histo();
@@ -1409,8 +1406,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
     double total = map_yields["total"];
     for(std::map<string, double>::iterator Y=map_yields.begin();Y!=map_yields.end();Y++){
-      if(Y->first.find("FakeLep")<std::string::npos)continue;//never drop this background
-      //  if(Y->first.find("ddqcd")<std::string::npos)continue;//never drop this background
+      if(Y->first.find("ddqcd")<std::string::npos)continue;//never drop this background
+      if(Y->first.find("VV")<std::string::npos)continue;//never drop this background
       if(Y->second/total<threshold){
         printf("Drop %s from the list of backgrounds because of negligible rate (%f%% of total bckq)\n", Y->first.c_str(), Y->second/total);
         for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==Y->first ){sorted_procs.erase(p);break;}}
@@ -1581,9 +1578,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       string ires;
       ostringstream convert;
       convert << I;   
-
-      // Only draw BDT in regions A
-      //      if(!(procs["data"].channels[p->first].bin.find("_A_")!=string::npos)) { continue; }    
       
       int NBins = map_data.size()/selCh.size();
       c[I] = new TCanvas("c_"+(char)I,"c_",800,800); //selCh.size());
@@ -1642,7 +1636,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       axis->GetYaxis()->SetTitleFont(42);
       axis->GetYaxis()->SetTitleSize(0.04);
 
-      
+      if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
+       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ) {
+	
+	int bbin=axis->FindBin(0.1); //map_data[p->first]->FindBin(0.1);
+       	for(unsigned int i=bbin;i<axis->GetNbinsX()+1; i++){   
+       	  axis->SetBinContent(i, 0); axis->SetBinError(i, 0);
+	}
+      }
       //if((I-1)%NBins!=0)
       axis->GetYaxis()->SetTitle("Events");
       //if(I<=NBins)
@@ -1658,28 +1659,27 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if (hs) hs->Draw("HIST same");
       }
       
-      // if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
-      // 	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ) {
+      if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
+       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ) {
 
-      // 	for(unsigned int i=map_data[p->first]->FindBin(0.1);i<=map_data[p->first]->GetNbinsX()+1; i++){   
-      // 	  map_data[p->first]->SetBinContent(i, 0); map_data[p->first]->SetBinError(i, 0);
-      // 	}
+	int bbin=axis->FindBin(0.1);
+       	for (int i=bbin; i<map_dataE[p->first]->GetN()+1; i++){
+       	   map_dataE[p->first]->RemovePoint(i);
+	   /*
+	   double x,y;
+       	  map_dataE[p->first]->GetPoint(i,x,y);
 
-      // 	for (int i=20; i<=map_dataE[p->first]->GetN()+1; i++){
-      // 	  // map_dataE[p->first]->RemovePoint(i);
-      // 	  double x,y;
-      // 	  map_dataE[p->first]->GetPoint(i,x,y);
-
-      // 	  map_dataE[p->first]->SetPoint(i,x,0.);
-      // 	  map_dataE[p->first]->SetPointEYlow(i,0);
-      // 	  map_dataE[p->first]->SetPointEYhigh(i,0);
-      // 	}
+       	  map_dataE[p->first]->SetPoint(i,x,0.);
+       	  map_dataE[p->first]->SetPointEYlow(i,0);
+       	  map_dataE[p->first]->SetPointEYhigh(i,0);
+	   */
+	}
 	
-      // 	TH1 *hist=(TH1*)p->second->GetHistogram();
+       	//TH1 *hist=(TH1*)p->second->GetHistogram();
 	
-      // 	TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), hist->GetMinimum(),axis->GetXaxis()->GetXmax(), hist->GetMaximum(), 0, "NB" );  
-      // 	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
-      // }
+       	TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), axis->GetMinimum(),axis->GetXaxis()->GetXmax(), axis->GetMaximum(), 0, "NB" );  
+       	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
+      }
       
       if(!blindData) map_dataE[p->first]->Draw("P0 same");
       
@@ -1792,6 +1792,15 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       TH1D* denSystUncH = (TH1D*)map_uncH[p->first];
       //   utils::root::checkSumw2(denSystUncH);
 
+      if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
+       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ) {
+	
+	int bbin=denSystUncH->FindBin(0.1); 
+       	for(unsigned int i=bbin;i<=denSystUncH->GetNbinsX()+1; i++){   
+       	  denSystUncH->SetBinContent(i, 0); denSystUncH->SetBinError(i, 0);
+	}
+      }
+      
       int GPoint=0;
       TGraphErrors *denSystUnc=new TGraphErrors(denSystUncH->GetXaxis()->GetNbins()); 
       for(int xbin=1; xbin<=denSystUncH->GetXaxis()->GetNbins(); xbin++){
@@ -1813,6 +1822,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       denSystUncH->Reset("ICE");       
       denSystUncH->SetTitle("");
       denSystUncH->SetStats(kFALSE);
+
       denSystUncH->Draw();
       denSystUnc->Draw("2 0 SAME");
       float yscale = (1.0-0.2)/(0.2);       
@@ -1852,13 +1862,15 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       dataToObs->SetMarkerSize(0.7);
       dataToObs->Draw("P 0 SAME");
 
-      // if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
-      // 	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ) {
+      
+      if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
+       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ) {
 	
-      // 	TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), 0.4,axis->GetXaxis()->GetXmax(), 1.6, 0, "NB" );  
-      // 	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
-      // }
-  
+       	TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), 0.4,axis->GetXaxis()->GetXmax(), 1.6, 0, "NB" );  
+       	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
+      }
+
+      
       TLegend *legR = new TLegend(0.56,0.78,0.93,0.96, "NDC");
       legR->SetHeader("");
       legR->SetNColumns(2);
