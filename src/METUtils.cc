@@ -42,68 +42,66 @@ double response(LorentzVector &Z, LorentzVector &MET)
 //Jet energy resoltuion, 13TeV scale factors, updated on 30/08/2018
 PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, int mode)
 {
-  if (mode==0) return origJet;
+    if (mode==0) return origJet;
 
     if(genJetPt<=0) return origJet;
 
-    //smearing factors are described in https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
     double eta=fabs(origJet.eta());
-
     //https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
-    // Spring16_25nsV10 (80X, 2016, BCD+GH PromtReco) DATA/MC SFs 
+    //Summer16_25nsV1 (80X, 2016, BCDEFGH, 07Aug ReReco) DATA/MC SFs 
     double ptSF(1.0), ptSF_up(1.0), ptSF_down(1.0);
-    if(eta<0.5)			   {
-      //        ptSF=1.109;
-        ptSF_up=ptSF+0.008;
-        ptSF_down=ptSF-0.008;
-    } else if(eta>=0.5 && eta<0.8) {
-      // ptSF=1.138;
-        ptSF_up=ptSF+0.013;
-        ptSF_down=ptSF-0.013;
-    } else if(eta>=0.8 && eta<1.1) {
-      //ptSF=1.114;
-        ptSF_up=ptSF+0.013;
-        ptSF_down=ptSF-0.013;
-    } else if(eta>=1.1 && eta<1.3) {
-      //ptSF=1.123;
-        ptSF_up=ptSF+0.024;
-        ptSF_down=ptSF-0.024;
-    } else if(eta>=1.3 && eta<1.7) {
-      //ptSF=1.084;
-        ptSF_up=ptSF+0.011;
-        ptSF_down=ptSF-0.011;
-    } else if(eta>=1.7 && eta<1.9) {
-      //ptSF=1.082;
-        ptSF_up=ptSF+0.035;
-        ptSF_down=ptSF-0.035;
-    } else if(eta>=1.9 && eta<2.1) {
-      //ptSF=1.140;
-        ptSF_up=ptSF+0.047;
-        ptSF_down=ptSF-0.047;
-    } else if(eta>=2.1 && eta<2.3) {
-      //ptSF=1.067;
-        ptSF_up=ptSF+0.053;
-        ptSF_down=ptSF-0.053;
-    } else if(eta>=2.3 && eta<2.5) {
-      //ptSF=1.177;
-        ptSF_up=ptSF+0.041;
-        ptSF_down=ptSF-0.041;
-    } else if(eta>=2.5 && eta<2.8) {
-      //ptSF=1.364;
-        ptSF_up=ptSF+0.039;
-        ptSF_down=ptSF-0.039;
-    } else if(eta>=2.8 && eta<3.0) {
-      //ptSF=1.857;
-        ptSF_up=ptSF+0.071;
-        ptSF_down=ptSF-0.071;
-    } else if(eta>=3.0 && eta<3.2) {
-      //ptSF=1.328;
-        ptSF_up=ptSF+0.022;
-        ptSF_down=ptSF-0.022;
-    } else if(eta>=3.2 && eta<5.0) {
-      //ptSF=1.16;
-        ptSF_up=ptSF+0.029;
-        ptSF_down=ptSF-0.029;
+    if(eta<0.522)			   {
+      //        ptSF=1.1595;
+      ptSF_up=ptSF+0.0645;
+      ptSF_down=ptSF-0.0645;
+    } else if(eta>=0.522 && eta<0.783) {
+      // ptSF=1.1948;
+      ptSF_up=ptSF+0.0652;
+      ptSF_down=ptSF-0.0652;
+    } else if(eta>=0.783 && eta<1.131) {
+      //ptSF=1.1464;
+      ptSF_up=ptSF+0.0632;
+      ptSF_down=ptSF-0.0632;
+    } else if(eta>=1.131 && eta<1.305) {
+      //ptSF=1.1609;
+      ptSF_up=ptSF+0.1025;
+      ptSF_down=ptSF-0.1025;
+    } else if(eta>=1.305 && eta<1.740) {
+      //ptSF=1.1278;
+      ptSF_up=ptSF+0.0986;
+      ptSF_down=ptSF-0.0986;
+    } else if(eta>=1.740 && eta<1.930) {
+      //ptSF=1.1000;
+      ptSF_up=ptSF+0.1079;
+      ptSF_down=ptSF-0.1079;
+    } else if(eta>=1.930 && eta<2.043) {
+      //ptSF=1.1426;
+      ptSF_up=ptSF+0.1214;
+      ptSF_down=ptSF-0.1214;
+    } else if(eta>=2.043 && eta<2.322) {
+      //ptSF=1.1512;
+      ptSF_up=ptSF+0.1140;
+      ptSF_down=ptSF-0.1140;
+    } else if(eta>=2.322 && eta<2.5) {
+      //ptSF=1.2963;
+      ptSF_up=ptSF+0.2371;
+      ptSF_down=ptSF-0.2371;
+    } else if(eta>=2.5 && eta<2.853) {
+      //ptSF=1.3418;
+      ptSF_up=ptSF+0.2091;
+      ptSF_down=ptSF-0.2091;
+    } else if(eta>=2.853 && eta<2.964) {
+      //ptSF=1.7788;
+      ptSF_up=ptSF+0.2008;
+      ptSF_down=ptSF-0.2008;
+    } else if(eta>=2.964 && eta<3.139) {
+      //ptSF=1.1869;
+      ptSF_up=ptSF+0.1243;
+      ptSF_down=ptSF-0.1243;
+    } else if(eta>=3.139 && eta<5.191) {
+      //ptSF=1.1922;
+      ptSF_up=ptSF+0.1488;
+      ptSF_down=ptSF-0.1488;
     }
 
     if(mode==1) ptSF = ptSF_up;
