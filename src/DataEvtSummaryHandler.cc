@@ -52,6 +52,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("x2",            &evSummary_.x2,             "x2/F");
     t_->Branch("id1",           &evSummary_.id1,            "id1/I");
     t_->Branch("id2",           &evSummary_.id2,            "id2/I");
+    t_->Branch("lheHt",      &evSummary_.lheHt,       "lheHt/F");     
     t_->Branch("lheNJets",      &evSummary_.lheNJets,       "lheNJets/I");
     /*
     t_->Branch("weight_QCDscale_muR1_muF1",     &evSummary_.weight_QCDscale_muR1_muF1,      "weight_QCDscale_muR1_muF1/F");
@@ -371,6 +372,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("x2",              &evSummary_.x2);
     t_->SetBranchAddress("id1",             &evSummary_.id1);
     t_->SetBranchAddress("id2",             &evSummary_.id2);
+    t_->SetBranchAddress("lheHt",           &evSummary_.lheHt);  
     t_->SetBranchAddress("lheNJets",        &evSummary_.lheNJets);
     /*
     t_->SetBranchAddress("weight_QCDscale_muR1_muF1",       &evSummary_.weight_QCDscale_muR1_muF1);
@@ -698,6 +700,7 @@ void DataEvtSummaryHandler::resetStruct()
     evSummary_.x2=0;
     evSummary_.id1=0;
     evSummary_.id2=0;
+    
     evSummary_.lheNJets=0;
     evSummary_.pthat=0;
     /*

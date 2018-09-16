@@ -111,7 +111,7 @@ using namespace std;
 //public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
 class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
-   public:
+  public:
       explicit mainNtuplizer(const edm::ParameterSet&);
       ~mainNtuplizer();
 
@@ -168,18 +168,12 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
   
     DataEvtSummaryHandler summaryHandler_;
 
-  // SmartSelectionMonitor mon_;
-  //    double xsecWeight;
   void beginJob() override;
   void beginRun(edm::Run const& iRun, edm::EventSetup const&) override;
   void analyze(const edm::Event&, const edm::EventSetup&) override;
   void endRun(edm::Run const& iRun, edm::EventSetup const&) override {};
   void endJob() override;
 
-  //virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
-  // virtual void beginJob(const edm::Run& iRun);
-  //virtual void beginJob(edm::Event const&, edm::EventSetup const&);
-  //  virtual void endJob(edm::Event const&, edm::EventSetup const&);
 
   // ----------member data ---------------------------
     float curAvgInstLumi_;
@@ -436,6 +430,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      ev.npdfs=0;
      ev.nalphaS=0;
      ev.lheNJets=0;
+     ev.lheHt=0.;           
      if(EvtHandles.size()>0)
      {
        edm::Handle<LHEEventProduct> EvtHandle = EvtHandles.front();
@@ -470,6 +465,9 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
          //Add lhe njets into DataEvtSummaryHandler
          const lhef::HEPEUP& lheEvent = EvtHandle->hepeup();
          std::vector<lhef::HEPEUP::FiveVector> lheParticles = lheEvent.PUP;
+
+	 float genparticles_lheHt(0.);
+
          size_t numParticles = lheParticles.size();
          for ( size_t idxParticle = 0; idxParticle < numParticles; ++idxParticle )
          {
@@ -477,9 +475,11 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
            int status = lheEvent.ISTUP[idxParticle];
            if ( status == 1 && ((absPdgId >= 1 && absPdgId <= 6) || absPdgId == 21) )
            { // quarks and gluons
+	     genparticles_lheHt += TMath::Sqrt(TMath::Power(lheParticles[idxParticle][0], 2.) + TMath::Power(lheParticles[idxParticle][1], 2.)); // first entry is px, second py
              ev.lheNJets++;
            }
          }
+	 ev.lheHt = genparticles_lheHt;
 
        }// EvtHandle.isValid
      }
@@ -696,19 +696,20 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    if(!tr.isValid()  )return;
    
    // float triggerPrescale(1.0),triggerThreshold(0), triggerThresholdHigh(99999);
-   bool mumuTrigger(true); bool muTrigger(true);
+   bool mumuTrigger(true); bool muTrigger(true); bool muTrigger2(true);
    bool eeTrigger(true); bool eTrigger(true); bool emuTrigger(true);
    bool highPTeTrigger(true);
    
    mumuTrigger        = utils::passTriggerPatterns(tr, "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*" , "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
-   muTrigger          = utils::passTriggerPatterns(tr, "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*", "HLT_Mu50_v*", "HLT_TkMu50_v*");
+   muTrigger          = utils::passTriggerPatterns(tr, "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*");
+   muTrigger2         = utils::passTriggerPatterns(tr, "HLT_Mu50_v*", "HLT_TkMu50_v*");
    eeTrigger          = utils::passTriggerPatterns(tr, "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_v*");
    //   highPTeeTrigger    = utils::passTriggerPatterns(tr, "HLT_Ele115_CaloIdVT_GsfTrkIdT_v*"); //"HLT_ECALHT800_v*");
    highPTeTrigger    = utils::passTriggerPatterns(tr, "HLT_Ele115_CaloIdVT_GsfTrkIdT_v*");
    eTrigger           = utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") ;
    emuTrigger         = utils::passTriggerPatterns(tr, "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*" , "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
    
-   ev.hasTrigger  = ( mumuTrigger||muTrigger||eeTrigger||highPTeTrigger||eTrigger||emuTrigger );
+   ev.hasTrigger  = ( mumuTrigger||muTrigger||muTrigger2||eeTrigger||highPTeTrigger||eTrigger||emuTrigger );
    //ev.hasTrigger  = ( muTrigger||eTrigger||emuTrigger ); 
    
    ev.triggerType = ( mumuTrigger  << 0 )
@@ -716,7 +717,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      | ( eeTrigger << 2 )
      | ( highPTeTrigger << 3 )
      | ( eTrigger << 4 )
-     | ( emuTrigger << 5 ) ;
+     | ( emuTrigger << 5 ) 
+     | ( muTrigger2 << 6 );
    
    //if(!isMC__ && !ev.hasTrigger) return; // skip the event if no trigger, only for Data
    if(!ev.hasTrigger) return; // skip the event if no trigger, for both Data and MC
