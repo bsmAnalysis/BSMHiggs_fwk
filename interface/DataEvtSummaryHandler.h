@@ -65,6 +65,7 @@ struct DataEvtSummary_t {
     Float_t alphaSWeights[MAXLHEWEIGHTS];
     //lhe njet
     Int_t lheNJets;
+  Float_t lheHt;
 
     //gen level event
     Int_t nmcparticles, nmcjparticles;

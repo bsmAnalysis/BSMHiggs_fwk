@@ -253,7 +253,7 @@ int main(int argc, char* argv[])
     std::vector<TString> varNames(1,"");
 
     std::vector<string> eleVarNames = {""};
-    std::vector<string> jetVarNames = {"", "_scale_jup","_scale_jdown", "_res_jup", "_res_jdown","_btagup","_btagdown"};
+    //    std::vector<string> jetVarNames = {"", "_scale_jup","_scale_jdown", "_res_jup", "_res_jdown","_btagup","_btagdown","_bnorm_up","_bnorm_down"};
 
     if(runSystematics) {
         cout << "Systematics will be computed for this analysis: " << endl;
@@ -280,6 +280,8 @@ int main(int argc, char* argv[])
 	  varNames.push_back("_ctagup"); varNames.push_back("_ctagdown");//13, 14
 	  varNames.push_back("_ltagup"); varNames.push_back("_ltagdown");//15, 16
 
+	  varNames.push_back("_softbup"); varNames.push_back("_softbdown");//11, 12      
+	  //	  varNames.push_back("_bnormup"); varNames.push_back("_bnormdown");//11, 12   
 	  //
 	  //varNames.push_back("_scale_mup");    varNames.push_back("_scale_mdown");  //muon energy scale
 	  varNames.push_back("_stat_eup");    varNames.push_back("_stat_edown");  //electron energy scale
@@ -443,6 +445,15 @@ int main(int argc, char* argv[])
         h3->GetXaxis()->SetBinLabel(ibin,label);
     }
 
+    TH1F *h33 = (TH1F *)mon.addHistogram( new TH1F("nbtags_raw",    ";soft b-tag multiplicity (#it{p}_{T}<20 GeV);Events",6,0,6) ); 
+    for(int ibin=1; ibin<=h33->GetXaxis()->GetNbins(); ibin++) {    
+      TString label("");   
+      if(ibin==h33->GetXaxis()->GetNbins()) label +="#geq";  
+      else                                label +="=";  
+      label += (ibin-1);   
+      h33->GetXaxis()->SetBinLabel(ibin,label);   
+    }
+
     TH2F *h4 = (TH2F *)mon.addHistogram( new TH2F("nbjets_2D", ";AK4 jet multiplicity (#it{p}_{T}>20 GeV); b-Jet multiplicity",5,0,5,5,0,5) );
     for(int ibin=1; ibin<=h4->GetXaxis()->GetNbins(); ibin++) {
       TString label("");
@@ -536,9 +547,18 @@ int main(int argc, char* argv[])
     for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){ Hoptim_cuts->Fill(index, 0.0, optim_Cuts1_bdt[index]); }
     for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
       mon.addHistogram( new TH2F (TString("bdt_shapes")+varNames[ivar],";cut index;BDT;Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 30,-0.3,0.3) );
+      if (ivar==0) {         
+	mon.addHistogram( new TH2F (TString("higgsMass_shapes")+varNames[ivar],";cut index;m_{h} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 40,0.,800.) );
+	mon.addHistogram( new TH2F (TString("higgsPt_shapes")+varNames[ivar],";cut index;p_{T}^{h} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 30,0.,500.));
+	mon.addHistogram( new TH2F (TString("ht_shapes")+varNames[ivar],";cut index;H_{T} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),40,0.,800.) );
+	mon.addHistogram( new TH2F (TString("pfmet_shapes")+varNames[ivar],";cut index;E_{T}^{miss} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),100,0.,800.) );
+	mon.addHistogram( new TH2F (TString("mtw_shapes")+varNames[ivar],";cut index;#it{m}_{T}^{W} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),80,0.,800.) );
+	mon.addHistogram( new TH2F (TString("ptw_shapes")+varNames[ivar],";cut index;#it{p}_{T}^{W} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),30,0.,500.) );
+	mon.addHistogram( new TH2F (TString("dphiWh_shapes")+varNames[ivar],";cut index;#Delta#it{#phi}(#it{W},h);Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),20,0,TMath::Pi()) );
+	mon.addHistogram( new TH2F (TString("dRave_shapes")+varNames[ivar],";cut index;#Delta R(b,b)_{ave};Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),50,0.,5.));
+	mon.addHistogram( new TH2F (TString("dmmin_shapes")+varNames[ivar],";cut index;#Delta m_{b,b}^{min};Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),25,0.,250.));
+      }
     }
-
-
 
     //##################################################################################
     //#############         GET READY FOR THE EVENT LOOP           #####################
@@ -1154,9 +1174,11 @@ int main(int argc, char* argv[])
 	    bool hasOverlap(false);
 	    for(size_t ilep=0; ilep<selLeptons.size(); ilep++) {
 	      double dR = deltaR( corrJets[ijet], selLeptons[ilep] );
-	      
-	      if (abs(selLeptons[ilep].id)==11) hasOverlap = (dR<0.4); // within 0.2 for electrons
-	      if (abs(selLeptons[ilep].id)==13) hasOverlap = (dR<0.4); // within 0.4 for muons
+	      //	      if (abs(selLeptons[ilep].id)==11) hasOverlap = (dR<0.4); // within 0.2 for electrons
+	      //	      if (abs(selLeptons[ilep].id)==13) {
+	      hasOverlap = (dR<0.4);
+	      //	      if (runQCD) { hasOverlap = (dR<0.4); } // within 0.4 for muons
+	      //	      else { hasOverlap = (dR<0.4); }
 	    }
 	    if(hasOverlap) continue;
 
@@ -1436,14 +1458,13 @@ int main(int argc, char* argv[])
 	  
 	    // check overlap with any other jet
 	  // bool hasOverlap(false);
-	  
 	  mon.fillHisto("softb_dxy","raw",isv.dxy,weight);
 	  if (isv.sv_mc_mcbh_ind>0)mon.fillHisto("softb_dxy","raw_true",isv.dxy,weight);
 	  mon.fillHisto("softb_dxyz_signif","raw",isv.dxyz_signif,weight);
 	  if (isv.sv_mc_mcbh_ind>0) mon.fillHisto("softb_dxyz_signif","raw_true",isv.dxyz_signif,weight);
 	  mon.fillHisto("softb_cos","raw",isv.cos_dxyz_p,weight);
 	  if (isv.sv_mc_mcbh_ind>0) mon.fillHisto("softb_cos","raw_true",isv.cos_dxyz_p,weight);
-	  
+
 	  if (isv.dxy>3.) continue;
 	  if (isv.dxyz_signif<4.) continue;
 	  if (isv.cos_dxyz_p<0.98) continue;
@@ -1531,7 +1552,7 @@ int main(int argc, char* argv[])
 	      varNames[ivar]=="_resRho_eup" || varNames[ivar]=="_resRho_edown" || varNames[ivar]=="_resPhi_edown")  {
 	    if (evcat==E) {
 	      selLeptons = selLeptonsVar[varNames[ivar].Data()];
-	    } else { selLeptonsVar[varNames[0].Data()]; }
+	    } else { continue; } //selLeptonsVar[varNames[0].Data()]; }
 	  } else {
 	    selLeptons = selLeptonsVar[varNames[0].Data()]; 
 	  }
@@ -1576,9 +1597,11 @@ int main(int argc, char* argv[])
 	    for(size_t ilep=0; ilep<selLeptons.size(); ilep++) {
 	      double dR = deltaR( vJets[ijet], selLeptons[ilep] );
 	      if (ivar==0) mon.fillHisto("dRlj_raw",tag_cat,dR,weight);
-
-	      if (abs(selLeptons[ilep].id)==11) hasOverlap = (dR<0.4); // within 0.2 for electrons
-	      if (abs(selLeptons[ilep].id)==13) hasOverlap = (dR<0.4); // within 0.4 for muons
+	      //	      if (abs(selLeptons[ilep].id)==11) hasOverlap = (dR<0.4); // within 0.2 for electrons
+	      //	      if (abs(selLeptons[ilep].id)==13) {
+	      hasOverlap = (dR<0.4); 
+	      //	      if (runQCD) { hasOverlap = (dR<0.1); } // within 0.4 for muons
+	      //	      else { hasOverlap = (dR<0.4); }  
 	    }
 	    if(hasOverlap) continue;
 	    
@@ -1623,6 +1646,10 @@ int main(int argc, char* argv[])
 		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_B ,
 										       vJets[ijet].eta(), vJets[ijet].pt()), beff); 
 		  }
+		  // B-tag normalization uncertainty (6% per b jet)
+		  //		  if(varNames[ivar]=="_bnormup") { if (hasCSVtag) weight *= 1.06; }
+		  //		  if(varNames[ivar]=="_bnormdown") { if (hasCSVtag) weight *= 0.94; }
+
 		} else if(abs(vJets[ijet].flavid)==4) {
 		  if(use_DeepCSV) beff=btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE");      
 		  //  80X recommendation
@@ -1636,6 +1663,9 @@ int main(int argc, char* argv[])
 		      btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_C ,
 										     vJets[ijet].eta(), vJets[ijet].pt()), beff);
 		   }
+		   // B-tag normalization uncertainty  (12% per c jet)
+		   //		   if(varNames[ivar]=="_bnormup") { if (hasCSVtag) weight *= 1.12; } 
+		   //		   if(varNames[ivar]=="_bnormdown") { if (hasCSVtag) weight *= 0.88; }  
 		} else {
 		  if(use_DeepCSV) leff=btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE");      
 		  //  80X recommendation
@@ -1649,19 +1679,22 @@ int main(int argc, char* argv[])
 		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_UDSG ,
 										       vJets[ijet].eta(), vJets[ijet].pt()), leff);
 		  }
+		  // B-tag normalization uncertainty  (15% per fake tag)  
+		  //		  if(varNames[ivar]=="_bnormup") { if (hasCSVtag) weight *= 1.15; } 
+		  //		  if(varNames[ivar]=="_bnormdown") { if (hasCSVtag) weight *= 0.85; } 
 		}
 		
 	      } // isMC
 
 	       if ( verbose && hasCSVtag) {
-		 printf(" B-jet has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",   
+		 printf(" b-jet has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",   
 			vJets[ijet].pt(),
 			vJets[ijet].eta(),
 			vJets[ijet].phi(),
 			vJets[ijet].M()
 			);
 	       } // verbose
-	      
+
 	      // Fill b-jet vector:
 	       if (hasCSVtag) {  CSVLoosebJets.push_back(vJets[ijet]); }
 	    } // b-jet loop
@@ -1681,6 +1714,7 @@ int main(int argc, char* argv[])
 	  // SVs cross-cleaned with AK4 + CSV jets
 	  PhysicsObjectSVCollection SVs;
 	  
+	  int isoft(0);
 	  for (auto & isv : SVs_raw) {
 	    // check overlap with any other jet
 	    bool hasOverlap(false);
@@ -1698,9 +1732,9 @@ int main(int argc, char* argv[])
 	    hasOverlap=(dRmin_csv<0.4);
 	    if (!hasOverlap) {// continue;
 	      // Fill final soft-bs from SVs
-	      SVs.push_back(isv);
+	      SVs.push_back(isv);  isoft++;      
 	    }
-	    
+	    if (isoft>=1) break; //only allow [0,1] SVs to enter    
 	  }
 
 	  // JET KINEMATICS
@@ -1745,7 +1779,7 @@ int main(int argc, char* argv[])
 	    //--------------------------------------------------------------------------
 	    // Soft-b tagging properties
 	    //--------------------------------------------------------------------------
-	    mon.fillHisto("nbjets_raw",tag_cat+"_"+"nb_soft",SVs.size(),weight);
+	    mon.fillHisto("nbtags_raw",tag_cat,SVs.size(),weight);
 	    
 	    is=0;
 	    for (auto & isv : SVs) {
@@ -1862,7 +1896,17 @@ int main(int argc, char* argv[])
 
 	  // Event categorization based on (n-btag, n-jet) after leptonic selection
 	  int evtCatPlot = eventCategoryPlot.Get(phys,&GoodIdbJets, &pseudoGoodIdbJets);
-	  //	  if (evtCatPlot<3) continue;
+	  if (evtCatPlot<3) continue;
+
+	  // soft b-tag SF and uncertainty: 1.05 +/- 0.16
+	  if (isMC) {
+	    for (auto & i : SVs) {  
+	      //	    if (ivar==0) weight *= 1.05;
+	      if (varNames[ivar]=="_softbup") { weight *= 1.21; }
+	      if (varNames[ivar]=="_softbdown") { weight *= 0.89; }
+	      else { weight *= 1.05; }
+	    }
+	  }
 	  
 	  if (ivar==0) mon.fillHisto("evt_cat",tag_cat+"_"+"sel1", evtCatPlot,weight);
 	  
@@ -2022,6 +2066,10 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("lep_pt_raw",tags,selLeptons[0].pt(),weight);
 	      mon.fillHisto("lep_eta_raw",tags,selLeptons[0].eta(),weight);
 	      
+	      // soft-bs + b-tagged jets
+	      mon.fillHisto("nbtags_raw",tags,SVs.size(),weight);    
+	      mon.fillHisto("nbjets_raw",tags, CSVLoosebJets.size(),weight);  
+
 	      // higgs mass
 	      mon.fillHisto("higgsMass",tags,allHadronic.mass(),weight);
 	      // higgs pT
@@ -2043,17 +2091,18 @@ int main(int argc, char* argv[])
 	      // BDT
 	      mon.fillHisto("bdt", tags, mvaBDT, weight);
 	      
-	  
+	    }
 	      //##############################################################################
 	      //############ MVA Handler ####################################################
 	      //##############################################################################
 		  
-	      if (runMVA) {
+	    if (runMVA) {
 		
-		float mvaweight = 1.0;
-		genWeight > 0 ? mvaweight = weight/xsecWeight : mvaweight = -weight / xsecWeight; // Include all weights except for the xsecWeight
-		if ( isSignalRegion && GoodIdbJets.size() >= 3 )
-		  {
+	      float mvaweight = 1.0;
+	      genWeight > 0 ? mvaweight = weight/xsecWeight : mvaweight = -weight / xsecWeight; // Include all weights except for the xsecWeight
+	      if ( isSignalRegion && GoodIdbJets.size() >= 3 ) 
+		{
+		  if(passNJ2 && passMet25 && passMt) {
 		    myMVAHandler_.getEntry
 		      (
 		       GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
@@ -2065,24 +2114,34 @@ int main(int argc, char* argv[])
 		       );
 		    myMVAHandler_.fillTree();
 		  }
-	      }
-	      
-	    } // passNJ2
-
-	  } // ivar==0
+		}
+	    } // runMVA
+	    
+	  }// ivar==0
 	  
 	  //##############################################################################
 	  //### HISTOS FOR STATISTICAL ANALYSIS (include systematic variations)
 	  //##############################################################################
 
-	  //  if(passMet25 && passMt && passNJ2) {
+	  //	  if(passMet25 && passMt && passNJ2) {
 	  if (passNJ2) {
 	  
 	    //scan the BDT cut and fill the shapes
 	    for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){
 	      if(mvaBDT>optim_Cuts1_bdt[index]){
 		mon.fillHisto(TString("bdt_shapes")+varNames[ivar],tags,index, mvaBDT,weight);
-	      }
+		if (ivar==0) {
+		  mon.fillHisto(TString("higgsMass_shapes")+varNames[ivar],tags,index, allHadronic.mass(),weight);  
+		  mon.fillHisto(TString("higgsPt_shapes")+varNames[ivar],tags,index, allHadronic.pt(),weight);        
+		  mon.fillHisto(TString("ht_shapes")+varNames[ivar],tags,index, ht,weight);       
+		  mon.fillHisto(TString("pfmet_shapes")+varNames[ivar],tags,index, imet.pt(),weight);       
+		  mon.fillHisto(TString("ptw_shapes")+varNames[ivar],tags,index, wsum.pt(),weight);       
+		  mon.fillHisto(TString("mtw_shapes")+varNames[ivar],tags,index, sqrt(tMass),weight);
+		  mon.fillHisto(TString("dphiWh_shapes")+varNames[ivar],tags,index, dphi_Wh,weight);         
+		  mon.fillHisto(TString("dRave_shapes")+varNames[ivar],tags,index, dRave_,weight);
+		  mon.fillHisto(TString("dmmin_shapes")+varNames[ivar],tags,index, dm,weight);             
+		}
+	      } // run slimmed analysis
 	    }
 	    
 	  } // END SELECTION
