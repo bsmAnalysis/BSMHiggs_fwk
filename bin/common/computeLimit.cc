@@ -56,11 +56,11 @@ double datadriven_qcd_Syst = 0.50;
 
 bool postfit=false;
 
-double norm_top=1.1;
-double enorm_3b_w=1.61;
-double enorm_4b_w=1.39;
-double munorm_3b_w=2.02;
-double munorm_4b_w=1.96;
+double norm_top=0.9;
+double enorm_3b_w=1.39;
+double enorm_4b_w=1.33;
+double munorm_3b_w=1.56;
+double munorm_4b_w=1.68;
 
 int mass;
 bool shape = true;
@@ -719,7 +719,7 @@ int main(int argc, char* argv[])
   //replace data by total MC background
   if(blindData)allInfo.blind();
 
-  //extrapolate backgrounds toward higher mt/met region to make sure that there is no empty bins
+  //extrapolate backgrounds toward higher BDT region to make sure that there is no empty bins
   if(shape && BackExtrapol)allInfo.rebinMainHisto(histo.Data());
 
   //drop backgrounds with rate<1%
@@ -1603,7 +1603,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       t1->Draw();
       t1->cd();
 
-      t1->SetLogy(true);         
+      //      t1->SetLogy(true);         
  
       //print histograms
       TH1* axis = (TH1*)map_data[p->first]->Clone("axis");
@@ -1612,8 +1612,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       axis->GetXaxis()->SetRangeUser(axis->GetXaxis()->GetXmin(),axis->GetXaxis()->GetXmax());
       //double signalHeight=0;
       //for(unsigned int s=0;s<map_signals[p->first].size();s++){signalHeight = std::max(signalHeight, map_signals[p->first][s]->GetMaximum());}
-      //  axis->SetMaximum(1.5*std::max(signalHeight , std::max( map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum())));
-      axis->SetMaximum(5000.5*std::max(map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum()));
+      //axis->SetMaximum(1.5*std::max(signalHeight , std::max( map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum())));
+      axis->SetMaximum(1.5*std::max(map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum()));       
+      //axis->SetMaximum(5000.5*std::max(map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum()));
       
       //hard code range
       if(procs["data"].channels[p->first].bin.find("vbf")!=string::npos){
@@ -1647,7 +1648,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       //if((I-1)%NBins!=0)
       axis->GetYaxis()->SetTitle("Events");
       //if(I<=NBins)
-      axis->GetXaxis()->SetTitle("BDT");
+      //      axis->GetXaxis()->SetTitle("BDT");
       axis->Draw();
 
       t1->Update();
@@ -1658,29 +1659,21 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	TH1* hs= map_signals[p->first][i];
         if (hs) hs->Draw("HIST same");
       }
-      
+      /*
       if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
        	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ) {
 
 	int bbin=axis->FindBin(0.1);
        	for (int i=bbin; i<map_dataE[p->first]->GetN()+1; i++){
        	   map_dataE[p->first]->RemovePoint(i);
-	   /*
-	   double x,y;
-       	  map_dataE[p->first]->GetPoint(i,x,y);
-
-       	  map_dataE[p->first]->SetPoint(i,x,0.);
-       	  map_dataE[p->first]->SetPointEYlow(i,0);
-       	  map_dataE[p->first]->SetPointEYhigh(i,0);
-	   */
 	}
 	
        	//TH1 *hist=(TH1*)p->second->GetHistogram();
-	
        	TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), axis->GetMinimum(),axis->GetXaxis()->GetXmax(), axis->GetMaximum(), 0, "NB" );  
        	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
       }
-      
+      */
+
       if(!blindData) map_dataE[p->first]->Draw("P0 same");
       
       bool printBinContent = false;
@@ -1790,8 +1783,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 
       TH1D* denSystUncH = (TH1D*)map_uncH[p->first];
-      //   utils::root::checkSumw2(denSystUncH);
-
+      utils::root::checkSumw2(denSystUncH);
+      /*
       if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
        	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ) {
 	
@@ -1800,7 +1793,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
        	  denSystUncH->SetBinContent(i, 0); denSystUncH->SetBinError(i, 0);
 	}
       }
-      
+      */
       int GPoint=0;
       TGraphErrors *denSystUnc=new TGraphErrors(denSystUncH->GetXaxis()->GetNbins()); 
       for(int xbin=1; xbin<=denSystUncH->GetXaxis()->GetNbins(); xbin++){
@@ -1862,14 +1855,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       dataToObs->SetMarkerSize(0.7);
       dataToObs->Draw("P 0 SAME");
 
-      
+      /*
       if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
        	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ) {
 	
        	TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), 0.4,axis->GetXaxis()->GetXmax(), 1.6, 0, "NB" );  
        	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
       }
-
+      */
       
       TLegend *legR = new TLegend(0.56,0.78,0.93,0.96, "NDC");
       legR->SetHeader("");
@@ -1941,8 +1934,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         //add the stat uncertainty is there;
         //ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );//add stat uncertainty to the uncertainty map;
 
-        if((it->second.shortName).find("ggH")!=std::string::npos)ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_ggH")).Data(),systpostfix.Data(), false );// attention
-	else if((it->second.shortName).find("qqH")!=std::string::npos)ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_qqH")).Data(),systpostfix.Data(), false );
+        if((it->second.shortName).find("wh")!=std::string::npos)ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_wh")).Data(),systpostfix.Data(), false );// attention
+	//	else if((it->second.shortName).find("qqH")!=std::string::npos)ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_qqH")).Data(),systpostfix.Data(), false );
         else ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );
         TVirtualPad* pad = t1->cd(I); 
         pad->SetTopMargin(0.06); pad->SetRightMargin(0.03); pad->SetBottomMargin(0.07);  pad->SetLeftMargin(0.06);
@@ -2393,7 +2386,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       bool TTcontrolregion(false);  
       bool nonTTcontrolregion(false); 
 
-      if(C->first.find("CR_nonTT"  )!=string::npos){ // this is the non-Top Control Region 
+      if(C->first.find("CR5j"  )!=string::npos){ // this is the non-Top Control Region 
 	nonTTcontrolregion=true;
       } else if(C->first.find("CR"  )!=string::npos){ // this is the Top Control Region
 	TTcontrolregion=true;
@@ -2434,11 +2427,13 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       fprintf(pFile, "-------------------------------\n");
 
       for(std::map<string, bool>::iterator U=allSysts.begin(); U!=allSysts.end();U++){
-        if(mass==125 && U->first=="CMS_haa4b_lshape")continue;//skip lineshape uncertainty for 125GeV Higgs
-	if( (TTcontrolregion || nonTTcontrolregion)  && U->first=="lumi_13TeV") continue; //skip lumi unc in the Control Regions
+        //if(mass==125 && U->first=="CMS_haa4b_lshape")continue;//skip lineshape uncertainty for 125GeV Higgs
 	//	if(!TTcontrolregion && !nonTTcontrolregion && U->first=="CMS_eff") continue;
-	if((TTcontrolregion || nonTTcontrolregion) && (U->first.find("CMS_haa4b_stat_")!=string::npos && U->first.find("_wh")!=string::npos )) continue; // skip signal systematics in the control regions
-
+	if(TTcontrolregion || nonTTcontrolregion){
+	  if(U->first=="lumi_13TeV") continue; //skip lumi unc in the Control Regions  
+	  if (U->first.find("PDFscale_wh")!=string::npos || U->first.find("QCDscale_wh")!=string::npos) continue; // skip signal systematics in the control regions
+	  //	  if (U->first.find("_pdf")!=string::npos) continue;
+	}
         char line[2048];
         sprintf(line,"%-45s %-10s ", U->first.c_str(), U->second?"shapeN2":"lnN");
         bool isNonNull = false;
@@ -2714,16 +2709,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if(varName==""){//does nothing
           }else if(varName.BeginsWith("_jes")){varName.ReplaceAll("_jes","_CMS_scale_j");
           }else if(varName.BeginsWith("_jer")){varName.ReplaceAll("_jer","_CMS_res_j"); // continue;//skip res for now
-          }else if(varName.BeginsWith("_les")){ 
-            if(ch.Contains("e"  ))varName.ReplaceAll("_les","_CMS_scale_e");
-            if(ch.Contains("mu"))varName.ReplaceAll("_les","_CMS_scale_m");
+	  }else if(varName.BeginsWith("_les")){ 
+	    if(ch.Contains("e"  ))varName.ReplaceAll("_les","_CMS_scale_e");
+	    if(ch.Contains("mu"))varName.ReplaceAll("_les","_CMS_scale_m");
           }else if(varName.BeginsWith("_btag"  )){varName.ReplaceAll("_btag","_CMS_eff_b");
-	    //  }else if(varName.BeginsWith("_ctag"  )){varName.ReplaceAll("_ctag","_CMS_eff_c");
-	    // }else if(varName.BeginsWith("_ltag"  )){varName.ReplaceAll("_ltag","_CMS_eff_lj");
+	  }else if(varName.BeginsWith("_ctag"  )){varName.ReplaceAll("_ctag","_CMS_eff_c");
+	  }else if(varName.BeginsWith("_ltag"  )){varName.ReplaceAll("_ltag","_CMS_eff_mistag");
           }else if(varName.BeginsWith("_pu"    )){varName.ReplaceAll("_pu", "_CMS_haa4b_pu");
-          }else if(varName.BeginsWith("_ren"   )){continue;   //already accounted for in QCD scales
-          }else if(varName.BeginsWith("_fact"  )){continue; //skip this one
-            //}else if(varName.BeginsWith("_interf")){varName="_CMS_haa4b"+varName;  //commented out for the HighMass paper
+          }else if(varName.BeginsWith("_bnorm"  )){continue; //skip this one
 	  }else{ varName="_CMS_haa4b"+varName;}
 
 	  hshape->SetTitle(proc+varName);
@@ -2738,7 +2731,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
   }
 
   //
-  // Rebin histograms to make sure that high mt/met region have no empty bins
+  // Rebin histograms to make sure that high BDT region have no empty bins
   //
   void AllInfo_t::rebinMainHisto(string histoName)
   {
@@ -2755,6 +2748,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if(!histo)continue;
 	    TString jetBin = ch->second.bin.c_str();
 
+	    double xbins[] = {-0.30, -0.18, -0.06, 0.10, 0.30}; 
+	    int nbins=sizeof(xbins)/sizeof(double);     
+	    unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);    
+	    utils::root::fixExtremities(unc->second, false, true);    
+
+	      /*
           if(jetBin.Contains("vbf")){
             double xbins[] = {150, 225, 300, 375, 450, 600, 750, 1100, 3000};
             int nbins=sizeof(xbins)/sizeof(double);
@@ -2766,13 +2765,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);
             utils::root::fixExtremities(unc->second, false, true);
           }
+	      */
 
-		  		//Old Binning
-          //double xbins[] = {150, 300, 450, 600, 850, 1100, 1600, 2100, 3000}; 
-          //double xbins[] = {150, 225, 300, 375, 450, 525, 600, 725, 850, 975, 1100, 1350, 1600, 1850, 2100, 2600, 3000}; 
-          //int nbins=sizeof(xbins)/sizeof(double);
-          //unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);
-          //utils::root::fixExtremities(unc->second, true, true);
         }
       }
     }
