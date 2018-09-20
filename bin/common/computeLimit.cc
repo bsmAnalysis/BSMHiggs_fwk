@@ -1408,6 +1408,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     for(std::map<string, double>::iterator Y=map_yields.begin();Y!=map_yields.end();Y++){
       if(Y->first.find("ddqcd")<std::string::npos)continue;//never drop this background
       if(Y->first.find("VV")<std::string::npos)continue;//never drop this background
+      if(Y->first.find("t#bar{t}+#gammaZW")<std::string::npos)continue;//never drop this background    
       if(Y->second/total<threshold){
         printf("Drop %s from the list of backgrounds because of negligible rate (%f%% of total bckq)\n", Y->first.c_str(), Y->second/total);
         for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==Y->first ){sorted_procs.erase(p);break;}}
@@ -1734,12 +1735,17 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 */
 
     // c1->cd(0);
+      /*   
       double L=0.03, R=0.03, T=0.02, B=0.0;
       char LumiText[1024];
       if(systpostfix.Contains('3'))      { double iLumi= 35914;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 13.0);
       }else if(systpostfix.Contains('8')){ double iLumi=20000;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 8.0);
       }else{                               double iLumi= 5000;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 7.0); 
       }
+      */
+      double iLumi=35.9;
+      double iEcm=13;
+      /*
       TPaveText* T1 = new TPaveText(1.0-R-0.50, 1.0-T-0.05, 1.02-R, 1.0-T-0.005, "NDC");
       T1->SetTextFont(43); T1->SetTextSize(22);   T1->SetTextAlign(31);
       T1->SetFillColor(0); T1->SetFillStyle(0);   T1->SetBorderSize(0);
@@ -1757,7 +1763,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	T3->SetFillColor(0); T3->SetFillStyle(0);   T3->SetBorderSize(0);
 	T3->AddText("Preliminary"); T3->Draw();
       }
-
+      */
    
       c[I]->cd();
       
@@ -1875,9 +1881,13 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       legR->AddEntry(denSystUnc, "Syst. + Stat.", "F");
       //legR->Draw("same");
       //  gPad->RedrawAxis();
-      // t1->cd();
+      t1->cd();
       c[I]->cd();
-      
+
+      utils::root::DrawPreliminary(iLumi, iEcm, t1);
+      c[I]->Modified();  
+      c[I]->Update();
+
       //save canvas
       LabelText.ReplaceAll(" ","_"); 
       // c[I]->SaveAs(SaveName+"_Shape.png");
@@ -2116,7 +2126,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         sprintf(txtBuffer, "%10s & %25s", mapUncType[varIt->first.c_str()]?"shape":"scale", varIt->first.c_str());
         for(auto chIt=mapYieldPerBin[""].begin();chIt!=mapYieldPerBin[""].end();chIt++){
           if(varIt->second.find(chIt->first)==varIt->second.end()){ sprintf(txtBuffer, "%s & %10s   "    , txtBuffer, "-" );                        
-          }else{                                                    sprintf(txtBuffer, "%s & %+10.3f\\%% ", txtBuffer,100.0 * varIt->second[chIt->first] ); 
+          }else{                                                    sprintf(txtBuffer, "%s & %+10.1f\\%% ", txtBuffer,100.0 * varIt->second[chIt->first] ); 
           }
         }sprintf(txtBuffer, "%s\\\\ \n", txtBuffer);   UncertaintyOnYield += txtBuffer;
       }sprintf(txtBuffer, "\\hline \n"); UncertaintyOnYield += txtBuffer;
@@ -2716,6 +2726,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  }else if(varName.BeginsWith("_ctag"  )){varName.ReplaceAll("_ctag","_CMS_eff_c");
 	  }else if(varName.BeginsWith("_ltag"  )){varName.ReplaceAll("_ltag","_CMS_eff_mistag");
           }else if(varName.BeginsWith("_pu"    )){varName.ReplaceAll("_pu", "_CMS_haa4b_pu");
+	  }else if(varName.BeginsWith("_pdf" )){
+	    if (proc.Contains("wh")!=std::string::npos) {continue; }
+	  }else if(varName.BeginsWith("_lumi")) {
+	    if (proc.Contains("wh")!=std::string::npos) {continue; }           
           }else if(varName.BeginsWith("_bnorm"  )){continue; //skip this one
 	  }else{ varName="_CMS_haa4b"+varName;}
 
