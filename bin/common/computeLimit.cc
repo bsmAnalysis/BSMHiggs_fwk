@@ -56,11 +56,11 @@ double datadriven_qcd_Syst = 0.50;
 
 bool postfit=false;
 
-double norm_top=0.9;
-double enorm_3b_w=1.39;
-double enorm_4b_w=1.33;
-double munorm_3b_w=1.56;
-double munorm_4b_w=1.68;
+double norm_top=0.89;
+double enorm_3b_w=1.37;
+double enorm_4b_w=1.29;
+double munorm_3b_w=1.37;
+double munorm_4b_w=1.44;
 
 int mass;
 bool shape = true;
@@ -2441,7 +2441,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	//	if(!TTcontrolregion && !nonTTcontrolregion && U->first=="CMS_eff") continue;
 	if(TTcontrolregion || nonTTcontrolregion){
 	  if(U->first=="lumi_13TeV") continue; //skip lumi unc in the Control Regions  
-	  if (U->first.find("PDFscale_wh")!=string::npos || U->first.find("QCDscale_wh")!=string::npos) continue; // skip signal systematics in the control regions
+	  //	  if (U->first.find("PDFscale_wh")!=string::npos || U->first.find("QCDscale_wh")!=string::npos) continue; // skip signal systematics in the control regions
 	  //	  if (U->first.find("_pdf")!=string::npos) continue;
 	}
         char line[2048];
@@ -2728,8 +2728,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           }else if(varName.BeginsWith("_pu"    )){varName.ReplaceAll("_pu", "_CMS_haa4b_pu");
 	  }else if(varName.BeginsWith("_pdf" )){
 	    if (proc.Contains("wh")!=std::string::npos) {continue; }
-	  }else if(varName.BeginsWith("_lumi")) {
-	    if (proc.Contains("wh")!=std::string::npos) {continue; }           
           }else if(varName.BeginsWith("_bnorm"  )){continue; //skip this one
 	  }else{ varName="_CMS_haa4b"+varName;}
 
