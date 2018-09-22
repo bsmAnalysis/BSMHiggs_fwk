@@ -243,8 +243,11 @@ class ShapeData_t
 	    if(statBinByBin>0 && shape==true && !noBinByBin){
 	      int BIN=0;
 	      for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++){           
+		//		if(h->Integral()<=0.01) continue;
+		//		if(h->GetBinContent(ibin)/h->Integral()<0.01 ) continue; // printf("Found bin with cont/Integral < 0.01\n");
+		//		if(h->GetBinContent(ibin)<=0.) printf("Found bin with 0 contnent\n");
 		if( !(h->GetBinContent(ibin)<=0 && h->GetBinError(ibin)>0) &&  (h->GetBinContent(ibin)<=0 || h->GetBinContent(ibin)/h->Integral()<0.01 || h->GetBinError(ibin)/h->GetBinContent(ibin)<statBinByBin))continue;
-		//           if(h->GetBinContent(ibin)<=0)continue;
+		//		if(h->GetBinContent(ibin)<=0.)continue;
 		char ibintxt[255]; sprintf(ibintxt, "_b%i", BIN);BIN++;
 		TH1* statU=(TH1 *)h->Clone(TString(h->GetName())+"StatU"+ibintxt);//  statU->Reset();
 		TH1* statD=(TH1 *)h->Clone(TString(h->GetName())+"StatD"+ibintxt);//  statD->Reset();           
@@ -1058,8 +1061,8 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     //remove all syst uncertainty
     chDD->second.shapes[mainHisto.Data()].clearSyst();
     //add syst uncertainty
-    chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_ddqcd_") + binName.Data() + systpostfix.Data()] = valDD*datadriven_qcd_Syst; //:1.8*valDD;
-    //chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_ddqcd_") + systpostfix.Data()] = valDD>=1E-4?valDD*datadriven_qcd_Syst:1.8*valDD;    
+    chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_ddqcd_") + binName.Data() +"_"+chData->second.bin.c_str() + systpostfix.Data()] = valDD*datadriven_qcd_Syst; //:1.8*valDD;
+    //    chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_ddqcd_") + binName.Data() + systpostfix.Data()] = ratioMC<0.5?valDD*datadriven_qcd_Syst:fabs(1.-ratioMC)*valDD;    
 
     //printout
     sprintf(Lcol    , "%s%s"  ,Lcol,    "|c");
@@ -1717,8 +1720,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
     //print legend
     // c1->cd(0);
-      legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);  legA->SetBorderSize(0); legA->SetHeader(LabelText);
-      legA->SetNColumns((NLegEntry/2) + 1);
+      //      legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);  legA->SetBorderSize(0); legA->SetHeader(LabelText);
+      //      legA->SetNColumns((NLegEntry/2) + 1);
       legA->Draw("same");    legA->SetTextFont(42);
       
     //print canvas header
@@ -2439,11 +2442,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       for(std::map<string, bool>::iterator U=allSysts.begin(); U!=allSysts.end();U++){
         //if(mass==125 && U->first=="CMS_haa4b_lshape")continue;//skip lineshape uncertainty for 125GeV Higgs
 	//	if(!TTcontrolregion && !nonTTcontrolregion && U->first=="CMS_eff") continue;
-	if(TTcontrolregion || nonTTcontrolregion){
-	  if(U->first=="lumi_13TeV") continue; //skip lumi unc in the Control Regions  
+	//	if(TTcontrolregion || nonTTcontrolregion){
+	  //	  if(U->first=="lumi_13TeV") continue; //skip lumi unc in the Control Regions  
 	  //	  if (U->first.find("PDFscale_wh")!=string::npos || U->first.find("QCDscale_wh")!=string::npos) continue; // skip signal systematics in the control regions
 	  //	  if (U->first.find("_pdf")!=string::npos) continue;
-	}
+	//	}
         char line[2048];
         sprintf(line,"%-45s %-10s ", U->first.c_str(), U->second?"shapeN2":"lnN");
         bool isNonNull = false;
@@ -2719,15 +2722,16 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if(varName==""){//does nothing
           }else if(varName.BeginsWith("_jes")){varName.ReplaceAll("_jes","_CMS_scale_j");
           }else if(varName.BeginsWith("_jer")){varName.ReplaceAll("_jer","_CMS_res_j"); // continue;//skip res for now
-	  }else if(varName.BeginsWith("_les")){ 
-	    if(ch.Contains("e"  ))varName.ReplaceAll("_les","_CMS_scale_e");
-	    if(ch.Contains("mu"))varName.ReplaceAll("_les","_CMS_scale_m");
+	  }else if(varName.BeginsWith("_les")){
+	    continue; // skip this one for now
+	    //	    if(ch.Contains("e"  ))varName.ReplaceAll("_les","_CMS_scale_e");
+	    //	    if(ch.Contains("mu"))varName.ReplaceAll("_les","_CMS_scale_m");
           }else if(varName.BeginsWith("_btag"  )){varName.ReplaceAll("_btag","_CMS_eff_b");
 	  }else if(varName.BeginsWith("_ctag"  )){varName.ReplaceAll("_ctag","_CMS_eff_c");
 	  }else if(varName.BeginsWith("_ltag"  )){varName.ReplaceAll("_ltag","_CMS_eff_mistag");
           }else if(varName.BeginsWith("_pu"    )){varName.ReplaceAll("_pu", "_CMS_haa4b_pu");
-	  }else if(varName.BeginsWith("_pdf" )){
-	    if (proc.Contains("wh")!=std::string::npos) {continue; }
+	    //	  }else if(varName.BeginsWith("_pdf" )){
+	    //	    if (proc.Contains("wh")!=std::string::npos) {continue; }
           }else if(varName.BeginsWith("_bnorm"  )){continue; //skip this one
 	  }else{ varName="_CMS_haa4b"+varName;}
 
