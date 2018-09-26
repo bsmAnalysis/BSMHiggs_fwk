@@ -1384,11 +1384,7 @@ int main(int argc, char* argv[])
 	// decorrelate JES uncertainties
 	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc); // totalJESUnc -> vector of 27
  	//	METUtils::computeVariation(phys.jets, selLeptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
-	if ( verbose ) {
-	  printf("variedJets size: %d \n",
-		 (int)variedJets.size());
-		 //		 variedMET.size());
-	}
+
 	
 	//###########################################################
 	// The AK8 fat jets configuration
@@ -2137,8 +2133,8 @@ int main(int argc, char* argv[])
 		       wsum.pt(), //W only, w pt
 		       allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
 		       dphi_Wh, //W and H, dr 
-		       selLeptons[0].pt(),
-		       imet.pt(), sqrt(tMass), mindphijmet,
+		       // selLeptons[0].pt(),
+		       // imet.pt(), sqrt(tMass), mindphijmet,
 		       mvaweight, //note, since weight is not the weight we want, we store all others except xSec weigh
 		       ev.lheNJets //AUX variable for weight calculation
 		       );
