@@ -248,6 +248,45 @@ int main(int argc, char* argv[])
     btagCal80X.load(btagCalib, BTagEntry::FLAV_UDSG, "incl");
 
 
+    //jet energy scale uncertainties
+    TString jecDir = runProcess.getParameter<std::string>("jecDir");
+    //gSystem->ExpandPathName(uncFile);
+    cout << "Loading jet energy scale uncertainties from: " << jecDir << endl;
+
+    if     (dtag.Contains("2016B") || dtag.Contains("2016C") ||dtag.Contains("2016D")) jecDir+="Summer16_80X/Summer16_23Sep2016BCDV4_DATA/";
+    else if(dtag.Contains("2016E") || dtag.Contains("2016F")) jecDir+="Summer16_80X/Summer16_23Sep2016EFV4_DATA/";
+    else if(dtag.Contains("2016G")) jecDir+="Summer16_80X/Summer16_23Sep2016GV4_DATA/";
+    else if(dtag.Contains("2016H")) jecDir+="Summer16_80X/Summer16_23Sep2016HV4_DATA/";
+    if(isMC) {jecDir+="Summer16_80X/Summer16_23Sep2016V4_MC/";}
+
+    gSystem->ExpandPathName(jecDir);
+    //    FactorizedJetCorrector *jesCor = NULL;
+    //    jesCor = utils::cmssw::getJetCorrector(jecDir,isMC);
+
+    TString pf(isMC ? "MC" : "DATA");
+
+    // Instantiate uncertainty sources
+    const int nsrc = 27;
+    const char* srcnames[nsrc] =
+      {"AbsoluteStat", "AbsoluteScale", "AbsoluteFlavMap", "AbsoluteMPFBias", "Fragmentation",
+       "SinglePionECAL", "SinglePionHCAL",
+       "FlavorQCD", "TimePtEta",
+       "RelativeJEREC1", "RelativeJEREC2", "RelativeJERHF",
+       "RelativePtBB","RelativePtEC1", "RelativePtEC2", "RelativePtHF","RelativeBal", "RelativeFSR",
+       "RelativeStatFSR", "RelativeStatEC", "RelativeStatHF",
+       "PileUpDataMC", "PileUpPtRef", "PileUpPtBB", "PileUpPtEC1", "PileUpPtEC2", "PileUpPtHF"
+      };
+    std::vector<JetCorrectionUncertainty*> totalJESUnc(nsrc);// = NULL; //(nsrc);
+    
+    for (int isrc = 0; isrc < nsrc; isrc++) {
+      const char *name = srcnames[isrc];
+      JetCorrectorParameters *p = new JetCorrectorParameters((jecDir+"/"+pf+"_UncertaintySources_AK4PFchs.txt").Data(), name);
+      JetCorrectionUncertainty *unc = new JetCorrectionUncertainty(*p);
+      //      totalJESUnc->push_back(unc);
+      totalJESUnc[isrc] = unc;
+    }
+
+    
     //systematics
     bool runSystematics = runProcess.getParameter<bool>("runSystematics");
     std::vector<TString> varNames(1,"");
@@ -270,12 +309,20 @@ int main(int argc, char* argv[])
 
 	  varNames.push_back("_jerup"); 	//1 
 	  varNames.push_back("_jerdown"); //2
-	  varNames.push_back("_jesup"); 	//3
-	  varNames.push_back("_jesdown"); //4
 	  varNames.push_back("_umetup"); 	//5
 	  varNames.push_back("_umetdown");//6
 	  varNames.push_back("_lesup"); 	//7
 	  varNames.push_back("_lesdown"); //8
+
+	  for (int isrc = 0; isrc < nsrc; isrc++) {
+	    const char *name = srcnames[isrc];
+
+	    stringstream ss;string target;
+	    ss << name; ss >> target;
+	    varNames.push_back("_"+target+"_jesup");      
+	    varNames.push_back("_"+target+"_jesdown");
+	  }
+
 	  varNames.push_back("_btagup"); varNames.push_back("_btagdown");//11, 12
 	  varNames.push_back("_ctagup"); varNames.push_back("_ctagdown");//13, 14
 	  varNames.push_back("_ltagup"); varNames.push_back("_ltagdown");//15, 16
@@ -289,7 +336,6 @@ int main(int argc, char* argv[])
 	  //  varNames.push_back("_GS_eup");    varNames.push_back("_GS_edown");  //electron energy scale
 	  varNames.push_back("_resRho_eup");    varNames.push_back("_resRho_edown");  //electron energy resolution
 	  varNames.push_back("_resPhi_edown");     //electron energy resolution
-	  //	varNames.push_back("_eff_bup"); varNames.push_back("_eff_bdown"); //btag SFs
 
 	  varNames.push_back("_puup");  varNames.push_back("_pudown");      //pileup uncertainty 
 	  varNames.push_back("_pdfup"); varNames.push_back("_pdfdown");  
@@ -324,26 +370,8 @@ int main(int argc, char* argv[])
     int evEnd       = runProcess.getParameter<int>("evEnd");
     TString dirname = runProcess.getParameter<std::string>("dirName");
 
+
     
-    //jet energy scale uncertainties
-    TString jecDir = runProcess.getParameter<std::string>("jecDir");
-    //gSystem->ExpandPathName(uncFile);
-    cout << "Loading jet energy scale uncertainties from: " << jecDir << endl;
-
-    if     (dtag.Contains("2016B") || dtag.Contains("2016C") ||dtag.Contains("2016D")) jecDir+="Summer16_80X/Summer16_23Sep2016BCDV4_DATA/";
-    else if(dtag.Contains("2016E") || dtag.Contains("2016F")) jecDir+="Summer16_80X/Summer16_23Sep2016EFV4_DATA/";
-    else if(dtag.Contains("2016G")) jecDir+="Summer16_80X/Summer16_23Sep2016GV4_DATA/";
-    else if(dtag.Contains("2016H")) jecDir+="Summer16_80X/Summer16_23Sep2016HV4_DATA/";
-    if(isMC) {jecDir+="Summer16_80X/Summer16_23Sep2016V4_MC/";}
-
-    gSystem->ExpandPathName(jecDir);
-    FactorizedJetCorrector *jesCor = NULL;
-    jesCor = utils::cmssw::getJetCorrector(jecDir,isMC);
-
-    TString pf(isMC ? "MC" : "DATA");
-    JetCorrectionUncertainty *totalJESUnc = NULL;
-    totalJESUnc = new JetCorrectionUncertainty((jecDir+"/"+pf+"_Uncertainty_AK4PFchs.txt").Data());
-
     //Lepton scale corrections
     EnergyScaleCorrection_class eScaler_("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_74x_pho");     
     eScaler_.doScale=true;
@@ -740,12 +768,12 @@ int main(int argc, char* argv[])
     myTribTMVAReader.InitTMVAReader();
     std::string TribMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/Haa4bSBClassificationTribMVA_BDT.weights.xml";
     myTribTMVAReader.SetupMVAReader( "Haa4bSBClassificationTribMVA", TribMVA_xml_path );
-    /*
+
     TMVAReader myQuabTMVAReader;
     myQuabTMVAReader.InitTMVAReader();
     std::string QuabMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/Haa4bSBClassificationQuabMVA_BDT.weights.xml"; 
     myQuabTMVAReader.SetupMVAReader( "Haa4bSBClassificationQuabMVA", QuabMVA_xml_path );
-    */
+
     
     //####################################################################################################################
     //###########################################           EVENT LOOP         ###########################################
@@ -1289,17 +1317,20 @@ int main(int argc, char* argv[])
   
             //this is a safety veto for the single Ele PD
             if(isSingleElePD) {
-	      if(!hasEtrigger && !hasHighPtEtrigger) continue;
+	      if(!hasEtrigger || hasMtrigger) continue;
+	      //	      if(hasMtrigger) continue;
+	      //	      if(!hasEtrigger && !hasHighPtEtrigger) continue;
 		//    if(hasEtrigger && hasEEtrigger) continue;
             }
     
             hasTrigger=true;
 
         } else { // isMC
-	  // if(evcat==E   && hasEtrigger ) hasTrigger=true;
-	  // if(evcat==MU && hasMtrigger ) hasTrigger=true;
+	  if(evcat==E   && hasEtrigger ) hasTrigger=true;
+	  if(evcat==MU && hasMtrigger ) hasTrigger=true;
 	  // if(evcat==EMU  && ( hasEtrigger || hasMtrigger)) hasTrigger=true;
-	  hasTrigger = (hasEtrigger || hasHighPtEtrigger || hasMtrigger);
+	  //	  hasTrigger = (hasEtrigger || hasMtrigger);   
+	  //	  hasTrigger = (hasEtrigger || hasHighPtEtrigger || hasMtrigger);
 	  if(!hasTrigger) continue;
         }
 
@@ -1349,8 +1380,10 @@ int main(int argc, char* argv[])
 	if ( verbose ) { printf("\nMissing  pt (after lepton energy scale cor.) =%6.1f\n", metP4.pt()); }
 
 	//note this also propagates to all MET uncertainties
-	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc); 
-	//	METUtils::computeVariation(phys.jets, selLeptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
+	//	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc);
+	// decorrelate JES uncertainties
+	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc); // totalJESUnc -> vector of 27
+ 	//	METUtils::computeVariation(phys.jets, selLeptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
 
 	
 	//###########################################################
@@ -1524,19 +1557,16 @@ int main(int argc, char* argv[])
 	  weight = iweight; // reset to nominal weight
 
 	  LorentzVector imet = variedMET[0];
-	  PhysicsObjectJetCollection &vJets = variedJets[0];   
-	  if(varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || varNames[ivar]=="_jesup" || varNames[ivar]=="_jesdown" || varNames[ivar]=="_umetup" || varNames[ivar]=="_umetdown" || varNames[ivar]=="_lesup" || varNames[ivar]=="_lesdown") {
+	  if(varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || (string(varNames[ivar].Data()).find("_jesup") != string::npos) || (string(varNames[ivar].Data()).find("_jesdown") != string::npos)  || varNames[ivar]=="_umetup" || varNames[ivar]=="_umetdown" || varNames[ivar]=="_lesup" || varNames[ivar]=="_lesdown") {
 	    imet = variedMET[ivar];
-	    vJets = variedJets[ivar];   
-	  } else { // reset Jet/MET to nominal
-	    imet = variedMET[0];
-	  }
-	  /*
-	  PhysicsObjectJetCollection &vJets = variedJets[0];
-	  if(varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || varNames[ivar]=="_jesup" || varNames[ivar]=="_jesdown") {
+	  } 
+	  
+	  PhysicsObjectJetCollection vJets = variedJets[0];
+	  if(varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || (string(varNames[ivar].Data()).find("_jesup") != string::npos) || (string(varNames[ivar].Data()).find("_jesdown") != string::npos) ){
+	     //varNames[ivar]=="_jesup" || varNames[ivar]=="_jesdown") {
 	    vJets = variedJets[ivar];
-	  } //else {vJets = variedJets[0]; }
-	  */
+	  } 
+	  
             //pileup
 	  if(varNames[ivar]=="_puup") weight *= ( TotalWeight_plus/puWeight ); //pu up
 	  if(varNames[ivar]=="_pudown") weight *= ( TotalWeight_minus/puWeight ); //pu down
@@ -1560,7 +1590,7 @@ int main(int argc, char* argv[])
 	  if ( verbose ) {
 	    printf("\nMissing  pt=%6.1f\n", imet.pt());
 	    
-	    printf("selLetpon is %s, and has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",   
+	    printf("selLepton is %s, and has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",   
 		   (abs(selLeptons[0].id)==11 ? "ELE" : "MUON") ,
 		   selLeptons[0].pt(),
 		   selLeptons[0].eta(),
@@ -1646,10 +1676,6 @@ int main(int argc, char* argv[])
 		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_B ,
 										       vJets[ijet].eta(), vJets[ijet].pt()), beff); 
 		  }
-		  // B-tag normalization uncertainty (6% per b jet)
-		  //		  if(varNames[ivar]=="_bnormup") { if (hasCSVtag) weight *= 1.06; }
-		  //		  if(varNames[ivar]=="_bnormdown") { if (hasCSVtag) weight *= 0.94; }
-
 		} else if(abs(vJets[ijet].flavid)==4) {
 		  if(use_DeepCSV) beff=btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE");      
 		  //  80X recommendation
@@ -1663,9 +1689,6 @@ int main(int argc, char* argv[])
 		      btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_C ,
 										     vJets[ijet].eta(), vJets[ijet].pt()), beff);
 		   }
-		   // B-tag normalization uncertainty  (12% per c jet)
-		   //		   if(varNames[ivar]=="_bnormup") { if (hasCSVtag) weight *= 1.12; } 
-		   //		   if(varNames[ivar]=="_bnormdown") { if (hasCSVtag) weight *= 0.88; }  
 		} else {
 		  if(use_DeepCSV) leff=btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE");      
 		  //  80X recommendation
@@ -1679,24 +1702,22 @@ int main(int argc, char* argv[])
 		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_UDSG ,
 										       vJets[ijet].eta(), vJets[ijet].pt()), leff);
 		  }
-		  // B-tag normalization uncertainty  (15% per fake tag)  
-		  //		  if(varNames[ivar]=="_bnormup") { if (hasCSVtag) weight *= 1.15; } 
-		  //		  if(varNames[ivar]=="_bnormdown") { if (hasCSVtag) weight *= 0.85; } 
 		}
 		
 	      } // isMC
 
-	       if ( verbose && hasCSVtag) {
-		 printf(" b-jet has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",   
-			vJets[ijet].pt(),
-			vJets[ijet].eta(),
-			vJets[ijet].phi(),
-			vJets[ijet].M()
-			);
-	       } // verbose
 
+	      if ( verbose ) { //&& hasCSVtag) {
+		printf("Jet has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",   
+		       vJets[ijet].pt(),
+		       vJets[ijet].eta(),
+		       vJets[ijet].phi(),
+		       vJets[ijet].M()
+		       );
+	      } // verbose
+	      
 	      // Fill b-jet vector:
-	       if (hasCSVtag) {  CSVLoosebJets.push_back(vJets[ijet]); }
+	      if (hasCSVtag) {  CSVLoosebJets.push_back(vJets[ijet]); }
 	    } // b-jet loop
 	    
 	  } // jet loop
@@ -1932,7 +1953,7 @@ int main(int argc, char* argv[])
 	  
 	  TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
 	  tags.push_back(tag_cat+tag_qcd+tag_subcat); // add jet binning category
-	  if (fabs(mindphijmet)>0.5) tags.push_back(tag_cat+tag_qcd+"passDPHI_"+tag_subcat);
+	  //	  if (fabs(mindphijmet)>0.5) tags.push_back(tag_cat+tag_qcd+"passDPHI_"+tag_subcat);
 	  
 	  bool isSignalRegion(false);
 	  if(tag_subcat.Contains("SR")) { isSignalRegion=true; }
@@ -2025,19 +2046,22 @@ int main(int argc, char* argv[])
 	      mvaBDT = myTribTMVAReader.GenReMVAReader
 		(
 		 wsum.pt(), allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, dphi_Wh,
+		 selLeptons[0].pt(),
+		 imet.pt(), sqrt(tMass), mindphijmet,     
 		 "Haa4bSBClassificationTribMVA"
 		 );
 	    }
-	  /*
 	  else if (GoodIdbJets.size() >= 4)
 	    {
 	      mvaBDT = myQuabTMVAReader.GenReMVAReader
 		(
 		 wsum.pt(), allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, dphi_Wh,
+		 selLeptons[0].pt(),         
+		 imet.pt(), sqrt(tMass), mindphijmet,     
 		 "Haa4bSBClassificationQuabMVA"
 		 );
 	    }
-	  */
+
 	  //##############################################################################
 	  //##############################################################################
 
@@ -2102,13 +2126,15 @@ int main(int argc, char* argv[])
 	      genWeight > 0 ? mvaweight = weight/xsecWeight : mvaweight = -weight / xsecWeight; // Include all weights except for the xsecWeight
 	      if ( isSignalRegion && GoodIdbJets.size() >= 3 ) 
 		{
-		  if(passNJ2 && passMet25 && passMt) {
+		  if(passMet25 && passMt && passNJ2) {
 		    myMVAHandler_.getEntry
 		      (
 		       GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
 		       wsum.pt(), //W only, w pt
 		       allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
 		       dphi_Wh, //W and H, dr 
+		       // selLeptons[0].pt(),
+		       // imet.pt(), sqrt(tMass), mindphijmet,
 		       mvaweight, //note, since weight is not the weight we want, we store all others except xSec weigh
 		       ev.lheNJets //AUX variable for weight calculation
 		       );
