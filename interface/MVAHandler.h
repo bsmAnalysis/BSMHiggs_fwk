@@ -34,6 +34,9 @@ struct MVAEvtContainer
   float HHt = -1.0;
   //dr W and Higgs 
   float WHdR = -1.0;
+  float lepPt = -1.0;
+  float pfMET = -1.0; float MTw = -1.0;
+  float ljDR = -1.0;
   //weight
   float weight = -1.0;
   //AUX
@@ -58,6 +61,8 @@ class MVAHandler
                 float Wpt, //W only
                 float Hmass, float HpT, float bbdRAve, float bbdMMin, float HHt, //Higgs only
                 float WHdR, //W and H
+		float lepPt, float pfMET, float MTw,
+		float ljDR,
                 float weight,
                 int lheNJets
                );

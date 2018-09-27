@@ -266,8 +266,10 @@ int main(int argc, char* argv[])
     TString pf(isMC ? "MC" : "DATA");
 
     // Instantiate uncertainty sources
-    const int nsrc = 27;
+    const int nsrc = 6; //27;
     const char* srcnames[nsrc] =
+      {"SubTotalPileUp", "SubTotalRelative", "SubTotalPt", "SubTotalScale", "SubTotalAbsolute","SubTotalMC"};
+    /*
       {"AbsoluteStat", "AbsoluteScale", "AbsoluteFlavMap", "AbsoluteMPFBias", "Fragmentation",
        "SinglePionECAL", "SinglePionHCAL",
        "FlavorQCD", "TimePtEta",
@@ -276,6 +278,7 @@ int main(int argc, char* argv[])
        "RelativeStatFSR", "RelativeStatEC", "RelativeStatHF",
        "PileUpDataMC", "PileUpPtRef", "PileUpPtBB", "PileUpPtEC1", "PileUpPtEC2", "PileUpPtHF"
       };
+    */
     std::vector<JetCorrectionUncertainty*> totalJESUnc(nsrc);// = NULL; //(nsrc);
     
     for (int isrc = 0; isrc < nsrc; isrc++) {
@@ -1034,7 +1037,7 @@ int main(int argc, char* argv[])
 	      // only run Systematics in MC samples
 	      if(!isMC && ivar>0) continue;
 	      // do not run systs. for QCD
-	      if(isMC && runQCD && ivar>0) continue;
+	      //	      if(isMC && runQCD && ivar>0) continue;
 	      
 	      if (abs(lepid)==11) {
 		double et = ilep.en_cor_en / cosh(fabs(ilep.en_EtaSC)); 
@@ -1384,7 +1387,6 @@ int main(int argc, char* argv[])
 	// decorrelate JES uncertainties
 	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc); // totalJESUnc -> vector of 27
  	//	METUtils::computeVariation(phys.jets, selLeptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
-
 	
 	//###########################################################
 	// The AK8 fat jets configuration
@@ -1549,6 +1551,7 @@ int main(int argc, char* argv[])
 
 	for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
 	  if(!isMC && ivar>0 ) continue; //loop on variation only for MC samples
+	  if(isQCD && ivar>0) continue; // skip systematics from MC QCD since data-driven will follow
 
 	  if ( verbose ) { std::cout << "\n\n Running variation: " << varNames[ivar] << " with ivar == " << ivar << std::endl; }
 	  
@@ -2133,8 +2136,8 @@ int main(int argc, char* argv[])
 		       wsum.pt(), //W only, w pt
 		       allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
 		       dphi_Wh, //W and H, dr 
-		       // selLeptons[0].pt(),
-		       // imet.pt(), sqrt(tMass), mindphijmet,
+		       selLeptons[0].pt(),
+		       imet.pt(), sqrt(tMass), mindphijmet,
 		       mvaweight, //note, since weight is not the weight we want, we store all others except xSec weigh
 		       ev.lheNJets //AUX variable for weight calculation
 		       );

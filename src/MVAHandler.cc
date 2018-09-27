@@ -27,6 +27,10 @@ void MVAHandler::resetStruct()
   evSummary_.HHt = -1.0;
   //dr W and Higgs 
   evSummary_.WHdR = -1.0;
+  evSummary_.lepPt = -1.0;
+  evSummary_.pfMET = -1.0;
+  evSummary_.MTw = -1.0;
+  evSummary_.ljDR = -1.0;
   //weight
   evSummary_.weight = 0.0;
   evSummary_.lheNJets = -1;
@@ -38,6 +42,8 @@ void MVAHandler::getEntry(
                           float Wpt, //W only
                           float Hmass, float HpT, float bbdRAve, float bbdMMin, float HHt, //Higgs only
                           float WHdR, //W and H
+			  float lepPt, float pfMET, float MTw, 
+			  float ljDR,
                           float weight,
                           int lheNJets
                          )
@@ -56,6 +62,11 @@ void MVAHandler::getEntry(
   evSummary_.HHt = HHt;
   //dr W and Higgs 
   evSummary_.WHdR = WHdR;
+  // few additions
+  evSummary_.lepPt = lepPt;
+  evSummary_.pfMET = pfMET;
+  evSummary_.MTw = MTw;
+  evSummary_.ljDR = ljDR;
   //weight
   evSummary_.weight = weight;
   //AUX
@@ -75,9 +86,13 @@ bool MVAHandler::initTree(TString mvaout)
   to3b->Branch("Hmass",  &evSummary_.Hmass,  "Hmass/F");
   to3b->Branch("HpT",  &evSummary_.HpT,  "HpT/F");
   to3b->Branch("bbdRAve",  &evSummary_.bbdRAve,  "bbdRAve/F");
-  to3b->Branch("bbdMMin",  &evSummary_.bbdMMin,  "bbdMMin/F");
+  //to3b->Branch("bbdMMin",  &evSummary_.bbdMMin,  "bbdMMin/F");
   to3b->Branch("HHt",  &evSummary_.HHt,  "HHt/F");
   to3b->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F");
+  to3b->Branch("lepPt", &evSummary_.lepPt, "lepPt/F");
+  to3b->Branch("pfMET", &evSummary_.pfMET, "pfMET/F");
+  to3b->Branch("MTw", &evSummary_.MTw, "MTw/F");  
+  to3b->Branch("ljDR", &evSummary_.ljDR, "ljDR/F");  
   to3b->Branch("weight",  &evSummary_.weight,  "weight/F");
   to3b->Branch("lheNJets",  &evSummary_.lheNJets,  "lheNJets/I");
 
@@ -89,6 +104,10 @@ bool MVAHandler::initTree(TString mvaout)
   to4b->Branch("bbdMMin",  &evSummary_.bbdMMin,  "bbdMMin/F");
   to4b->Branch("HHt",  &evSummary_.HHt,  "HHt/F");
   to4b->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F");
+  to4b->Branch("lepPt", &evSummary_.lepPt, "lepPt/F");   
+  to4b->Branch("pfMET", &evSummary_.pfMET, "pfMET/F");      
+  to4b->Branch("MTw", &evSummary_.MTw, "MTw/F"); 
+  to4b->Branch("ljDR", &evSummary_.ljDR, "ljDR/F");  
   to4b->Branch("weight",  &evSummary_.weight,  "weight/F");
   to4b->Branch("lheNJets",  &evSummary_.lheNJets,  "lheNJets/I");
 
@@ -102,7 +121,7 @@ void MVAHandler::fillTree()
   {
     std::cout << "One event can not be both in 3 and 4 b cat! Please check!" << std::endl;
   }
-  else if ( evSummary_.is3b && !evSummary_.is4b )
+  else if ( evSummary_.is3b && !evSummary_.is4b ) 
   {
     if ( to3b ) to3b->Fill();
     return ;
@@ -119,7 +138,7 @@ void MVAHandler::fillTree()
 //
 void MVAHandler::writeTree()
 {
-  //TFile *MVAofile=TFile::Open( outURL, "recreate");
+  //TFile *MVAofile=TFile::Open( outURL, "recreate");  
   to3b->Write();
   to4b->Write();
   MVAofile->Close();
