@@ -1387,11 +1387,6 @@ int main(int argc, char* argv[])
 	// decorrelate JES uncertainties
 	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc); // totalJESUnc -> vector of 27
  	//	METUtils::computeVariation(phys.jets, selLeptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
-	if ( verbose ) {
-	  printf("variedJets size: %d \n",
-		 (int)variedJets.size());
-		 //		 variedMET.size());
-	}
 	
 	//###########################################################
 	// The AK8 fat jets configuration
