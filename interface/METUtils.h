@@ -28,6 +28,7 @@ namespace METUtils {
   PhysicsObject_Jet smearedJet(const LorentzVector &origJet, double genJetPt, int mode=0);
 
   enum UncertaintyVariations { JER, JER_UP, JER_DOWN,UMET_UP,UMET_DOWN,LES_UP,LES_DOWN}; 
+  //  enum UncertaintyVariations2 {JES_UP, JES_DOWN};
   //  enum UncertaintyVariations { JER, JER_UP, JER_DOWN, JES_UP, JES_DOWN,UMET_UP,UMET_DOWN,LES_UP,LES_DOWN};
   void computeVariation(PhysicsObjectJetCollection& jets,
                         PhysicsObjectLeptonCollection &leptons,

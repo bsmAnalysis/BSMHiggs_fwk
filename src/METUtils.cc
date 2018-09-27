@@ -216,7 +216,7 @@ void computeVariation(PhysicsObjectJetCollection& jets,
 
     // Now add JES as recommended from here: https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources
     // Instantiate JES uncertainty sources
-    const int nsrc = 27;
+    const int nsrc = 6;
     
     for (int isrc = 0; isrc < nsrc; isrc++) {
 
