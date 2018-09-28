@@ -1946,7 +1946,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
         //add the stat uncertainty is there;
         //ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );//add stat uncertainty to the uncertainty map;
-
         if((it->second.shortName).find("wh")!=std::string::npos)ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_wh")).Data(),systpostfix.Data(), false );// attention
 	//	else if((it->second.shortName).find("qqH")!=std::string::npos)ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_qqH")).Data(),systpostfix.Data(), false );
         else ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );
@@ -2253,6 +2252,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if(runSystematics && syst!=""){
             TString systName(syst); 
             systName.ReplaceAll("Up",""); systName.ReplaceAll("Down","");//  systName.ReplaceAll("_","");
+	    systName.ReplaceAll("Pile","PileUp");
             if(systName.First("_")==0)systName.Remove(0,1);
 
             TH1 *temp=(TH1*) hshape->Clone();
@@ -2299,10 +2299,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	TH1* h=shapeInfo.histo(); if (h) integral=h->Integral();
 
         //lumi
-        if(!it->second.isData && systpostfix.Contains('3'))shapeInfo.uncScale["lumi_13TeV"] = integral*0.025;
-        if(!it->second.isData && systpostfix.Contains('8'))shapeInfo.uncScale["lumi_8TeV" ] = integral*0.026;
-        if(!it->second.isData && systpostfix.Contains('7'))shapeInfo.uncScale["lumi_7TeV" ] = integral*0.022;
-
+	if( !(it->second.shortName.find("ttbarcba")!=string::npos) && !(it->second.shortName.find("ttbarbba")!=string::npos) &&
+	    !(it->second.shortName.find("wlnu")!=string::npos) ) {
+	  if(!it->second.isData && systpostfix.Contains('3'))shapeInfo.uncScale["lumi_13TeV"] = integral*0.025;
+	  if(!it->second.isData && systpostfix.Contains('8'))shapeInfo.uncScale["lumi_8TeV" ] = integral*0.026;
+	  if(!it->second.isData && systpostfix.Contains('7'))shapeInfo.uncScale["lumi_7TeV" ] = integral*0.022;
+	}
         //Id+Trigger efficiencies combined
 	
         if(!it->second.isData){
@@ -2440,12 +2442,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       fprintf(pFile, "-------------------------------\n");
 
       for(std::map<string, bool>::iterator U=allSysts.begin(); U!=allSysts.end();U++){
-        //if(mass==125 && U->first=="CMS_haa4b_lshape")continue;//skip lineshape uncertainty for 125GeV Higgs
-	//	if(!TTcontrolregion && !nonTTcontrolregion && U->first=="CMS_eff") continue;
 	//	if(TTcontrolregion || nonTTcontrolregion){
 	  //	  if(U->first=="lumi_13TeV") continue; //skip lumi unc in the Control Regions  
-	  //	  if (U->first.find("PDFscale_wh")!=string::npos || U->first.find("QCDscale_wh")!=string::npos) continue; // skip signal systematics in the control regions
-	  //	  if (U->first.find("_pdf")!=string::npos) continue;
 	//	}
         char line[2048];
         sprintf(line,"%-45s %-10s ", U->first.c_str(), U->second?"shapeN2":"lnN");
@@ -2454,7 +2452,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           ShapeData_t& shapeInfo = procs[clean_procs[j]].channels[C->first].shapes[histoName];
           double integral = shapeInfo.histo()->Integral();
           if(shapeInfo.uncScale.find(U->first)!=shapeInfo.uncScale.end()){   isNonNull = true;   
-            if(U->second) sprintf(line,"%s%8s ",line,"       1");
+	    if(U->second) sprintf(line,"%s%8s ",line,"       1");
             else if(integral>0)sprintf(line,"%s%8f ",line,1+(shapeInfo.uncScale[U->first]/integral));
             else sprintf(line,"%s%8f ",line,1+(shapeInfo.uncScale[U->first]));
           }else{ sprintf(line,"%s%8s ",line,"       -");        }
@@ -2469,16 +2467,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       if(C->first.find("e" )!=string::npos) {
 	fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");
 	fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n"); 
-	//	if (modeDD) fprintf(pFile,"qcd_norm_e rateParam bin1 ddqcd 1\n"); 
-	//	else fprintf(pFile,"qcd_norm_e rateParam bin1 qcd 1\n");  
 	if (C->first.find("3b")!=string::npos) fprintf(pFile,"w_norm_3b_e rateParam bin1 wlnu 1 \n");    
 	if (C->first.find("4b")!=string::npos) fprintf(pFile,"w_norm_4b_e rateParam bin1 wlnu 1 \n"); 
       }
       if(C->first.find("mu")!=string::npos) {
 	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");
 	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");  
-	//	if (modeDD) fprintf(pFile,"qcd_norm_mu rateParam bin1 ddqcd 1\n");  
-	//	else fprintf(pFile,"qcd_norm_mu rateParam bin1 qcd 1\n");    
 	if (C->first.find("3b")!=string::npos) fprintf(pFile,"w_norm_3b_mu rateParam bin1 wlnu 1 \n"); 
 	if (C->first.find("4b")!=string::npos) fprintf(pFile,"w_norm_4b_mu rateParam bin1 wlnu 1 \n"); 
       }
@@ -2720,7 +2714,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           varName.ReplaceAll("up","Up");
 
           if(varName==""){//does nothing
-          }else if(varName.BeginsWith("_jes")){varName.ReplaceAll("_jes","_CMS_scale_j");
+	    //	  }else if(varName.EndsWith("_jes")){varName.ReplaceAll("_jes","_CMS_scale_j");
           }else if(varName.BeginsWith("_jer")){varName.ReplaceAll("_jer","_CMS_res_j"); // continue;//skip res for now
 	  }else if(varName.BeginsWith("_les")){
 	    continue; // skip this one for now
@@ -2729,7 +2723,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           }else if(varName.BeginsWith("_btag"  )){varName.ReplaceAll("_btag","_CMS_eff_b");
 	  }else if(varName.BeginsWith("_ctag"  )){varName.ReplaceAll("_ctag","_CMS_eff_c");
 	  }else if(varName.BeginsWith("_ltag"  )){varName.ReplaceAll("_ltag","_CMS_eff_mistag");
-          }else if(varName.BeginsWith("_pu"    )){varName.ReplaceAll("_pu", "_CMS_haa4b_pu");
+	    //          }else if(varName.BeginsWith("_pu"    )){varName.ReplaceAll("_pu", "_CMS_haa4b_pu");
 	    //	  }else if(varName.BeginsWith("_pdf" )){
 	    //	    if (proc.Contains("wh")!=std::string::npos) {continue; }
           }else if(varName.BeginsWith("_bnorm"  )){continue; //skip this one
