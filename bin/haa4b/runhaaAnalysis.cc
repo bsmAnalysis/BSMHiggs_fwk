@@ -2044,7 +2044,7 @@ int main(int argc, char* argv[])
 	  //############ MVA Reader #####################################################
 	  //##############################################################################
 	  float mvaBDT(-10.0);
-	  if (GoodIdbJets.size() >= 3)
+	  if (GoodIdbJets.size() == 3)
 	    {
 	      mvaBDT = myTribTMVAReader.GenReMVAReader
 		(
