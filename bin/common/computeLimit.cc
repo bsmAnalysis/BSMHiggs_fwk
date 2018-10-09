@@ -1466,7 +1466,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if(ch->second.shapes.find(histoName.Data())==(ch->second.shapes).end())continue;
 
         TH1* h = ch->second.shapes[histoName.Data()].histo();
-
+	if (!h) continue;
         //if(process.Contains("SOnly_S") ) h->Scale(10);  
         if(it->first=="total"){
           //double Uncertainty = std::max(0.0, ch->second.shapes[histoName.Data()].getScaleUncertainty() / h->Integral() );;
@@ -1523,8 +1523,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    map_mc   [ch->first] = (TH1D*)h->Clone((ch->first+"mc").c_str()); //utils::root::checkSumw2((ch->first+"mc").c_str());
           }
           map_stack   [ch->first]->Add(h,"HIST");
-	  map_mc   [ch->first]->Add(h);
-	  // if(!map_mc){map_mc   [ch->first] = (TH1D*)h->Clone((ch->first+"mc").c_str());utils::root::checkSumw2((ch->first+"mc").c_str());}else{map_mc   [ch->first]->Add(h);}
+	  map_mc [ch->first]->Add(h); 
+	  //if(h!=NULL && h->Integral()>0){map_mc   [ch->first] = (TH1D*)h->Clone((ch->first+"mc").c_str());utils::root::checkSumw2((ch->first+"mc").c_str());}else{map_mc   [ch->first]->Add(h);}
 
         }else if(it->second.isSign){                    
           map_signals [ch->first].push_back(h);
@@ -2299,7 +2299,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	TH1* h=shapeInfo.histo(); if (h) integral=h->Integral();
 
         //lumi
-	if( !(it->second.shortName.find("ttbarcba")!=string::npos) && !(it->second.shortName.find("ttbarbba")!=string::npos) &&
+	if( !(it->second.shortName.find("ttbarbba")!=string::npos) && //!(it->second.shortName.find("ttbarcba")!=string::npos) &&
 	    !(it->second.shortName.find("wlnu")!=string::npos) ) {
 	  if(!it->second.isData && systpostfix.Contains('3'))shapeInfo.uncScale["lumi_13TeV"] = integral*0.025;
 	  if(!it->second.isData && systpostfix.Contains('8'))shapeInfo.uncScale["lumi_8TeV" ] = integral*0.026;
@@ -2320,7 +2320,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	if(it->second.shortName.find("zll")!=string::npos){shapeInfo.uncScale["norm_zll"] = integral*0.02;}
 
 	if(it->second.shortName.find("ttbarlig")!=string::npos){shapeInfo.uncScale["norm_toplight"] = integral*0.06;} 
-	//	if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_topcc"] = integral*0.50;} 
+	if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_topcc"] = integral*0.50;} 
 	if(it->second.shortName.find("ttbargam")!=string::npos){shapeInfo.uncScale["norm_topgzw"] = integral*0.15;} 
 	if(it->second.shortName.find("singleto")!=string::npos){shapeInfo.uncScale["norm_singletop"] = integral*0.05;}
 	if (!subFake){
@@ -2466,13 +2466,13 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       fprintf(pFile,"\n");
       if(C->first.find("e" )!=string::npos) {
 	fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");
-	fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n"); 
+	//	fprintf(pFile,"ttc_norm_e rateParam bin1 ttbarcba 1\n"); 
 	if (C->first.find("3b")!=string::npos) fprintf(pFile,"w_norm_3b_e rateParam bin1 wlnu 1 \n");    
 	if (C->first.find("4b")!=string::npos) fprintf(pFile,"w_norm_4b_e rateParam bin1 wlnu 1 \n"); 
       }
       if(C->first.find("mu")!=string::npos) {
 	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");
-	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");  
+	//	fprintf(pFile,"ttc_norm_mu rateParam bin1 ttbarcba 1\n");  
 	if (C->first.find("3b")!=string::npos) fprintf(pFile,"w_norm_3b_mu rateParam bin1 wlnu 1 \n"); 
 	if (C->first.find("4b")!=string::npos) fprintf(pFile,"w_norm_4b_mu rateParam bin1 wlnu 1 \n"); 
       }
@@ -2715,6 +2715,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
           if(varName==""){//does nothing
 	    //	  }else if(varName.EndsWith("_jes")){varName.ReplaceAll("_jes","_CMS_scale_j");
+	    //	  }else if(varName.BeginsWith("_umet")) { continue; //skip this one for now
           }else if(varName.BeginsWith("_jer")){varName.ReplaceAll("_jer","_CMS_res_j"); // continue;//skip res for now
 	  }else if(varName.BeginsWith("_les")){
 	    continue; // skip this one for now
@@ -2758,7 +2759,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if(!histo)continue;
 	    TString jetBin = ch->second.bin.c_str();
 
-	    double xbins[] = {-0.30, -0.18, -0.06, 0.10, 0.30}; 
+	    double xbins[] = {-0.30, -0.18, -0.06, 0.03, 0.12, 0.30}; 
 	    int nbins=sizeof(xbins)/sizeof(double);     
 	    unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);    
 	    utils::root::fixExtremities(unc->second, false, true);    

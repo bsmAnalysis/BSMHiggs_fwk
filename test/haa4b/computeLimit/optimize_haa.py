@@ -29,9 +29,9 @@ phase=-1
 ###################################################
 
 MODELS=["SM"] 
-based_key="haa_mcbased" #mcbased_" #to run limits on MC use: 2l2v_mcbased_, to use data driven obj use: 2l2v_datadriven_
+based_key="haa_mcbased" #mcbased_" #to run limits on MC use: haa_mcbased_, to use data driven obj use: haa_datadriven_
 jsonPath='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples2016.json' 
-inUrl='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2018_08_17_forLimits.root' #plotter_2017_05_05_forLimits.root'
+inUrl='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2018_09_16_forLimits.root' 
 BESTDISCOVERYOPTIM=True #Set to True for best discovery optimization, Set to False for best limit optimization
 ASYMTOTICLIMIT=True #Set to True to compute asymptotic limits (faster) instead of toy based hybrid-new limits
 BINS = ["3b","4b","3b,4b"] # list individual analysis bins to consider as well as combined bins (separated with a coma but without space)
@@ -39,11 +39,11 @@ BINS = ["3b","4b","3b,4b"] # list individual analysis bins to consider as well a
 MASS = [12, 15, 20, 25, 30, 40, 50, 60]
 SUBMASS = [12, 15, 20, 25, 30, 40, 50, 60]
 
-LandSArgCommonOptions=" --dropBckgBelow 0.001 --statBinByBin 0.00001 "      
+LandSArgCommonOptions=" --dropBckgBelow 0.001 --statBinByBin 0.001 " #--BackExtrapol " #--statBinByBin 0.00001 "
 #LandSArgCommonOptions="  --BackExtrapol --statBinByBin 0.00001 --dropBckgBelow 0.00001 --blind"
 
 for model in MODELS:
-   for shape in ["bdt_shapes"]:# --histoVBF met_shapes"]:  #here run all the shapes you want to test.
+   for shape in ["bdt_shapes"]: #here run all the shapes you want to test.
       for bin in BINS:
          if(model=="SM"):
             suffix = "" 
@@ -371,14 +371,14 @@ for signalSuffix in signalSuffixVec :
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
            SCRIPT.writelines('mkdir -p out;\ncd out;\n') #--blind instead of --simfit
 #           SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --blind --index 1 --rebin 6 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
-	   SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --simfit --index 1 --rebin 6 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --subFake --modeDD " + " " + LandSArg + cutStr  +" ;\n")
+           SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --rebin 6 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --subFake --modeDD " + " " + LandSArg + cutStr  +" ;\n")
            SCRIPT.writelines("sh combineCards.sh;\n"); 
 #           SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root --PO verbose --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n") 
            SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n")  
            #compute pvalue
            SCRIPT.writelines("combine -M ProfileLikelihood --signif --pvalue -m " +  str(m) + " workspace.root > COMB.log;\n")
-#           SCRIPT.writelines("combine -M FitDiagnostics workspace.root --plots --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --rMin=-5 --rMax=5 --robustFit 1 > log.txt \n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " --plots --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --stepSize=0.05 --rMin=-5 --rMax=5 --robustFit 1 --setParameters mask_e_A_SR_3b=1,mask_mu_A_SR_3b=1,mask_e_A_SR_4b=1,mask_mu_A_SR_4b=1 > log.txt \n") 
+#           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -v 3 --plots --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --rMin=-20 --rMax=20 --robustFit 1 > log.txt \n")
+           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3  --plots --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-20 --rMax=20 --stepSize=0.05 --robustFit 1 --setParameters mask_e_A_SR_3b=1,mask_mu_A_SR_3b=1,mask_e_A_SR_4b=1,mask_mu_A_SR_4b=1 > log.txt \n") 
            # save likelihood fit info
            SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnostics.root > simfit_m"+ str(m)+".txt \n")
 	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnostics.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +".txt\n")
