@@ -29,6 +29,11 @@ namespace METUtils {
 
   enum UncertaintyVariations { JER, JER_UP, JER_DOWN,UMET_UP,UMET_DOWN,LES_UP,LES_DOWN}; 
   //  enum UncertaintyVariations { JER, JER_UP, JER_DOWN, JES_UP, JES_DOWN,UMET_UP,UMET_DOWN,LES_UP,LES_DOWN};
+  void computeJetVariation(PhysicsObjectJetCollection& jets,
+			   PhysicsObjectLeptonCollection &leptons,       
+			   std::vector<PhysicsObjectJetCollection>& jetsVar, 
+			   std::vector<JetCorrectionUncertainty*>& jecUnc);    
+
   void computeVariation(PhysicsObjectJetCollection& jets,
                         PhysicsObjectLeptonCollection &leptons,
                         LorentzVector& met,

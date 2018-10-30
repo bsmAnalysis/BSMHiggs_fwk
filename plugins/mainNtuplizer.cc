@@ -308,6 +308,8 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   h_metFilter->GetXaxis()->SetBinLabel(11,"duplicateMuonHIPFilter");
 
   // patUtils::MetFilter metFilter;
+  //MET CORRection level
+  //  pat::MET::METCorrectionLevel metcor = pat::MET::METCorrectionLevel::Type1XY;
   
   // Use for Top pt re-weighting
   isMC_ttbar = isMC_ && (string(proc_.c_str()).find("TeV_TTJets") != string::npos);
@@ -701,7 +703,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    bool highPTeTrigger(true);
    
    mumuTrigger        = utils::passTriggerPatterns(tr, "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*" , "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
-   muTrigger          = utils::passTriggerPatterns(tr, "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*");
+   muTrigger          = utils::passTriggerPatterns(tr, "HLT_IsoMu22_v*","HLT_IsoTkMu22_v*", "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*");
+   //   muTrigger          = utils::passTriggerPatterns(tr, "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*");
    muTrigger2         = utils::passTriggerPatterns(tr, "HLT_Mu50_v*", "HLT_TkMu50_v*");
    eeTrigger          = utils::passTriggerPatterns(tr, "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_v*");
    //   highPTeeTrigger    = utils::passTriggerPatterns(tr, "HLT_Ele115_CaloIdVT_GsfTrkIdT_v*"); //"HLT_ECALHT800_v*");
@@ -1156,12 +1159,40 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        
      pat::METCollection mets;
      edm::Handle< pat::METCollection > metsHandle;
-     if(isMC_)event.getByToken(metTag_, metsHandle);
-     if(!isMC_)event.getByToken(metTagData_, metsHandle);
+     // if(isMC_)
+     event.getByToken(metTag_, metsHandle);
+     //     if(!isMC_)event.getByToken(metTagData_, metsHandle);
      if(metsHandle.isValid()){ mets = *metsHandle;}
-       //       pat::MET met = mets[0];
+     pat::MET met = mets[0];
 
-       const pat::MET &met = mets.front();
+     //       const pat::MET &met = mets.front();
+
+       //MET CORRection level
+       pat::MET::METCorrectionLevel metcor = pat::MET::METCorrectionLevel::Type1XY;
+       //recompute MET with variation
+       //       LorentzVector imet[];
+       ev.imet_pt[0] = met.corP4(metcor).pt();
+       ev.imet_phi[0] = met.corP4(metcor).phi();
+       ev.imet_pt[1] = met.shiftedP4(pat::MET::METUncertainty::JetEnUp           , metcor).pt();
+       ev.imet_phi[1] = met.shiftedP4(pat::MET::METUncertainty::JetEnUp           , metcor).phi();   
+       ev.imet_pt[2] = met.shiftedP4(pat::MET::METUncertainty::JetEnDown         , metcor).pt();
+       ev.imet_phi[2] = met.shiftedP4(pat::MET::METUncertainty::JetEnDown         , metcor).phi();    
+       ev.imet_pt[3] = met.shiftedP4(pat::MET::METUncertainty::JetResUp          , metcor).pt();
+       ev.imet_phi[3] = met.shiftedP4(pat::MET::METUncertainty::JetResUp          , metcor).phi();  
+       ev.imet_pt[4] = met.shiftedP4(pat::MET::METUncertainty::JetResDown        , metcor).pt();
+       ev.imet_phi[4] = met.shiftedP4(pat::MET::METUncertainty::JetResDown        , metcor).phi();  
+       ev.imet_pt[5] = met.shiftedP4(pat::MET::METUncertainty::UnclusteredEnUp   , metcor).pt();
+       ev.imet_phi[5] = met.shiftedP4(pat::MET::METUncertainty::UnclusteredEnUp   , metcor).phi();   
+       ev.imet_pt[6] = met.shiftedP4(pat::MET::METUncertainty::UnclusteredEnDown , metcor).pt();
+       ev.imet_phi[6] = met.shiftedP4(pat::MET::METUncertainty::UnclusteredEnDown , metcor).phi();  
+       ev.imet_pt[7] = met.shiftedP4(pat::MET::METUncertainty::MuonEnUp          , metcor).pt();
+       ev.imet_phi[7] = met.shiftedP4(pat::MET::METUncertainty::MuonEnUp          , metcor).phi(); 
+       ev.imet_pt[8] = met.shiftedP4(pat::MET::METUncertainty::MuonEnDown        , metcor).pt();
+       ev.imet_phi[8] = met.shiftedP4(pat::MET::METUncertainty::MuonEnDown        , metcor).phi();     
+       ev.imet_pt[9] = met.shiftedP4(pat::MET::METUncertainty::ElectronEnUp      , metcor).pt();
+       ev.imet_phi[9] = met.shiftedP4(pat::MET::METUncertainty::ElectronEnUp      , metcor).phi(); 
+       ev.imet_pt[10] = met.shiftedP4(pat::MET::METUncertainty::ElectronEnDown , metcor).pt();
+       ev.imet_phi[10] = met.shiftedP4(pat::MET::METUncertainty::ElectronEnDown , metcor).phi();
 
        //PF type-1 ETmiss
        ev.met_pt = met.pt();

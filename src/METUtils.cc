@@ -123,6 +123,76 @@ PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, 
     return toReturn;
 }
 
+  // JET variations
+  void computeJetVariation(PhysicsObjectJetCollection& jets,
+                      PhysicsObjectLeptonCollection& leptons,
+                       std::vector<PhysicsObjectJetCollection>& jetsVar,
+ 		      std::vector<JetCorrectionUncertainty*> &jecUnc)
+		      //                      JetCorrectionUncertainty *jecUnc)
+{
+    jetsVar.clear();
+
+    int vars[]= {JER, JER_UP,JER_DOWN}; //, UMET_UP,UMET_DOWN, LES_UP,LES_DOWN};
+    for(size_t ivar=0; ivar<sizeof(vars)/sizeof(int); ivar++) {
+        PhysicsObjectJetCollection newJets;
+        LorentzVector jetDiff(0,0,0,0);
+        for(size_t ijet=0; ijet<jets.size(); ijet++) {
+
+	  PhysicsObject_Jet iSmearJet=METUtils::smearedJet(jets[ijet],jets[ijet].genPt,ivar);
+	  jetDiff += (iSmearJet-jets[ijet]);
+	  newJets.push_back( iSmearJet );
+
+        } // end loop on ijet
+	
+	//add new jets (if some change has occured)
+	jetsVar.push_back(newJets);
+
+    } // end ivariation
+
+    // Now add JES as recommended from here: https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources
+    // Instantiate JES uncertainty sources
+    const int nsrc = 6;
+    
+    for (int isrc = 0; isrc < nsrc; isrc++) {
+
+      for(size_t ivar=0; ivar<2; ivar++) { //ivar<sizeof(jesvars)/sizeof(int); ivar++) {
+	PhysicsObjectJetCollection newJets;
+	LorentzVector jetDiff(0,0,0,0);
+	
+	for(size_t ijet=0; ijet<jets.size(); ijet++) {
+	  
+	  // sub-loop to decorrelate JES
+	  JetCorrectionUncertainty *unc = jecUnc.at(isrc);
+	  
+	  //	  bool varSign=(ivar==0 ? true : false );    
+	  double varSign=(ivar==0 ? 1.0 : -1.0 );
+	  double jetScale(1.0);
+	  try {
+	    unc->setJetEta(jets[ijet].eta());
+	    unc->setJetPt(jets[ijet].pt());
+	    //jetScale = 1.0 + fabs(unc->getUncertainty(varSign)); 
+	    jetScale = 1.0 + varSign*fabs(unc->getUncertainty(true));
+	  } catch(std::exception &e) {
+	    cout << "[METUtils::computeVariation]" << e.what() << ijet << " " << jets[ijet].pt() << endl;
+	  }
+	  
+	  PhysicsObject_Jet iScaleJet(jets[ijet]);
+	  iScaleJet *= jetScale;
+	  jetDiff += (iScaleJet-jets[ijet]);
+	  newJets.push_back(iScaleJet);
+	  
+	  // up OR down end
+	} // ijet loop 
+
+	//add new jets (if some change has occured)
+	jetsVar.push_back(newJets);
+      
+      } // loop on up and down
+    } //JES nsrc sources end
+    
+}
+
+
 
 //
 void computeVariation(PhysicsObjectJetCollection& jets,

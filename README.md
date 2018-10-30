@@ -37,6 +37,11 @@ scram b -j 8
 
 #git clone -b svFit_2015Apr03 https://github.com/veelken/SVfit_standalone.git TauAnalysis/SVfitStandalone
 
+#https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions_for_8_0_X_X_26_patc
+git cms-merge-topic cms-met:METRecipe_8020 -u
+git cms-merge-topic cms-met:METRecipe_80X_part2 -u
+
+
 git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
 cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
 git checkout -b modified #copy the branch to a new one to host future modifications (ease pull request and code merging)
