@@ -279,7 +279,9 @@ struct PhysicsEvent_t {
   PhysicsObjectFatJetCollection fatjets;
   PhysicsObjectSVCollection svs;
   LorentzVector met, metNoHF;
-  
+  LorentzVector imet[11];
+  LorentzVectorCollection variedMet;
+
   PhysicsObjectCollection genparticles;
   PhysicsObjectCollection genneutrinos,genleptons,genHiggs,genpartons;
   PhysicsObjectCollection genjets;

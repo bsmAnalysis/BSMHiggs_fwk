@@ -312,10 +312,6 @@ int main(int argc, char* argv[])
 
 	  varNames.push_back("_jerup"); 	//1 
 	  varNames.push_back("_jerdown"); //2
-	  varNames.push_back("_umetup"); 	//5
-	  varNames.push_back("_umetdown");//6
-	  varNames.push_back("_lesup"); 	//7
-	  varNames.push_back("_lesdown"); //8
 
 	  for (int isrc = 0; isrc < nsrc; isrc++) {
 	    const char *name = srcnames[isrc];
@@ -325,6 +321,11 @@ int main(int argc, char* argv[])
 	    varNames.push_back("_"+target+"_jesup");      
 	    varNames.push_back("_"+target+"_jesdown");
 	  }
+
+	  varNames.push_back("_umetup");        //5
+          varNames.push_back("_umetdown");//6 
+          varNames.push_back("_lesup");         //7 
+          varNames.push_back("_lesdown"); //8  
 
 	  varNames.push_back("_btagup"); varNames.push_back("_btagdown");//11, 12
 	  varNames.push_back("_ctagup"); varNames.push_back("_ctagdown");//13, 14
@@ -934,16 +935,17 @@ int main(int argc, char* argv[])
 
         //#########################################################################
         //#####################      Objects Selection       ######################
-        //#########################################################################
+        //######################################################################### 
 
         //
         // MET ANALYSIS
         //
         //apply Jet Energy Resolution corrections to jets (and compute associated variations on the MET variable)
 	std::vector<PhysicsObjectJetCollection> variedJets;
-	LorentzVectorCollection variedMET;
+	LorentzVectorCollection &variedMET = phys.variedMet;
 
-	LorentzVector &metP4 = phys.met;
+	LorentzVector metP4 = variedMET[0];
+	//	LorentzVector &metP4 = phys.met;
 	//	METUtils::computeVariation(phys.jets, phys.leptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
 
 	PhysicsObjectJetCollection &corrJets = phys.jets; 
@@ -1120,7 +1122,8 @@ int main(int argc, char* argv[])
 		if(!runQCD){
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
 		} else {
-		  if((ilep.mn_relIso>0.2) && (ilep.mn_trkrelIso>0.1) ) selLeptonsVar[eleVarNames[ivar]].push_back(ilep); 
+		  //		  if( (ilep.mn_relIso>0.4) && (ilep.mn_relIso<4.) && (ilep.mn_trkrelIso>0.4) && (ilep.mn_trkrelIso<4.) ) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);  
+		  if( (ilep.mn_relIso>0.15) && (ilep.mn_trkrelIso>0.05) ) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
 		}
 	      }
 	    }
@@ -1158,7 +1161,22 @@ int main(int argc, char* argv[])
 	//	std::vector<PhysicsObject_Lepton> selLeptons = selLeptonsVar[""];
 	PhysicsObjectLeptonCollection selLeptons = selLeptonsVar[""];
 	sort(selLeptons.begin(), selLeptons.end(), ptsort());          
-	
+	sort(allLeptons.begin(), allLeptons.end(), ptsort()); 
+
+        sort(vetoLeptons.begin(), vetoLeptons.end(), ptsort()); 
+        mon.fillHisto("nleptons","raw", selLeptons.size(),weight); 
+        mon.fillHisto("ngoodleptons","raw", allLeptons.size(),weight); 
+        mon.fillHisto("nleptons","raw_extra", extraLeptons.size(),weight); 
+
+        //Some info on Isolation 
+	if(allLeptons.size()>0){ 
+          if(abs(allLeptons[0].id)==11) mon.fillHisto("lep_reliso","e_noniso",allLeptons[0].en_relIso,weight); 
+          if(abs(allLeptons[0].id)==13) {
+	    mon.fillHisto("lep_reliso","mu_noniso",allLeptons[0].mn_relIso,weight); 
+	    mon.fillHisto("lep_reliso","mutrk_noniso",allLeptons[0].mn_trkrelIso,weight);    
+	  }
+	}
+
 	// Exactly 1 good lepton
 	bool passOneLepton(selLeptons.size()==1); 
 	bool passOneLepton_anti(selLeptons.size()>=1);
@@ -1265,15 +1283,6 @@ int main(int argc, char* argv[])
 	if ((abs(selLeptons[0].id)==13)) {
 	  mon.fillHisto("eventflow","mu",1,weight);
 	}
-	
-	sort(allLeptons.begin(), allLeptons.end(), ptsort());
-	sort(vetoLeptons.begin(), vetoLeptons.end(), ptsort());
-	
-	mon.fillHisto("nleptons","raw", selLeptons.size(),weight);
-	mon.fillHisto("ngoodleptons","raw", allLeptons.size(),weight);
-	
-        mon.fillHisto("nleptons","raw_extra", extraLeptons.size(),weight);
-
 	
 	TString tag_cat;
         int evcat=-1;
@@ -1391,7 +1400,9 @@ int main(int argc, char* argv[])
 	//note this also propagates to all MET uncertainties
 	//	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc);
 	// decorrelate JES uncertainties
-	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc); // totalJESUnc -> vector of 27
+	//	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc); // totalJESUnc -> vector of 27
+	METUtils::computeJetVariation(phys.jets, selLeptons,variedJets,totalJESUnc); // totalJESUnc -> vector of 6
+
  	//	METUtils::computeVariation(phys.jets, selLeptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
 	//	for (int isrc = 0; isrc < nsrc; isrc++) {
 	//	  delete totalJESUnc[isrc]; 
@@ -1571,9 +1582,20 @@ int main(int argc, char* argv[])
 	  weight = iweight; // reset to nominal weight
 
 	  LorentzVector imet = variedMET[0];
-	  if(varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || (string(varNames[ivar].Data()).find("_jesup") != string::npos) || (string(varNames[ivar].Data()).find("_jesdown") != string::npos)  || varNames[ivar]=="_umetup" || varNames[ivar]=="_umetdown" || varNames[ivar]=="_lesup" || varNames[ivar]=="_lesdown") {
-	    imet = variedMET[ivar];
-	  } 
+	  if(varNames[ivar]=="_jerup" ) imet = variedMET[3]; 
+	  if(varNames[ivar]=="_jerdown") imet = variedMET[4];
+	  if(string(varNames[ivar].Data()).find("_jesup") != string::npos) imet = variedMET[1];
+	  if(string(varNames[ivar].Data()).find("_jesdown") != string::npos) imet = variedMET[2];
+	  if(varNames[ivar]=="_umetup") imet = variedMET[5];
+	  if(varNames[ivar]=="_umetdown") imet = variedMET[6];
+
+	  if(varNames[ivar]=="_lesup") {// || varNames[ivar]=="_lesdown") { 
+	    if (evcat==E) imet = variedMET[9];
+	    else if (evcat==MU) imet = variedMET[7];
+	  } else if(varNames[ivar]=="_lesdown") {      
+	    if (evcat==E) imet = variedMET[10];
+	    else if (evcat==MU) imet = variedMET[8];
+	  }
 	  
 	  PhysicsObjectJetCollection vJets = variedJets[0];
 	  if(varNames[ivar]=="_jerup" || varNames[ivar]=="_jerdown" || (string(varNames[ivar].Data()).find("_jesup") != string::npos) || (string(varNames[ivar].Data()).find("_jesdown") != string::npos) ){
@@ -1588,11 +1610,17 @@ int main(int argc, char* argv[])
 	  if(varNames[ivar]=="_pdfup")    weight *= (1.+PDFalphaSWeight);
 	  else if(varNames[ivar]=="_pdfdown") weight *= (1.-PDFalphaSWeight);
 
+	  if(varNames[ivar]=="_stat_eup" ||  varNames[ivar]=="_sys_eup" ||  varNames[ivar]=="_GS_eup" ||  varNames[ivar]=="_resRho_eup") { imet = variedMET[9]; }
+	  if(varNames[ivar]=="_stat_edown" ||    varNames[ivar]=="_sys_edown" || varNames[ivar]=="_GS_edown" || varNames[ivar]=="_resRho_edown" || varNames[ivar]=="_resPhi_edown")  { imet = variedMET[10]; }
+
 
 	  //	  if(varNames[ivar]=="_scale_mup" || varNames[ivar]=="_scale_mdown")
 	  if (varNames[ivar]=="_stat_eup" || varNames[ivar]=="_stat_edown" ||
 	      varNames[ivar]=="_sys_eup" || varNames[ivar]=="_sys_edown" || varNames[ivar]=="_GS_eup" || varNames[ivar]=="_GS_edown" ||
 	      varNames[ivar]=="_resRho_eup" || varNames[ivar]=="_resRho_edown" || varNames[ivar]=="_resPhi_edown")  {
+
+	    //	    imet = variedMET[];
+
 	    if (evcat==E) {
 	      selLeptons = selLeptonsVar[varNames[ivar].Data()];
 	    } else { continue; } //selLeptonsVar[varNames[0].Data()]; }

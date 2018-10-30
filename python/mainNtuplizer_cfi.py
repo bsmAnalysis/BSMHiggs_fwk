@@ -37,7 +37,7 @@ process.mainNtuplizer = cms.EDAnalyzer('mainNtuplizer',
     jetsPuppiTag = cms.InputTag("slimmedJetsPuppi"),
     fatjetsTag = cms.InputTag("slimmedJetsAK8"),
 
-    metsTag = cms.InputTag("slimmedMETs"),
+    metsTag = cms.InputTag("slimmedMETs","","bsmAnalysis"),
     metsTagData = cms.InputTag("slimmedMETsMuEGClean"),                                        
     metsNoHFTag = cms.InputTag("slimmedMETsNoHF"),
     metsPuppiTag = cms.InputTag("slimmedMETsPuppi"),
