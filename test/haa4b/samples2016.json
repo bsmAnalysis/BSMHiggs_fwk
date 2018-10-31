@@ -1145,7 +1145,175 @@
                 "haa_mcbased"
             ],
             "tag": "QCD"
-	},	    	
+	},
+     {
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSYZHToAA_AATo4B_M-20_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_Zh_amass20",
+                    "xsec": 0.9095
+                }
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": false,
+            "issignal": true,
+            "keys": [
+                "haa_prod",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lwidth": 3,
+            "resonance": 20,
+            "spimpose": true,
+            "tag": "Zh (20)"
+        },
+     {
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSYZHToAA_AATo4B_M-25_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_Zh_amass25",
+                    "xsec": 0.9095
+                }
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": false,
+            "issignal": true,
+            "keys": [
+                "haa_prod",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lwidth": 3,
+            "resonance": 20,
+            "spimpose": true,
+            "tag": "Zh (25)"
+        },
+     {
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSYZHToAA_AATo4B_M-30_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_Zh_amass30",
+                    "xsec": 0.9095
+                }
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": false,
+            "issignal": true,
+            "keys": [
+                "haa_prod",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lwidth": 3,
+            "resonance": 20,
+            "spimpose": true,
+            "tag": "Zh (30)"
+        },
+     {
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSYZHToAA_AATo4B_M-40_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_Zh_amass40",
+                    "xsec": 0.9095
+                }
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": false,
+            "issignal": true,
+            "keys": [
+                "haa_prod",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lwidth": 3,
+            "resonance": 20,
+            "spimpose": true,
+            "tag": "Zh (40)"
+        },
+      {
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSYZHToAA_AATo4B_M-50_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_Zh_amass50",
+                    "xsec": 0.9095
+                }
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": false,
+            "issignal": true,
+            "keys": [
+                "haa_prod",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lwidth": 3,
+            "resonance": 20,
+            "spimpose": true,
+            "tag": "Zh (50)"
+        },
+      {
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSYZHToAA_AATo4B_M-60_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_Zh_amass60",
+                    "xsec": 0.9095
+                }
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": false,
+            "issignal": true,
+            "keys": [
+                "haa_prod",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lwidth": 3,
+            "resonance": 20,
+            "spimpose": true,
+            "tag": "Zh (60)"
+        },
         {
             "data": [
                 {

@@ -2,6 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 from UserCode.bsmhiggs_fwk.mainNtuplizer_cfi import *
 
+from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 
@@ -37,6 +39,16 @@ updateJetCollection(
     btagDiscriminators = bTagDiscriminators
 )
 
+runOnMC=@isMC  
+if runOnMC:
+   runMetCorAndUncFromMiniAOD(process,  
+   			isData=False
+			)		
+else:
+   runMetCorAndUncFromMiniAOD(process,
+                           isData=True,
+                           )
+
 process.mainNtuplizer.isMC = cms.bool(@isMC)
 process.mainNtuplizer.dtag = cms.string("@dtag")
 process.mainNtuplizer.xsec = cms.double(@xsec)
@@ -45,12 +57,16 @@ process.mainNtuplizer.verbose = cms.bool(@verbose)
 process.mainNtuplizer.jetsTag = cms.InputTag('selectedUpdatedPatJets')
 
 process.source = cms.Source("PoolSource",
-	       	     fileNames = cms.untracked.vstring()
+	       	     fileNames = cms.untracked.vstring(),
+		     inputCommands=cms.untracked.vstring(
+			   'keep *', 
+ 		     	   'drop *_ctppsLocalTrackLiteProducer_*_RECO' 
+			   )        
 )
 
 process.TFileService = cms.Service("TFileService",
 			fileName = cms.string("analysis.root")
 )
                      		 				             
-process.p = cms.Path(  process.mainNtuplizer )	
+process.p = cms.Path( process.fullPatMetSequence * process.mainNtuplizer )	
 
