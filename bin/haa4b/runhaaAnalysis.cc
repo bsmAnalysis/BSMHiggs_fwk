@@ -748,17 +748,32 @@ int main(int argc, char* argv[])
     TFile *MU_TRG_SF_file = TFile::Open(muTRG_sf);  
     TH2F* MU_TRG_SF_h = (TH2F*) MU_TRG_SF_file->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/pt_abseta_ratio");
 
+    TString muTRG_sf2 = runProcess.getParameter<std::string>("mu_trgSF2");  
+    gSystem->ExpandPathName(muTRG_sf2);         
+    TFile *MU_TRG_SF_file2 = TFile::Open(muTRG_sf2);
+    TH2F* MU_TRG_SF_h2 = (TH2F*) MU_TRG_SF_file2->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/pt_abseta_ratio"); 
+
      // mu ID SFs
     TString muID_sf = runProcess.getParameter<std::string>("mu_idSF"); 
     gSystem->ExpandPathName(muID_sf);   
     TFile *MU_ID_SF_file = TFile::Open(muID_sf);  
     TH2F* MU_ID_SF_h = (TH2F*) MU_ID_SF_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio");
     
+    TString muID_sf2 = runProcess.getParameter<std::string>("mu_idSF2");    
+    gSystem->ExpandPathName(muID_sf2); 
+    TFile *MU_ID_SF_file2 = TFile::Open(muID_sf2);  
+    TH2F* MU_ID_SF_h2 = (TH2F*) MU_ID_SF_file2->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio");   
+
     // mu ISO SFs
     TString muISO_sf = runProcess.getParameter<std::string>("mu_isoSF"); 
     gSystem->ExpandPathName(muISO_sf);   
     TFile *MU_ISO_SF_file = TFile::Open(muISO_sf);  
     TH2F* MU_ISO_SF_h = (TH2F*) MU_ISO_SF_file->Get("TightISO_TightID_pt_eta/pt_abseta_ratio");
+
+    TString muISO_sf2 = runProcess.getParameter<std::string>("mu_isoSF2");        
+    gSystem->ExpandPathName(muISO_sf2);       
+    TFile *MU_ISO_SF_file2 = TFile::Open(muISO_sf2);   
+    TH2F* MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file2->Get("TightISO_TightID_pt_eta/pt_abseta_ratio");     
 
     //####################################################################################################################
     //###########################################           MVAHandler         ###########################################
@@ -1197,8 +1212,11 @@ int main(int argc, char* argv[])
 	  } else if (abs(selLeptons[0].id)==13) {
 	    // TRK + ID + ISO
 	    //	    weight *= lepEff.getTrackingEfficiency( selLeptons[0].eta(), 13).first; //Tracking eff
-	    weight *= getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h );
-	    weight *= getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h  );
+	    weight *= 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h );
+	    weight *= 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h2 ); 
+
+	    weight *= 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h  );
+	    weight *= 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h2  );       
 	  }
 	}
 
@@ -1365,7 +1383,8 @@ int main(int argc, char* argv[])
 	} else if (abs(selLeptons[0].id)==13) {
 	    // TRG
 	  if(isMC) {
-	    weight*=getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h );
+	    weight*=0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h );
+	    weight*=0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h2 );  
 	  }
 	  mon.fillHisto("lep_pt_raw","mu",selLeptons[0].pt(),weight);
 	  mon.fillHisto("lep_eta_raw","mu",selLeptons[0].eta(),weight);
