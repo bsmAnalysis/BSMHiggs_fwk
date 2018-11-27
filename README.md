@@ -57,6 +57,9 @@ git checkout v7.0.6
 scramv1 b clean; scramv1 b # always make a clean build
 cd ../../
 
+#JetToolBox: https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetToolbox
+git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X_V3
+
 #And compile
 scramv1 b -j 16 
 ```

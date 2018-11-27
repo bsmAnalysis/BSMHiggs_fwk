@@ -373,7 +373,7 @@ for procBlock in procList :
                               LaunchOnCondor.Jobs_CRABStorageSite = 'T2_CH_CERN'
                           elif(commands.getstatusoutput("whoami")[1]=='hwei'):
                               LaunchOnCondor.Jobs_CRABStorageSite = 'T3_US_FNALLPC'
-                          else: LaunchOnCondor.Jobs_CRABStorageSite = 'T2_US_UCSD'
+                          else: LaunchOnCondor.Jobs_CRABStorageSite = 'T2_CH_CERN'
                           if(isdata): 
                               LaunchOnCondor.Jobs_CRABsplitting = 'LumiBased'
                               LaunchOnCondor.Jobs_CRABUnitPerJob = 100 
