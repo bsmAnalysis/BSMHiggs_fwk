@@ -1044,11 +1044,13 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.fjet_en[ev.fjet] = j.correctedP4(0).energy();
 
 	 ev.fjet_btag0[ev.fjet] = j.bDiscriminator("pfBoostedDoubleSecondaryVertexAK8BJetTags");
+	 ev.fjet_btag1[ev.fjet] = j.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
 
 	 if ( verbose_ ) {  
-	   printf("\n    %3d : pt=%6.1f, eta=%7.3f, phi=%7.3f : boostedSV=%7.3f\n", 
+	   printf("\n    %3d : pt=%6.1f, eta=%7.3f, phi=%7.3f : boostedSV=%7.3f, combinedSV=%7.3f\n", 
 		  ifjet, j.pt(), j.eta(), j.phi(),
-		  j.bDiscriminator("pfBoostedDoubleSecondaryVertexAK8BJetTags")
+		  j.bDiscriminator("pfBoostedDoubleSecondaryVertexAK8BJetTags"),
+      j.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags")
 		  ) ;
          }  
 	 
@@ -1056,9 +1058,9 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.fjet_prunedM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSPrunedMass");
 	 ev.fjet_softdropM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSSoftDropMass");
 	 //	 ev.fjet_filteredM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSFilteredLinks");
-	 ev.fjet_tau1[ev.fjet] =  (float) j.userFloat("NjettinessAK8:tau1");
-	 ev.fjet_tau2[ev.fjet] =  (float) j.userFloat("NjettinessAK8:tau2");
-	 ev.fjet_tau3[ev.fjet] =  (float) j.userFloat("NjettinessAK8:tau3");
+	 ev.fjet_tau1[ev.fjet] =  (float) j.userFloat("NjettinessAK8CHS:tau1");
+	 ev.fjet_tau2[ev.fjet] =  (float) j.userFloat("NjettinessAK8CHS:tau2");
+	 ev.fjet_tau3[ev.fjet] =  (float) j.userFloat("NjettinessAK8CHS:tau3");
 
 	 // Add soft drop subjets
 

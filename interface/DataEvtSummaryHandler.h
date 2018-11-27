@@ -160,7 +160,7 @@ struct DataEvtSummary_t {
     //fjet (ak8PFJetsCHS)
     Int_t fjet;
     Float_t fjet_px[MAXPARTICLES],fjet_py[MAXPARTICLES],fjet_pz[MAXPARTICLES],fjet_en[MAXPARTICLES];
-    Float_t fjet_btag0[MAXPARTICLES];
+    Float_t fjet_btag0[MAXPARTICLES], fjet_btag1[MAXPARTICLES];
     Float_t fjet_prunedM[MAXPARTICLES], fjet_softdropM[MAXPARTICLES]; //fjet_trimmedM[MAXPARTICLES],fjet_filteredM[MAXPARTICLES];
     Float_t fjet_tau1[MAXPARTICLES],fjet_tau2[MAXPARTICLES],fjet_tau3[MAXPARTICLES];
     Float_t fjet_genpt[MAXPARTICLES];

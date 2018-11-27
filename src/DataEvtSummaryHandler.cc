@@ -283,6 +283,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("fjet_pz",                 evSummary_.fjet_pz,                 "fjet_pz[fjet]/F");
     t_->Branch("fjet_en",                 evSummary_.fjet_en,                 "fjet_en[fjet]/F");
     t_->Branch("fjet_btag0",              evSummary_.fjet_btag0,              "fjet_btag0[fjet]/F");  
+    t_->Branch("fjet_btag1",              evSummary_.fjet_btag1,              "fjet_btag1[fjet]/F");  
     t_->Branch("fjet_genpt",              evSummary_.fjet_genpt,              "fjet_genpt[fjet]/F");
     t_->Branch("fjet_prunedM",            evSummary_.fjet_prunedM,            "fjet_prunedM[fjet]/F");
     t_->Branch("fjet_softdropM",          evSummary_.fjet_softdropM,          "fjet_softdropM[fjet]/F"); 
@@ -630,6 +631,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("fjet_pz",                 evSummary_.fjet_pz);
     t_->SetBranchAddress("fjet_en",                 evSummary_.fjet_en);
     t_->SetBranchAddress("fjet_btag0",              evSummary_.fjet_btag0);     
+    t_->SetBranchAddress("fjet_btag1",              evSummary_.fjet_btag1);     
     t_->SetBranchAddress("fjet_genpt",              evSummary_.fjet_genpt);
     t_->SetBranchAddress("fjet_prunedM",            evSummary_.fjet_prunedM);
     t_->SetBranchAddress("fjet_softdropM",          evSummary_.fjet_softdropM);
