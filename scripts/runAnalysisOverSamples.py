@@ -382,7 +382,8 @@ for procBlock in procList :
                               LaunchOnCondor.Jobs_CRABUnitPerJob = 5
                           LaunchOnCondor.Jobs_CRABname     = dtag + '_' + str(s)
                           if( 'signal' in opt.onlykeyword):
-                            LaunchOnCondor.Jobs_CRABInDBS    = getByLabel(procData,'dbsURL','phys03')
+#                            LaunchOnCondor.Jobs_CRABInDBS    = getByLabel(procData,'dbsURL','phys03')
+                            LaunchOnCondor.Jobs_CRABInDBS    = getByLabel(procData,'dbsURL','global')
                           else:
                             LaunchOnCondor.Jobs_CRABInDBS    = getByLabel(procData,'dbsURL','global')
 #                          if(split>0):

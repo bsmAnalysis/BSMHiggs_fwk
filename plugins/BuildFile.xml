@@ -21,7 +21,6 @@
 <use name="UserCode/bsmhiggs_fwk"/>
 <use name="DataFormats/Luminosity"/>
 <use name="FWCore/Services"/>
-<use name="FWCore/ServiceRegistry"/>
 <use name="DQMServices/Core"/>
 <use name="SimDataFormats/GeneratorProducts"/>
 <use name="SimDataFormats/TrackingAnalysis"/>

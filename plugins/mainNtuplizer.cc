@@ -15,7 +15,7 @@
 //         Created:  Sun, 17 Sep 2017 08:27:19 GMT
 //
 //
-
+#define YEAR_2017
 // system include files
 #include <memory>
 
@@ -25,6 +25,10 @@
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+
+#ifdef YEAR_2017
+#include "FWCore/Framework/interface/Run.h"
+#endif
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -694,14 +698,29 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        
    //apply trigger and require compatibilitiy of the event with the PD
    edm::TriggerResultsByName tr(nullptr,nullptr);
+#ifdef YEAR_2017
+   tr = event.triggerResultsByName(*triggerBits);
+#else
    tr = event.triggerResultsByName("HLT");
+#endif
    if(!tr.isValid()  )return;
    
    // float triggerPrescale(1.0),triggerThreshold(0), triggerThresholdHigh(99999);
    bool mumuTrigger(true); bool muTrigger(true); bool muTrigger2(true);
    bool eeTrigger(true); bool eTrigger(true); bool emuTrigger(true);
    bool highPTeTrigger(true);
-   
+
+#ifdef YEAR_2017
+//https://indico.cern.ch/event/682891/contributions/2810364/attachments/1570825/2820752/20171206_CMSWeek_MuonHLTReport_KPLee_v3_4.pdf
+   mumuTrigger        = utils::passTriggerPatterns(tr,"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*");
+   muTrigger          = utils::passTriggerPatterns(tr,"HLT_IsoMu24_v*","HLT_IsoMu24_eta2p1_v*","HLT_IsoMu27_v*");
+// For 2017, muTrigger2 is always set to True
+//   muTrigger2         = utils::passTriggerPatterns(tr, "HLT_Mu50_v*", "HLT_TkMu50_v*");
+//   https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#E/gamma%20Trigger%20Recomendations
+   eeTrigger          = utils::passTriggerPatterns(tr,"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_DoubleEle33_CaloIdL_MW_v*","HLT_DoubleEle25_CaloIdL_MW_v*");
+   eTrigger           = utils::passTriggerPatterns(tr,"HLT_Ele32_WPTight_Gsf_v*","HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*");
+   emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+#else
    mumuTrigger        = utils::passTriggerPatterns(tr, "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*" , "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
    //   muTrigger          = utils::passTriggerPatterns(tr, "HLT_IsoMu22_v*","HLT_IsoTkMu22_v*", "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*");
    muTrigger          = utils::passTriggerPatterns(tr, "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*");
@@ -711,6 +730,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    highPTeTrigger    = utils::passTriggerPatterns(tr, "HLT_Ele115_CaloIdVT_GsfTrkIdT_v*");
    eTrigger           = utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") ;
    emuTrigger         = utils::passTriggerPatterns(tr, "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*" , "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+#endif 
    
    ev.hasTrigger  = ( mumuTrigger||muTrigger||muTrigger2||eeTrigger||highPTeTrigger||eTrigger||emuTrigger );
    //ev.hasTrigger  = ( muTrigger||eTrigger||emuTrigger ); 
@@ -957,8 +977,12 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.jet_en[ev.jet] = j.energy(); //correctedP4(0).energy();
 
 	 ev.jet_btag0[ev.jet] = j.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-         ev.jet_btag1[ev.jet] = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
-	 // ev.jet_btag1[ev.jet] = j.bDiscriminator("pfJetBProbabilityBJetTags");
+#ifdef YEAR_2017
+   ev.jet_btag1[ev.jet] = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+#else
+   ev.jet_btag1[ev.jet] = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
+#endif
+   // ev.jet_btag1[ev.jet] = j.bDiscriminator("pfJetBProbabilityBJetTags");
 	 // ev.jet_btag2[ev.jet] = j.bDiscriminator("pfJetProbabilityBJetTags");
 	 // ev.jet_btag3[ev.jet] = j.bDiscriminator("pfTrackCountingHighPurBJetTags");
 	 // ev.jet_btag4[ev.jet] = j.bDiscriminator("pfTrackCountingHighEffBJetTags");
@@ -1054,13 +1078,20 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 		  ) ;
          }  
 	 
-
+#ifdef YEAR_2017
+   ev.fjet_prunedM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSValueMap:ak8PFJetsCHSPrunedMass");
+   ev.fjet_softdropM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSValueMap:ak8PFJetsCHSSoftDropMass");
+   ev.fjet_tau1[ev.fjet] =  (float) j.userFloat("ak8PFJetsCHSValueMap:NjettinessAK8CHSTau1");
+   ev.fjet_tau2[ev.fjet] =  (float) j.userFloat("ak8PFJetsCHSValueMap:NjettinessAK8CHSTau2");
+   ev.fjet_tau3[ev.fjet] =  (float) j.userFloat("ak8PFJetsCHSValueMap:NjettinessAK8CHSTau3");
+#else
 	 ev.fjet_prunedM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSPrunedMass");
 	 ev.fjet_softdropM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSSoftDropMass");
 	 //	 ev.fjet_filteredM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSFilteredLinks");
 	 ev.fjet_tau1[ev.fjet] =  (float) j.userFloat("NjettinessAK8CHS:tau1");
 	 ev.fjet_tau2[ev.fjet] =  (float) j.userFloat("NjettinessAK8CHS:tau2");
 	 ev.fjet_tau3[ev.fjet] =  (float) j.userFloat("NjettinessAK8CHS:tau3");
+#endif
 
 	 // Add soft drop subjets
 
@@ -1074,7 +1105,11 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	   printf("\n") ; 
 	 }
 
-	 auto const & sdSubjets = j.subjets("SoftDrop"); 
+#ifdef YEAR_2017
+   auto const & sdSubjets = j.subjets("SoftDropPuppi");  
+#else
+   auto const & sdSubjets = j.subjets("SoftDrop"); 
+#endif
 	 //The Soft Drop Subjets are stored in positions 0  in the subjet collection list.
 	 int count_subj(0);
 
@@ -1132,7 +1167,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.fjet_parton_en[ev.fjet] = 0.; 
 	 
 	 if (isMC_) {
-
+#ifndef YEAR_2017
 	   const reco::GenParticle *pJet = j.genParton();
 	   if (pJet) {
 	     const reco::Candidate* mom = findFirstMotherWithDifferentID(&(*pJet));
@@ -1146,9 +1181,10 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	     }
 	   }
 
+#endif
 	   ev.fjet_partonFlavour[ev.fjet] = j.partonFlavour();
 	   ev.fjet_hadronFlavour[ev.fjet] = j.hadronFlavour();
-	   
+
 	   const reco::GenJet *gJet=j.genJet();
 	   if(gJet) ev.fjet_genpt[ev.fjet] = gJet->pt();
 	   else     ev.fjet_genpt[ev.fjet] = 0.;
