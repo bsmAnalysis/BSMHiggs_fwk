@@ -977,8 +977,12 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.jet_en[ev.jet] = j.energy(); //correctedP4(0).energy();
 
 	 ev.jet_btag0[ev.jet] = j.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-         ev.jet_btag1[ev.jet] = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
-	 // ev.jet_btag1[ev.jet] = j.bDiscriminator("pfJetBProbabilityBJetTags");
+#ifdef YEAR_2017
+   ev.jet_btag1[ev.jet] = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+#else
+   ev.jet_btag1[ev.jet] = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
+#endif
+   // ev.jet_btag1[ev.jet] = j.bDiscriminator("pfJetBProbabilityBJetTags");
 	 // ev.jet_btag2[ev.jet] = j.bDiscriminator("pfJetProbabilityBJetTags");
 	 // ev.jet_btag3[ev.jet] = j.bDiscriminator("pfTrackCountingHighPurBJetTags");
 	 // ev.jet_btag4[ev.jet] = j.bDiscriminator("pfTrackCountingHighEffBJetTags");
