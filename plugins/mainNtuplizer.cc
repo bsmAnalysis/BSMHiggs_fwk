@@ -1177,9 +1177,10 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	     }
 	   }
 
+#endif
 	   ev.fjet_partonFlavour[ev.fjet] = j.partonFlavour();
 	   ev.fjet_hadronFlavour[ev.fjet] = j.hadronFlavour();
-#endif
+
 	   const reco::GenJet *gJet=j.genJet();
 	   if(gJet) ev.fjet_genpt[ev.fjet] = gJet->pt();
 	   else     ev.fjet_genpt[ev.fjet] = 0.;
