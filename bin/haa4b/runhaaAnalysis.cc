@@ -40,6 +40,12 @@
 #include "TROOT.h"
 #include "TMath.h"
 
+#define YEAR_2017
+#ifdef  YEAR_2017
+#define getSmearingSigma(a,b,c,d,e,f,g,h) getSmearingSigma(a,b,c,d,e,g,h)
+#define ScaleCorrection(a,b,c,d,e,f) ScaleCorrection(a,b,c,d,e)
+#define ScaleCorrectionUncertainty(a,b,c,d,e,f,g) ScaleCorrectionUncertainty(a,b,c,d,e)
+#endif
 
 using namespace std;
 

@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
-from EgammaAnalysis.ElectronTools.calibrationTablesRun2 import correctionType
-from EgammaAnalysis.ElectronTools.calibrationTablesRun2 import files
+#from EgammaAnalysis.ElectronTools.calibrationTablesRun2 import correctionType
+#from EgammaAnalysis.ElectronTools.calibrationTablesRun2 import files
 
 process = cms.Process("bsmAnalysis")
 
@@ -52,7 +52,7 @@ process.mainNtuplizer = cms.EDAnalyzer('mainNtuplizer',
     puInfoTag = cms.InputTag("slimmedAddPileupInfo", "", "PAT"),
     genInfoTag = cms.InputTag("generator", "", "SIM"),
 
-    correctionFile = cms.string(files[correctionType]),                                       
+#    correctionFile = cms.string(files[correctionType]),                                       
     reducedEcalRecHitsEB = cms.InputTag('reducedEgamma:reducedEBRecHits'),
     reducedEcalRecHitsEE = cms.InputTag('reducedEgamma:reducedEERecHits'),                                       
 
