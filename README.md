@@ -41,8 +41,10 @@ cd $CMSSW_BASE/src
 
 git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
 cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
-git checkout -b modified
+git checkout 2017_Analysis
 cd $CMSSW_BASE/src
+
+#And compile
 scram b -j 4
 ```
 
