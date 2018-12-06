@@ -1,0 +1,54 @@
+{
+    "proc": [
+        {
+            "color": 831,
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/ST_t-channel_antitop_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSI"
+                    ],
+                    "gtag": "94X_mc2017_realistic_v14",
+                    "dtag": "MC13TeV_SingleT_t_antitop_2017",
+                    "xsec": 26.30875
+                }
+            ],
+            "isdata": false,
+            "keys": [
+                "haa_mcbased"
+            ],
+            "tag": "Single_Top"
+        },
+        {
+            "color":624,
+            "data":[
+                {
+                    "br": [ 0.5023 ],
+                    "dset": [
+                        "/DYJetsToLL_M-4to50_HT-70to100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM"  
+                    ],
+                    "gtag": "94X_mc2017_realistic_v14",
+                    "dtag": "MC13TeV_DYJetsToLL_M4to50_HT70to100_2017_ext1",
+                    "xsec": 146.3
+                },
+                {
+                    "br": [ 0.8956 ],
+                    "dset": [
+                        "/DYJetsToLL_M-50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"
+                    ],
+                    "gtag": "94X_mc2017_realistic_v14",
+                    "dtag": "MC13TeV_DYJetsToLL_M50_HT200to400_2017",
+                    "xsec": 49.1877
+                }
+            ],
+            "isdata":false,
+            "keys":[
+                "haa_mcbased",
+                "haa_ztoll"
+            ],
+            "tag": "DYJets"
+        }
+    ]
+}
