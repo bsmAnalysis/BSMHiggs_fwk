@@ -218,7 +218,7 @@
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_ZZ_2016",
-                    "xsec": 16.523 
+                    "xsec": 17.72 
                 },
                 {
                     "br": [
@@ -229,9 +229,9 @@
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_ZZ_ext1_2016",
-                    "xsec": 16.523
+                    "xsec": 17.72
                 },
-                {
+                 {
                     "br": [
                         1
                     ],
@@ -244,7 +244,7 @@
                 },
                 {
                     "br": [
-                        0.5
+                        0.15
                     ],
                     "dset": [
                         "/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
@@ -255,7 +255,7 @@
                 },
                 {
                     "br": [
-                        0.5
+                        0.35
                     ],
                     "dset": [
                         "/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
@@ -263,6 +263,28 @@
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                     "dtag": "MC13TeV_WWlnu2q_ext1_2016",
                     "xsec": 49.997
+		},
+		  {
+                    "br": [
+                        0.5
+                    ],
+                    "dset": [
+                        "/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v2/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_WWlnu2q_ext2_2016",
+                    "xsec": 49.997
+		  },
+		  {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/WWTo4Q_13TeV-powheg/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_WW4q_2016",
+                    "xsec": 51.723
                 },
                 {
                      "br": [
@@ -332,6 +354,7 @@
             ],
             "isdata": false,
             "keys": [
+	        "haa_prod",
                 "haa_mcbased"
             ],
             "tag": "(Z)VV"
