@@ -905,7 +905,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
   for(std::map<string, ProcessInfo_t>::iterator it=procs.begin(); it!=procs.end();it++){
     if(it->second.isData)continue;
     TString procName = it->first.c_str();
-    if(!(procName.Contains("Single Top") || procName.Contains("t#bar{t}+#gammaZW") || procName.Contains("Z#rightarrow") || procName.Contains("VV") || procName.Contains("t#bar{t}") || procName.Contains("W#rightarrow")))continue;
+    if(!(procName.Contains("Single Top") || procName.Contains("t#bar{t}+#gammaZW") || procName.Contains("Z#rightarrow") || procName.Contains("VV") || procName.Contains("Vh") || procName.Contains("t#bar{t}") || procName.Contains("W#rightarrow")))continue;
     //    printf("Subtracting nonQCD process from data: %s \n",procName.Data()); 
     addProc(procInfo_NRB, it->second, false);
   }
@@ -1411,6 +1411,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     for(std::map<string, double>::iterator Y=map_yields.begin();Y!=map_yields.end();Y++){
       if(Y->first.find("ddqcd")<std::string::npos)continue;//never drop this background
       if(Y->first.find("VV")<std::string::npos)continue;//never drop this background
+      if(Y->first.find("Vh")<std::string::npos)continue;//never drop this background 
       if(Y->first.find("t#bar{t}+#gammaZW")<std::string::npos)continue;//never drop this background    
       if(Y->second/total<threshold){
         printf("Drop %s from the list of backgrounds because of negligible rate (%f%% of total bckq)\n", Y->first.c_str(), Y->second/total);
@@ -1607,7 +1608,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       t1->Draw();
       t1->cd();
 
-      //      t1->SetLogy(true);         
+      t1->SetLogy(true);         
  
       //print histograms
       TH1* axis = (TH1*)map_data[p->first]->Clone("axis");
@@ -1625,8 +1626,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         axis->SetMinimum(1E-1);
         axis->SetMaximum(std::max(axis->GetMaximum(), 5E1));
       }else{
-        axis->SetMinimum(1E-1);
-        axis->SetMaximum(std::max(axis->GetMaximum(), 5E1));
+        axis->SetMinimum(1E-2);
+        axis->SetMaximum(std::max(axis->GetMaximum(), 1E9));
       }
 
       axis->GetXaxis()->SetLabelOffset(0.007);
@@ -2318,6 +2319,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 	if(it->second.shortName.find("zvv")!=string::npos){shapeInfo.uncScale["norm_zvv"] = integral*0.50;}    
 	if(it->second.shortName.find("zll")!=string::npos){shapeInfo.uncScale["norm_zll"] = integral*0.02;}
+	if(it->second.shortName.find("vhbb")!=string::npos){shapeInfo.uncScale["norm_vhbb"] = integral*0.10;}     
 
 	if(it->second.shortName.find("ttbarlig")!=string::npos){shapeInfo.uncScale["norm_toplight"] = integral*0.06;} 
 	if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_topcc"] = integral*0.50;} 
@@ -2759,10 +2761,20 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if(!histo)continue;
 	    TString jetBin = ch->second.bin.c_str();
 
-	    double xbins[] = {-0.30, -0.18, -0.06, 0.03, 0.12, 0.30}; 
-	    int nbins=sizeof(xbins)/sizeof(double);     
-	    unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);    
-	    utils::root::fixExtremities(unc->second, false, true);    
+	    //	    printf("Now going to rebinMainHisto of: %s\n",jetBin.Data());
+
+	    if(jetBin.Contains("3b")){
+	      //	      double xbins[] = {-0.30, -0.18, -0.06, 0.06, 0.18, 0.30};  
+	      double xbins[] = {-0.30, -0.18, 0.0, 0.16, 0.2, 0.30};     
+	      int nbins=sizeof(xbins)/sizeof(double);    
+	      unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);  
+	      utils::root::fixExtremities(unc->second, false, true); 
+	    }else if(jetBin.Contains("4b")){ 
+	      double xbins[] = {-0.30, -0.18, 0.0, 0.10, 0.14, 0.30}; 
+	      int nbins=sizeof(xbins)/sizeof(double);
+	      unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
+	      utils::root::fixExtremities(unc->second, false, true); 
+	    }
 
 	      /*
           if(jetBin.Contains("vbf")){

@@ -563,6 +563,11 @@ int main(int argc, char* argv[])
     //MVA BDT
     mon.addHistogram( new TH1F( "bdt", ";BDT;Events", 30, -0.3, 0.3) );
     
+    // Debugging SFs
+    TH2F* musf_id =(TH2F*)mon.addHistogram(new TProfile2D("musfid", ";muon p_{T} (GeV); muon |#eta|",20,0.,400.,10,0,2.5) );    
+    TH2F* musf_iso =(TH2F*)mon.addHistogram(new TProfile2D("musfiso", ";muon p_{T} (GeV); muon |#eta|",20,0.,400.,10,0,2.5) );   
+    TH2F* musf_trg =(TH2F*)mon.addHistogram(new TProfile2D("musftrg", ";muon p_{T} (GeV); muon |#eta|",20,0.,400.,10,0,2.5) );   
+
     //##################################################################################
     //########################## STUFF FOR CUTS OPTIMIZATION  ##########################
     //##################################################################################
@@ -1203,19 +1208,23 @@ int main(int argc, char* argv[])
 	}
 
        	// lepton TRG + ID + ISO scale factors 
-	if(isMC) {
+	if(isMC && !isQCD) {
 	  if (abs(selLeptons[0].id)==11) {
 	      // ID + ISO
 	    weight *= getSFfrom2DHist(selLeptons[0].en_EtaSC, selLeptons[0].pt(), E_RECO_SF_h );
 	    //lepEff.getRecoEfficiency( selLeptons[0].en_EtaSC, 11).first;
 	    weight *= getSFfrom2DHist(selLeptons[0].en_EtaSC, selLeptons[0].pt(), E_TIGHTID_SF_h);
 	  } else if (abs(selLeptons[0].id)==13) {
-	    // TRK + ID + ISO
-	    weight *= (0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h )
-		       + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h2 ) ); 
+	    // ID + ISO
+	    musf_id->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()),MU_ID_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h2 ) );
+	    musf_iso->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()),MU_ISO_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h2) );
+	    musf_trg->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h2) );
 
-	    weight *= (0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h  )
-		       + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h2  ) );       
+	    weight *= (getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h ));
+		       //+ 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h2) ); 
+
+	    weight *= (getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h  ));
+	    //		       + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h2  ) );       
 	  }
 	}
 
@@ -1368,7 +1377,7 @@ int main(int argc, char* argv[])
 
 	if (abs(selLeptons[0].id)==11) {
 	  // TRG
-	  if(isMC) {
+	  if(isMC && !isQCD) {
 	    weight*=getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	  }
 	    //	    weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
@@ -1381,9 +1390,9 @@ int main(int argc, char* argv[])
 
 	} else if (abs(selLeptons[0].id)==13) {
 	    // TRG
-	  if(isMC) {
-	    weight*= ( 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h )
-		       + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h2 ) );  
+	  if(isMC && !isQCD) {
+	    weight *= (getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h ));
+	    //		       + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h2 ) );
 	  }
 	  mon.fillHisto("lep_pt_raw","mu",selLeptons[0].pt(),weight);
 	  mon.fillHisto("lep_eta_raw","mu",selLeptons[0].eta(),weight);
