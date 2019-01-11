@@ -103,7 +103,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        if [ ! -d "$NTPL_OUTDIR" ]; then
 	   mkdir $NTPL_OUTDIR
        fi
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@runSystematics=True @runMVA=False @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False" -s $queue #-r True
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@runSystematics=True @runMVA=False @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False @runZH=False" -s $queue #-r True
    fi
 fi
 

@@ -127,10 +127,10 @@ int main(int argc, char* argv[])
 
     //configure the process
     const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
+
+    bool runZH = runProcess.getParameter<bool>("runZH");
   
     bool isMC = runProcess.getParameter<bool>("isMC");
-    int mctruthmode = runProcess.getParameter<int>("mctruthmode");
-
     double xsec = runProcess.getParameter<double>("xsec");
 
     TString proc=runProcess.getParameter<std::string>("proc");
@@ -138,6 +138,8 @@ int main(int argc, char* argv[])
     TString suffix=runProcess.getParameter<std::string>("suffix");
 
     bool verbose = runProcess.getParameter<bool>("verbose");
+   
+    int mctruthmode = runProcess.getParameter<int>("mctruthmode");
 
     // will reweight the top pt in TT+jets sample (optional)
     bool reweightTopPt = runProcess.getParameter<bool>("reweightTopPt");
@@ -178,7 +180,9 @@ int main(int argc, char* argv[])
     bool isDoubleMuPD(!isMC && url.Contains("DoubleMuon"));
     bool isSingleElePD(!isMC && url.Contains("SingleElectron"));
     bool isDoubleElePD(!isMC && url.Contains("DoubleEG"));
+    bool isMuonEGPD(!isMC && url.Contains("MuonEG"));
 
+    
     bool isMC_ZZ  = isMC && ( string(url.Data()).find("TeV_ZZ_")  != string::npos );
     
     bool isMC_WZ  = isMC && ( string(url.Data()).find("TeV_WZamcatnloFXFX")  != string::npos
@@ -207,6 +211,7 @@ int main(int argc, char* argv[])
     bool isSignal = (isMC_Wh || isMC_Zh || isMC_VBF );
 
     if (isSignal) printf("Signal url = %s\n",url.Data());
+
 
     //b-tagging: beff and leff must be derived from the MC sample using the discriminator vs flavor
     //the scale factors are taken as average numbers from the pT dependent curves see:
@@ -1198,16 +1203,19 @@ int main(int argc, char* argv[])
 	}
 
 	// Exactly 1 good lepton
-	bool passOneLepton(selLeptons.size()==1); 
+	bool passOneLepton(selLeptons.size()==1);
+	bool passDiLepton(selLeptons.size()==2);
+	
 	bool passOneLepton_anti(selLeptons.size()>=1);
 	if (runQCD) {
 	  if (!passOneLepton_anti) continue;
 	  // if (goodLeptons.size()==1) continue;
 	} else {
-	  if (!passOneLepton) continue;
+	  if (runZH) { if (!passDiLepton) continue;}
+	  else {if (!passOneLepton) continue; }
 	}
 
-       	// lepton TRG + ID + ISO scale factors 
+       	// lepton ID + ISO scale factors 
 	if(isMC && !isQCD) {
 	  if (abs(selLeptons[0].id)==11) {
 	      // ID + ISO
@@ -1313,8 +1321,8 @@ int main(int argc, char* argv[])
 	TString tag_cat;
         int evcat=-1;
 	if (selLeptons.size()==1) evcat = getLeptonId(abs(selLeptons[0].id)); //abs(selLeptons[0].first));
-	if (runQCD && selLeptons.size()>1)  evcat = getLeptonId(abs(selLeptons[0].id));
-	//	if (selLeptons.size()>1) evcat =  getDileptonId(abs(selLeptons[0].id),abs(selLeptons[1].id)); 
+	//	if (runQCD && selLeptons.size()>1)  evcat = getLeptonId(abs(selLeptons[0].id));
+	if (selLeptons.size()>1) evcat =  getDileptonId(abs(selLeptons[0].id),abs(selLeptons[1].id)); 
         switch(evcat) {
         case MUMU :
 	  tag_cat="mumu";
@@ -1331,7 +1339,7 @@ int main(int argc, char* argv[])
 	  //  tag_cat="l";
 	  break;
         case EMU  :
-	  tag_cat="emu";
+	  tag_cat="emu"; continue;
 	  break;
 	// default :
 	//   continue;
@@ -1339,38 +1347,22 @@ int main(int argc, char* argv[])
 
 
         bool hasTrigger(false);
-
-        if(!isMC) {
-	    //if(evcat!=fType) continue;
-
-            //if(evcat==EE   && !(hasEEtrigger||hasEtrigger) ) continue;
-            //if(evcat==MUMU && !(hasMMtrigger||hasMtrigger) ) continue;
-            //if(evcat==EMU  && !hasEMtrigger ) continue;
-
-            //this is a safety veto for the single mu PD
-            if(isSingleMuPD) {
-	      if(!hasMtrigger) continue;
-		//                if(hasMtrigger && hasMMtrigger) continue;
-            }
-  
-            //this is a safety veto for the single Ele PD
-            if(isSingleElePD) {
-	      if(!hasEtrigger) continue;
-	      //	      if(hasMtrigger) continue;
-	      //	      if(!hasEtrigger && !hasHighPtEtrigger) continue;
-		//    if(hasEtrigger && hasEEtrigger) continue;
-            }
-    
-            hasTrigger=true;
-
-        } else { // isMC
-	  //if(evcat==E   && hasEtrigger ) hasTrigger=true;
-	  // if(evcat==MU && hasMtrigger ) hasTrigger=true;
-	  // if(evcat==EMU  && ( hasEtrigger || hasMtrigger)) hasTrigger=true;
-	  hasTrigger = (hasEtrigger || hasMtrigger);   
-	  //	  hasTrigger = (hasEtrigger || hasHighPtEtrigger || hasMtrigger);
-	  if(!hasTrigger) continue;
-        }
+	if(!isMC) {
+	  if(isDoubleMuPD)    { hasTrigger = hasMMtrigger;}
+	  if(isSingleMuPD)    { hasTrigger = hasMtrigger  && !hasMMtrigger;}
+	  if(isDoubleElePD)   { hasTrigger = hasEEtrigger  && !hasMtrigger  && !hasMMtrigger;}
+	  if(isSingleElePD)   { hasTrigger = hasEtrigger  && !hasEEtrigger  && !hasMtrigger && !hasMMtrigger; }
+	  if(isMuonEGPD)      { hasTrigger = hasEMtrigger && !hasEtrigger   && !hasEEtrigger && !hasMtrigger && !hasMMtrigger; }
+	} else {
+	  if(evcat==E && hasEtrigger ) hasTrigger=true;
+	  if(evcat==MU && hasMtrigger ) hasTrigger=true;
+	  if(evcat==EE && (hasEEtrigger || hasEtrigger)) hasTrigger=true;
+	  if(evcat==MUMU && (hasMtrigger || hasMMtrigger)) hasTrigger=true;
+	  if(evcat==EMU  && hasEMtrigger ) hasTrigger=true;
+	}
+	// Apply Trigger requirement:
+	if(!hasTrigger) continue;
+	
 
 	// TRG Scale Factors
 	double myrelIso=-1.; //double mytrkrelIso=-1;
@@ -1387,13 +1379,13 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("lep_reliso","e",selLeptons[0].en_relIso,weight);
 	  
 	  myrelIso=selLeptons[0].en_relIso;
-
+	  
 	} else if (abs(selLeptons[0].id)==13) {
 	    // TRG
 	  if(isMC && !isQCD) {
 	    weight *= (getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h ));
-	    //		       + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h2 ) );
 	  }
+	     
 	  mon.fillHisto("lep_pt_raw","mu",selLeptons[0].pt(),weight);
 	  mon.fillHisto("lep_eta_raw","mu",selLeptons[0].eta(),weight);
 	  mon.fillHisto("lep_reliso","mu",selLeptons[0].mn_relIso,weight);       
@@ -1576,6 +1568,7 @@ int main(int argc, char* argv[])
 
 	  double pdfError(0.);
 	  if (ev.npdfs>0 && pdf_h!=NULL) pdfError = pdf_h->GetRMS();
+	  else cout << "pdfError: " << pdfError << endl; 
 
 	  delete pdf_h;
 	  //      cout << "pdfError: " << pdfError << endl;
@@ -1583,8 +1576,8 @@ int main(int argc, char* argv[])
 	  // retrive alphaSweights from ntuple
 	  TH1F *alphaS_h = new TH1F();
 
-	  for(int nalphaS=0; nalphaS<ev.nalphaS; nalphaS++) {
-	    alphaS_h->Fill(ev.alphaSWeights[nalphaS]);
+	  for(int nalpha=0; nalpha<ev.nalphaS; nalpha++) {
+	    alphaS_h->Fill(ev.alphaSWeights[nalpha]);
 	  }
 
 	  double alphaSError(0.);
@@ -1724,7 +1717,7 @@ int main(int argc, char* argv[])
 	      
 	      if (isMC) { 
 		//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X
-		btsfutil.SetSeed(ev.event*10 + ijet*10000 + ivar*10);
+		btsfutil.SetSeed(ev.event*10 + ijet*10000);// + ivar*10);
 		
 		if(abs(vJets[ijet].flavid)==5) {
 		  if(use_DeepCSV) beff=btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE");   
@@ -1984,10 +1977,10 @@ int main(int argc, char* argv[])
 	  // soft b-tag SF and uncertainty: 1.05 +/- 0.16
 	  if (isMC) {
 	    for (auto & i : SVs) {  
-	      //	    if (ivar==0) weight *= 1.05;
+	      weight *= 1.05;
 	      if (varNames[ivar]=="_softbup") { weight *= 1.21; }
 	      if (varNames[ivar]=="_softbdown") { weight *= 0.89; }
-	      else { weight *= 1.05; }
+	      //else { weight *= 1.05; }
 	    }
 	  }
 	  

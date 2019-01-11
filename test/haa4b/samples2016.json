@@ -3,6 +3,102 @@
         {
             "color": 1,
             "data": [
+		 {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MuonEG/Run2016B-03Feb2017_ver2-v2/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_MuEG2016B_ver2",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt", 
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MuonEG/Run2016C-03Feb2017-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_MuEG2016C",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt", 
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MuonEG/Run2016D-03Feb2017-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_MuEG2016D",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MuonEG/Run2016E-03Feb2017-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_MuEG2016E",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MuonEG/Run2016F-03Feb2017-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_MuEG2016F",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MuonEG/Run2016G-03Feb2017-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_MuEG2016G",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MuonEG/Run2016H-03Feb2017_ver2-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_MuEG2016H_ver2",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MuonEG/Run2016H-03Feb2017_ver3-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_MuEG2016H_ver3",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+		},
                 {
                     "br": [
                         1.0
@@ -194,7 +290,199 @@
                     "dtag": "Data13TeV_SingleMuon2016H_ver3",
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
                     "xsec": 1.0
-                }
+                },
+			 {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleMuon/Run2016B-03Feb2017_ver2-v2/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_DoubleMuon2016B_ver2",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleMuon/Run2016C-03Feb2017-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_DoubleMuon2016C",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleMuon/Run2016D-03Feb2017-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_DoubleMuon2016D",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleMuon/Run2016E-03Feb2017-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_DoubleMuon2016E",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleMuon/Run2016F-03Feb2017-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_DoubleMuon2016F",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleMuon/Run2016G-03Feb2017-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_DoubleMuon2016G",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleMuon/Run2016H-03Feb2017_ver2-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_DoubleMuon2016H_ver2",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleMuon/Run2016H-03Feb2017_ver3-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_DoubleMuon2016H_ver3",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+		 {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleEG/Run2016B-03Feb2017_ver2-v2/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_DoubleEle2016B_ver2",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleEG/Run2016C-03Feb2017-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_DoubleEle2016C",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleEG/Run2016D-03Feb2017-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_DoubleEle2016D",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleEG/Run2016E-03Feb2017-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_DoubleEle2016E",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleEG/Run2016F-03Feb2017-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_DoubleEle2016F",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleEG/Run2016G-03Feb2017-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_DoubleEle2016G",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleEG/Run2016H-03Feb2017_ver2-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_DoubleEle2016H_ver2",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleEG/Run2016H-03Feb2017_ver3-v1/MINIAOD"
+                    ],
+		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+                    "dtag": "Data13TeV_DoubleEle2016H_ver3",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "xsec": 1.0
+		} 
             ],
             "fill": 0,
             "isdata": true,
