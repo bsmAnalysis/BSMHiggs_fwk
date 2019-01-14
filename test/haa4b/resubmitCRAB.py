@@ -10,7 +10,8 @@ import re
 ############################################## Variables and Functions Decleration Starts
 runningMode = "" # 1 means whenever there's failed jobs, we will resubmit. If it's 0, we will only resubmit if this task has been finished, meaning only failed and finished jobs.
                 # empty means we just check tasks, don't resubmit any tasks
-timerange = 'lastWeek' # Crab search range, you could change it to lastMonth
+#searchrange = 'from=&to=&timerange=lastWeek&pattern=' # Crab search range, you could change it to lastMonth
+searchrange = 'from=2018-12-01+00%3A00&to=2019-01-11+23%3A59&timerange=&pattern=' # Crab search range, you could set it to your desired time range
 def returnName(path,task):
   fileName = os.path.join(path,'crab.log')
   searchPattern = r'[0-9]{6}_[0-9]{6}:' + getpass.getuser() + '_' + task
@@ -52,7 +53,7 @@ else:
 
 user = getpass.getuser()
 
-url = 'http://dashb-cms-job.cern.ch/dashboard/request.py/antasktable?user={}&task=&from=&to=&timerange={}&pattern='.format(user,timerange)
+url = 'http://dashb-cms-job.cern.ch/dashboard/request.py/antasktable?user={}&task=&{}'.format(user,searchrange)
 headers = {
 	'accept':'application/json, text/javascript, */*; q=0.01',
 	'accept-Encoding':'gzip, deflate',
@@ -65,14 +66,14 @@ headers = {
 	'cache-Control':'max-age=0',
 	'upgrade-Insecure-Requests':'1'
 }
-params = {
-	'user':user,
-	'task':'',
-	'from':'',
-	'to':'',
-	'timerange':timerange,
-	'pattern':''
-}
+#params = {
+#	'user':user,
+#	'task':'',
+#	'from':'',
+#	'to':'',
+#	'timerange':timerange,
+#	'pattern':''
+#}
 
 #wbdata = requests.get(url,headers=headers,data=params,verify=False).text
 wbdata = requests.get(url).text
@@ -108,6 +109,7 @@ countFinished = 0 #counting how many jobs in the directory have been completed
 totalTask = 0 # the number of tasks in total
 totalFinished = 0 # the number of tasks finished
 totalFound = 0 # the number of tasks we find on CRAB
+errMsg = []
 for task in DIRS:
   taskName = returnName(os.path.join(path,task),task)
   if taskName in dirName:
@@ -117,6 +119,8 @@ for task in DIRS:
     totalFinished += numFinished[index]
     if flagCompleted[index]:
       countFinished += 1
+    else:
+      print('Uncompleted Task: '+taskName)
     if flagFinished[index] and int(numFailed[index]) > 0: # to see if we have failed jobs for this task
 #      print("{}. Resubmitting the job: {}, folder cteate: {}, task create: {}, delta: {}".format(count+1,task,ts,timeCreate[index],timeCreate[index]-ts))
       print("{}. Resubmitting the job: {}".format(count+1,task))
@@ -130,8 +134,10 @@ for task in DIRS:
 #        exit(1)
       count += 1
   else:
-    print('Alert: can not find the task on CRAB: {}'.format(taskName))
+    errMsg.append('Alert: can not find the task on CRAB: {}'.format(taskName))
 if not totalFound == len(DIRS):
+  for msg in errMsg:
+    print(msg)
   print('-'*100)
   print('Alert: there are {} tasks in local but only {} tasks found on CRAB, see above for details'.format(len(DIRS),totalFound))
   print('If you submit jobs just now, you need to wait a few minutes to allow CRAB to process')

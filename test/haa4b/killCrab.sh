@@ -40,7 +40,7 @@ then
     if [[ -d $job ]];then
       echo " crab kill --dir="$job" "
       crab kill --dir=${job}
-      crab purge --dir=${job}
+#      crab purge --dir=${job}
     fi
   done
 fi
