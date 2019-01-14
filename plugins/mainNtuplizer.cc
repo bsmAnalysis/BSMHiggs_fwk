@@ -959,7 +959,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        if ( verbose_ ) printf("\n\n ----- Reconstructed jets : %lu\n", jets.size() ) ;
 
        //for (std::vector<pat::Jet >::const_iterator j = jets.begin(); j!=jets.end(); j++) 
-       int ijet(0) ;
+       int ijet(0),ijet2(0) ;
        for (pat::Jet &j : jets) {
 	 if(j.pt() < 20) continue;
 
@@ -1007,7 +1007,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
                 j.userFloat("pileupJetId:fullDiscriminant")
              ) ;
          }
-	 
+	 if(patUtils::passPFJetID("Loose", j))  ijet2++; 
 
 	 ev.jet_mother_id[ev.jet] = 0;
 	 
@@ -1046,11 +1046,11 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.jet++;
          ijet++ ;
        }
-
+  if((ijet2<=2)) return;
        //
        // jet selection (AK8Jets)
        //
-
+/*
        pat::JetCollection fatjets; 
        edm::Handle< pat::JetCollection > jetsAK8Handle; 
        event.getByToken(fatjetTag_, jetsAK8Handle);
@@ -1194,7 +1194,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.fjet++;
 	 ifjet++;
        }
-       
+*/ 
      pat::METCollection mets;
      edm::Handle< pat::METCollection > metsHandle;
      // if(isMC_)

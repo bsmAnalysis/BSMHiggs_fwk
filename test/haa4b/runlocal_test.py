@@ -82,8 +82,8 @@ process.mainNtuplizer.metFilterBitsTag = cms.InputTag('TriggerResults','','HLT')
 process.source = cms.Source("PoolSource",
 #	       	     fileNames = cms.untracked.vstring("/store/mc/RunIISummer16MiniAODv2/SUSYZHToAA_AATo4B_M-50_TuneCUETP8M1_13TeV_madgraph_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/00000/BEEEFB4E-37C8-E811-A98B-001E6757E05C.root"),
 #              fileNames = cms.untracked.vstring("/store/mc/RunIIFall17MiniAODv2/NMSSM_WHToAATo4b_M-125_M-12_madgraph_pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/40000/00F6F5BE-8742-E811-90B6-B499BAABF212.root"),
-              fileNames = cms.untracked.vstring("/store/mc/RunIIFall17MiniAODv2/NMSSM_WHToAATo4b_M-125_M-40_madgraph_pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/20000/50FCC250-3143-E811-A2B0-AC1F6B1AF03C.root"),
-#              fileNames = cms.untracked.vstring("/store/data/Run2017B/SingleElectron/MINIAOD/31Mar2018-v1/30000/04B05308-0038-E811-99AB-008CFAC94314.root"),
+             fileNames = cms.untracked.vstring("/store/mc/RunIIFall17MiniAODv2/NMSSM_WHToAATo4b_M-125_M-40_madgraph_pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/20000/50FCC250-3143-E811-A2B0-AC1F6B1AF03C.root"),
+ #             fileNames = cms.untracked.vstring("/store/data/Run2017B/SingleElectron/MINIAOD/31Mar2018-v1/30000/04B05308-0038-E811-99AB-008CFAC94314.root"),
 #              fileNames = cms.untracked.vstring("/store/data/Run2017F/SingleElectron/MINIAOD/31Mar2018-v1/010000/72A98F53-E53B-E811-8945-0CC47A4C8E2E.root"),
                             inputCommands=cms.untracked.vstring( 
         'keep *', 
@@ -93,7 +93,7 @@ process.source = cms.Source("PoolSource",
 )
 
 process.TFileService = cms.Service("TFileService",
-			fileName = cms.string("analysis_MC.root")
+			fileName = cms.string("analysis_MC_r.root")
 #			fileName = cms.string("analysis_Data.root")
 )
 

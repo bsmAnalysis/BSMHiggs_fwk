@@ -36,7 +36,7 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 # Global Variables
 #--------------------------------------------------
 
-SUFFIX=_2018_11_29 #_2018_03_03
+SUFFIX=_2018_12_08 #_2018_03_03
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
@@ -92,18 +92,19 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
    if [[ $step == 1.0 ]]; then
        echo "2017 JOB SUBMISSION for Ntuplization using full CMSSW fwk"
        echo -e "Input: " $JSON "\nOutput: " $RESULTSDIR
-       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg_2017.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_signal -s crab 
+#       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg_2017.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_signal -s crab 
+       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg_2017.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -s crab 
    fi    
 
-#   if [[ $step == 1.1 ]]; then  #submit jobs for h->aa->XXYY analysis
-#       echo "JOB SUBMISSION for BSM h->aa Analysis"
-#       echo -e "Input: " $NTPL_JSON "\n Output: " $NTPL_OUTDIR
-#       ## if the output directory does not exist, create it:
-#       if [ ! -d "$NTPL_OUTDIR" ]; then
-#	   mkdir $NTPL_OUTDIR
-#       fi
-#       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@runSystematics=True @runMVA=False @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False" -s $queue #-r True
-#   fi
+   if [[ $step == 1.1 ]]; then  #submit jobs for h->aa->XXYY analysis
+       echo "JOB SUBMISSION for BSM h->aa Analysis"
+       echo -e "Input: " $NTPL_JSON "\n Output: " $NTPL_OUTDIR
+       ## if the output directory does not exist, create it:
+       if [ ! -d "$NTPL_OUTDIR" ]; then
+	        mkdir $NTPL_OUTDIR
+       fi
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $MAINDIR/../runNtplAnalysis_cfg.py.templ -p "@runSystematics=True @runMVA=False @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False" -s $queue #-r True
+   fi
 fi
 
 ###  ############################################## STEPS between 2 and 3
