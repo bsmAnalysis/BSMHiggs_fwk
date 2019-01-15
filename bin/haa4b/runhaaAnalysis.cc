@@ -171,16 +171,16 @@ int main(int argc, char* argv[])
     fprintf(outTxtFile_final,"run lumi event\n");
 
     int fType(0);
-    if(url.Contains("DoubleEG")) fType=EE;
-    if(url.Contains("DoubleMuon"))  fType=MUMU;
-    if(url.Contains("MuonEG"))      fType=EMU;
-    if(url.Contains("SingleMuon"))  fType=MU;
-    if(url.Contains("SingleElectron")) fType=E;
-    bool isSingleMuPD(!isMC && url.Contains("SingleMuon"));
-    bool isDoubleMuPD(!isMC && url.Contains("DoubleMuon"));
-    bool isSingleElePD(!isMC && url.Contains("SingleElectron"));
-    bool isDoubleElePD(!isMC && url.Contains("DoubleEG"));
-    bool isMuonEGPD(!isMC && url.Contains("MuonEG"));
+    if(dtag.Contains("DoubleEG")) fType=EE;
+    if(dtag.Contains("DoubleMuon"))  fType=MUMU;
+    if(dtag.Contains("MuonEG"))      fType=EMU;
+    if(dtag.Contains("SingleMuon"))  fType=MU;
+    if(dtag.Contains("SingleElectron")) fType=E;
+    bool isSingleMuPD(!isMC && dtag.Contains("SingleMuon"));
+    bool isDoubleMuPD(!isMC && dtag.Contains("DoubleMuon"));
+    bool isSingleElePD(!isMC && dtag.Contains("SingleElectron"));
+    bool isDoubleElePD(!isMC && dtag.Contains("DoubleEG"));
+    bool isMuonEGPD(!isMC && dtag.Contains("MuonEG"));
 
     
     bool isMC_ZZ  = isMC && ( string(url.Data()).find("TeV_ZZ_")  != string::npos );
@@ -1204,14 +1204,17 @@ int main(int argc, char* argv[])
 
 	// Exactly 1 good lepton
 	bool passOneLepton(selLeptons.size()==1);
-	bool passDiLepton(selLeptons.size()==2);
+	bool passDiLepton(selLeptons.size()==2); // && ( abs(selLeptons[0].id)==abs(selLeptons[1].id) ) );
 	
 	bool passOneLepton_anti(selLeptons.size()>=1);
 	if (runQCD) {
 	  if (!passOneLepton_anti) continue;
 	  // if (goodLeptons.size()==1) continue;
 	} else {
-	  if (runZH) { if (!passDiLepton) continue;}
+	  if (runZH) { 
+	    if (!passDiLepton) continue;
+	    //	    LorentzVector zll(selLeptons[0]+selLeptons[1]);
+	  }
 	  else {if (!passOneLepton) continue; }
 	}
 
@@ -1354,11 +1357,19 @@ int main(int argc, char* argv[])
 	  if(isSingleElePD)   { hasTrigger = hasEtrigger  && !hasEEtrigger  && !hasMtrigger && !hasMMtrigger; }
 	  if(isMuonEGPD)      { hasTrigger = hasEMtrigger && !hasEtrigger   && !hasEEtrigger && !hasMtrigger && !hasMMtrigger; }
 	} else {
-	  if(evcat==E && hasEtrigger ) hasTrigger=true;
-	  if(evcat==MU && hasMtrigger ) hasTrigger=true;
-	  if(evcat==EE && (hasEEtrigger || hasEtrigger)) hasTrigger=true;
-	  if(evcat==MUMU && (hasMtrigger || hasMMtrigger)) hasTrigger=true;
-	  if(evcat==EMU  && hasEMtrigger ) hasTrigger=true;
+	  if(evcat==E) hasTrigger = hasEtrigger;// ) hasTrigger=true;
+	  if(evcat==MU) hasTrigger = hasMtrigger; //) hasTrigger=true;
+	  if(evcat==EE)
+	    {
+	      hasTrigger = (hasEEtrigger || hasEtrigger); //) hasTrigger=true;
+	      printf("Found an ee event!\n");
+	    }
+	  if(evcat==MUMU) 
+	    {
+	      hasTrigger = (hasMtrigger || hasMMtrigger); //) hasTrigger=true;
+	      printf("Found a mumu event!\n");
+	    }
+	  if(evcat==EMU) hasTrigger = hasEMtrigger; //) hasTrigger=true;
 	}
 	// Apply Trigger requirement:
 	if(!hasTrigger) continue;
@@ -1568,10 +1579,9 @@ int main(int argc, char* argv[])
 
 	  double pdfError(0.);
 	  if (ev.npdfs>0 && pdf_h!=NULL) pdfError = pdf_h->GetRMS();
-	  else cout << "pdfError: " << pdfError << endl; 
+	  //	  else cout << "pdfError: " << pdfError << endl; 
 
 	  delete pdf_h;
-	  //      cout << "pdfError: " << pdfError << endl;
 
 	  // retrive alphaSweights from ntuple
 	  TH1F *alphaS_h = new TH1F();
@@ -1650,14 +1660,17 @@ int main(int argc, char* argv[])
 
 	  if ( verbose ) {
 	    printf("\nMissing  pt=%6.1f\n", imet.pt());
-	    
-	    printf("selLepton is %s, and has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",   
-		   (abs(selLeptons[0].id)==11 ? "ELE" : "MUON") ,
-		   selLeptons[0].pt(),
-		   selLeptons[0].eta(),
-		   selLeptons[0].Phi(),
-		   selLeptons[0].M()
-		   );
+	    int ilep(0);
+	    for (auto & i : selLeptons) {
+	      printf("selLepton is %s, and has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",   
+		     (abs(selLeptons[ilep].id)==11 ? "ELE" : "MUON") ,
+		     selLeptons[ilep].pt(),
+		     selLeptons[ilep].eta(),
+		     selLeptons[ilep].Phi(),
+		     selLeptons[ilep].M()
+		     );
+	      ilep++;
+	    }
 	  } // verbose
 
 	  
@@ -1763,13 +1776,23 @@ int main(int argc, char* argv[])
 	      } // isMC
 
 
-	      if ( verbose && hasCSVtag) {
-		printf("B-Jet has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",   
-		       vJets[ijet].pt(),
-		       vJets[ijet].eta(),
+	      if ( verbose) {
+
+		printf("AK4-Jet has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",     
+		       vJets[ijet].pt(),    
+		       vJets[ijet].eta(),  
 		       vJets[ijet].phi(),
-		       vJets[ijet].M()
+		       vJets[ijet].M()  
 		       );
+
+		if(hasCSVtag) {
+		  printf("B-Jet has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",   
+			 vJets[ijet].pt(),
+			 vJets[ijet].eta(),
+			 vJets[ijet].phi(),
+			 vJets[ijet].M()
+			 );
+		}
 	      } // verbose
 	      
 	      // Fill b-jet vector:
@@ -1885,6 +1908,15 @@ int main(int argc, char* argv[])
 	  LorentzVector wsum=imet+selLeptons[0];
 	  // mtW
 	  double tMass = 2.*selLeptons[0].pt()*imet.pt()*(1.-TMath::Cos(deltaPhi(selLeptons[0].phi(),imet.phi())));
+
+	  if (runZH){
+	    LorentzVector zll(selLeptons[0]+selLeptons[1]);    
+	    wsum+=selLeptons[1];
+
+	    double dphi=fabs(deltaPhi(imet.phi(),zll.phi()));
+	    tMass=2*imet.pt()*zll.pt()*(1-cos(dphi));
+	  }
+
 	  if(ivar==0) {
 	    mon.fillHisto("pfmet","raw"+tag_cat,imet.pt(),weight);
 	    mon.fillHisto("mtw","raw"+tag_cat,sqrt(tMass),weight);
