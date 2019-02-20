@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #determine CMSSW config
-SCRIPT=$(readlink -f $0)
+SCRIPT=$(readlink -f $1)
 SCRIPTPATH=`dirname $SCRIPT`
 ARCH=${SCRIPTPATH##/*/}
 CMSSW=${SCRIPTPATH}/../../src
