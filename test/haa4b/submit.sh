@@ -36,7 +36,7 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 # Global Variables
 #--------------------------------------------------
 
-SUFFIX=_2018_08_17 #_2018_03_03
+SUFFIX=_2018_10_29 #_2018_03_03
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
