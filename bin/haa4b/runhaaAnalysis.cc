@@ -93,9 +93,9 @@ const float ele_threshold_=30.;
 const float jet_threshold_=20.; 
 
 //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X
-const float CSVLooseWP = 0.5426;  // Updated to 80X Moriond17 Loose
-const float CSVMediumWP = 0.800;
-const float CSVTightWP = 0.935;
+float CSVLooseWP = 0.5426;  // Updated to 80X Moriond17 Loose
+float CSVMediumWP = 0.800;
+float CSVTightWP = 0.935;
 
 //https://twiki.cern.ch/twiki/bin/viewauth/CMS/Hbbtagging#8_0_X
 // https://indico.cern.ch/event/543002/contributions/2205058/attachments/1295600/1932387/cv-doubleb-tagging-btv-approval.pdf (definition of WPs: slide 16)
@@ -104,9 +104,9 @@ const float DBMediumWP = 0.600;
 const float DBTightWP = 0.900;
 
 //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80XReReco#Data_MC_Scale_Factors
-const float DeepCSVLooseWP = 0.2219;
-const float DeepCSVMediumWP = 0.6324;
-const float DeepCSVTightWP = 0.8958;
+float DeepCSVLooseWP = 0.2219;
+float DeepCSVMediumWP = 0.6324;
+float DeepCSVTightWP = 0.8958;
 
 int main(int argc, char* argv[])
 {
@@ -137,6 +137,11 @@ int main(int argc, char* argv[])
     TString dtag=runProcess.getParameter<std::string>("tag");
     TString suffix=runProcess.getParameter<std::string>("suffix");
 
+    bool is2016data = (!isMC && dtag.Contains("2016"));
+    bool is2016MC = (isMC && !dtag.Contains("2017"));
+    bool is2017data = (!isMC && dtag.Contains("2017"));
+    bool is2017MC = (isMC && dtag.Contains("2017"));
+
     bool verbose = runProcess.getParameter<bool>("verbose");
    
     int mctruthmode = runProcess.getParameter<int>("mctruthmode");
@@ -155,6 +160,11 @@ int main(int argc, char* argv[])
     
     TString url = runProcess.getParameter<std::string>("input");
     TString outFileUrl( dtag ); //gSystem->BaseName(url));
+
+    if(is2017data || is2017MC){// 2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+        CSVLooseWP = 0.5803;CSVMediumWP = 0.8838;CSVTightWP = 0.9693;
+        DeepCSVLooseWP = 0.1522;DeepCSVMediumWP = 0.4941;DeepCSVTightWP = 0.8001;
+    }
 
     // if(mctruthmode!=0) {
     //     outFileUrl += "_filt";
@@ -195,6 +205,7 @@ int main(int argc, char* argv[])
     bool isMCBkg_runPDFQCDscale = (isMC_ZZ || isMC_WZ || isMC_VVV);
 
     bool isMC_ttbar = isMC && (string(url.Data()).find("TeV_TTJets")  != string::npos);
+    if(is2017data || is2017MC) isMC_ttbar = isMC && (string(url.Data()).find("TeV_TTTo")  != string::npos);
     bool isMC_stop  = isMC && (string(url.Data()).find("TeV_SingleT")  != string::npos);
 
     bool isMC_WJets = isMC && ( (string(url.Data()).find("MC13TeV_WJets")  != string::npos) || (string(url.Data()).find("MC13TeV_W1Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W2Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W3Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W4Jets")  != string::npos) );
@@ -229,6 +240,11 @@ int main(int argc, char* argv[])
        
       csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                       "/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_Moriond17_B_H.csv";
+      if(is2017data || is2017MC){
+          csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
+                          "/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_94XSF_V2_B_F.csv";     
+      }
+
        
       LooseWP = CSVLooseWP;
       MediumWP = CSVMediumWP;
@@ -239,7 +255,10 @@ int main(int argc, char* argv[])
        
       csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                       "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_Moriond17_B_H.csv";
-       
+      if(is2017data || is2017MC){
+          csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
+                          "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V3_B_F.csv";       
+      }
       LooseWP = DeepCSVLooseWP;
       MediumWP = DeepCSVMediumWP;
       TightWP = DeepCSVTightWP;
@@ -258,11 +277,21 @@ int main(int argc, char* argv[])
     //gSystem->ExpandPathName(uncFile);
     cout << "Loading jet energy scale uncertainties from: " << jecDir << endl;
 
-    if     (dtag.Contains("2016B") || dtag.Contains("2016C") ||dtag.Contains("2016D")) jecDir+="Summer16_80X/Summer16_23Sep2016BCDV4_DATA/";
-    else if(dtag.Contains("2016E") || dtag.Contains("2016F")) jecDir+="Summer16_80X/Summer16_23Sep2016EFV4_DATA/";
-    else if(dtag.Contains("2016G")) jecDir+="Summer16_80X/Summer16_23Sep2016GV4_DATA/";
-    else if(dtag.Contains("2016H")) jecDir+="Summer16_80X/Summer16_23Sep2016HV4_DATA/";
-    if(isMC) {jecDir+="Summer16_80X/Summer16_23Sep2016V4_MC/";}
+    if(is2017MC || is2017data){
+        if     (dtag.Contains("2017B")) jecDir+="94X/Fall17_17Nov2017B_V32_DATA/Fall17_17Nov2017B_V32_";
+        else if(dtag.Contains("2017C")) jecDir+="94X/Fall17_17Nov2017C_V32_DATA/Fall17_17Nov2017C_V32_";
+        else if(dtag.Contains("2017D") || dtag.Contains("2017E")) jecDir+="94X/Fall17_17Nov2017DE_V32_DATA/Fall17_17Nov2017DE_V32_";
+        else if(dtag.Contains("2017F")) jecDir+="94X/Fall17_17Nov2017F_V32_DATA/Fall17_17Nov2017F_V32_";
+        if(isMC) {jecDir+="94X/Fall17_17Nov2017_V32_MC/Fall17_17Nov2017_V32_";}
+    }
+    else{//2016 jec files
+        if     (dtag.Contains("2016B") || dtag.Contains("2016C") ||dtag.Contains("2016D")) jecDir+="Summer16_80X/Summer16_23Sep2016BCDV4_DATA/";
+        else if(dtag.Contains("2016E") || dtag.Contains("2016F")) jecDir+="Summer16_80X/Summer16_23Sep2016EFV4_DATA/";
+        else if(dtag.Contains("2016G")) jecDir+="Summer16_80X/Summer16_23Sep2016GV4_DATA/";
+        else if(dtag.Contains("2016H")) jecDir+="Summer16_80X/Summer16_23Sep2016HV4_DATA/";
+        if(isMC) {jecDir+="Summer16_80X/Summer16_23Sep2016V4_MC/";}
+    }
+
 
     gSystem->ExpandPathName(jecDir);
     //    FactorizedJetCorrector *jesCor = NULL;
@@ -756,34 +785,58 @@ int main(int argc, char* argv[])
     TString muTRG_sf = runProcess.getParameter<std::string>("mu_trgSF"); 
     gSystem->ExpandPathName(muTRG_sf);   
     TFile *MU_TRG_SF_file = TFile::Open(muTRG_sf);  
-    TH2F* MU_TRG_SF_h = (TH2F*) MU_TRG_SF_file->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/pt_abseta_ratio");
+    TH2F* MU_TRG_SF_h = new TH2F();
+    if(is2017data || is2017MC)
+        MU_TRG_SF_h = (TH2F*) MU_TRG_SF_file->Get("IsoMu27_PtEtaBins/pt_abseta_ratio");
+    else
+        MU_TRG_SF_h = (TH2F*) MU_TRG_SF_file->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/pt_abseta_ratio");
 
     TString muTRG_sf2 = runProcess.getParameter<std::string>("mu_trgSF2");  
     gSystem->ExpandPathName(muTRG_sf2);         
     TFile *MU_TRG_SF_file2 = TFile::Open(muTRG_sf2);
-    TH2F* MU_TRG_SF_h2 = (TH2F*) MU_TRG_SF_file2->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/pt_abseta_ratio"); 
+    TH2F* MU_TRG_SF_h2 = new TH2F(); 
+    if(is2017data || is2017MC)
+        MU_TRG_SF_h2 = (TH2F*) MU_TRG_SF_file->Get("IsoMu27_PtEtaBins/pt_abseta_ratio");
+    else
+        MU_TRG_SF_h2 = (TH2F*) MU_TRG_SF_file->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/pt_abseta_ratio");
 
      // mu ID SFs
     TString muID_sf = runProcess.getParameter<std::string>("mu_idSF"); 
     gSystem->ExpandPathName(muID_sf);   
     TFile *MU_ID_SF_file = TFile::Open(muID_sf);  
-    TH2F* MU_ID_SF_h = (TH2F*) MU_ID_SF_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio");
+    TH2F* MU_ID_SF_h = new TH2F();
+    if(is2017data || is2017MC)
+        MU_ID_SF_h = (TH2F*) MU_ID_SF_file->Get("NUM_TightID_DEN_genTracks_pt_abseta");
+    else
+        MU_ID_SF_h = (TH2F*) MU_ID_SF_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio");
     
     TString muID_sf2 = runProcess.getParameter<std::string>("mu_idSF2");    
     gSystem->ExpandPathName(muID_sf2); 
     TFile *MU_ID_SF_file2 = TFile::Open(muID_sf2);  
-    TH2F* MU_ID_SF_h2 = (TH2F*) MU_ID_SF_file2->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio");   
+    TH2F* MU_ID_SF_h2 = new TH2F();
+    if(is2017data || is2017MC)
+        MU_ID_SF_h2 = (TH2F*) MU_ID_SF_file->Get("NUM_TightID_DEN_genTracks_pt_abseta");
+    else
+        MU_ID_SF_h2 = (TH2F*) MU_ID_SF_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio");
 
     // mu ISO SFs
     TString muISO_sf = runProcess.getParameter<std::string>("mu_isoSF"); 
     gSystem->ExpandPathName(muISO_sf);   
     TFile *MU_ISO_SF_file = TFile::Open(muISO_sf);  
-    TH2F* MU_ISO_SF_h = (TH2F*) MU_ISO_SF_file->Get("TightISO_TightID_pt_eta/pt_abseta_ratio");
+    TH2F* MU_ISO_SF_h = new TH2F();
+    if(is2017data || is2017MC)
+        MU_ISO_SF_h = (TH2F*) MU_ISO_SF_file->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
+    else
+        MU_ISO_SF_h = (TH2F*) MU_ISO_SF_file->Get("TightISO_TightID_pt_eta/pt_abseta_ratio");
 
     TString muISO_sf2 = runProcess.getParameter<std::string>("mu_isoSF2");        
     gSystem->ExpandPathName(muISO_sf2);       
     TFile *MU_ISO_SF_file2 = TFile::Open(muISO_sf2);   
-    TH2F* MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file2->Get("TightISO_TightID_pt_eta/pt_abseta_ratio");     
+    TH2F* MU_ISO_SF_h2 = new TH2F();
+    if(is2017data || is2017MC)
+        MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
+    else
+        MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file->Get("TightISO_TightID_pt_eta/pt_abseta_ratio");
 
     //####################################################################################################################
     //###########################################           MVAHandler         ###########################################
@@ -858,12 +911,12 @@ int main(int argc, char* argv[])
           weight *= genWeight;
           //Here is the tricky part.,... rewrite xsecWeight for WJets/WXJets and DYJets/DYXJets
           if( isMC_WJets )
-	    { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(0, ev.lheNJets); }
+	    { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(0, ev.lheNJets, (is2017MC || is2017data)); }
           else if( isMC_DY ) {
 	    if (string(url.Data()).find("10to50")  != string::npos)
-	      { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(1, ev.lheNJets); }
+	      { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(1, ev.lheNJets, (is2017MC || is2017data)); }
             else
-	      { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(2, ev.lheNJets); }
+	      { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(2, ev.lheNJets, (is2017MC || is2017data)); }
           }
           weight *= xsecWeight; 
         }
@@ -1032,16 +1085,18 @@ int main(int argc, char* argv[])
 	      if(fabs(ilep.en_EtaSC) < 1.479) elDiff_forMET -= ilep*0.006;
 	      else elDiff_forMET -= ilep*0.015; 
 	      
-	      if (isMC) {
-		double sigma= eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed,0,0);
+	      if (is2016MC) {
+		double sigma=0.0; 
+//    sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed,0,0);
 		//Now smear the MC energy
 		TRandom3 *rgen_ = new TRandom3(0);
 		double smearValue = rgen_->Gaus(1, sigma) ;
 		delete rgen_;
 		//TLorentzVector p4        
 		ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue); 
-	      } else {
-		double scale_corr=eScaler_.ScaleCorrection(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed); 
+	      } else if(is2016data){
+		double scale_corr=1.0;
+//    scale_corr = eScaler_.ScaleCorrection(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed); 
 		//TLorentzVector p4
 		ilep.SetPxPyPzE(ilep.Px()*scale_corr, ilep.Py()*scale_corr, ilep.Pz()*scale_corr, ilep.E()*scale_corr); 
 	      }
@@ -1080,61 +1135,82 @@ int main(int argc, char* argv[])
 
 		if(ivar==1) { //stat electron up
 		  double error_scale=0.0;
-		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_stat);
+      if(is2016MC)
+          error_scale=0.0;
+//		      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_stat);
 
 		  ilep.SetPxPyPzE(ilep.Px()*(1.+error_scale), ilep.Py()*(1.+error_scale), ilep.Pz()*(1.+error_scale), ilep.E()*(1.+error_scale));   
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);
 		}if(ivar==2) { //stat electron down
 		  double error_scale=0.0;
-		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_stat); 
+      if(is2016MC)
+          error_scale=0.0;
+//		      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_stat); 
 		  
 		  ilep.SetPxPyPzE(ilep.Px()*(1.-error_scale), ilep.Py()*(1.-error_scale), ilep.Pz()*(1.-error_scale), ilep.E()*(1.-error_scale)); 
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);   
 		}if(ivar==3) { //systematic electron up
 		  double error_scale=0.0;
-		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_syst);
+      if(is2016MC)
+          error_scale=0.0;
+//		      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_syst);
 
 		  ilep.SetPxPyPzE(ilep.Px()*(1.+error_scale), ilep.Py()*(1.+error_scale), ilep.Pz()*(1.+error_scale), ilep.E()*(1.+error_scale)); 
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);   
 		}if(ivar==4) { //systematic electron down
 		  double error_scale=0.0;
-		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_syst);
+      if(is2016MC)
+          error_scale=0.0;
+//		      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_syst);
 		  
 		  ilep.SetPxPyPzE(ilep.Px()*(1.-error_scale), ilep.Py()*(1.-error_scale), ilep.Pz()*(1.-error_scale), ilep.E()*(1.-error_scale));
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep); 
 		}if(ivar==5) { //gain switch electron up
 		  double error_scale=0.0;
-		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_gain);
+      if(is2016MC)
+          error_scale=0.0;
+//		      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_gain);
 		  
 		  ilep.SetPxPyPzE(ilep.Px()*(1.+error_scale), ilep.Py()*(1.+error_scale), ilep.Pz()*(1.+error_scale), ilep.E()*(1.+error_scale)); 
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep); 
 		}if(ivar==6) { //gain switch electron down
 		  double error_scale=0.0;  
-		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_gain);      
+      if(is2016MC)
+          error_scale=0.0;
+//		      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_gain);      
 
 		  ilep.SetPxPyPzE(ilep.Px()*(1.-error_scale), ilep.Py()*(1.-error_scale), ilep.Pz()*(1.-error_scale), ilep.E()*(1.-error_scale));   
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);  
 		}if(ivar==7) { //rho resolution Electron up
 		  double smearValue = 1.0;
-		  double sigma=eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,1,0);
-		  TRandom3 *rgen_ = new TRandom3(0);
-		  smearValue = rgen_->Gaus(1, sigma) ;
+      if(is2016MC){
+		      double sigma=0.0;
+//          sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,1,0);
+		      TRandom3 *rgen_ = new TRandom3(0);
+		      smearValue = rgen_->Gaus(1, sigma) ;
+      }
 
 		  ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue);
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);  
 		}if(ivar==8) { //rho resolution Electron down
 		  double smearValue = 1.0;       
-		  double sigma=eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,-1,0);
-		  TRandom3 *rgen_ = new TRandom3(0);  
-		  smearValue = rgen_->Gaus(1, sigma) ;        
+      if(is2016MC){
+		      double sigma=0.0;
+//          sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,-1,0);
+		      TRandom3 *rgen_ = new TRandom3(0);  
+		      smearValue = rgen_->Gaus(1, sigma) ;        
+      }
 
 		  ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue);      
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);      
 		}if(ivar==9) { //phi resolution Electron down
 		  double smearValue = 1.0;        
-		  double sigma=eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,0,-1);
-		  TRandom3 *rgen_ = new TRandom3(0);  
-		  smearValue = rgen_->Gaus(1, sigma) ;    
+      if(is2016MC){
+		      double sigma=0.0;
+//          sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,0,-1);
+		      TRandom3 *rgen_ = new TRandom3(0);  
+		      smearValue = rgen_->Gaus(1, sigma) ;    
+      }
 
 		  ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue);        
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);      
@@ -1381,9 +1457,11 @@ int main(int argc, char* argv[])
 
 	if (abs(selLeptons[0].id)==11) {
 	  // TRG
-	  if(isMC && !isQCD) {
+	  if(is2016MC && !isQCD) {
 	    weight*=getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
-	  }
+	  } else if(is2017MC && !isQCD){//2017 ele TRG scale factor: https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#E/gamma%20Trigger%20Recomendations
+      weight*=0.991;
+    }
 	    //	    weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	  //weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h2);
 	  mon.fillHisto("lep_pt_raw","e",selLeptons[0].pt(),weight);   
