@@ -47,10 +47,10 @@ FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg.py.templ
 RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg.py.templ
 
 # Json and python template for 2017
-JSON=$MAINDIR/samples2017.json
-NTPL_JSON=$MAINDIR/samples2017.json
-FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_2017.py.templ
-RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_2017.py.templ
+#JSON=$MAINDIR/samples2017.json
+#NTPL_JSON=$MAINDIR/samples2017.json
+#FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_2017.py.templ
+#RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_2017.py.templ
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 GOLDENJSON=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/json/

@@ -137,6 +137,13 @@ git merge upstream/master
 git commit -a -m "Added feature A, B, C"
 git push
 ```
+If work under 94X, be sure that do not commit src/PatUtils.cc, use the below instead:
+```
+git add -u
+git reset src/PatUtils.cc
+git commit -m "Added feature A, B, C"
+git push
+```
 - Make a pull request against the bsmAnalysis. See [details](https://help.github.com/articles/using-pull-requests/)
 
 
