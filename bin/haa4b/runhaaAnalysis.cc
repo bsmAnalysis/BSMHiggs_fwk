@@ -317,7 +317,7 @@ int main(int argc, char* argv[])
     
     for (int isrc = 0; isrc < nsrc; isrc++) {
       const char *name = srcnames[isrc];
-      JetCorrectorParameters *p = new JetCorrectorParameters((jecDir+"/"+pf+"_UncertaintySources_AK4PFchs.txt").Data(), name);
+      JetCorrectorParameters *p = new JetCorrectorParameters((jecDir+pf+"_UncertaintySources_AK4PFchs.txt").Data(), name);
       JetCorrectionUncertainty *unc = new JetCorrectionUncertainty(*p);
       //      totalJESUnc->push_back(unc);
       totalJESUnc[isrc] = unc;
@@ -410,10 +410,12 @@ int main(int argc, char* argv[])
 
 
     
-    //Lepton scale corrections
-    EnergyScaleCorrection_class eScaler_("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_74x_pho");     
-    eScaler_.doScale=true;
-    eScaler_.doSmearings=true;
+    if(is2016MC || is2016data){
+        //Lepton scale corrections
+        EnergyScaleCorrection_class eScaler_("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_74x_pho");     
+        eScaler_.doScale=true;
+        eScaler_.doSmearings=true;
+    }
 
     std::string bit_string_stat = "001";
     std::string bit_string_syst = "010";

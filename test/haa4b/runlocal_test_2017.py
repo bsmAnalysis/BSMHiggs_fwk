@@ -64,7 +64,7 @@ runMetCorAndUncFromMiniAOD(process,
 
 process.mainNtuplizer.isMC = cms.bool(True)
 #process.mainNtuplizer.isMC = cms.bool(False)
-process.mainNtuplizer.dtag = cms.string("MC13TeV_SUSYZHToAA_AATo4B_M-50_2016")
+process.mainNtuplizer.dtag = cms.string("MC13TeV_Wh_amass40_2017")
 process.mainNtuplizer.xsec = cms.double(1.0)
 process.mainNtuplizer.mctruthmode = cms.int32(0)
 process.mainNtuplizer.verbose = cms.bool(False)
