@@ -1,4 +1,56 @@
-# Installation for 80X (2017) 
+# Installation for 94X (2017) 
+```bash
+export SCRAM_ARCH=slc6_amd64_gcc630
+#or
+setenv SCRAM_ARCH slc6_amd64_gcc630
+cmsrel CMSSW_9_4_9
+cd CMSSW_9_4_9/src
+cmsenv
+git cms-init
+
+#Packages to rerun electrons energy correction
+#https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#2017%20MiniAOD%20V2
+git cms-merge-topic cms-egamma:EgammaPostRecoTools_940
+scram b -j 4
+
+#Calculating corrections and uncertainties on MET
+#https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETUncertaintyPrescription#Instructions%20for%20%209_4_X,%20X%20%3E=0%20f
+git cms-merge-topic cms-met:METFixEE2017_949_v2
+scram b -j 4
+
+#Add Fall17_94X_V2 ID for electrons
+#https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2
+git cms-merge-topic guitargeek:EgammaID_9_4_X
+scram b -j 4
+
+#Add Fall17_94X_V2 ID for photons
+#https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2
+git cms-merge-topic lsoffi:CMSSW_9_4_0_pre3_TnP
+scram b -j 10
+# Add the area containing the MVA weights (from cms-data, to appear in "external").
+# Note: the "external" area appears after "scram build" is run at least once, as above
+cd $CMSSW_BASE/external/slc6_amd64_gcc630/
+git clone https://github.com/lsoffi/RecoEgamma-PhotonIdentification.git data/RecoEgamma/PhotonIdentification/data
+cd data/RecoEgamma/PhotonIdentification/data
+git checkout CMSSW_9_4_0_pre3_TnP
+cd $CMSSW_BASE/external/slc6_amd64_gcc630/
+git clone https://github.com/lsoffi/RecoEgamma-ElectronIdentification.git data/RecoEgamma/ElectronIdentification/data
+cd data/RecoEgamma/ElectronIdentification/data
+git checkout CMSSW_9_4_0_pre3_TnP
+cd $CMSSW_BASE/src
+
+git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
+cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
+git checkout 2017_Analysis
+cd $CMSSW_BASE/src
+#PatUtils.cc is broken under 94X, has to be reloaded
+wget https://raw.githubusercontent.com/Wallace-Chen/BSMHiggs_fwk/2017_Development/src/PatUtils.cc  -O UserCode/bsmhiggs_fwk/src/PatUtils.cc
+
+#And compile
+scram b -j 4
+```
+
+# Installation for 80X (2016) 
 
 ```bash
 export SCRAM_ARCH=slc6_amd64_gcc530
@@ -83,6 +135,13 @@ git merge upstream/master
 - Make your own change and commit
 ```
 git commit -a -m "Added feature A, B, C"
+git push
+```
+If work under 94X, be sure that do not commit src/PatUtils.cc, use the below instead:
+```
+git add -u
+git reset src/PatUtils.cc
+git commit -m "Added feature A, B, C"
 git push
 ```
 - Make a pull request against the bsmAnalysis. See [details](https://help.github.com/articles/using-pull-requests/)
