@@ -40,6 +40,7 @@
 #include "TROOT.h"
 #include "TMath.h"
 
+#include <unistd.h>
 
 using namespace std;
 
@@ -86,10 +87,10 @@ struct btagsort: public std::binary_function<PhysicsObject_Jet, PhysicsObject_Je
 
 //bool runDBversion = false;
 
-// Physics objects offline thresholds
+// Physics objects offline thresholds, default values for 2016 below. 2017 value is updated in code
 //const float lep_threshold_=25.; 
-const float mu_threshold_=25.; 
-const float ele_threshold_=30.; 
+float mu_threshold_=25.; 
+float ele_threshold_=30.; 
 const float jet_threshold_=20.; 
 
 //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X
@@ -164,6 +165,8 @@ int main(int argc, char* argv[])
     if(is2017data || is2017MC){// 2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
         CSVLooseWP = 0.5803;CSVMediumWP = 0.8838;CSVTightWP = 0.9693;
         DeepCSVLooseWP = 0.1522;DeepCSVMediumWP = 0.4941;DeepCSVTightWP = 0.8001;
+        mu_threshold_=30.;
+        ele_threshold_=35.;
     }
 
     // if(mctruthmode!=0) {
@@ -172,9 +175,11 @@ int main(int argc, char* argv[])
     // }
     TString outdir = runProcess.getParameter<std::string>("outdir");
     TString outUrl( outdir );
+    TString outTxtUrl = outUrl + "/TXT";
     gSystem->Exec("mkdir -p " + outUrl);
+    gSystem->Exec("mkdir -p " + outTxtUrl);
   
-    TString outTxtUrl_final= outUrl + "/" + outFileUrl + "_FinalList.txt";
+    TString outTxtUrl_final= outTxtUrl + "/" + outFileUrl + "_FinalList.txt";
     FILE* outTxtFile_final = NULL;
     outTxtFile_final = fopen(outTxtUrl_final.Data(), "w");
     printf("TextFile URL = %s\n",outTxtUrl_final.Data());
@@ -2371,10 +2376,22 @@ int main(int argc, char* argv[])
     //save control plots to file
     outUrl += "/";
     outUrl += outFileUrl + ".root";
+//    outUrl = outFileUrl + ".root";
     printf("Results saved in %s\n", outUrl.Data());
 
     //save all to the file
+    int nTrial = 0;
     TFile *ofile=TFile::Open(outUrl, "recreate");
+    while( !ofile->IsOpen() || ofile->IsZombie() ){
+        if(nTrial > 3){
+          printf("Output file open failed!");
+          if ( outTxtFile_final ) fclose(outTxtFile_final);
+          return -1;
+        }
+        nTrial++;
+        usleep(1000000*nTrial);
+        ofile=TFile::Open(outUrl, "update");
+    }
     mon.Write();
     ofile->Close();
 
