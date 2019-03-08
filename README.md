@@ -41,10 +41,10 @@ cd $CMSSW_BASE/src
 
 git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
 cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
-git checkout 2017_Analysis
-cd $CMSSW_BASE/src
+git checkout -b modified #copy the branch to a new one to host future modifications (ease pull request and code merging)
 #PatUtils.cc is broken under 94X, has to be reloaded
-wget https://raw.githubusercontent.com/Wallace-Chen/BSMHiggs_fwk/2017_Development/src/PatUtils.cc  -O UserCode/bsmhiggs_fwk/src/PatUtils.cc
+wget https://raw.githubusercontent.com/Wallace-Chen/BSMHiggs_fwk/2017_Development/src/PatUtils.cc -O src/PatUtils.cc
+cd $CMSSW_BASE/src
 
 #And compile
 scram b -j 4

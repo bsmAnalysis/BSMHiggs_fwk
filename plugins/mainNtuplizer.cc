@@ -713,9 +713,9 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    if(!tr.isValid()  )return;
    
    // float triggerPrescale(1.0),triggerThreshold(0), triggerThresholdHigh(99999);
-   bool mumuTrigger(true); bool muTrigger(true); bool muTrigger2(true);
-   bool eeTrigger(true); bool eTrigger(true); bool emuTrigger(true);
-   bool highPTeTrigger(true);
+   bool mumuTrigger(false); bool muTrigger(false); bool muTrigger2(false);
+   bool eeTrigger(false); bool eTrigger(false); bool eTrigger2(false); bool emuTrigger(false);
+   bool highPTeTrigger(false);
    
    if(is2017){
       //https://indico.cern.ch/event/682891/contributions/2810364/attachments/1570825/2820752/20171206_CMSWeek_MuonHLTReport_KPLee_v3_4.pdf
@@ -725,6 +725,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
       //   https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#E/gamma%20Trigger%20Recomendations
       eeTrigger          = utils::passTriggerPatterns(tr,"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_DoubleEle33_CaloIdL_MW_v*","HLT_DoubleEle25_CaloIdL_MW_v*");
       eTrigger           = utils::passTriggerPatterns(tr,"HLT_Ele32_WPTight_Gsf_v*","HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*");
+      eTrigger2          = utils::passTriggerPatterns(tr,"HLT_Ele35_WPTight_Gsf_v*");
       emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
    } else{
       mumuTrigger        = utils::passTriggerPatterns(tr, "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*" , "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
@@ -738,7 +739,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
       emuTrigger         = utils::passTriggerPatterns(tr, "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*" , "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
    }
    
-   ev.hasTrigger  = ( mumuTrigger||muTrigger||muTrigger2||eeTrigger||highPTeTrigger||eTrigger||emuTrigger );
+   ev.hasTrigger  = ( mumuTrigger||muTrigger||muTrigger2||eeTrigger||highPTeTrigger||eTrigger||eTrigger2||emuTrigger );
    //ev.hasTrigger  = ( muTrigger||eTrigger||emuTrigger ); 
    
    ev.triggerType = ( mumuTrigger  << 0 )
@@ -747,7 +748,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      | ( highPTeTrigger << 3 )
      | ( eTrigger << 4 )
      | ( emuTrigger << 5 ) 
-     | ( muTrigger2 << 6 );
+     | ( muTrigger2 << 6 )
+     | ( eTrigger2 << 7 );
    
    //if(!isMC__ && !ev.hasTrigger) return; // skip the event if no trigger, only for Data
    if(!ev.hasTrigger) return; // skip the event if no trigger, for both Data and MC
@@ -965,9 +967,9 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        if ( verbose_ ) printf("\n\n ----- Reconstructed jets : %lu\n", jets.size() ) ;
 
        //for (std::vector<pat::Jet >::const_iterator j = jets.begin(); j!=jets.end(); j++) 
-       int ijet(0) ;
+       int ijet(0), ijet2(0);
        for (pat::Jet &j : jets) {
-	 if(j.pt() < 20) continue;
+	        if(j.pt() < 20 || fabs(j.eta())>2.5) continue;
 
 	 //jet id
 	 //	 hasLooseId.set(false);
@@ -1012,7 +1014,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
                 j.userFloat("pileupJetId:fullDiscriminant")
              ) ;
          }
-	 
+	 if(patUtils::passPFJetID("Loose", j))  ijet2++;
 
 	 ev.jet_mother_id[ev.jet] = 0;
 	 
@@ -1051,11 +1053,12 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.jet++;
          ijet++ ;
        }
-
+  if((ijet2<2)) return;
        //
        // jet selection (AK8Jets)
        //
 
+  if(!is2017){//disable fatjet for 2017
        pat::JetCollection fatjets; 
        edm::Handle< pat::JetCollection > jetsAK8Handle; 
        event.getByToken(fatjetTag_, jetsAK8Handle);
@@ -1201,7 +1204,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.fjet++;
 	 ifjet++;
        }
-       
+  }
+         
      pat::METCollection mets;
      edm::Handle< pat::METCollection > metsHandle;
      // if(isMC_)

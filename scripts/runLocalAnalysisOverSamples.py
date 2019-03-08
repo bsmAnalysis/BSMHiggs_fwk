@@ -61,6 +61,7 @@ onlytag='all'
 queuelog=''
 resubmit=False
 
+DtagsList = []
 count=0
 who = commands.getstatusoutput('whoami')[1]
 SCRIPT = open('/tmp/'+who+'/SCRIPT_Submit2batch.sh',"w")
@@ -134,10 +135,11 @@ for proc in procList :
             if(xsec>0 and not isdata) :
                 for ibr in br :  xsec = xsec*ibr
             split=getByLabel(d,'split',1)
-            print "Running 133"
+#            print "Running 133"
 
             ## submit or resubmit
-            if(resubmit) :      
+            if(resubmit) :
+                print "Collecting python configuration files for tag: " + dtag 
                 configList = commands.getstatusoutput('ls ' + outdir +'/'+ dtag + '_' + '*_cfg.py')[1].split('\n')
                 failedList = []
 
@@ -159,13 +161,14 @@ for proc in procList :
                         
                         SCRIPT_Temp.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' & \n\n')
                         SCRIPT_DTag.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' & \n\n')
-                        PythonLists.writelines(cfgfile+' '+queuelog+'/'+dtag+'_'+str(segment)+'\n')
+                        PythonLists.writelines(cfgfile+' '+queuelog+'/'+dtag+'_'+str(rsegment)+'\n')
                         #sys.exit(0)
 #                        os.system('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(rsegment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
                         rsegment+=1 
 
             else :    
-                print "Running 165"
+#                print "Running 165"
+                print "Generating python configuration files for tag: " + dtag
                 mydtag = dtag
                 mydtag = mydtag.replace("#","")
                 mydtag = mydtag.replace(" ","")
@@ -213,7 +216,7 @@ for proc in procList :
                         
                     
                     cfgfile=outdir +'/'+ dtag + suffix + '_' + str(segment) + '_cfg.py'
-                    print cfgfile    
+#                    print cfgfile    
                     os.system('cat ' + cfg_file + ' | ' + sedcmd + ' > ' + cfgfile)
 
                     if(not subtoBatch) :
@@ -247,13 +250,15 @@ for proc in procList :
                 SCRIPT2HTCondor.writelines('output                = $(log).out\n')
                 SCRIPT2HTCondor.writelines('error                 = $(log).err\n')
                 SCRIPT2HTCondor.writelines('log                   = $(log).log\n')
+                SCRIPT2HTCondor.writelines('request_cpus          = 2\n')
                 SCRIPT2HTCondor.writelines('+JobFlavour           = "'+queue+'"\n')
                 SCRIPT2HTCondor.writelines('queue cfg,log from '+queuelog+'/all/'+dtag+'_PythonList.txt')
                 SCRIPT2HTCondor.close()
                 os.system('mv /tmp/'+who+'/'+dtag+'_PythonList.txt '+queuelog+'/all/')
                 os.system('mv /tmp/'+who+'/'+dtag+'_SubmitHTCondor.sub '+queuelog+'/all/')
-                print('\033[92mSubmitting jobs for: '+dtag+' \033[0m')
-                os.system('condor_submit '+queuelog+'/all/'+dtag+'_SubmitHTCondor.sub')
+                DtagsList.append(dtag)
+#                print('\033[92mSubmitting jobs for: '+dtag+' \033[0m')
+#                os.system('condor_submit '+queuelog+'/all/'+dtag+'_SubmitHTCondor.sub')
             else:
                 SCRIPT2HTCondor.close()
                 os.system('rm /tmp/'+who+'/'+dtag+'_PythonList.txt')
@@ -273,4 +278,15 @@ os.system('mv /tmp/'+who+'/SCRIPT_Submit2batch.sh '+queuelog+'/all/')
 os.system('mv /tmp/'+who+'/SCRIPT_Local.sh '+queuelog+'/all/')
 os.system('cp $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/scripts/splitlocaljobs.py '+queuelog+'/all/')
 os.system('cp $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/scripts/checkLocaljobs.py '+queuelog+'/all/')
+# Now submit jobs
+for tag in DtagsList:
+#    pythonFile = queuelog+'/all/'+dtag+'_PythonList.txt'
+#    f = open(pythonFile)
+#    try:
+#        for line in f:
+#            print line.split()[0]
+#    finally:
+#        f.close()
+    print('\033[92mSubmitting jobs for: '+tag+' \033[0m')
+    os.system('condor_submit '+queuelog+'/all/'+tag+'_SubmitHTCondor.sub')
 print('\033[92mJobs submitted, use condor_q to check status. \033[0m')
