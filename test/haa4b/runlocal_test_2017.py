@@ -11,7 +11,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 5
 
 process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
 process.load("Configuration.EventContent.EventContent_cff")
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 #load run conditions
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
@@ -64,8 +64,8 @@ runMetCorAndUncFromMiniAOD(process,
 
 #process.mainNtuplizer.isMC = cms.bool(True)
 process.mainNtuplizer.isMC = cms.bool(False)
-#process.mainNtuplizer.dtag = cms.string("MC13TeV_Wh_amass40_2017")
-process.mainNtuplizer.dtag = cms.string("DATA13TeV_SingleElectron_2017B")
+process.mainNtuplizer.dtag = cms.string("MC13TeV_Wh_amass40_2017")
+#process.mainNtuplizer.dtag = cms.string("DATA13TeV_SingleElectron_2017B")
 process.mainNtuplizer.xsec = cms.double(1.0)
 process.mainNtuplizer.mctruthmode = cms.int32(0)
 process.mainNtuplizer.verbose = cms.bool(False)
@@ -97,7 +97,7 @@ process.source = cms.Source("PoolSource",
 
 process.TFileService = cms.Service("TFileService",
 #			fileName = cms.string("analysis_MC_2J_woFJ.root")
-			fileName = cms.string("analysis_MC.root")
+			fileName = cms.string("analysis_pruned.root")
 )
 
 process.dump = cms.EDAnalyzer("EventContentAnalyzer")  
