@@ -415,13 +415,12 @@ int main(int argc, char* argv[])
     TString dirname = runProcess.getParameter<std::string>("dirName");
 
 
-    
-    if(is2016MC || is2016data){
-        //Lepton scale corrections
-        EnergyScaleCorrection_class eScaler_("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_74x_pho");     
-        eScaler_.doScale=true;
-        eScaler_.doSmearings=true;
-    }
+#ifndef YEAR_2017    
+    //Lepton scale corrections
+    EnergyScaleCorrection_class eScaler_("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_74x_pho");     
+    eScaler_.doScale=true;
+    eScaler_.doSmearings=true;
+#endif
 
     std::string bit_string_stat = "001";
     std::string bit_string_syst = "010";
@@ -1099,7 +1098,7 @@ int main(int argc, char* argv[])
 		double sigma=0.0;
 #ifdef YEAR_2017
     //https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2#2017_MiniAOD_V2
-    sigma= ilep.en_enSmearNrSigma;
+    sigma = ilep.en_enSmearNrSigma;
 #else
     sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed,0,0);
 #endif
@@ -1112,7 +1111,7 @@ int main(int argc, char* argv[])
 	      } else {
 		double scale_corr=1.0;
 #ifdef YEAR_2017
-    scale_corr= ilep.en_enScaleValue;
+    scale_corr = ilep.en_enScaleValue;
 #else
     scale_corr = eScaler_.ScaleCorrection(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed); 
 #endif

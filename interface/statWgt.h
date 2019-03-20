@@ -1,4 +1,3 @@
-#define YEAR_2017
 #include <string>
 #include <map>
 #include <utility>
