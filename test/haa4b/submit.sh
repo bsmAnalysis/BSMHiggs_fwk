@@ -36,21 +36,21 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 # Global Variables
 #--------------------------------------------------
 
-SUFFIX=_2019_03_08 #_2018_03_03
+SUFFIX=_2018_10_29 #_2018_03_03
 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
 
 # Json and python template for 2016
-#JSON=$MAINDIR/samples2016.json
-#NTPL_JSON=$MAINDIR/samples2016.json
-#FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg.py.templ
-#RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg.py.templ
+JSON=$MAINDIR/samples2016.json
+NTPL_JSON=$MAINDIR/samples2016.json
+FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg.py.templ
+RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg.py.templ
 
 # Json and python template for 2017
-JSON=$MAINDIR/samples2017.json
-NTPL_JSON=$MAINDIR/samples2017.json
-FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_2017.py.templ
-RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_2017.py.templ
+#JSON=$MAINDIR/samples2017.json
+#NTPL_JSON=$MAINDIR/samples2017.json
+#FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_2017.py.templ
+#RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_2017.py.templ
 
 #SUFFIX=$(date +"_%Y_%m_%d") 
 GOLDENJSON=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/json/
@@ -66,7 +66,7 @@ PLOTTER=$MAINDIR/plotter${SUFFIX}
 ####################### Settings for Ntuple Analysis ##################
 NTPL_INPUT=results$SUFFIX
 
-NTPL_OUTDIR=$MAINDIR/results_Ntpl_Wh${SUFFIX}
+NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX
 #NTPL_OUTDIR=/eos/cms/store/user/georgia/results_Ntpl$SUFFIX #only for Data
 RUNLOG=$NTPL_OUTDIR/LOGFILES/runSelection.log
 
@@ -103,8 +103,8 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
    if [[ $step == 1.0 ]]; then
        echo "JOB SUBMISSION for Ntuplization using full CMSSW fwk"
        echo -e "Input: " $JSON "\nOutput: " $RESULTSDIR
-       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg_2017.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -s crab
-       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $FULLANALYSISCFG -l results$SUFFIX -p "@verbose=False" --key haa_signal -s crab
+       #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -s crab 
+       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $FULLANALYSISCFG -l results$SUFFIX -p "@verbose=False" --key haa_signal -s crab 
    fi    
 
    if [[ $step == 1.1 ]]; then  #submit jobs for h->aa->XXYY analysis
@@ -114,7 +114,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        if [ ! -d "$NTPL_OUTDIR" ]; then
 	   mkdir $NTPL_OUTDIR
        fi
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=False @runMVA=False @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False @runZH=False" -s $queue -r True # -r True
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=True @runMVA=False @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False @runZH=False" -s $queue #-r True
    fi
 fi
 
