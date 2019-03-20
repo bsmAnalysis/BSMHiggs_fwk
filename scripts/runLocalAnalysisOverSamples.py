@@ -139,9 +139,13 @@ for proc in procList :
 
             ## submit or resubmit
             if(resubmit) :
-                print "Collecting python configuration files for tag: " + dtag 
-                configList = commands.getstatusoutput('ls ' + outdir +'/'+ dtag + '_' + '*_cfg.py')[1].split('\n')
+                status, output = commands.getstatusoutput('ls ' + outdir +'/'+ dtag + '_' + '*_cfg.py')
+                if status > 0 :
+                    print "No python configuation files for tag: " + dtag 
+                    continue
+                configList = output.split('\n')
                 failedList = []
+                print "Collecting python configuration files for tag: " + dtag 
 
                     ## split jobs by dtag name
                 SCRIPT_DTag = open('/tmp/'+who+'/SCRIPT_Local_'+dtag+'.sh',"w")

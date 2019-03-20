@@ -50,20 +50,20 @@ setupEgammaPostRecoSeq(process,
 #    )
 
 runMetCorAndUncFromMiniAOD(process,
-#    isData=False,
-    isData=True,
+    isData=False,
+#    isData=True,
     )
 
 runMetCorAndUncFromMiniAOD(process,
-#    isData = False,
-    isData = True,
+    isData = False,
+#    isData = True,
     fixEE2017 = True,
     fixEE2017Params = {'userawPt': True, 'ptThreshold':50.0, 'minEtaThreshold':2.65, 'maxEtaThreshold': 3.139} ,
     postfix = "ModifiedMET"
     )
 
-#process.mainNtuplizer.isMC = cms.bool(True)
-process.mainNtuplizer.isMC = cms.bool(False)
+process.mainNtuplizer.isMC = cms.bool(True)
+#process.mainNtuplizer.isMC = cms.bool(False)
 process.mainNtuplizer.dtag = cms.string("MC13TeV_Wh_amass40_2017")
 #process.mainNtuplizer.dtag = cms.string("DATA13TeV_SingleElectron_2017B")
 process.mainNtuplizer.xsec = cms.double(1.0)
@@ -85,8 +85,8 @@ process.source = cms.Source("PoolSource",
 #	       	     fileNames = cms.untracked.vstring("/store/mc/RunIISummer16MiniAODv2/SUSYZHToAA_AATo4B_M-50_TuneCUETP8M1_13TeV_madgraph_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/00000/BEEEFB4E-37C8-E811-A98B-001E6757E05C.root"),
 #              fileNames = cms.untracked.vstring("/store/mc/RunIIFall17MiniAODv2/NMSSM_WHToAATo4b_M-125_M-12_madgraph_pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/40000/00F6F5BE-8742-E811-90B6-B499BAABF212.root"),
 #             fileNames = cms.untracked.vstring("/store/mc/RunIIFall17MiniAODv2/NMSSM_WHToAATo4b_M-125_M-40_madgraph_pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/20000/50FCC250-3143-E811-A2B0-AC1F6B1AF03C.root"),
-#             fileNames = cms.untracked.vstring("/store/mc/RunIIFall17MiniAODv2/NMSSM_WHToAATo4b_M-125_M-40_madgraph_pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/20000/D2B6CBD5-3443-E811-906F-003048FE2B6C.root"),
-              fileNames = cms.untracked.vstring("/store/data/Run2017B/SingleElectron/MINIAOD/31Mar2018-v1/30000/04B05308-0038-E811-99AB-008CFAC94314.root"),
+             fileNames = cms.untracked.vstring("/store/mc/RunIIFall17MiniAODv2/NMSSM_WHToAATo4b_M-125_M-40_madgraph_pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/20000/D2B6CBD5-3443-E811-906F-003048FE2B6C.root"),
+#              fileNames = cms.untracked.vstring("/store/data/Run2017B/SingleElectron/MINIAOD/31Mar2018-v1/30000/04B05308-0038-E811-99AB-008CFAC94314.root"),
 #              fileNames = cms.untracked.vstring("/store/data/Run2017F/SingleElectron/MINIAOD/31Mar2018-v1/010000/72A98F53-E53B-E811-8945-0CC47A4C8E2E.root"),
                             inputCommands=cms.untracked.vstring( 
         'keep *', 
@@ -97,7 +97,7 @@ process.source = cms.Source("PoolSource",
 
 process.TFileService = cms.Service("TFileService",
 #			fileName = cms.string("analysis_MC_2J_woFJ.root")
-			fileName = cms.string("analysis_pruned.root")
+			fileName = cms.string("analysiMCs_pruned.root")
 )
 
 process.dump = cms.EDAnalyzer("EventContentAnalyzer")  

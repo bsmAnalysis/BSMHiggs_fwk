@@ -1,7 +1,7 @@
 //
 //  BSMPhysicsEvent.cc
 //
-
+//#define YEAR_2017
 #include "UserCode/bsmhiggs_fwk/interface/BSMPhysicsEvent.h"
 
 using namespace std;
@@ -59,7 +59,10 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
                                                 ev.en_pileupIso[i],ev.en_chargedIso[i],ev.en_photonIso[i],ev.en_neutralHadIso[i],ev.en_relIsoWithEA[i],ev.en_passIso[i],
                                                 ev.ta_IsLooseIso[i], ev.ta_IsMediumIso[i], ev.ta_IsTightIso[i], ev.en_relIso[i]
                                                );
-
+#ifdef YEAR_2017
+            phys.leptons[nlep].setLeptonScaleFac(ev.en_enSmearNrSigma[i],ev.en_enScaleValue[i],
+                                                 ev.en_enScaleStatUp[i],ev.en_enScaleStatDown[i],ev.en_enScaleSystUp[i],ev.en_enScaleSystDown[i],ev.en_enScaleGainUp[i],ev.en_enScaleGainDown[i],ev.en_enSigmaRhoUp[i],ev.en_enSigmaRhoDown[i],ev.en_enSigmaPhiDown[i]);
+#endif
 
             nlep++;
         }

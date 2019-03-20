@@ -3,6 +3,8 @@
 
 #if !defined(__CINT__) || defined(__MAKECINT__)
 
+//#define YEAR_2017
+
 #include <string.h>
 #include <iomanip>
 #include <iostream>
@@ -115,6 +117,10 @@ struct DataEvtSummary_t {
     Bool_t en_passId[MAXPARTICLES],en_passIdLoose[MAXPARTICLES],en_passIso[MAXPARTICLES];
     Float_t en_relIso[MAXPARTICLES];
 
+#ifdef YEAR_2017
+    Float_t en_enSmearNrSigma[MAXPARTICLES],en_enScaleValue[MAXPARTICLES];
+    Float_t en_enScaleStatUp[MAXPARTICLES],en_enScaleStatDown[MAXPARTICLES],en_enScaleSystUp[MAXPARTICLES],en_enScaleSystDown[MAXPARTICLES],en_enScaleGainUp[MAXPARTICLES],en_enScaleGainDown[MAXPARTICLES],en_enSigmaRhoUp[MAXPARTICLES],en_enSigmaRhoDown[MAXPARTICLES],en_enSigmaPhiDown[MAXPARTICLES];
+#endif
     //tau
     Int_t ta;
     Float_t ta_px[MAXPARTICLES],ta_py[MAXPARTICLES],ta_pz[MAXPARTICLES],ta_en[MAXPARTICLES];

@@ -41,7 +41,7 @@
 #include "TMath.h"
 
 #include <unistd.h>
-
+//#define YEAR_2017
 using namespace std;
 
 
@@ -142,6 +142,7 @@ int main(int argc, char* argv[])
     bool is2016MC = (isMC && !dtag.Contains("2017"));
     bool is2017data = (!isMC && dtag.Contains("2017"));
     bool is2017MC = (isMC && dtag.Contains("2017"));
+    bool is2017BCdata = (is2017data && (dtag.Contains("2017B") || dtag.Contains("2017C")));
 
     bool verbose = runProcess.getParameter<bool>("verbose");
    
@@ -414,13 +415,12 @@ int main(int argc, char* argv[])
     TString dirname = runProcess.getParameter<std::string>("dirName");
 
 
-    
-    if(is2016MC || is2016data){
-        //Lepton scale corrections
-        EnergyScaleCorrection_class eScaler_("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_74x_pho");     
-        eScaler_.doScale=true;
-        eScaler_.doSmearings=true;
-    }
+#ifndef YEAR_2017    
+    //Lepton scale corrections
+    EnergyScaleCorrection_class eScaler_("EgammaAnalysis/ElectronTools/data/ScalesSmearings/Moriond17_74x_pho");     
+    eScaler_.doScale=true;
+    eScaler_.doSmearings=true;
+#endif
 
     std::string bit_string_stat = "001";
     std::string bit_string_syst = "010";
@@ -1016,11 +1016,13 @@ int main(int argc, char* argv[])
         bool hasMtrigger  = (ev.triggerType >> 1 ) & 0x1;
         bool hasEEtrigger = (ev.triggerType >> 2 ) & 0x1;
         // type 3 is high-pT eeTrigger (safety)
-	bool hasHighPtEtrigger  = (ev.triggerType >> 3 ) & 0x1;
+	      bool hasHighPtEtrigger  = (ev.triggerType >> 3 ) & 0x1;
         bool hasEtrigger  = (ev.triggerType >> 4 ) & 0x1;
         bool hasEMtrigger = (ev.triggerType >> 5 ) & 0x1;
-
-
+        bool hasEtrigger2  = (ev.triggerType >> 7 ) & 0x1;
+        // Follow the EG POG recommendation, require pass HLT_Ele32_WPTight_L1DoubleEG and HLT_Ele35_WPTight at the same time when is 2017 RunB or RunC
+        // https://indico.cern.ch/event/662751/contributions/2778365/attachments/1561439/2458438/egamma_workshop_triggerTalk.pdf
+        if(is2017BCdata) hasEtrigger = hasEtrigger && hasEtrigger2;
         //#########################################################################
         //#####################      Objects Selection       ######################
         //######################################################################### 
@@ -1092,18 +1094,27 @@ int main(int argc, char* argv[])
 	      if(fabs(ilep.en_EtaSC) < 1.479) elDiff_forMET -= ilep*0.006;
 	      else elDiff_forMET -= ilep*0.015; 
 	      
-	      if (is2016MC) {
-		double sigma=0.0; 
-//    sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed,0,0);
+	      if (isMC) {
+		double sigma=0.0;
+#ifdef YEAR_2017
+    //https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2#2017_MiniAOD_V2
+    sigma = ilep.en_enSmearNrSigma;
+#else
+    sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed,0,0);
+#endif
 		//Now smear the MC energy
 		TRandom3 *rgen_ = new TRandom3(0);
 		double smearValue = rgen_->Gaus(1, sigma) ;
 		delete rgen_;
 		//TLorentzVector p4        
 		ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue); 
-	      } else if(is2016data){
+	      } else {
 		double scale_corr=1.0;
-//    scale_corr = eScaler_.ScaleCorrection(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed); 
+#ifdef YEAR_2017
+    scale_corr = ilep.en_enScaleValue;
+#else
+    scale_corr = eScaler_.ScaleCorrection(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed); 
+#endif
 		//TLorentzVector p4
 		ilep.SetPxPyPzE(ilep.Px()*scale_corr, ilep.Py()*scale_corr, ilep.Pz()*scale_corr, ilep.E()*scale_corr); 
 	      }
@@ -1142,82 +1153,100 @@ int main(int argc, char* argv[])
 
 		if(ivar==1) { //stat electron up
 		  double error_scale=0.0;
-      if(is2016MC)
-          error_scale=0.0;
-//		      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_stat);
-
+#ifdef YEAR_2017
+      error_scale = ilep.en_enScaleStatUp/ilep.E()-1;
+//      printf("Electron stat up error scale: %f\n",error_scale);
+#else
+		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_stat);
+#endif
 		  ilep.SetPxPyPzE(ilep.Px()*(1.+error_scale), ilep.Py()*(1.+error_scale), ilep.Pz()*(1.+error_scale), ilep.E()*(1.+error_scale));   
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);
 		}if(ivar==2) { //stat electron down
 		  double error_scale=0.0;
-      if(is2016MC)
-          error_scale=0.0;
-//		      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_stat); 
-		  
+#ifdef YEAR_2017
+      error_scale = ilep.en_enScaleStatDown/ilep.E()-1;
+//      printf("Electron stat down error scale: %f\n",error_scale);
+#else
+      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_stat); 
+#endif		  
 		  ilep.SetPxPyPzE(ilep.Px()*(1.-error_scale), ilep.Py()*(1.-error_scale), ilep.Pz()*(1.-error_scale), ilep.E()*(1.-error_scale)); 
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);   
 		}if(ivar==3) { //systematic electron up
 		  double error_scale=0.0;
-      if(is2016MC)
-          error_scale=0.0;
-//		      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_syst);
-
+#ifdef YEAR_2017
+      error_scale = ilep.en_enScaleSystUp/ilep.E()-1;
+//      printf("Electron sys up error scale: %f\n",error_scale);
+#else
+      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_syst);
+#endif
 		  ilep.SetPxPyPzE(ilep.Px()*(1.+error_scale), ilep.Py()*(1.+error_scale), ilep.Pz()*(1.+error_scale), ilep.E()*(1.+error_scale)); 
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);   
 		}if(ivar==4) { //systematic electron down
 		  double error_scale=0.0;
-      if(is2016MC)
-          error_scale=0.0;
-//		      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_syst);
-		  
+#ifdef YEAR_2017
+      error_scale = ilep.en_enScaleSystDown/ilep.E()-1;
+//      printf("Electron stat down error scale: %f\n",error_scale);
+#else
+      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_syst);
+#endif		  
 		  ilep.SetPxPyPzE(ilep.Px()*(1.-error_scale), ilep.Py()*(1.-error_scale), ilep.Pz()*(1.-error_scale), ilep.E()*(1.-error_scale));
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep); 
 		}if(ivar==5) { //gain switch electron up
 		  double error_scale=0.0;
-      if(is2016MC)
-          error_scale=0.0;
-//		      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_gain);
-		  
+#ifdef YEAR_2017
+      error_scale = ilep.en_enScaleGainUp/ilep.E()-1;
+//      printf("Electron gain up error scale: %f\n",error_scale);
+#else
+      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_gain);
+#endif		  
 		  ilep.SetPxPyPzE(ilep.Px()*(1.+error_scale), ilep.Py()*(1.+error_scale), ilep.Pz()*(1.+error_scale), ilep.E()*(1.+error_scale)); 
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep); 
 		}if(ivar==6) { //gain switch electron down
 		  double error_scale=0.0;  
-      if(is2016MC)
-          error_scale=0.0;
-//		      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_gain);      
-
+#ifdef YEAR_2017
+      error_scale = ilep.en_enScaleGainDown/ilep.E()-1;
+//      printf("Electron gain down error scale: %f\n",error_scale);
+#else	      
+      error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_gain);      
+#endif
 		  ilep.SetPxPyPzE(ilep.Px()*(1.-error_scale), ilep.Py()*(1.-error_scale), ilep.Pz()*(1.-error_scale), ilep.E()*(1.-error_scale));   
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);  
 		}if(ivar==7) { //rho resolution Electron up
 		  double smearValue = 1.0;
-      if(is2016MC){
-		      double sigma=0.0;
-//          sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,1,0);
-		      TRandom3 *rgen_ = new TRandom3(0);
-		      smearValue = rgen_->Gaus(1, sigma) ;
-      }
+#ifdef YEAR_2017
+      smearValue = ilep.en_enSigmaRhoUp/ilep.E();
+//      printf("Electron rho up smear value: %f\n",smearValue);
+#else
+      double sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,1,0);
+		  TRandom3 *rgen_ = new TRandom3(0);
+		  smearValue = rgen_->Gaus(1, sigma) ;
+#endif
 
 		  ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue);
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);  
 		}if(ivar==8) { //rho resolution Electron down
 		  double smearValue = 1.0;       
-      if(is2016MC){
-		      double sigma=0.0;
-//          sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,-1,0);
-		      TRandom3 *rgen_ = new TRandom3(0);  
-		      smearValue = rgen_->Gaus(1, sigma) ;        
-      }
+#ifdef YEAR_2017
+      smearValue = ilep.en_enSigmaRhoDown/ilep.E();
+//      printf("Electron rho down smear value: %f\n",smearValue);
+#else
+      double sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,-1,0);
+		  TRandom3 *rgen_ = new TRandom3(0);  
+		  smearValue = rgen_->Gaus(1, sigma) ;        
+#endif
 
 		  ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue);      
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);      
 		}if(ivar==9) { //phi resolution Electron down
-		  double smearValue = 1.0;        
-      if(is2016MC){
-		      double sigma=0.0;
-//          sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,0,-1);
-		      TRandom3 *rgen_ = new TRandom3(0);  
-		      smearValue = rgen_->Gaus(1, sigma) ;    
-      }
+		  double smearValue = 1.0;
+#ifdef YEAR_2017
+      smearValue = ilep.en_enSigmaPhiDown/ilep.E();
+//      printf("Electron phi down smear value: %f\n",smearValue);
+#else
+      double sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,0,-1);
+		  TRandom3 *rgen_ = new TRandom3(0);  
+		  smearValue = rgen_->Gaus(1, sigma);
+#endif 
 
 		  ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue);        
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);      
@@ -2285,6 +2314,9 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("ptw",tags,wsum.pt(),weight);
 	      // mtW 
 	      mon.fillHisto("mtw",tags,sqrt(tMass),weight);
+//        if(tag_cat=="mu" && tag_qcd=="_A_" && tag_subcat=="SR_4b"){
+//          printf("iev: %i, weight is: %f\n",iev,weight);
+//        }
 	      // Dphi(W,h) 
 	      mon.fillHisto("dphiWh",tags,dphi_Wh,weight);
 	      // DRave, DMmin
