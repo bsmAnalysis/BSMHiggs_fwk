@@ -1,5 +1,5 @@
 #include "UserCode/bsmhiggs_fwk/interface/DataEvtSummaryHandler.h"
-
+//#define YEAR_2017
 using namespace std;
 
 //
@@ -195,6 +195,20 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("en_passIdLoose",        evSummary_.en_passIdLoose,          "en_passIdLoose[en]/O"); 
     t_->Branch("en_passIso",            evSummary_.en_passIso,              "en_passIso[en]/O"); 
     t_->Branch("en_relIso",             evSummary_.en_relIso,               "en_relIso[en]/F");
+
+#ifdef YEAR_2017
+    t_->Branch("en_enSmearNrSigma",     evSummary_.en_enSmearNrSigma,       "en_enSmearNrSigma[en]/F");
+    t_->Branch("en_enScaleValue",       evSummary_.en_enScaleValue,         "en_enScaleValue[en]/F");
+    t_->Branch("en_enScaleStatUp",      evSummary_.en_enScaleStatUp,        "en_enScaleStatUp[en]/F");
+    t_->Branch("en_enScaleStatDown",    evSummary_.en_enScaleStatDown,      "en_enScaleStatDown[en]/F");
+    t_->Branch("en_enScaleSystUp",      evSummary_.en_enScaleSystUp,        "en_enScaleSystUp[en]/F");
+    t_->Branch("en_enScaleSystDown",    evSummary_.en_enScaleSystDown,      "en_enScaleSystDown[en]/F");
+    t_->Branch("en_enScaleGainUp",      evSummary_.en_enScaleGainUp,        "en_enScaleGainUp[en]/F");
+    t_->Branch("en_enScaleGainDown",    evSummary_.en_enScaleGainDown,      "en_enScaleGainDown[en]/F");
+    t_->Branch("en_enSigmaRhoUp",       evSummary_.en_enSigmaRhoUp,         "en_enSigmaRhoUp[en]/F");
+    t_->Branch("en_enSigmaRhoDown",     evSummary_.en_enSigmaRhoDown,       "en_enSigmaRhoDown[en]/F");
+    t_->Branch("en_enSigmaPhiDown",     evSummary_.en_enSigmaPhiDown,       "en_enSigmaPhiDown[en]/F");
+#endif
 
     /* tmp
     //tau
@@ -524,6 +538,21 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("en_passIdLoose", evSummary_.en_passIdLoose);
     t_->SetBranchAddress("en_passIso", evSummary_.en_passIso);
     t_->SetBranchAddress("en_relIso", evSummary_.en_relIso);
+
+#ifdef YEAR_2017
+    t_->SetBranchAddress("en_enSmearNrSigma",     evSummary_.en_enSmearNrSigma);
+    t_->SetBranchAddress("en_enScaleValue",       evSummary_.en_enScaleValue);
+    t_->SetBranchAddress("en_enScaleStatUp",      evSummary_.en_enScaleStatUp);
+    t_->SetBranchAddress("en_enScaleStatDown",    evSummary_.en_enScaleStatDown);
+    t_->SetBranchAddress("en_enScaleSystUp",      evSummary_.en_enScaleSystUp);
+    t_->SetBranchAddress("en_enScaleSystDown",    evSummary_.en_enScaleSystDown);
+    t_->SetBranchAddress("en_enScaleGainUp",      evSummary_.en_enScaleGainUp);
+    t_->SetBranchAddress("en_enScaleGainDown",    evSummary_.en_enScaleGainDown);
+    t_->SetBranchAddress("en_enSigmaRhoUp",       evSummary_.en_enSigmaRhoUp);
+    t_->SetBranchAddress("en_enSigmaRhoDown",     evSummary_.en_enSigmaRhoDown);
+    t_->SetBranchAddress("en_enSigmaPhiDown",     evSummary_.en_enSigmaPhiDown);
+#endif
+
     /* tmp
     //tau
     t_->SetBranchAddress("ta",                      &evSummary_.ta);

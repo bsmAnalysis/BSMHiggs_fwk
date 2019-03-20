@@ -44,6 +44,9 @@ cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
 git checkout -b modified #copy the branch to a new one to host future modifications (ease pull request and code merging)
 #PatUtils.cc is broken under 94X, has to be reloaded
 wget https://raw.githubusercontent.com/Wallace-Chen/BSMHiggs_fwk/2017_Development/src/PatUtils.cc -O src/PatUtils.cc
+#Switching from 2016 version to 2017 by running:
+cd test/haa4b
+sh ./converter # input 2 when you are prompted to select
 cd $CMSSW_BASE/src
 
 #And compile
@@ -136,6 +139,12 @@ git merge upstream/master
 ```
 git commit -a -m "Added feature A, B, C"
 git push
+```
+And also switch back to 2016 from 2017 if you work in 2017 before commiting by running:
+```
+cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
+sh ./converter # input 1 when you are prompted to select
+cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
 ```
 If work under 94X, be sure that do not commit src/PatUtils.cc, use the below instead:
 ```

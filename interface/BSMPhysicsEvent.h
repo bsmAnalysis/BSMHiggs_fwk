@@ -5,6 +5,8 @@
 #ifndef ____BSMPhysicsEvent__
 #define ____BSMPhysicsEvent__
 
+//#define YEAR_2017
+
 #include <stdio.h>
 #include <vector>
 #include "TH2F.h"
@@ -101,6 +103,23 @@ public :
 	ta_IsTightIso = ta_IsTightIso_;
     }
 
+#ifdef YEAR_2017
+    void setLeptonScaleFac(float en_enSmearNrSigma_, float en_enScaleValue_,
+                           float en_enScaleStatUp_, float en_enScaleStatDown_, float en_enScaleSystUp_, float en_enScaleSystDown_, float en_enScaleGainUp_, float en_enScaleGainDown_, float en_enSigmaRhoUp_,  float en_enSigmaRhoDown_, float en_enSigmaPhiDown_) {
+    en_enSmearNrSigma = en_enSmearNrSigma_;
+    en_enScaleValue   = en_enScaleValue_;
+    en_enScaleStatUp  = en_enScaleStatUp_;
+    en_enScaleStatDown= en_enScaleStatDown_;
+    en_enScaleSystUp  = en_enScaleSystUp_;
+    en_enScaleSystDown= en_enScaleSystDown_;
+    en_enScaleGainUp  = en_enScaleGainUp_;
+    en_enScaleGainDown= en_enScaleGainDown_;
+    en_enSigmaRhoUp   = en_enSigmaRhoUp_;
+    en_enSigmaRhoDown = en_enSigmaRhoDown_;
+    en_enSigmaPhiDown = en_enSigmaPhiDown_;
+    }
+#endif
+
     float e_pfRelIsoDbeta() {
         return (en_chargedIso + TMath::Max(0., en_neutralHadIso + en_photonIso - 0.5 * en_pileupIso) )/pt();
     }
@@ -131,6 +150,11 @@ public :
     float en_pileupIso, en_chargedIso, en_photonIso, en_neutralHadIso;
     float en_relIsoWithEA;
     bool ta_IsLooseIso, ta_IsMediumIso, ta_IsTightIso;
+
+#ifdef YEAR_2017
+    float en_enSmearNrSigma, en_enScaleValue;
+    float en_enScaleStatUp, en_enScaleStatDown, en_enScaleSystUp, en_enScaleSystDown, en_enScaleGainUp, en_enScaleGainDown, en_enSigmaRhoUp,  en_enSigmaRhoDown, en_enSigmaPhiDown;
+#endif
 };
 
 
