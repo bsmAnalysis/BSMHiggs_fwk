@@ -758,7 +758,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_WJets_2017_ext1",
-                    "xsec": 50960
+                    "xsec": 50690
                 },
                 {
                     "br": [
@@ -769,7 +769,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_WJets_2017",
-                    "xsec": 50960
+                    "xsec": 50690
                 },
                 {
                     "br": [
