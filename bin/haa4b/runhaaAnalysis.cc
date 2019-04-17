@@ -447,31 +447,25 @@ int main(int argc, char* argv[])
 
     SmartSelectionMonitor mon;
 
-    TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";;Events", 9,0,9) );
+    TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";;Events", 8,0,8) );
     h->GetXaxis()->SetBinLabel(1,"Raw");
-    if (!runZH)
+    if (!runZH) {
       h->GetXaxis()->SetBinLabel(2,"1 lepton");
-    else 
+      h->GetXaxis()->SetBinLabel(3,"Trigger");  
+      h->GetXaxis()->SetBinLabel(4,"E_{T}^{miss}>25");   
+      h->GetXaxis()->SetBinLabel(5,"M_{T}^{W}>50");  
+      h->GetXaxis()->SetBinLabel(6,">=2-jets, >=2 b-tags"); 
+      h->GetXaxis()->SetBinLabel(7,"==3b-tags");     
+      h->GetXaxis()->SetBinLabel(8,"==4b-tags");    
+    } else {
       h->GetXaxis()->SetBinLabel(2,"2 leptons");
-    h->GetXaxis()->SetBinLabel(3,"Trigger");
-    if (!runZH) 
-      h->GetXaxis()->SetBinLabel(4,"E_{T}^{miss}>25");
-    else
+      h->GetXaxis()->SetBinLabel(3,"Trigger");
       h->GetXaxis()->SetBinLabel(4,"Z-mass window");
-    if (!runZH) 
-      h->GetXaxis()->SetBinLabel(5,"50<M_{T}^{W}<250");
-    else
-      h->GetXaxis()->SetBinLabel(5,">=2-jets, >=2 b-tags");   
-    if (!runZH)
-      h->GetXaxis()->SetBinLabel(6,">=2-jets, >=2 b-tags");
-    else 
-      h->GetXaxis()->SetBinLabel(6,"==3b-tags");     
-    if (!runZH)
-      h->GetXaxis()->SetBinLabel(7,"==3b-tags");
-    else
-      h->GetXaxis()->SetBinLabel(7,"==4b-tags");  
-    if (!runZH)
-      h->GetXaxis()->SetBinLabel(8,"==4b-tags");
+      h->GetXaxis()->SetBinLabel(5,"Z-mass window");  
+      h->GetXaxis()->SetBinLabel(6,">=2-jets, >=2 b-tags");   
+      h->GetXaxis()->SetBinLabel(7,"==3b-tags");     
+      h->GetXaxis()->SetBinLabel(8,"==4b-tags");  
+    }
  
     //generator level plots
     mon.addHistogram( new TH1F( "pileup", ";pileup;Events", 100,-0.5,99.5) );
@@ -584,15 +578,15 @@ int main(int argc, char* argv[])
     hevt->GetXaxis()->SetBinLabel(5,"(1b, 4j)");
     hevt->GetXaxis()->SetBinLabel(6,"(1b, >=5j)");
     */
-    hevt->GetXaxis()->SetBinLabel(7,"(2b, 3j)");
-    hevt->GetXaxis()->SetBinLabel(8,"(2b, 4j)");
-    hevt->GetXaxis()->SetBinLabel(9,"(2b, >=5j)");
-    hevt->GetXaxis()->SetBinLabel(10,"(3b, 3j)");
-    hevt->GetXaxis()->SetBinLabel(11,"(3b, 4j)");
-    hevt->GetXaxis()->SetBinLabel(12,"(3b, >=5j)");
-    hevt->GetXaxis()->SetBinLabel(13,"(4b, 3j)");
-    hevt->GetXaxis()->SetBinLabel(14,"(4b, 4j)");
-    hevt->GetXaxis()->SetBinLabel(15,"(4b, >=5j)");
+    hevt->GetXaxis()->SetBinLabel(1,"(2b, 3j)");
+    hevt->GetXaxis()->SetBinLabel(2,"(2b, 4j)");
+    hevt->GetXaxis()->SetBinLabel(3,"(2b, >=5j)");
+    hevt->GetXaxis()->SetBinLabel(4,"(3b, 3j)");
+    hevt->GetXaxis()->SetBinLabel(5,"(3b, 4j)");
+    hevt->GetXaxis()->SetBinLabel(6,"(3b, >=5j)");
+    hevt->GetXaxis()->SetBinLabel(7,"(4b, 3j)");
+    hevt->GetXaxis()->SetBinLabel(8,"(4b, 4j)");
+    hevt->GetXaxis()->SetBinLabel(9,"(4b, >=5j)");
     /*
     hevt->GetXaxis()->SetBinLabel(16,"(5b, 3j)");
     hevt->GetXaxis()->SetBinLabel(17,"(5b, 4j)");
@@ -2158,7 +2152,7 @@ int main(int argc, char* argv[])
 	    }
 	  }
 
-	  //	  if (!passMnBTag) continue; //at least 1 MediumWP b-tag if nBjets>0
+	  if (!passMnBTag) continue; //at least 1 MediumWP b-tag if nBjets>0
 	  
 	  //#########################################################
 	  //####  RUN PRESELECTION AND CONTROL REGION PLOTS  ########
