@@ -75,7 +75,8 @@ int EventCategory::Get(const PhysicsEvent_t& phys, std::vector<LorentzVector>* b
 	if (NJets>=5) return 7;
       }
       if(NbJets==3) {
-	if (NJets==3 || NJets==4) return 4;
+	if (NJets==3) return 4;
+	if (NJets==4) return 5; 
 	if (NJets>=5) return 6;
       }
       if(NbJets==2) { // tt+light CR
