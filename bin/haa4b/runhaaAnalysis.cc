@@ -89,8 +89,8 @@ struct btagsort: public std::binary_function<PhysicsObject_Jet, PhysicsObject_Je
 
 // Physics objects offline thresholds, default values for 2016 below. 2017 value is updated in code
 //const float lep_threshold_=25.; 
-float mu_threshold_=25.; 
-float ele_threshold_=30.; 
+float mu_threshold_=10.; //25.; 
+float ele_threshold_=15.; //30.; 
 const float jet_threshold_=20.; 
 
 //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X
@@ -163,9 +163,10 @@ int main(int argc, char* argv[])
     TString url = runProcess.getParameter<std::string>("input");
     TString outFileUrl( dtag ); //gSystem->BaseName(url));
 
-    if(is2017data || is2017MC){// 2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
-        CSVLooseWP = 0.5803;CSVMediumWP = 0.8838;CSVTightWP = 0.9693;
-        DeepCSVLooseWP = 0.1522;DeepCSVMediumWP = 0.4941;DeepCSVTightWP = 0.8001;
+    if(is2017data || is2017MC){
+      // 2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+        CSVLooseWP = 0.5803; CSVMediumWP = 0.8838; CSVTightWP = 0.9693;
+        DeepCSVLooseWP = 0.1522; DeepCSVMediumWP = 0.4941; DeepCSVTightWP = 0.8001;
         mu_threshold_=30.;
         ele_threshold_=35.;
     }
@@ -195,7 +196,7 @@ int main(int argc, char* argv[])
     bool isSingleMuPD(!isMC && dtag.Contains("SingleMuon"));
     bool isDoubleMuPD(!isMC && dtag.Contains("DoubleMuon"));
     bool isSingleElePD(!isMC && dtag.Contains("SingleElectron"));
-    bool isDoubleElePD(!isMC && dtag.Contains("DoubleEG"));
+    bool isDoubleElePD(!isMC && dtag.Contains("DoubleEle"));
     bool isMuonEGPD(!isMC && dtag.Contains("MuonEG"));
 
     
@@ -229,6 +230,9 @@ int main(int argc, char* argv[])
 
     if (isSignal) printf("Signal url = %s\n",url.Data());
 
+    if (!runZH) {
+      if(isDoubleElePD || isDoubleMuPD || isMuonEGPD) return -1; 
+    }   
 
     //b-tagging: beff and leff must be derived from the MC sample using the discriminator vs flavor
     //the scale factors are taken as average numbers from the pT dependent curves see:
@@ -443,15 +447,25 @@ int main(int argc, char* argv[])
 
     SmartSelectionMonitor mon;
 
-    TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";;Events", 9,0,9) );
+    TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";;Events", 8,0,8) );
     h->GetXaxis()->SetBinLabel(1,"Raw");
-    h->GetXaxis()->SetBinLabel(2,"1 lepton");
-    h->GetXaxis()->SetBinLabel(3,"Trigger");
-    h->GetXaxis()->SetBinLabel(4,"E_{T}^{miss}>25");
-    h->GetXaxis()->SetBinLabel(5,"50<M_{T}^{W}<250");
-    h->GetXaxis()->SetBinLabel(6,">=2-jets, >=2 b-tags");
-    h->GetXaxis()->SetBinLabel(7,"==3b-tags");
-    h->GetXaxis()->SetBinLabel(8,"==4b-tags");
+    if (!runZH) {
+      h->GetXaxis()->SetBinLabel(2,"1 lepton");
+      h->GetXaxis()->SetBinLabel(3,"Trigger");  
+      h->GetXaxis()->SetBinLabel(4,"E_{T}^{miss}>25");   
+      h->GetXaxis()->SetBinLabel(5,"M_{T}^{W}>50");  
+      h->GetXaxis()->SetBinLabel(6,">=2-jets, >=2 b-tags"); 
+      h->GetXaxis()->SetBinLabel(7,"==3b-tags");     
+      h->GetXaxis()->SetBinLabel(8,"==4b-tags");    
+    } else {
+      h->GetXaxis()->SetBinLabel(2,"2 leptons");
+      h->GetXaxis()->SetBinLabel(3,"Trigger");
+      h->GetXaxis()->SetBinLabel(4,"Z-mass window");
+      h->GetXaxis()->SetBinLabel(5,"Z-mass window");  
+      h->GetXaxis()->SetBinLabel(6,">=2-jets, >=2 b-tags");   
+      h->GetXaxis()->SetBinLabel(7,"==3b-tags");     
+      h->GetXaxis()->SetBinLabel(8,"==4b-tags");  
+    }
  
     //generator level plots
     mon.addHistogram( new TH1F( "pileup", ";pileup;Events", 100,-0.5,99.5) );
@@ -467,7 +481,7 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "dR_raw",";#Delta R(SV,b);Events",50,0.,5.));
     mon.addHistogram( new TH1F( "dRlj_raw",";#Delta R(lep,jet);Events",100,0.,5.));
 
-    mon.addHistogram( new TH1F( "lep_pt_raw", ";lepton #it{p}_{T}^{l} [GeV];Events", 80,0.,200.) );  
+    mon.addHistogram( new TH1F( "lep_pt_raw", ";lepton #it{p}_{T}^{l} [GeV];Events", 50,0.,200.) );  
     mon.addHistogram( new TH1F( "lep_eta_raw",";lepton #eta^{l};Events", 52,-2.6,2.6) );  
 
     mon.addHistogram( new TH1F( "leadlep_pt_raw", ";Leading lepton #it{p}_{T}^{l} [GeV];Events", 80,0.,600.) );
@@ -555,26 +569,29 @@ int main(int argc, char* argv[])
     }
 
     // EVent categorization plot
-    TH1F *hevt = (TH1F *)mon.addHistogram( new TH1F("evt_cat",  ";(n-btag, n-jet);Events",18,0,18) );
+    TH1F *hevt = (TH1F *)mon.addHistogram( new TH1F("evt_cat",  ";(n-btag, n-jet);Events",9,0,9) );
+    /*
     hevt->GetXaxis()->SetBinLabel(1,"(0b, 3j)");
     hevt->GetXaxis()->SetBinLabel(2,"(0b, 4j)");
     hevt->GetXaxis()->SetBinLabel(3,"(0b, >=5j)");
     hevt->GetXaxis()->SetBinLabel(4,"(1b, 3j)");
     hevt->GetXaxis()->SetBinLabel(5,"(1b, 4j)");
     hevt->GetXaxis()->SetBinLabel(6,"(1b, >=5j)");
-    hevt->GetXaxis()->SetBinLabel(7,"(2b, 3j)");
-    hevt->GetXaxis()->SetBinLabel(8,"(2b, 4j)");
-    hevt->GetXaxis()->SetBinLabel(9,"(2b, >=5j)");
-    hevt->GetXaxis()->SetBinLabel(10,"(3b, 3j)");
-    hevt->GetXaxis()->SetBinLabel(11,"(3b, 4j)");
-    hevt->GetXaxis()->SetBinLabel(12,"(3b, >=5j)");
-    hevt->GetXaxis()->SetBinLabel(13,"(4b, 3j)");
-    hevt->GetXaxis()->SetBinLabel(14,"(4b, 4j)");
-    hevt->GetXaxis()->SetBinLabel(15,"(4b, >=5j)");
+    */
+    hevt->GetXaxis()->SetBinLabel(1,"(2b, 3j)");
+    hevt->GetXaxis()->SetBinLabel(2,"(2b, 4j)");
+    hevt->GetXaxis()->SetBinLabel(3,"(2b, >=5j)");
+    hevt->GetXaxis()->SetBinLabel(4,"(3b, 3j)");
+    hevt->GetXaxis()->SetBinLabel(5,"(3b, 4j)");
+    hevt->GetXaxis()->SetBinLabel(6,"(3b, >=5j)");
+    hevt->GetXaxis()->SetBinLabel(7,"(4b, 3j)");
+    hevt->GetXaxis()->SetBinLabel(8,"(4b, 4j)");
+    hevt->GetXaxis()->SetBinLabel(9,"(4b, >=5j)");
+    /*
     hevt->GetXaxis()->SetBinLabel(16,"(5b, 3j)");
     hevt->GetXaxis()->SetBinLabel(17,"(5b, 4j)");
     hevt->GetXaxis()->SetBinLabel(18,"(5b, >=5j)");
-    
+    */
     //--------------------------------------------------------------------------
     //some strings for tagging histograms:
     const char* astr[] = {"_b1","_b2","_b3","_b4"};
@@ -589,11 +606,11 @@ int main(int argc, char* argv[])
     
     mon.addHistogram( new TH1F( "nvtx_raw",";Vertices;Events",100,0,100) );
     mon.addHistogram( new TH1F( "nvtxwgt_raw",";Vertices;Events",100,0,100) );
-    mon.addHistogram( new TH1F( "pfmet",    ";E_{T}^{miss} [GeV];Events", 100,0.,800.) );
+    mon.addHistogram( new TH1F( "pfmet",    ";E_{T}^{miss} [GeV];Events", 30,0.,500.) );
     mon.addHistogram( new TH1F( "ht",    ";H_{T} [GeV];Events", 40,0.,800.) );
-    mon.addHistogram( new TH1F( "mtw",       ";#it{m}_{T}^{W} [GeV];Events", 80,0.,800.) );
-    mon.addHistogram( new TH1F( "ptw",       ";#it{p}_{T}^{W} [GeV];Events",30,0.,500.) );
-    mon.addHistogram( new TH1F( "dphiWh", ";#Delta#it{#phi}(#it{W},h);Events", 20,0,TMath::Pi()) );
+    mon.addHistogram( new TH1F( "mtw",       ";#it{m}_{T}^{V} [GeV];Events", 60,0.,600.) );
+    mon.addHistogram( new TH1F( "ptw",       ";#it{p}_{T}^{V} [GeV];Events",30,0.,500.) );
+    mon.addHistogram( new TH1F( "dphiWh", ";#Delta#it{#phi}(#it{V},h);Events", 20,0,TMath::Pi()) );
     mon.addHistogram( new TH1F( "dRave",";#Delta R(b,b)_{ave};Events",50,0.,5.));
     mon.addHistogram( new TH1F( "dmmin",";#Delta m_{b,b}^{min};Events",25,0.,250.));
     mon.addHistogram( new TH1F( "dphijmet", ";|#Delta#it{#phi}(jet,E_{T}^{miss})_{min}|;#jet", 20,0,TMath::Pi()) );
@@ -1072,14 +1089,14 @@ int main(int argc, char* argv[])
 	  bool hasTightIdandIso(true);
 	  if (abs(lepid)==11) {
 	    lep_threshold=ele_threshold_;
-            hasTightIdandIso &= ilep.passIdEl;
-	    if (hasTightIdandIso && (ilep.pt()>lep_threshold) ) allLeptons.push_back(ilep);
-	    if ( !runQCD ) hasTightIdandIso &= ilep.passIsoEl;
+	    if(!runQCD)hasTightIdandIso = (ilep.passIdEl && ilep.passIsoEl);   
+            else hasTightIdandIso = ilep.passIdEl;
+	    if ( (ilep.passIdEl) && (ilep.pt()>lep_threshold) ) allLeptons.push_back(ilep);
 	  } else if (abs(lepid)==13) {
 	    lep_threshold=mu_threshold_;
-            hasTightIdandIso &= ilep.passIdMu;
-	    if (hasTightIdandIso && (ilep.pt()>lep_threshold) ) allLeptons.push_back(ilep);  
-	    if ( !runQCD ) hasTightIdandIso &= ilep.passIsoMu;  //(ilep.mn_relIso<0.15);
+            if(!runQCD)hasTightIdandIso = (ilep.passIdMu && ilep.passIsoMu);          
+	    else hasTightIdandIso = ilep.passIdMu;
+	    if ( (ilep.passIdMu) && (ilep.pt()>lep_threshold) ) allLeptons.push_back(ilep);  
 	  } else continue;
 
 	  bool hasExtraLepton(false);
@@ -1317,17 +1334,34 @@ int main(int argc, char* argv[])
 	  }
 	}
 
+	// Lepton thresholds
+	if (selLeptons.size()>0) {
+	  if(abs(selLeptons[0].id)==11) {
+	    if(runZH && selLeptons[0].pt()<25.) continue;
+	    if(!runZH && selLeptons[0].pt()<30.) continue;
+	  }else if(abs(selLeptons[0].id)==13){
+	    if(runZH && selLeptons[0].pt()<20.) continue;
+	    if(!runZH && selLeptons[0].pt()<25.) continue; 
+	  }
+	}
+
+
 	// Exactly 1 good lepton
 	bool passOneLepton(selLeptons.size()==1);
 	bool passDiLepton(selLeptons.size()==2); // && ( abs(selLeptons[0].id)==abs(selLeptons[1].id) ) );
 	
-	bool passOneLepton_anti(selLeptons.size()>=1);
+	bool passOneLepton_anti(selLeptons.size()==1);
 	if (runQCD) {
 	  if (!passOneLepton_anti) continue;
 	  // if (goodLeptons.size()==1) continue;
 	} else {
 	  if (runZH) { 
-	    if (!passDiLepton) continue;
+            if (!passDiLepton) continue; 
+            int id1=selLeptons[0].id; 
+            int id2=selLeptons[1].id; 
+            if(id1*id2>0) continue; // only opposite charge dilepton allow   
+	  //	  if (runZH) { 
+	  // if (!passDiLepton) continue;
 	    //	    LorentzVector zll(selLeptons[0]+selLeptons[1]);
 	  }
 	  else {if (!passOneLepton) continue; }
@@ -1457,10 +1491,10 @@ int main(int argc, char* argv[])
 	  //  tag_cat="l";
 	  break;
         case EMU  :
-	  tag_cat="emu"; continue;
+	  tag_cat="emu"; //continue;
 	  break;
-	// default :
-	//   continue;
+	  //	default :
+	  // continue;
         }
 
 
@@ -1524,8 +1558,8 @@ int main(int argc, char* argv[])
 	    
 	    // Trigger
 	mon.fillHisto("eventflow","all",2,weight);
-	if (evcat==E) mon.fillHisto("eventflow","e",2,weight);
-	if (evcat==MU) mon.fillHisto("eventflow","mu",2,weight);
+	if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",2,weight);
+	if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",2,weight);
 	
         // pielup reweightiing
         mon.fillHisto("nvtx_raw",   "all", phys.nvtx,      xsecWeight*genWeight);
@@ -1659,11 +1693,11 @@ int main(int argc, char* argv[])
 	    // check overlap with any other jet
 	  // bool hasOverlap(false);
 	  mon.fillHisto("softb_dxy","raw",isv.dxy,weight);
-	  if (isv.sv_mc_mcbh_ind>0)mon.fillHisto("softb_dxy","raw_true",isv.dxy,weight);
+	  //	  if (isv.sv_mc_mcbh_ind>0)mon.fillHisto("softb_dxy","raw_true",isv.dxy,weight);
 	  mon.fillHisto("softb_dxyz_signif","raw",isv.dxyz_signif,weight);
-	  if (isv.sv_mc_mcbh_ind>0) mon.fillHisto("softb_dxyz_signif","raw_true",isv.dxyz_signif,weight);
+	  //	  if (isv.sv_mc_mcbh_ind>0) mon.fillHisto("softb_dxyz_signif","raw_true",isv.dxyz_signif,weight);
 	  mon.fillHisto("softb_cos","raw",isv.cos_dxyz_p,weight);
-	  if (isv.sv_mc_mcbh_ind>0) mon.fillHisto("softb_cos","raw_true",isv.cos_dxyz_p,weight);
+	  //	  if (isv.sv_mc_mcbh_ind>0) mon.fillHisto("softb_cos","raw_true",isv.cos_dxyz_p,weight);
 
 	  if (isv.dxy>3.) continue;
 	  if (isv.dxyz_signif<4.) continue;
@@ -2020,12 +2054,16 @@ int main(int argc, char* argv[])
 	  //####  RUN PRESELECTION AND CONTROL REGION PLOTS  ########
 	  //#########################################################
 	  
+	  bool passZmass(true);          
+
 	  LorentzVector wsum=imet+selLeptons[0];
 	  // mtW
 	  double tMass = 2.*selLeptons[0].pt()*imet.pt()*(1.-TMath::Cos(deltaPhi(selLeptons[0].phi(),imet.phi())));
 
 	  if (runZH){
 	    LorentzVector zll(selLeptons[0]+selLeptons[1]);    
+	    passZmass=(fabs(zll.mass()-91)<15);        
+
 	    wsum+=selLeptons[1];
 
 	    double dphi=fabs(deltaPhi(imet.phi(),zll.phi()));
@@ -2039,13 +2077,18 @@ int main(int argc, char* argv[])
 	  }
 	  
 	  //-------------------------------------------------------------------
+	  // Z-mass window (only effective in ZH)
+	  if(!passZmass) continue;     
+
 	  //MET>25 GeV 
 	  bool passMet25(imet.pt()>25);
+	  if(runZH) passMet25=true;
 
 	  //-------------------------------------------------------------------
 	  //mtW >50 GeV
-	  bool passMt(sqrt(tMass)>50. && sqrt(tMass)<250.);
-	
+	  bool passMt(sqrt(tMass)>50.); // && sqrt(tMass)<250.);
+	  if(runZH) passMt=true;
+
 	  //-------------------------------------------------------------------
 	  // First set all b-tags (x-cleaned) in one vector<LorentzVector>
 	  vector<LorentzVector> GoodIdbJets;
@@ -2057,42 +2100,40 @@ int main(int argc, char* argv[])
 	  for (auto & i : SVs) {  pseudoGoodIdbJets.push_back(i); } // have you x-cleaned jets and SVs?
 	  
 	  //At least 2 jets && 2 b-tags  
-	  bool passNJ2(GoodIdJets.size()>=2 && GoodIdbJets.size()>=2);     
+	  bool passNJ2(GoodIdJets.size()>=3 && GoodIdbJets.size()>=2);     
 	  // opposed to ATLAS with Nj>2, as here we add soft b-tags      
 
-	  //At least 1 MediumWP b-tag       
+	  //At least 1 MediumWP b-tag --> NEED to RECONSIDER       
 	  bool passMnBTag(true);       
-	  if (CSVLoosebJets.size()>0 && nCSVMtags<=0){       
-	    passMnBTag=false;          
-	  }  
+	  if (CSVLoosebJets.size()>0 && nCSVMtags<=0) passMnBTag=false;
 
 	  // N-1 Plots
 	  if (ivar==0) {
 	    if (passMet25) {
 	      mon.fillHisto("eventflow","all",3,weight);
-	      if (evcat==E) mon.fillHisto("eventflow","e",3,weight);
-	      if (evcat==MU) mon.fillHisto("eventflow","mu",3,weight);
+	      if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",3,weight);
+	      if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",3,weight);
 
 	      // MT CUT
 	      if (passMt) {
 		mon.fillHisto("eventflow","all",4,weight);
-		if (evcat==E) mon.fillHisto("eventflow","e",4,weight);
-		if (evcat==MU) mon.fillHisto("eventflow","mu",4,weight);
+		if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",4,weight);
+		if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",4,weight);
 
 		// Lepton kinematics
-		if (evcat==E) {
+		if (evcat==E || evcat==EE) {
 		  mon.fillHisto("lep_pt_raw","e_metmt",selLeptons[0].pt(),weight);
 		  mon.fillHisto("lep_eta_raw","e_metmt",selLeptons[0].eta(),weight);
 
 		}
-		if (evcat==MU) {
+		if (evcat==MU || evcat==MUMU) {
 		  mon.fillHisto("lep_pt_raw","mu_metmt",selLeptons[0].pt(),weight);
 		  mon.fillHisto("lep_eta_raw","mu_metmt",selLeptons[0].eta(),weight);
 
 		}
 		 
 		   // NJET CUT
-		 if (passNJ2 && passMnBTag) {
+		 if (passNJ2) {
 		  mon.fillHisto("eventflow","all",5,weight);
 		  if (evcat==E) mon.fillHisto("eventflow","e",5,weight);
 		  if (evcat==MU) mon.fillHisto("eventflow","mu",5,weight);
@@ -2142,6 +2183,7 @@ int main(int argc, char* argv[])
 	    if (!runQCD) {tag_qcd="_A_";} // region A
 	    else {tag_qcd="_B_";} // region B
 	  } else if (!passMet25 && sqrt(tMass)<50.) {
+	    if(runZH) continue;
 	    if (!runQCD) {tag_qcd="_C_";} // region C
 	    else {tag_qcd="_D_";} // region D
 	  } else { continue; }
@@ -2170,13 +2212,13 @@ int main(int argc, char* argv[])
 	    if (passMet25 && passMt && passNJ2) {  
 	      if (tag_subcat=="SR_3b") {
 		mon.fillHisto("eventflow","all",6,weight);
-		if (evcat==E) mon.fillHisto("eventflow","e",6,weight);
-		if (evcat==MU) mon.fillHisto("eventflow","mu",6,weight);
+		if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",6,weight);
+		if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",6,weight);
 	      }
 	      if (tag_subcat=="SR_4b") {
 		mon.fillHisto("eventflow","all",7,weight);
-		if (evcat==E) mon.fillHisto("eventflow","e",7,weight);
-		if (evcat==MU) mon.fillHisto("eventflow","mu",7,weight);
+		if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",7,weight);
+		if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",7,weight);
 	      }
 	    }
 	  }
@@ -2245,8 +2287,9 @@ int main(int argc, char* argv[])
 	  //############ MVA Reader #####################################################
 	  //##############################################################################
 	  float mvaBDT(-10.0);
-	  // if (GoodIdbJets.size() >= 3)   
-	  if (GoodIdbJets.size() == 3)
+
+	  //	  if (GoodIdbJets.size() == 3)
+	  if (tag_subcat.Contains("3b"))
 	    {
 	      mvaBDT = myTribTMVAReader.GenReMVAReader
 		(
@@ -2256,7 +2299,8 @@ int main(int argc, char* argv[])
 		 "Haa4bSBClassificationTribMVA"
 		 );
 	    }
-	  else if (GoodIdbJets.size() >= 4)
+	  else if (tag_subcat.Contains("4b")) 
+	    //(GoodIdbJets.size() >= 4)
 	    {
 	      mvaBDT = myQuabTMVAReader.GenReMVAReader
 		(
@@ -2297,6 +2341,9 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("lep_reliso",tags,myrelIso,weight);    
 	      //	      mon.fillHisto("lep_reliso",tags,mytrkrelIso,weight); 
 	      
+	      //zll mass
+	      if(runZH) mon.fillHisto("zmass_raw" ,tags, (selLeptons[0]+selLeptons[1]).mass(), weight);
+
 	      // soft-bs + b-tagged jets
 	      mon.fillHisto("nbtags_raw",tags,SVs.size(),weight);    
 	      mon.fillHisto("nbjets_raw",tags, CSVLoosebJets.size(),weight);  
@@ -2339,7 +2386,8 @@ int main(int argc, char* argv[])
 		  if(passMet25 && passMt && passNJ2) {
 		    myMVAHandler_.getEntry
 		      (
-		       GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
+		       //	       GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
+		       tag_subcat == "SR_3b", tag_subcat == "SR_4b" , 
 		       wsum.pt(), //W only, w pt
 		       allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
 		       dphi_Wh, //W and H, dr 
