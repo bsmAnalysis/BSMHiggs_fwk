@@ -1035,7 +1035,7 @@ int main(int argc, char* argv[])
         bool hasMtrigger  = (ev.triggerType >> 1 ) & 0x1;
         bool hasEEtrigger = (ev.triggerType >> 2 ) & 0x1;
         // type 3 is high-pT eeTrigger (safety)
-	      bool hasHighPtEtrigger  = (ev.triggerType >> 3 ) & 0x1;
+	bool hasHighPtEtrigger  = (ev.triggerType >> 3 ) & 0x1;
         bool hasEtrigger  = (ev.triggerType >> 4 ) & 0x1;
         bool hasEMtrigger = (ev.triggerType >> 5 ) & 0x1;
         bool hasEtrigger2  = (ev.triggerType >> 7 ) & 0x1;
@@ -1495,8 +1495,8 @@ int main(int argc, char* argv[])
         case EMU  :
 	  tag_cat="emu"; //continue;
 	  break;
-	  //	default :
-	  // continue;
+	default :
+	  continue;
         }
 
 
@@ -1508,17 +1508,11 @@ int main(int argc, char* argv[])
 	  if(isSingleElePD)   { hasTrigger = hasEtrigger  && !hasEEtrigger  && !hasMtrigger && !hasMMtrigger; }
 	  if(isMuonEGPD)      { hasTrigger = hasEMtrigger && !hasEtrigger   && !hasEEtrigger && !hasMtrigger && !hasMMtrigger; }
 	} else {
-	  if(evcat==E) hasTrigger = hasEtrigger;// ) hasTrigger=true;
-	  if(evcat==MU) hasTrigger = hasMtrigger; //) hasTrigger=true;
-	  if(evcat==EE)
-	    {
-	      hasTrigger = (hasEEtrigger || hasEtrigger); //) hasTrigger=true;
-	    }
-	  if(evcat==MUMU) 
-	    {
-	      hasTrigger = (hasMtrigger || hasMMtrigger); //) hasTrigger=true;
-	    }
-	  if(evcat==EMU) hasTrigger = hasEMtrigger; //) hasTrigger=true;
+	  if(evcat==E && hasEtrigger ) hasTrigger=true;   
+	  if(evcat==MU && hasMtrigger ) hasTrigger=true;   
+	  if(evcat==EE && (hasEEtrigger)) hasTrigger=true; 
+	  if(evcat==MUMU && (hasMMtrigger)) hasTrigger=true; 
+	  if(evcat==EMU  && hasEMtrigger ) hasTrigger=true;  
 	}
 	// Apply Trigger requirement:
 	if(!hasTrigger) continue;

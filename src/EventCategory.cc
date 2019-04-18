@@ -92,7 +92,7 @@ int EventCategory::Get(const PhysicsEvent_t& phys, std::vector<LorentzVector>* b
     }
     break;
     case 2: { // ZH channel
-      if (NbJets==5) return 8;
+      //      if (NbJets==5) return 8;
       if(NbJets>=4) {
 	//	if (NJets==3) ||
 	if (NJets==4) return 5;
