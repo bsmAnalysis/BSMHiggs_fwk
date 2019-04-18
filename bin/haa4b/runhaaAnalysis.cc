@@ -1705,7 +1705,7 @@ int main(int argc, char* argv[])
 	  if (isv.dxyz_signif<4.) continue;
 	  if (isv.cos_dxyz_p<0.98) continue;
 	  
-	  //	  SVs_raw.push_back(isv);
+	  SVs_raw.push_back(isv);
 	  
 	}
 	    
