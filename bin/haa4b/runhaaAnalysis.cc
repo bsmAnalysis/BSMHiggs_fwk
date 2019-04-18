@@ -782,8 +782,10 @@ int main(int argc, char* argv[])
     }//is MC
     
     //event categorizer
-    EventCategory eventCategoryInst(1);
-    EventCategory eventCategoryPlot(2);   
+    EventCategory eventCategoryInst_Wh(1); //WH channel
+    EventCategory eventCategoryInst_Zh(2); //ZH channel       
+
+    EventCategory eventCategoryPlot(3);   
 
     //Lepton scale factors
     LeptonEfficiencySF lepEff;
@@ -2191,11 +2193,15 @@ int main(int argc, char* argv[])
 	  
 	  //Define event category according to Nb multiplicity: Nb=0->W CR, Nb=1,2->top CR, Nb=3,4->SR
 	  //event category
-	  int eventSubCat  = eventCategoryInst.Get(phys,&GoodIdbJets, &pseudoGoodIdbJets);
+	  int eventSubCat(-1);
+	  if (runZH) eventSubCat = eventCategoryInst_Zh.Get(phys,&GoodIdbJets, &pseudoGoodIdbJets);
+	  else eventSubCat = eventCategoryInst_Wh.Get(phys,&GoodIdbJets, &pseudoGoodIdbJets);  
 	  // remove events other than the Signal and Control regions.
 	  if (eventSubCat<0) continue; 
 	  
-	  TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
+	  TString tag_subcat;
+	  if (runZH) tag_subcat = eventCategoryInst_Zh.GetLabel(eventSubCat);
+	  else tag_subcat = eventCategoryInst_Wh.GetLabel(eventSubCat);  
 	  tags.push_back(tag_cat+tag_qcd+tag_subcat); // add jet binning category
 	  //	  if (fabs(mindphijmet)>0.5) tags.push_back(tag_cat+tag_qcd+"passDPHI_"+tag_subcat);
 	  
