@@ -2149,7 +2149,8 @@ int main(int argc, char* argv[])
 	      }
 	    }
 	  }
-
+	  
+	  if(!passNJ2) continue;
 	  //	  if (!passMnBTag) continue; //at least 1 MediumWP b-tag if nBjets>0
 	  
 	  //#########################################################
