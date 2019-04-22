@@ -569,7 +569,7 @@ int main(int argc, char* argv[])
     }
 
     // EVent categorization plot
-    TH1F *hevt = (TH1F *)mon.addHistogram( new TH1F("evt_cat",  ";(n-btag, n-jet);Events",9,0,9) );
+    TH1F *hevt = (TH1F *)mon.addHistogram( new TH1F("evt_cat",  ";(n-btag, n-jet);Events",12,0,12) );
     /*
     hevt->GetXaxis()->SetBinLabel(1,"(0b, 3j)");
     hevt->GetXaxis()->SetBinLabel(2,"(0b, 4j)");
@@ -587,11 +587,10 @@ int main(int argc, char* argv[])
     hevt->GetXaxis()->SetBinLabel(7,"(4b, 3j)");
     hevt->GetXaxis()->SetBinLabel(8,"(4b, 4j)");
     hevt->GetXaxis()->SetBinLabel(9,"(4b, >=5j)");
-    /*
-    hevt->GetXaxis()->SetBinLabel(16,"(5b, 3j)");
-    hevt->GetXaxis()->SetBinLabel(17,"(5b, 4j)");
-    hevt->GetXaxis()->SetBinLabel(18,"(5b, >=5j)");
-    */
+    hevt->GetXaxis()->SetBinLabel(10,"(5b, 3j)");
+    hevt->GetXaxis()->SetBinLabel(11,"(5b, 4j)");
+    hevt->GetXaxis()->SetBinLabel(12,"(5b, >=5j)");
+
     //--------------------------------------------------------------------------
     //some strings for tagging histograms:
     const char* astr[] = {"_b1","_b2","_b3","_b4"};
@@ -2096,12 +2095,15 @@ int main(int argc, char* argv[])
 	  for (auto & i : SVs) {  pseudoGoodIdbJets.push_back(i); } // have you x-cleaned jets and SVs?
 	  
 	  //At least 2 jets && 2 b-tags  
-	  bool passNJ2(GoodIdJets.size()>=3 && GoodIdbJets.size()>=2);     
+	  //	  bool passNJ2(GoodIdJets.size()>=3 && GoodIdbJets.size()>=2);     
 	  // opposed to ATLAS with Nj>2, as here we add soft b-tags      
 
 	  //At least 1 MediumWP b-tag --> NEED to RECONSIDER       
 	  bool passMnBTag(true);       
 	  if (CSVLoosebJets.size()>0 && nCSVMtags<=0) passMnBTag=false;
+
+	  //At least 2 jets && 2 b-tags   
+	  bool passNJ2(GoodIdJets.size()>=3 && GoodIdbJets.size()>=2 && passMnBTag);
 
 	  // N-1 Plots
 	  if (ivar==0) {
@@ -2148,7 +2150,7 @@ int main(int argc, char* argv[])
 	    }
 	  }
 
-	  if (!passMnBTag) continue; //at least 1 MediumWP b-tag if nBjets>0
+	  //	  if (!passMnBTag) continue; //at least 1 MediumWP b-tag if nBjets>0
 	  
 	  //#########################################################
 	  //####  RUN PRESELECTION AND CONTROL REGION PLOTS  ########
@@ -2200,12 +2202,15 @@ int main(int argc, char* argv[])
 	  //	  if (fabs(mindphijmet)>0.5) tags.push_back(tag_cat+tag_qcd+"passDPHI_"+tag_subcat);
 	  
 	  bool isSignalRegion(false);
-	  if(tag_subcat.Contains("SR")) { isSignalRegion=true; }
-	  else if (tag_subcat.Contains("CR_")) { // ||  tag_subcat.Contains("CR_nonTT")) {
+	  if(tag_subcat.Contains("SR")) { 
+	    isSignalRegion=true; 
+	  } else if (tag_subcat.Contains("CR_") || evcat==EMU) { // ||  tag_subcat.Contains("CR_nonTT")) {
 	    // contains (2b,3j) and (2b, 4j)
 	    GoodIdbJets.clear();
 	    for (auto & i : GoodIdJets) { GoodIdbJets.push_back(i);}
 	    for (auto & i : SVs) {  GoodIdbJets.push_back(i); }
+
+	    isSignalRegion=false;
 	  }
 
 	  if (ivar==0) {
@@ -2245,6 +2250,7 @@ int main(int argc, char* argv[])
 	    ht+=thisb.pt();
 	  }
 	  
+
 	  //-----------------------------------------------------------
 	  // Control plots
 	  //-----------------------------------------------------------
@@ -2282,6 +2288,11 @@ int main(int argc, char* argv[])
 	    }
 	  dRave_/=dRs.size();
 	  
+	  // More MVA input variables
+	  // dijet invariatn mass:
+	  //	  float mjj=(GoodIdbJets[0]+GoodIdbJets[1]).mass();
+	  //	  float ptjj=(GoodIdbJets[0]+GoodIdbJets[1]).pt();
+	  //	  float dRll=deltaR(GoodIdbJets[0],SelLeptons[1]);
 	  
 	  //##############################################################################
 	  //############ MVA Reader #####################################################
@@ -2381,7 +2392,7 @@ int main(int argc, char* argv[])
 		
 	      float mvaweight = 1.0;
 	      genWeight > 0 ? mvaweight = weight/xsecWeight : mvaweight = -weight / xsecWeight; // Include all weights except for the xsecWeight
-	      if ( isSignalRegion && GoodIdbJets.size() >= 3 ) 
+	      if ( isSignalRegion && GoodIdbJets.size() >= 3) 
 		{
 		  if(passMet25 && passMt && passNJ2) {
 		    myMVAHandler_.getEntry
