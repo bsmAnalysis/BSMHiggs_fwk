@@ -2205,7 +2205,8 @@ int main(int argc, char* argv[])
 	  bool isSignalRegion(false);
 	  if(tag_subcat.Contains("SR")) { 
 	    isSignalRegion=true; 
-	  } else if (tag_subcat.Contains("CR_") || evcat==EMU) { // ||  tag_subcat.Contains("CR_nonTT")) {
+	  } 
+	  if (tag_subcat.Contains("CR_") || evcat==EMU) { // ||  tag_subcat.Contains("CR_nonTT")) {
 	    // contains (2b,3j) and (2b, 4j)
 	    GoodIdbJets.clear();
 	    for (auto & i : GoodIdJets) { GoodIdbJets.push_back(i);}
@@ -2215,7 +2216,7 @@ int main(int argc, char* argv[])
 	  }
 
 	  if (ivar==0) {
-	    if (passMet25 && passMt && passNJ2) {  
+	    if (passMet25 && passMt) {  
 	      if (tag_subcat=="SR_3b") {
 		mon.fillHisto("eventflow","all",6,weight);
 		if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",6,weight);
