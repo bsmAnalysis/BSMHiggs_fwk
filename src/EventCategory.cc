@@ -130,24 +130,24 @@ int EventCategory::Get(const PhysicsEvent_t& phys, std::vector<LorentzVector>* b
       }
       */
       if (NbJets==2) {
-	if (NJets==3) return 1;
-	if (NJets==4) return 2;
-	if (NJets>=5) return 3;
+	if (NJets==3) return 0;
+	if (NJets==4) return 1;
+	if (NJets>=5) return 2;
       }
       if (NbJets==3) {
-	if (NJets==3) return 4;
-	if (NJets==4) return 5;
-	if (NJets>=5) return 6;
+	if (NJets==3) return 3;
+	if (NJets==4) return 4;
+	if (NJets>=5) return 5;
       }
       if (NbJets==4) {
-	if (NJets==3) return 7;
-	if (NJets==4) return 8;
-	if (NJets>=5) return 9;
+	if (NJets==3) return 6;
+	if (NJets==4) return 7;
+	if (NJets>=5) return 8;
       }
       if (NbJets==5) {
-	if (NJets==3) return 10;
-	if (NJets==4) return 11;
-	if (NJets>=5) return 12;
+	if (NJets==3) return 9;
+	if (NJets==4) return 10;
+	if (NJets>=5) return 11;
       }
       return -1;
     }
