@@ -2133,8 +2133,8 @@ int main(int argc, char* argv[])
 		   // NJET CUT
 		 if (passNJ2) {
 		  mon.fillHisto("eventflow","all",5,weight);
-		  if (evcat==E) mon.fillHisto("eventflow","e",5,weight);
-		  if (evcat==MU) mon.fillHisto("eventflow","mu",5,weight);
+		  if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",5,weight);
+		  if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",5,weight);
 
 		      // Lepton kinematics
 		  if (abs(selLeptons[0].id)==11) {
@@ -2203,16 +2203,17 @@ int main(int argc, char* argv[])
 	  //	  if (fabs(mindphijmet)>0.5) tags.push_back(tag_cat+tag_qcd+"passDPHI_"+tag_subcat);
 	  
 	  bool isSignalRegion(false);
-	  if(tag_subcat.Contains("SR")) { 
-	    isSignalRegion=true; 
-	  } 
-	  if (tag_subcat.Contains("CR_") || evcat==EMU) { // ||  tag_subcat.Contains("CR_nonTT")) {
+	  if (tag_subcat.Contains("CR") || evcat==EMU) { // ||  tag_subcat.Contains("CR_nonTT")) {
 	    // contains (2b,3j) and (2b, 4j)
 	    GoodIdbJets.clear();
 	    for (auto & i : GoodIdJets) { GoodIdbJets.push_back(i);}
 	    for (auto & i : SVs) {  GoodIdbJets.push_back(i); }
 
-	    isSignalRegion=false;
+	    //	    isSignalRegion=false;
+	  } else if(tag_subcat.Contains("SR")) {  
+	    isSignalRegion=true;
+	  } else {
+	    printf("UNDEFINED event category; please check!!\n");
 	  }
 
 	  if (ivar==0) {

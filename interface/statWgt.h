@@ -32,13 +32,13 @@ const std::map<std::string, std::pair <int, float> > mStat =
     { "MC13TeV_TTJets_dl_2016"       , std::make_pair(30444678, 88.2877) }, //0.104012*0.2002 },
     { "MC13TeV_TTJets_dl_ext1_2016"  , std::make_pair(30444678, 88.2877) }, // 0.104012*0.7998 },
     //WJets 2016
-    { "MC13TeV_WJets_2016"     , std::make_pair(85772627, 50690) },//61526.7) }, //280929804 }, //30.7868*0.3425 },
-    { "MC13TeV_WJets_ext2_2016", std::make_pair(85772627, 50690) },//61526.7) }, //280929804 }, // 30.7868*0.6575 },
-    { "MC13TeV_W1Jets_2016"     , std::make_pair(44954933, 9493) },
-    { "MC13TeV_W2Jets_2016"     , std::make_pair(60039784, 3120) },
-    { "MC13TeV_W2Jets_ext1_2016", std::make_pair(60039784, 3120) },
-    { "MC13TeV_W3Jets_2016"     , std::make_pair(59067548, 942.3) },
-    { "MC13TeV_W3Jets_ext1_2016", std::make_pair(59067548, 942.3) },
+    { "MC13TeV_WJets_2016"     , std::make_pair(86731806, 50690) },//61526.7) }, //280929804 }, //30.7868*0.3425 },
+    { "MC13TeV_WJets_ext2_2016", std::make_pair(86731806, 50690) },//61526.7) }, //280929804 }, // 30.7868*0.6575 },
+    { "MC13TeV_W1Jets_2016"     , std::make_pair(45367044, 9493) },
+    { "MC13TeV_W2Jets_2016"     , std::make_pair(60197766, 3120) },
+    { "MC13TeV_W2Jets_ext1_2016", std::make_pair(60197766, 3120) },
+    { "MC13TeV_W3Jets_2016"     , std::make_pair(56623793, 942.3) },
+    { "MC13TeV_W3Jets_ext1_2016", std::make_pair(56623793, 942.3) },
     { "MC13TeV_W4Jets_2016"     , std::make_pair(29995313, 524.2) },
     { "MC13TeV_W4Jets_ext1_2016", std::make_pair(29995313, 524.2) },
     { "MC13TeV_W4Jets_ext2_2016", std::make_pair(29995313, 524.2) },
@@ -62,7 +62,7 @@ const std::map<std::string, std::pair <int, float> > mStat =
     
     //DY 2016
     { "MC13TeV_DYJetsToLL_10to50_2016"      , std::make_pair(35291566, 18610) }, //12.9777*0.434 },
-    //    { "MC13TeV_DYJetsToLL_10to50_ext1_2016" , std::make_pair(35291566, 18610) }, //12.9777*0.566 },
+    { "MC13TeV_DYJetsToLL_10to50_ext1_2016" , std::make_pair(35291566, 18610) }, //12.9777*0.566 },
     { "MC13TeV_DY1JetsToLL_10to50_2016" , std::make_pair(39840774, 725) },
     { "MC13TeV_DY2JetsToLL_10to50_2016" , std::make_pair(19442927, 394.5) },
     { "MC13TeV_DY3JetsToLL_10to50_2016" , std::make_pair(4964197, 96.47) },
@@ -70,7 +70,7 @@ const std::map<std::string, std::pair <int, float> > mStat =
 
     { "MC13TeV_DYJetsToLL_50toInf_ext1_2016", std::make_pair(145803217, 4895) },//5765.4) }, //81781064 }, //2.52854 },
     { "MC13TeV_DYJetsToLL_50toInf_ext2_2016", std::make_pair(145803217, 4895) },//5765.4) },
-    { "MC13TeV_DY1JetsToLL_50toInf_2016" , std::make_pair(61805710, 1016) },
+    { "MC13TeV_DY1JetsToLL_50toInf_2016" , std::make_pair(62627174, 1016) },
     { "MC13TeV_DY2JetsToLL_50toInf_2016" , std::make_pair(19970551, 331.3) },
     { "MC13TeV_DY3JetsToLL_50toInf_2016" , std::make_pair(5856110, 96.6) },
     { "MC13TeV_DY4JetsToLL_50toInf_2016" , std::make_pair(4197868, 51.4) },
@@ -148,7 +148,7 @@ namespace xsecWeightCalculator
             }
             else if( bit == 2)//high mass DY
             {
-                this_kf = 1.17;
+                this_kf = 1.18;
                 this_events[0] = (mStat.find("MC13TeV_DYJetsToLL_M50_2017")->second).first; this_xsec[0] = (mStat.find("MC13TeV_DYJetsToLL_M50_2017")->second).second;
                 this_events[1] = (mStat.find("MC13TeV_DY1JetsToLL_M50_2017")->second).first; this_xsec[1] = (mStat.find("MC13TeV_DY1JetsToLL_M50_2017")->second).second;
                 this_events[2] = (mStat.find("MC13TeV_DY2JetsToLL_M50_2017_ext1")->second).first; this_xsec[2] = (mStat.find("MC13TeV_DY2JetsToLL_M50_2017_ext1")->second).second;
@@ -182,7 +182,7 @@ namespace xsecWeightCalculator
             }
             else if( bit == 2)//high mass DY
             {
-                this_kf = 1.17;
+                this_kf = 1.18;
                 this_events[0] = (mStat.find("MC13TeV_DYJetsToLL_50toInf_ext1_2016")->second).first; this_xsec[0] = (mStat.find("MC13TeV_DYJetsToLL_50toInf_ext1_2016")->second).second;
                 this_events[1] = (mStat.find("MC13TeV_DY1JetsToLL_50toInf_2016")->second).first; this_xsec[1] = (mStat.find("MC13TeV_DY1JetsToLL_50toInf_2016")->second).second;
                 this_events[2] = (mStat.find("MC13TeV_DY2JetsToLL_50toInf_2016")->second).first; this_xsec[2] = (mStat.find("MC13TeV_DY2JetsToLL_50toInf_2016")->second).second;
