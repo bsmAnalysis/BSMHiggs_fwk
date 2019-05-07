@@ -159,12 +159,17 @@ if [[ $step > 2.999 && $step < 4 ]]; then
     if [ -f $NTPL_OUTDIR/LUMI.txt ]; then
       INTLUMI=`tail -n 3 $RESULTSDIR/LUMI.txt | cut -d ',' -f 6`
     else
-	if [[ $JSON =~ "2016" ]]; then  
-	    INTLUMI=35866.932
-            echo "Please run step==2 above to calculate int. luminosity for 2016 data!" 
+	    if [[ $JSON =~ "2016" ]]; then  
+	      INTLUMI=35866.932
+        echo "Please run step==2 above to calculate int. luminosity for 2016 data!" 
+      else
+        if [[ $JSON =~ "2017" ]]; then
+          INTLUMI=41529.343
+	        echo "Please run step==2 above to calculate int. luminosity for 2017 data!"
         else
-	    echo "Please run step==2 above to calculate int. luminosity!"
+	        echo "Please run step==2 above to calculate int. luminosity!"
         fi                                                                                                                   
+      fi
 	echo "WARNING: $RESULTSDIR/LUMI.txt file is missing so use fixed integrated luminosity value, this might be different than the dataset you ran on"
     fi
     

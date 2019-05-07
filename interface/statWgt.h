@@ -53,12 +53,12 @@ const std::map<std::string, std::pair <int, float> > mStat =
     { "MC13TeV_WJets_ext10_2016", std::make_pair(280929804, 61526.7) },
     */
     //WJets 2017
-    { "MC13TeV_WJets_2017"     , std::make_pair(122327706, 50690) },
-    { "MC13TeV_WJets_2017_ext1", std::make_pair(122327706, 50690) },
-    { "MC13TeV_W1Jets_2017"    , std::make_pair(54147812, 9493) },
-    { "MC13TeV_W2Jets_2017"    , std::make_pair(6577492, 3120) },
-    { "MC13TeV_W3Jets_2017"    , std::make_pair(19700377, 942.3) },
-    { "MC13TeV_W4Jets_2017"    , std::make_pair(11103685, 524.2) },
+    { "MC13TeV_WJets_2017"     , std::make_pair(122218628, 50690) },
+    { "MC13TeV_WJets_2017_ext1", std::make_pair(122218628, 50690) },
+    { "MC13TeV_W1Jets_2017"    , std::make_pair(53772533, 9493) },
+    { "MC13TeV_W2Jets_2017"    , std::make_pair(6570442, 3120) },
+    { "MC13TeV_W3Jets_2017"    , std::make_pair(19669693, 942.3) },
+    { "MC13TeV_W4Jets_2017"    , std::make_pair(11074019, 524.2) },
     
     //DY 2016
     { "MC13TeV_DYJetsToLL_10to50_2016"      , std::make_pair(35291566, 18610) }, //12.9777*0.434 },
@@ -79,16 +79,17 @@ const std::map<std::string, std::pair <int, float> > mStat =
     //{ "MC13TeV_DYJetsToLL_50toInf_ext5_2016", std::make_pair(238454920, 5765.4) },
     //{ "MC13TeV_DYJetsToLL_50toInf_ext6_2016", std::make_pair(238454920, 5765.4) },
     //DY 2017
-    { "MC13TeV_DYJetsToLL_10to50_2017" , std::make_pair(39521230, 18610) },
+    { "MC13TeV_DYJetsToLL_10to50_2017" , std::make_pair(39489654, 18610) },
     
-    { "MC13TeV_DYJetsToLL_M50_2017" , std::make_pair(146926500, 6100.8) },
-    { "MC13TeV_DYJetsToLL_M50_2017_ext1" , std::make_pair(146926500, 6100.8) },
-    { "MC13TeV_DY1JetsToLL_M50_2017" , std::make_pair(112050163, 725) },
-    { "MC13TeV_DY1JetsToLL_M50_2017_ext1" , std::make_pair(112050163, 725) },
-    { "MC13TeV_DY2JetsToLL_M50_2017_ext1" , std::make_pair(9701595, 394.5) },
-    { "MC13TeV_DY3JetsToLL_M50_2017" , std::make_pair(8047400, 96.47) },
-    { "MC13TeV_DY3JetsToLL_M50_2017_ext1" , std::make_pair(8047400, 96.47) },
-    { "MC13TeV_DY4JetsToLL_M50_2017" , std::make_pair(4328648, 40.44) },
+    { "MC13TeV_DYJetsToLL_M50_2017" , std::make_pair(146796944, 6100.8) },
+    { "MC13TeV_DYJetsToLL_M50_2017_ext1" , std::make_pair(146796944, 6100.8) },
+    { "MC13TeV_DY1JetsToLL_M50_2017" , std::make_pair(111965305, 725) },
+    { "MC13TeV_DY1JetsToLL_M50_2017_ext1" , std::make_pair(111965305, 725) },
+    { "MC13TeV_DY2JetsToLL_M50_2017" , std::make_pair(9780352, 394.5) },
+    { "MC13TeV_DY2JetsToLL_M50_2017_ext1" , std::make_pair(9780352, 394.5) },
+    { "MC13TeV_DY3JetsToLL_M50_2017" , std::make_pair(8035618, 96.47) },
+    { "MC13TeV_DY3JetsToLL_M50_2017_ext1" , std::make_pair(8035618, 96.47) },
+    { "MC13TeV_DY4JetsToLL_M50_2017" , std::make_pair(4317756, 40.44) },
     
     //TG, TTG, TTW, TTZ
     { "MC13TeV_TGJets_2016"      , std::make_pair(368562, 2.967) }, //0.288736*0.25 },

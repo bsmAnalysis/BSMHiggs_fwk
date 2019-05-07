@@ -299,7 +299,7 @@
                         "/DoubleEG/Run2017F-31Mar2018-v1/MINIAOD"
                     ],
                     "gtag": "94X_dataRun2_v6",
-                    "dtag": "Data13TeV_DoueblEle2017F_31Mar2018_v1",
+                    "dtag": "Data13TeV_DoubleEle2017F_31Mar2018_v1",
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions17/13TeV/ReReco/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt",
                     "xsec": 1.0
                 }
@@ -685,7 +685,16 @@
                     "xsec": 725
                 },
                 {
-                    "br": [ 1.0 ],
+                    "br": [ 0.01 ],
+                    "dset": [
+                        "/DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"
+                    ],
+                    "gtag": "94X_mc2017_realistic_v14",
+                    "dtag": "MC13TeV_DY2JetsToLL_M50_2017",
+                    "xsec": 394.5
+                },
+                {
+                    "br": [ 0.99 ],
                     "dset": [
                         "/DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM"
                     ],
