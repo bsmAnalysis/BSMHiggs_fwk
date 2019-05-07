@@ -766,7 +766,7 @@
                         "/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/MINIAODSIM"
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
-                    "dtag": "_MC13TeV_WJets_2017_ext1",
+                    "dtag": "MC13TeV_WJets_2017_ext1",
                     "xsec": 50690
                 },
                 {
@@ -777,7 +777,7 @@
                         "/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
-                    "dtag": "_MC13TeV_WJets_2017",
+                    "dtag": "MC13TeV_WJets_2017",
                     "xsec": 50690
                 },
                 {
@@ -788,7 +788,7 @@
                         "/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/MINIAODSIM"
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
-                    "dtag": "_MC13TeV_W1Jets_2017",
+                    "dtag": "MC13TeV_W1Jets_2017",
                     "xsec": 9493
                 },
                 {
@@ -799,7 +799,7 @@
                         "/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v4/MINIAODSIM"
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
-                    "dtag": "_MC13TeV_W2Jets_2017",
+                    "dtag": "MC13TeV_W2Jets_2017",
                     "xsec": 3120
                 },
                 {
@@ -810,7 +810,7 @@
                         "/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
-                    "dtag": "_MC13TeV_W3Jets_2017",
+                    "dtag": "MC13TeV_W3Jets_2017",
                     "xsec": 942.3
                 },
                 {
@@ -821,7 +821,7 @@
                         "/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v2/MINIAODSIM"
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
-                    "dtag": "_MC13TeV_W4Jets_2017",
+                    "dtag": "MC13TeV_W4Jets_2017",
                     "xsec": 524.2
                 }
             ],
