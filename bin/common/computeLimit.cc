@@ -68,6 +68,7 @@ TString postfix="";
 TString systpostfix="";
 bool runSystematics = true; 
 
+bool runZh = false;
 bool modeDD = false;
 bool simfit = false;
 
@@ -564,6 +565,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--statBinByBin")    !=string::npos) { sscanf(argv[i+1],"%f",&statBinByBin); i++; printf("statBinByBin = %f\n", statBinByBin);}
     else if(arg.find("--dropBckgBelow")   !=string::npos) { sscanf(argv[i+1],"%lf",&dropBckgBelow); i++; printf("dropBckgBelow = %f\n", dropBckgBelow);}
     else if(arg.find("--key"          )   !=string::npos && i+1<argc){ keywords.push_back(argv[i+1]); printf("Only samples matching this (regex) expression '%s' are processed\n", argv[i+1]); i++;  }
+    if(arg.find("--runZh") !=string::npos) { runZh=true; printf("runZh = True");}
     if(arg.find("--modeDD") !=string::npos) { modeDD=true; printf("modeDD = True\n");} 
     if(arg.find("--postfit")  !=string::npos) { postfit=true; printf("postfit = True\n");}   
   }
@@ -580,7 +582,11 @@ int main(int argc, char* argv[])
       Channels.push_back("e_C_SR"); Channels.push_back("mu_C_SR");  
       Channels.push_back("e_D_SR"); Channels.push_back("mu_D_SR");  
     } else {
-      Channels.push_back("e_A_SR"); Channels.push_back("mu_A_SR");
+      if(runZh){
+	Channels.push_back("ee_A_SR"); Channels.push_back("mumu_A_SR");  
+      } else {
+	Channels.push_back("e_A_SR"); Channels.push_back("mu_A_SR");
+      }
     }
     if(simfit){
       if (modeDD) {
@@ -594,8 +600,13 @@ int main(int argc, char* argv[])
 	Channels.push_back("e_C_CR5j");Channels.push_back("mu_C_CR5j"); // tt+bb CR 
 	Channels.push_back("e_D_CR5j");Channels.push_back("mu_D_CR5j"); // tt+bb CR 
       } else {
-	Channels.push_back("e_A_CR");Channels.push_back("mu_A_CR"); // Top CR
-	Channels.push_back("e_A_CR5j");Channels.push_back("mu_A_CR5j"); // tt+bb CR   
+	if(runZh){ // Zh
+	  Channels.push_back("ee_A_CR");Channels.push_back("mumu_A_CR"); // DY CR
+	  Channels.push_back("emu_A_SR");Channels.push_back("emu_A_CR"); // Top CR     
+	}else{ // Wh
+	  Channels.push_back("e_A_CR");Channels.push_back("mu_A_CR"); // Top/W CR
+	  Channels.push_back("e_A_CR5j");Channels.push_back("mu_A_CR5j"); // tt+bb CR   
+	}
       }
     }
   }
@@ -667,11 +678,21 @@ int main(int argc, char* argv[])
       ch.push_back("e_D_CR5j"); ch.push_back("mu_D_CR5j"); 
     }
   } else {
-    ch.push_back("e_A_SR"); ch.push_back("mu_A_SR");
-    if (simfit) { 
-      ch.push_back("e_A_CR"); ch.push_back("mu_A_CR");
-      ch.push_back("e_A_CR5j"); ch.push_back("mu_A_CR5j"); 
-     }
+    if(runZh){ // Zh
+      ch.push_back("ee_A_SR"); ch.push_back("mumu_A_SR");     
+      if (simfit) {
+	ch.push_back("ee_A_CR"); ch.push_back("mumu_A_CR");   
+	ch.push_back("emu_A_SR"); ch.push_back("emu_A_CR");       
+      }
+
+    } else { // Wh
+      ch.push_back("e_A_SR"); ch.push_back("mu_A_SR");
+      if (simfit) { 
+	ch.push_back("e_A_CR"); ch.push_back("mu_A_CR");
+	ch.push_back("e_A_CR5j"); ch.push_back("mu_A_CR5j"); 
+      }
+    }
+
   }
   //TString ch[]={"SR"}; //"mumu","ee","emu"};
   const size_t nch=ch.size(); //sizeof(ch)/sizeof(TString);
@@ -2318,11 +2339,15 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	//      if(it->second.shortName.find("ttbarjet")!=string::npos){shapeInfo.uncScale["norm_tt"] = integral*0.10;}  
 
 	if(it->second.shortName.find("zvv")!=string::npos){shapeInfo.uncScale["norm_zvv"] = integral*0.50;}    
-	if(it->second.shortName.find("zll")!=string::npos){shapeInfo.uncScale["norm_zll"] = integral*0.02;}
+	if(runZh) {
+	  if(it->second.shortName.find("wlnu")!=string::npos){shapeInfo.uncScale["norm_wjet"] = integral*0.02;}     
+	} else {
+	  if(it->second.shortName.find("zll")!=string::npos){shapeInfo.uncScale["norm_zll"] = integral*0.02;}
+	}
 	if(it->second.shortName.find("vhbb")!=string::npos){shapeInfo.uncScale["norm_vhbb"] = integral*0.10;}     
 
 	if(it->second.shortName.find("ttbarlig")!=string::npos){shapeInfo.uncScale["norm_toplight"] = integral*0.06;} 
-	if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_topcc"] = integral*0.50;} 
+	//if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_topcc"] = integral*0.50;} 
 	if(it->second.shortName.find("ttbargam")!=string::npos){shapeInfo.uncScale["norm_topgzw"] = integral*0.15;} 
 	if(it->second.shortName.find("singleto")!=string::npos){shapeInfo.uncScale["norm_singletop"] = integral*0.05;}
 	if (!subFake){
@@ -2332,9 +2357,13 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if(mass>0){
           //bin migration at theory level
 	  // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt13TeV#WH_Process
-          if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["QCDscale_wh"]  = integral*0.006;} //QCD scale
-	  if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["PDFscale_wh"]  = integral*0.019;} //PDF+as scale
-
+	  if (runZh) {
+	    if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["QCDscale_wh"]  = integral*0.038;} //QCD scale
+	    if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["PDFscale_wh"]  = integral*0.024;} //PDF+as scale 
+	  } else {
+	    if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["QCDscale_wh"]  = integral*0.006;} //QCD scale
+	    if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["PDFscale_wh"]  = integral*0.019;} //PDF+as scale
+	  }
         }//end of uncertainties to be applied only in higgs analyses
 
       }
@@ -2466,18 +2495,26 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       //      if (simfit) {
       fprintf(pFile, "-------------------------------\n");  
       fprintf(pFile,"\n");
-      if(C->first.find("e" )!=string::npos) {
-	fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");
+      //      if(C->first.find("e" )!=string::npos) {
+      fprintf(pFile,"tt_norm rateParam bin1 ttbarbba 1\n");
+      fprintf(pFile,"tt_norm rateParam bin1 ttbarcba 1\n");  
 	//	fprintf(pFile,"ttc_norm_e rateParam bin1 ttbarcba 1\n"); 
-	if (C->first.find("3b")!=string::npos) fprintf(pFile,"w_norm_3b_e rateParam bin1 wlnu 1 \n");    
-	if (C->first.find("4b")!=string::npos) fprintf(pFile,"w_norm_4b_e rateParam bin1 wlnu 1 \n"); 
+      if(runZh) {
+	if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b rateParam bin1 zll 1 \n");    
+	if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b rateParam bin1 zll 1 \n"); 
+      } else {
+	if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b rateParam bin1 wlnu 1 \n");    
+	if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b rateParam bin1 wlnu 1 \n"); 
       }
+      //}
+      /*
       if(C->first.find("mu")!=string::npos) {
 	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");
 	//	fprintf(pFile,"ttc_norm_mu rateParam bin1 ttbarcba 1\n");  
 	if (C->first.find("3b")!=string::npos) fprintf(pFile,"w_norm_3b_mu rateParam bin1 wlnu 1 \n"); 
 	if (C->first.find("4b")!=string::npos) fprintf(pFile,"w_norm_4b_mu rateParam bin1 wlnu 1 \n"); 
       }
+      */
       fprintf(pFile, "-------------------------------\n");  
       //}
       
