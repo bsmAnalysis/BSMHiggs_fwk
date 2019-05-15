@@ -2438,7 +2438,7 @@ int main(int argc, char* argv[])
 	      genWeight > 0 ? mvaweight = weight/xsecWeight : mvaweight = -weight / xsecWeight; // Include all weights except for the xsecWeight
 	      if ( isSignalRegion && GoodIdbJets.size() >= 3) 
 		{
-		  if(passZmass && passMet25 && passMt && passNJ2) {
+		  if(passMet25 && passMt) {
 		    myMVAHandler_.getEntry
 		      (
 		       //	       GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
