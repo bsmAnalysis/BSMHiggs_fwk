@@ -167,8 +167,8 @@ int main(int argc, char* argv[])
       // 2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
         CSVLooseWP = 0.5803; CSVMediumWP = 0.8838; CSVTightWP = 0.9693;
         DeepCSVLooseWP = 0.1522; DeepCSVMediumWP = 0.4941; DeepCSVTightWP = 0.8001;
-        mu_threshold_=30.;
-        ele_threshold_=35.;
+	//        mu_threshold_=30.;
+	//        ele_threshold_=35.;
     }
 
     // if(mctruthmode!=0) {
@@ -188,16 +188,22 @@ int main(int argc, char* argv[])
     fprintf(outTxtFile_final,"run lumi event\n");
 
     int fType(0);
-    if(dtag.Contains("DoubleEG")) fType=EE;
+    if(dtag.Contains("DoubleEle")) fType=EE;
     if(dtag.Contains("DoubleMuon"))  fType=MUMU;
-    if(dtag.Contains("MuonEG"))      fType=EMU;
-    if(dtag.Contains("SingleMuon"))  fType=MU;
-    if(dtag.Contains("SingleElectron")) fType=E;
+    if(dtag.Contains("MuEG"))    fType=EMU;
+    if(dtag.Contains("SingleMuon")) {
+      if (runZH) fType=MUMU;
+      else fType=MU;
+    }
+    if(dtag.Contains("SingleElectron")) {
+      if(runZH) fType=EE;
+      else fType=E;
+    }
     bool isSingleMuPD(!isMC && dtag.Contains("SingleMuon"));
     bool isDoubleMuPD(!isMC && dtag.Contains("DoubleMuon"));
     bool isSingleElePD(!isMC && dtag.Contains("SingleElectron"));
     bool isDoubleElePD(!isMC && dtag.Contains("DoubleEle"));
-    bool isMuonEGPD(!isMC && dtag.Contains("MuonEG"));
+    bool isMuonEGPD(!isMC && dtag.Contains("MuEG"));
 
     
     bool isMC_ZZ  = isMC && ( string(url.Data()).find("TeV_ZZ_")  != string::npos );
@@ -342,53 +348,53 @@ int main(int argc, char* argv[])
     //    std::vector<string> jetVarNames = {"", "_scale_jup","_scale_jdown", "_res_jup", "_res_jdown","_btagup","_btagdown","_bnorm_up","_bnorm_down"};
 
     if(runSystematics) {
-        cout << "Systematics will be computed for this analysis: " << endl;
-
-	  eleVarNames.push_back("_stat_eup");
-	  eleVarNames.push_back("_stat_edown");
-	  eleVarNames.push_back("_sys_eup");
-	  eleVarNames.push_back("_sys_edown");
-	  // eleVarNames.push_back("_GS_eup");
-	  // eleVarNames.push_back("_GS_edown");
-	  eleVarNames.push_back("_resRho_eup");
-	  eleVarNames.push_back("_resRho_edown");
-	  eleVarNames.push_back("_resPhi_edown");
-
-	  varNames.push_back("_jerup"); 	//1 
-	  varNames.push_back("_jerdown"); //2
-
-	  for (int isrc = 0; isrc < nsrc; isrc++) {
-	    const char *name = srcnames[isrc];
-
-	    stringstream ss;string target;
-	    ss << name; ss >> target;
-	    varNames.push_back("_"+target+"_jesup");      
-	    varNames.push_back("_"+target+"_jesdown");
-	  }
-
-	  varNames.push_back("_umetup");        //5
-          varNames.push_back("_umetdown");//6 
-          varNames.push_back("_lesup");         //7 
-          varNames.push_back("_lesdown"); //8  
-
-	  varNames.push_back("_btagup"); varNames.push_back("_btagdown");//11, 12
-	  varNames.push_back("_ctagup"); varNames.push_back("_ctagdown");//13, 14
-	  varNames.push_back("_ltagup"); varNames.push_back("_ltagdown");//15, 16
-
-	  varNames.push_back("_softbup"); varNames.push_back("_softbdown");//11, 12      
-	  //	  varNames.push_back("_bnormup"); varNames.push_back("_bnormdown");//11, 12   
-	  //
-	  //varNames.push_back("_scale_mup");    varNames.push_back("_scale_mdown");  //muon energy scale
-	  varNames.push_back("_stat_eup");    varNames.push_back("_stat_edown");  //electron energy scale
-	  varNames.push_back("_sys_eup");    varNames.push_back("_sys_edown");  //electron energy scale
-	  //  varNames.push_back("_GS_eup");    varNames.push_back("_GS_edown");  //electron energy scale
-	  varNames.push_back("_resRho_eup");    varNames.push_back("_resRho_edown");  //electron energy resolution
-	  varNames.push_back("_resPhi_edown");     //electron energy resolution
-
-	  varNames.push_back("_puup");  varNames.push_back("_pudown");      //pileup uncertainty 
-	  varNames.push_back("_pdfup"); varNames.push_back("_pdfdown");  
-
-	  //	  varNames.push_back("_th_pdf");                                           //pdf
+      cout << "Systematics will be computed for this analysis: " << endl;
+      
+      eleVarNames.push_back("_stat_eup");
+      eleVarNames.push_back("_stat_edown");
+      eleVarNames.push_back("_sys_eup");
+      eleVarNames.push_back("_sys_edown");
+      // eleVarNames.push_back("_GS_eup");
+      // eleVarNames.push_back("_GS_edown");
+      eleVarNames.push_back("_resRho_eup");
+      eleVarNames.push_back("_resRho_edown");
+      eleVarNames.push_back("_resPhi_edown");
+      
+      varNames.push_back("_jerup"); 	//1 
+      varNames.push_back("_jerdown"); //2
+      
+      for (int isrc = 0; isrc < nsrc; isrc++) {
+	const char *name = srcnames[isrc];
+	
+	stringstream ss;string target;
+	ss << name; ss >> target;
+	varNames.push_back("_"+target+"_jesup");      
+	varNames.push_back("_"+target+"_jesdown");
+      }
+      
+      varNames.push_back("_umetup");        //5
+      varNames.push_back("_umetdown");//6 
+      varNames.push_back("_lesup");         //7 
+      varNames.push_back("_lesdown"); //8  
+      
+      varNames.push_back("_btagup"); varNames.push_back("_btagdown");//11, 12
+      varNames.push_back("_ctagup"); varNames.push_back("_ctagdown");//13, 14
+      varNames.push_back("_ltagup"); varNames.push_back("_ltagdown");//15, 16
+      
+      varNames.push_back("_softbup"); varNames.push_back("_softbdown");//11, 12      
+      //	  varNames.push_back("_bnormup"); varNames.push_back("_bnormdown");//11, 12   
+      //
+      //varNames.push_back("_scale_mup");    varNames.push_back("_scale_mdown");  //muon energy scale
+      varNames.push_back("_stat_eup");    varNames.push_back("_stat_edown");  //electron energy scale
+      varNames.push_back("_sys_eup");    varNames.push_back("_sys_edown");  //electron energy scale
+      //  varNames.push_back("_GS_eup");    varNames.push_back("_GS_edown");  //electron energy scale
+      varNames.push_back("_resRho_eup");    varNames.push_back("_resRho_edown");  //electron energy resolution
+      varNames.push_back("_resPhi_edown");     //electron energy resolution
+      
+      varNames.push_back("_puup");  varNames.push_back("_pudown");      //pileup uncertainty 
+      varNames.push_back("_pdfup"); varNames.push_back("_pdfdown");  
+      
+      //	  varNames.push_back("_th_pdf");                                           //pdf
 	  //	  varNames.push_back("_th_alphas"); //alpha_s (QCD)
 
 	  /*
@@ -406,9 +412,9 @@ int main(int argc, char* argv[])
             varNames.push_back("_qcdscaledown");
 	  }
 	  */
-        for(size_t sys=1; sys<varNames.size(); sys++) {
-            cout << varNames[sys] << endl;
-        }
+      for(size_t sys=1; sys<varNames.size(); sys++) {
+	cout << varNames[sys] << endl;
+      }
     }
     size_t nvarsToInclude=varNames.size();
     
@@ -481,10 +487,10 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "dR_raw",";#Delta R(SV,b);Events",50,0.,5.));
     mon.addHistogram( new TH1F( "dRlj_raw",";#Delta R(lep,jet);Events",100,0.,5.));
 
-    mon.addHistogram( new TH1F( "lep_pt_raw", ";lepton #it{p}_{T}^{l} [GeV];Events", 50,0.,200.) );  
-    mon.addHistogram( new TH1F( "lep_eta_raw",";lepton #eta^{l};Events", 52,-2.6,2.6) );  
+    mon.addHistogram( new TH1F( "lep_pt_raw", ";trailing lepton #it{p}_{T}^{l} [GeV];Events", 50,0.,200.) );  
+    mon.addHistogram( new TH1F( "lep_eta_raw",";trailing lepton #eta^{l};Events", 52,-2.6,2.6) );  
 
-    mon.addHistogram( new TH1F( "leadlep_pt_raw", ";Leading lepton #it{p}_{T}^{l} [GeV];Events", 80,0.,600.) );
+    mon.addHistogram( new TH1F( "leadlep_pt_raw", ";Leading lepton #it{p}_{T}^{l} [GeV];Events", 50,0.,200.) );
     mon.addHistogram( new TH1F( "leadlep_eta_raw",";Leading lepton #eta^{l};Events", 52,-2.6,2.6) );
     
     mon.addHistogram( new TH1F( "lep_reliso",";relative Isolation;Events",100,0.,5.) );
@@ -616,6 +622,7 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "dphijmet1", ";|#Delta#it{#phi}(jet1,E_{T}^{miss})|;#jet", 20,0,TMath::Pi()) );   
     mon.addHistogram( new TH1F( "dphijmet12", ";|#Delta#it{#phi}(j12,E_{T}^{miss})|;#jet", 20,0,TMath::Pi()) );           
     mon.addHistogram( new TH1F( "dphilepmet", ";|#Delta#it{#phi}(lep,E_{T}^{miss})|;Events", 20,0,TMath::Pi()) );
+    mon.addHistogram( new TH1F( "zmass_raw", ";#it{m}_{ll} [GeV];Events", 80,0,200) );   
 
     //MVA BDT
     mon.addHistogram( new TH1F( "bdt", ";BDT;Events", 30, -0.3, 0.3) );
@@ -908,7 +915,6 @@ int main(int argc, char* argv[])
 
         if ( verbose ) printf("\n\n Event info %3d: \n",iev);
 
-
         //##############################################   EVENT LOOP STARTS   ###########################################
         //load the event content from tree
         summaryHandler_.getEntry(iev);
@@ -1087,7 +1093,7 @@ int main(int argc, char* argv[])
 	  if (abs(lepid)==13) eta_threshold=2.4;
 	  if (fabs(ilep.eta())>eta_threshold) continue;
  
-	  bool hasTightIdandIso(true);
+	  bool hasTightIdandIso;
 	  if (abs(lepid)==11) {
 	    lep_threshold=ele_threshold_;
 	    if(!runQCD)hasTightIdandIso = (ilep.passIdEl && ilep.passIsoEl);   
@@ -1116,8 +1122,7 @@ int main(int argc, char* argv[])
 		double sigma=0.0;
 #ifdef YEAR_2017
     //https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2#2017_MiniAOD_V2
-//    sigma = ilep.en_enSmearNrSigma;
-    sigma = 0.0;
+    sigma = ilep.en_enSmearNrSigma;
 #else
     sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed,0,0);
 #endif
@@ -1130,8 +1135,7 @@ int main(int argc, char* argv[])
 	      } else {
 		double scale_corr=1.0;
 #ifdef YEAR_2017
-//    scale_corr = ilep.en_enScaleValue;
-    scale_corr = 1.0;
+    scale_corr = ilep.en_enScaleValue;
 #else
     scale_corr = eScaler_.ScaleCorrection(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed); 
 #endif
@@ -1174,8 +1178,7 @@ int main(int argc, char* argv[])
 		if(ivar==1) { //stat electron up
 		  double error_scale=0.0;
 #ifdef YEAR_2017
-      //error_scale = ilep.en_enScaleStatUp/ilep.E()-1;
-      error_scale = 0.0;
+      error_scale = ilep.en_enScaleStatUp/ilep.E()-1;
 //      printf("Electron stat up error scale: %f\n",error_scale);
 #else
 		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_stat);
@@ -1185,8 +1188,7 @@ int main(int argc, char* argv[])
 		}if(ivar==2) { //stat electron down
 		  double error_scale=0.0;
 #ifdef YEAR_2017
-      //error_scale = ilep.en_enScaleStatDown/ilep.E()-1;
-      error_scale = 0.0;
+      error_scale = ilep.en_enScaleStatDown/ilep.E()-1;
 //      printf("Electron stat down error scale: %f\n",error_scale);
 #else
       error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_stat); 
@@ -1196,8 +1198,7 @@ int main(int argc, char* argv[])
 		}if(ivar==3) { //systematic electron up
 		  double error_scale=0.0;
 #ifdef YEAR_2017
-      //error_scale = ilep.en_enScaleSystUp/ilep.E()-1;
-      error_scale = 0.0;
+      error_scale = ilep.en_enScaleSystUp/ilep.E()-1;
 //      printf("Electron sys up error scale: %f\n",error_scale);
 #else
       error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_syst);
@@ -1207,8 +1208,7 @@ int main(int argc, char* argv[])
 		}if(ivar==4) { //systematic electron down
 		  double error_scale=0.0;
 #ifdef YEAR_2017
-      //error_scale = ilep.en_enScaleSystDown/ilep.E()-1;
-      error_scale = 0.0;
+      error_scale = ilep.en_enScaleSystDown/ilep.E()-1;
 //      printf("Electron stat down error scale: %f\n",error_scale);
 #else
       error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_syst);
@@ -1218,8 +1218,7 @@ int main(int argc, char* argv[])
 		}if(ivar==5) { //gain switch electron up
 		  double error_scale=0.0;
 #ifdef YEAR_2017
-      //error_scale = ilep.en_enScaleGainUp/ilep.E()-1;
-      error_scale = 0.0;
+      error_scale = ilep.en_enScaleGainUp/ilep.E()-1;
 //      printf("Electron gain up error scale: %f\n",error_scale);
 #else
       error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_gain);
@@ -1229,8 +1228,7 @@ int main(int argc, char* argv[])
 		}if(ivar==6) { //gain switch electron down
 		  double error_scale=0.0;  
 #ifdef YEAR_2017
-      //error_scale = ilep.en_enScaleGainDown/ilep.E()-1;
-      error_scale = 0.0;
+      error_scale = ilep.en_enScaleGainDown/ilep.E()-1;
 //      printf("Electron gain down error scale: %f\n",error_scale);
 #else	      
       error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_gain);      
@@ -1240,8 +1238,7 @@ int main(int argc, char* argv[])
 		}if(ivar==7) { //rho resolution Electron up
 		  double smearValue = 1.0;
 #ifdef YEAR_2017
-      //smearValue = ilep.en_enSigmaRhoUp/ilep.E();
-      smearValue = 1.0;
+      smearValue = ilep.en_enSigmaRhoUp/ilep.E();
 //      printf("Electron rho up smear value: %f\n",smearValue);
 #else
       double sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,1,0);
@@ -1254,8 +1251,7 @@ int main(int argc, char* argv[])
 		}if(ivar==8) { //rho resolution Electron down
 		  double smearValue = 1.0;       
 #ifdef YEAR_2017
-      //smearValue = ilep.en_enSigmaRhoDown/ilep.E();
-      smearValue = 1.0;
+      smearValue = ilep.en_enSigmaRhoDown/ilep.E();
 //      printf("Electron rho down smear value: %f\n",smearValue);
 #else
       double sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,-1,0);
@@ -1268,8 +1264,7 @@ int main(int argc, char* argv[])
 		}if(ivar==9) { //phi resolution Electron down
 		  double smearValue = 1.0;
 #ifdef YEAR_2017
-      //smearValue = ilep.en_enSigmaPhiDown/ilep.E();
-      smearValue = 1.0;
+      smearValue = ilep.en_enSigmaPhiDown/ilep.E();
 //      printf("Electron phi down smear value: %f\n",smearValue);
 #else
       double sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,0,-1);
@@ -1349,11 +1344,13 @@ int main(int argc, char* argv[])
 	// Lepton thresholds
 	if (selLeptons.size()>0) {
 	  if(abs(selLeptons[0].id)==11) {
-	    if(runZH && selLeptons[0].pt()<25.) continue;
-	    if(!runZH && selLeptons[0].pt()<30.) continue;
+	    if((is2016data || is2016MC) && selLeptons[0].pt()<30.) continue; 
+	    if((is2017data || is2017MC) && selLeptons[0].pt()<35.) continue;
+	    //	    if(!runZH && selLeptons[0].pt()<30.) continue;
 	  }else if(abs(selLeptons[0].id)==13){
-	    if(runZH && selLeptons[0].pt()<20.) continue;
-	    if(!runZH && selLeptons[0].pt()<25.) continue; 
+	    if((is2016data || is2016MC) && selLeptons[0].pt()<25.) continue;    
+	    if((is2017data || is2017MC) && selLeptons[0].pt()<30.) continue;
+	    //	    if(!runZH && selLeptons[0].pt()<25.) continue; 
 	  }
 	}
 
@@ -1472,18 +1469,8 @@ int main(int argc, char* argv[])
         }
 	*/
 
-	
-	// 1-lepton
-	mon.fillHisto("eventflow","all",1,weight);
-	if ((abs(selLeptons[0].id)==11)) {
-	  mon.fillHisto("eventflow","e",1,weight);
-	}
-	if ((abs(selLeptons[0].id)==13)) {
-	  mon.fillHisto("eventflow","mu",1,weight);
-	}
-	
 	TString tag_cat;
-        int evcat=-1;
+        int evcat(0);
 	if (selLeptons.size()==1) evcat = getLeptonId(abs(selLeptons[0].id)); //abs(selLeptons[0].first));
 	//	if (runQCD && selLeptons.size()>1)  evcat = getLeptonId(abs(selLeptons[0].id));
 	if (selLeptons.size()>1) evcat =  getDileptonId(abs(selLeptons[0].id),abs(selLeptons[1].id)); 
@@ -1496,11 +1483,9 @@ int main(int argc, char* argv[])
 	  break;
 	case MU  :
 	  tag_cat="mu";
-	  //	  tag_cat="l";
 	  break;
 	case E   :
 	  tag_cat="e";
-	  //  tag_cat="l";
 	  break;
         case EMU  :
 	  tag_cat="emu"; //continue;
@@ -1509,19 +1494,65 @@ int main(int argc, char* argv[])
 	  continue;
         }
 
+	// 1-lepton
+        mon.fillHisto("eventflow","all",1,weight); 
+        if (evcat==E || evcat==EE) { 
+          mon.fillHisto("eventflow","e",1,weight); 
+        } 
+        if (evcat==MU || evcat==MUMU) { 
+          mon.fillHisto("eventflow","mu",1,weight); 
+        }
 
         bool hasTrigger(false);
 	if(!isMC) {
+	  if(evcat!=fType) continue; 
+
+	  if(evcat==E && !(hasEtrigger)) continue;
+	  if(evcat==MU && !(hasMtrigger)) continue;
+
+	  if(evcat==EE   && !(hasEEtrigger||hasEtrigger) ) continue;
+	  if(evcat==MUMU && !(hasMMtrigger||hasMtrigger) ) continue;
+	  if(evcat==EMU && !hasEMtrigger ) continue;
+
+	  //this is a safety veto for the single mu PD
+	  if(isSingleMuPD) {
+	    if(!hasMtrigger) continue;
+	    if(hasMtrigger && hasMMtrigger) continue;
+	  }
+	  if(isDoubleMuPD) {
+	    if(!hasMMtrigger) continue;
+	  }
+
+	  //this is a safety veto for the single Ele PD
+	  if(isSingleElePD) {
+	    if(!hasEtrigger) continue;
+	    if(hasEtrigger && (hasEEtrigger)) continue; //|| hasMtrigger || hasMMtrigger ) ) continue;
+	  }
+	  if(isDoubleElePD) {
+	    if(!hasEEtrigger) continue;
+	    //	    if(hasEEtrigger && (hasMtrigger || hasMMtrigger) ) continue;
+	  }
+	  /*
+	  if(isMuonEGPD) {
+	    if(!hasEMtrigger) continue;
+	    if(hasEMtrigger && (hasEtrigger || hasEEtrigger || hasMtrigger || hasMMtrigger) ) continue;
+	  } 
+	  */  
+	  /*
 	  if(isDoubleMuPD)    { hasTrigger = hasMMtrigger;}
 	  if(isSingleMuPD)    { hasTrigger = hasMtrigger  && !hasMMtrigger;}
 	  if(isDoubleElePD)   { hasTrigger = hasEEtrigger  && !hasMtrigger  && !hasMMtrigger;}
 	  if(isSingleElePD)   { hasTrigger = hasEtrigger  && !hasEEtrigger  && !hasMtrigger && !hasMMtrigger; }
 	  if(isMuonEGPD)      { hasTrigger = hasEMtrigger && !hasEtrigger   && !hasEEtrigger && !hasMtrigger && !hasMMtrigger; }
+	  */
+
+	  hasTrigger=true;
+
 	} else {
 	  if(evcat==E && hasEtrigger ) hasTrigger=true;   
 	  if(evcat==MU && hasMtrigger ) hasTrigger=true;   
-	  if(evcat==EE && (hasEEtrigger)) hasTrigger=true; 
-	  if(evcat==MUMU && (hasMMtrigger)) hasTrigger=true; 
+	  if(evcat==EE && (hasEEtrigger || hasEtrigger)) hasTrigger=true; 
+	  if(evcat==MUMU && (hasMMtrigger || hasMtrigger)) hasTrigger=true; 
 	  if(evcat==EMU  && hasEMtrigger ) hasTrigger=true;  
 	}
 	// Apply Trigger requirement:
@@ -1536,12 +1567,12 @@ int main(int argc, char* argv[])
 	  if(is2016MC && !isQCD) {
 	    weight*=getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	  } else if(is2017MC && !isQCD){//2017 ele TRG scale factor: https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#E/gamma%20Trigger%20Recomendations
-      weight*=0.991;
-    }
+	    weight*=0.991;
+	  }
 	    //	    weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	  //weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h2);
-	  mon.fillHisto("lep_pt_raw","e",selLeptons[0].pt(),weight);   
-	  mon.fillHisto("lep_eta_raw","e",selLeptons[0].eta(),weight);     
+	  mon.fillHisto("leadlep_pt_raw","e",selLeptons[0].pt(),weight);   
+	  mon.fillHisto("leadlep_eta_raw","e",selLeptons[0].eta(),weight);     
 	  mon.fillHisto("lep_reliso","e",selLeptons[0].en_relIso,weight);
 	  
 	  myrelIso=selLeptons[0].en_relIso;
@@ -1552,8 +1583,8 @@ int main(int argc, char* argv[])
 	    weight *= (getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h ));
 	  }
 	     
-	  mon.fillHisto("lep_pt_raw","mu",selLeptons[0].pt(),weight);
-	  mon.fillHisto("lep_eta_raw","mu",selLeptons[0].eta(),weight);
+	  mon.fillHisto("leadlep_pt_raw","mu",selLeptons[0].pt(),weight);
+	  mon.fillHisto("leadlep_eta_raw","mu",selLeptons[0].eta(),weight);
 	  mon.fillHisto("lep_reliso","mu",selLeptons[0].mn_relIso,weight);       
 	  mon.fillHisto("lep_reliso","mutrk",selLeptons[0].mn_trkrelIso,weight);   
 
@@ -1775,11 +1806,11 @@ int main(int argc, char* argv[])
 	  if(varNames[ivar]=="_umetdown") imet = variedMET[6];
 
 	  if(varNames[ivar]=="_lesup") {// || varNames[ivar]=="_lesdown") { 
-	    if (evcat==E) imet = variedMET[9];
-	    else if (evcat==MU) imet = variedMET[7];
+	    if (evcat==E || evcat==EE) imet = variedMET[9];
+	    else if (evcat==MU || evcat==MUMU) imet = variedMET[7];
 	  } else if(varNames[ivar]=="_lesdown") {      
-	    if (evcat==E) imet = variedMET[10];
-	    else if (evcat==MU) imet = variedMET[8];
+	    if (evcat==E || evcat==EE) imet = variedMET[10];
+	    else if (evcat==MU || evcat==MUMU) imet = variedMET[8];
 	  }
 	  
 	  PhysicsObjectJetCollection vJets = variedJets[0];
@@ -2083,8 +2114,6 @@ int main(int argc, char* argv[])
 	  }
 	  
 	  //-------------------------------------------------------------------
-	  // Z-mass window (only effective in ZH)
-	  if(!passZmass) continue;     
 
 	  //MET>25 GeV 
 	  bool passMet25(imet.pt()>25);
@@ -2094,6 +2123,9 @@ int main(int argc, char* argv[])
 	  //mtW >50 GeV
 	  bool passMt(sqrt(tMass)>50.); // && sqrt(tMass)<250.);
 	  if(runZH) passMt=true;
+
+	  // Z-mass window (only effective in ZH) 
+	  if(!passZmass) continue;     
 
 	  //-------------------------------------------------------------------
 	  // First set all b-tags (x-cleaned) in one vector<LorentzVector>
@@ -2122,41 +2154,42 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("eventflow","all",3,weight);
 	      if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",3,weight);
 	      if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",3,weight);
-
+	      
 	      // MT CUT
 	      if (passMt) {
 		mon.fillHisto("eventflow","all",4,weight);
 		if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",4,weight);
 		if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",4,weight);
-
+		
 		// Lepton kinematics
 		if (evcat==E || evcat==EE) {
-		  mon.fillHisto("lep_pt_raw","e_metmt",selLeptons[0].pt(),weight);
-		  mon.fillHisto("lep_eta_raw","e_metmt",selLeptons[0].eta(),weight);
-
+		  mon.fillHisto("leadlep_pt_raw","e_metmt",selLeptons[0].pt(),weight);
+		  mon.fillHisto("leadlep_eta_raw","e_metmt",selLeptons[0].eta(),weight);
+		  
 		}
 		if (evcat==MU || evcat==MUMU) {
-		  mon.fillHisto("lep_pt_raw","mu_metmt",selLeptons[0].pt(),weight);
-		  mon.fillHisto("lep_eta_raw","mu_metmt",selLeptons[0].eta(),weight);
-
+		  mon.fillHisto("leadlep_pt_raw","mu_metmt",selLeptons[0].pt(),weight);
+		  mon.fillHisto("leadlep_eta_raw","mu_metmt",selLeptons[0].eta(),weight);
+		  
 		}
-		 
-		   // NJET CUT
-		 if (passNJ2) {
+		
+		// NJET CUT
+		if (passNJ2) {
 		  mon.fillHisto("eventflow","all",5,weight);
 		  if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",5,weight);
 		  if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",5,weight);
-
-		      // Lepton kinematics
-		  if (abs(selLeptons[0].id)==11) {
-		    mon.fillHisto("lep_pt_raw","e_nj2",selLeptons[0].pt(),weight);
-		    mon.fillHisto("lep_eta_raw","e_nj2",selLeptons[0].eta(),weight);
-		  } else if (abs(selLeptons[0].id)==13) {
-		    mon.fillHisto("lep_pt_raw","mu_nj2",selLeptons[0].pt(),weight);
-		    mon.fillHisto("lep_eta_raw","mu_nj2",selLeptons[0].eta(),weight);
-		  }
 		  
+		  // Lepton kinematics
+		  if (abs(selLeptons[0].id)==11) {
+		    mon.fillHisto("leadlep_pt_raw","e_nj2",selLeptons[0].pt(),weight);
+		    mon.fillHisto("leadlep_eta_raw","e_nj2",selLeptons[0].eta(),weight);
+		  } else if (abs(selLeptons[0].id)==13) {
+		    mon.fillHisto("leadlep_pt_raw","mu_nj2",selLeptons[0].pt(),weight);
+		    mon.fillHisto("leadlep_eta_raw","mu_nj2",selLeptons[0].eta(),weight);
+		  }
 		}
+		
+		
 	      }
 	    }
 	  }
@@ -2219,8 +2252,6 @@ int main(int argc, char* argv[])
 	    GoodIdbJets.clear();
 	    for (auto & i : GoodIdJets) { GoodIdbJets.push_back(i);}
 	    for (auto & i : SVs) {  GoodIdbJets.push_back(i); }
-
-	    //	    isSignalRegion=false;
 	  } else if(tag_subcat.Contains("SR")) {  
 	    isSignalRegion=true;
 	  } else {
@@ -2341,74 +2372,76 @@ int main(int argc, char* argv[])
 
 	  if (ivar==0) {
 
-	    if (passNJ2) {
+	    //	    if (passZmass && passNJ2) {
 
-	      // Reject QCD with Dphi(jet,MET) ?
-	      float dphij1met=fabs(deltaPhi(GoodIdJets[0].phi(),imet.phi()));       
-	      float dphij2met=fabs(deltaPhi(GoodIdJets[1].phi(),imet.phi()));
-	      float min_dphijmet=min(dphij1met,dphij2met);
-	      //mon.fillHisto("dphijmet12","raw_minj1j2",min_dphijmet,weight);
-	      
-	      // dphi(jet,MET)
-	      mon.fillHisto("dphijmet",tags,mindphijmet,weight);
-	      mon.fillHisto("dphijmet12",tags,min_dphijmet,weight); 
-	      mon.fillHisto("dphijmet1",tags,dphij1met,weight); 
-	      
-	      // pu reweighting
-	      mon.fillHisto("nvtx_raw",   tags, phys.nvtx,      xsecWeight*genWeight);
-	      mon.fillHisto("nvtxwgt_raw",tags, phys.nvtx,      weight);
-
-	     // Lepton kinematics
-	      mon.fillHisto("lep_pt_raw",tags,selLeptons[0].pt(),weight);
-	      mon.fillHisto("lep_eta_raw",tags,selLeptons[0].eta(),weight);
-	      
-	      //lepton iso
-	      mon.fillHisto("lep_reliso",tags,myrelIso,weight);    
-	      //	      mon.fillHisto("lep_reliso",tags,mytrkrelIso,weight); 
-	      
-	      //zll mass
-	      if(runZH) mon.fillHisto("zmass_raw" ,tags, (selLeptons[0]+selLeptons[1]).mass(), weight);
-
-	      // soft-bs + b-tagged jets
-	      mon.fillHisto("nbtags_raw",tags,SVs.size(),weight);    
-	      mon.fillHisto("nbjets_raw",tags, CSVLoosebJets.size(),weight);  
-
-	      // higgs mass
-	      mon.fillHisto("higgsMass",tags,allHadronic.mass(),weight);
-	      // higgs pT
-	      mon.fillHisto("higgsPt",tags,allHadronic.pt(),weight);
-	      // HT from all CSV + soft b's
-	      mon.fillHisto("ht",tags,ht,weight);
-	      // MET
-	      mon.fillHisto("pfmet",tags,imet.pt(),weight);
-	      // pTW
-	      //LorentzVector wsum=imet+selLeptons[0];
-	      mon.fillHisto("ptw",tags,wsum.pt(),weight);
-	      // mtW 
-	      mon.fillHisto("mtw",tags,sqrt(tMass),weight);
-//        if(tag_cat=="mu" && tag_qcd=="_A_" && tag_subcat=="SR_4b"){
-//          printf("iev: %i, weight is: %f\n",iev,weight);
-//        }
-	      // Dphi(W,h) 
-	      mon.fillHisto("dphiWh",tags,dphi_Wh,weight);
-	      // DRave, DMmin
-	      mon.fillHisto("dRave",tags,dRave_,weight);
-	      mon.fillHisto("dmmin",tags,dm, weight);
-	      // BDT
-	      mon.fillHisto("bdt", tags, mvaBDT, weight);
-	      
+	    // Reject QCD with Dphi(jet,MET) ?
+	    float dphij1met=fabs(deltaPhi(GoodIdJets[0].phi(),imet.phi()));       
+	    float dphij2met=fabs(deltaPhi(GoodIdJets[1].phi(),imet.phi()));
+	    float min_dphijmet=min(dphij1met,dphij2met);
+	    //mon.fillHisto("dphijmet12","raw_minj1j2",min_dphijmet,weight);
+	    
+	    // dphi(jet,MET)
+	    mon.fillHisto("dphijmet",tags,mindphijmet,weight);
+	    mon.fillHisto("dphijmet12",tags,min_dphijmet,weight); 
+	    mon.fillHisto("dphijmet1",tags,dphij1met,weight); 
+	    
+	    // pu reweighting
+	    mon.fillHisto("nvtx_raw",   tags, phys.nvtx,      xsecWeight*genWeight);
+	    mon.fillHisto("nvtxwgt_raw",tags, phys.nvtx,      weight);
+	    
+	    // Lepton kinematics
+	    mon.fillHisto("leadlep_pt_raw",tags,selLeptons[0].pt(),weight);
+	    mon.fillHisto("leadlep_eta_raw",tags,selLeptons[0].eta(),weight);
+	    
+	    //lepton iso
+	    mon.fillHisto("lep_reliso",tags,myrelIso,weight);    
+	    //	      mon.fillHisto("lep_reliso",tags,mytrkrelIso,weight); 
+	    
+	    //zll mass
+	    if(runZH){
+	      mon.fillHisto("zmass_raw" ,tags, (selLeptons[0]+selLeptons[1]).mass(), weight);
+	      mon.fillHisto("lep_pt_raw",tags,selLeptons[1].pt(),weight);
+	      mon.fillHisto("lep_eta_raw",tags,selLeptons[1].eta(),weight);  
 	    }
-	      //##############################################################################
-	      //############ MVA Handler ####################################################
-	      //##############################################################################
-		  
+	    
+	    // soft-bs + b-tagged jets
+	    mon.fillHisto("nbtags_raw",tags,SVs.size(),weight);    
+	    mon.fillHisto("nbjets_raw",tags, CSVLoosebJets.size(),weight);  
+	    
+	    // higgs mass
+	    mon.fillHisto("higgsMass",tags,allHadronic.mass(),weight);
+	    // higgs pT
+	    mon.fillHisto("higgsPt",tags,allHadronic.pt(),weight);
+	    // HT from all CSV + soft b's
+	    mon.fillHisto("ht",tags,ht,weight);
+	    // MET
+	    mon.fillHisto("pfmet",tags,imet.pt(),weight);
+	    // pTW
+	    //LorentzVector wsum=imet+selLeptons[0];
+	    mon.fillHisto("ptw",tags,wsum.pt(),weight);
+	    // mtW 
+	    mon.fillHisto("mtw",tags,sqrt(tMass),weight);
+	    
+	    // Dphi(W,h) 
+	    mon.fillHisto("dphiWh",tags,dphi_Wh,weight);
+	    // DRave, DMmin
+	    mon.fillHisto("dRave",tags,dRave_,weight);
+	    mon.fillHisto("dmmin",tags,dm, weight);
+	    // BDT
+	    mon.fillHisto("bdt", tags, mvaBDT, weight);
+	      
+	    
+	    //##############################################################################
+	    //############ MVA Handler ####################################################
+	    //##############################################################################
+	    
 	    if (runMVA) {
-		
+	      
 	      float mvaweight = 1.0;
 	      genWeight > 0 ? mvaweight = weight/xsecWeight : mvaweight = -weight / xsecWeight; // Include all weights except for the xsecWeight
 	      if ( isSignalRegion && GoodIdbJets.size() >= 3) 
 		{
-		  if(passMet25 && passMt && passNJ2) {
+		  if(passZmass && passMet25 && passMt && passNJ2) {
 		    myMVAHandler_.getEntry
 		      (
 		       //	       GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
@@ -2433,7 +2466,7 @@ int main(int argc, char* argv[])
 	  //##############################################################################
 
 	  //	  if(passMet25 && passMt && passNJ2) {
-	  if (passNJ2) {
+	  //	  if (passZmass && passNJ2) {
 	  
 	    //scan the BDT cut and fill the shapes
 	    for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){
@@ -2455,7 +2488,7 @@ int main(int argc, char* argv[])
 	      } // run slimmed analysis
 	    }
 	    
-	  } // END SELECTION
+	    //	  } // END SELECTION
 	  
 	} // Systematic variation END
 	
