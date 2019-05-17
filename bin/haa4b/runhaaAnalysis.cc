@@ -275,7 +275,7 @@ int main(int argc, char* argv[])
                       "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_Moriond17_B_H.csv";
       if(is2017data || is2017MC){
           csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
-                          "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V3_B_F.csv";       
+                          "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V4_B_F.csv";       
       }
       LooseWP = DeepCSVLooseWP;
       MediumWP = DeepCSVMediumWP;
