@@ -194,8 +194,26 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
   TH1F * h_sumWeights, * h_sumScaleWeights , * h_sumPdfWeights ,* h_sumAlphasWeights; 
   TH1F * h_metFilter;
   
+  TH2F *h2_BTaggingEff_Denom_b, *h2_BTaggingEff_Denom_c, *h2_BTaggingEff_Denom_udsg;
+  TH2F *h2_LooseBTaggingEff_Num_b, *h2_LooseBTaggingEff_Num_c, *h2_LooseBTaggingEff_Num_udsg;
+  TH2F *h2_MediumBTaggingEff_Num_b, *h2_MediumBTaggingEff_Num_c, *h2_MediumBTaggingEff_Num_udsg;
+  TH2F *h2_TightBTaggingEff_Num_b, *h2_TightBTaggingEff_Num_c, *h2_TightBTaggingEff_Num_udsg;
+
   bool isMC_ttbar;
   bool is2017;
+  
+  //BTagging
+  //2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+  float DeepCSVLooseWP;  float DeepCSVMediumWP; float DeepCSVTightWP;
+
+  // BTagging efficiency Map bin configuration
+  const int     ptNBins = 400;
+  const double  ptMin = 0.;
+  const double  ptMax = 4000.;
+  const int     etaNBins = 60;
+  const double  etaMin = -3.;
+  const double  etaMax = 3.;
+
   /*
   std::string bit_string_stat = "001";
   std::string bit_string_syst = "010";
@@ -284,6 +302,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
      printf("  Verbose set to false.  Will be quiet.\n") ;
   }
 
+  is2017     = (string(proc_.c_str()).find("2017") != string::npos);
   
   printf("Definition of plots\n");
   h_nevents = fs->make< TH1F>("nevents",";nevents; nevents",1,-0.5,0.5);
@@ -298,7 +317,24 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   h_sumScaleWeights = fs->make< TH1F>("sumScaleWeights",";;sumScaleWeights;",9,-0.5,8.5);
   h_sumPdfWeights = fs->make< TH1F>("sumPdfWeights",";;sumPdfWeights;",100,-0.5,99.5);
   h_sumAlphasWeights = fs->make< TH1F>("sumAlphasWeights",";;sumAlphasWeights;",2,-0.5,1.5);
+ 
+  // BTag efficiency histograms definition
+  if(isMC_){
+    h2_BTaggingEff_Denom_b = fs->make< TH2F>("BTaggingEff_Denom_b", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
+    h2_BTaggingEff_Denom_c = fs->make< TH2F>("BTaggingEff_Denom_c", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
+    h2_BTaggingEff_Denom_udsg = fs->make< TH2F>("BTaggingEff_Denom_udsg", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
   
+    h2_LooseBTaggingEff_Num_b = fs->make< TH2F>("LooseBTaggingEff_Num_b", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
+    h2_LooseBTaggingEff_Num_c = fs->make< TH2F>("LooseBTaggingEff_Num_c", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
+    h2_LooseBTaggingEff_Num_udsg = fs->make< TH2F>("LooseBTaggingEff_Num_udsg", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
+    h2_MediumBTaggingEff_Num_b = fs->make< TH2F>("MediumBTaggingEff_Num_b", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
+    h2_MediumBTaggingEff_Num_c = fs->make< TH2F>("MediumBTaggingEff_Num_c", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
+    h2_MediumBTaggingEff_Num_udsg = fs->make< TH2F>("MediumBTaggingEff_Num_udsg", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
+    h2_TightBTaggingEff_Num_b = fs->make< TH2F>("TightBTaggingEff_Num_b", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
+    h2_TightBTaggingEff_Num_c = fs->make< TH2F>("TightBTaggingEff_Num_c", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
+    h2_TightBTaggingEff_Num_udsg = fs->make< TH2F>("TightBTaggingEff_Num_udsg", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
+  }
+
   h_metFilter = fs->make<TH1F>( "metFilter",";metEventflow",20,0,20);
   h_metFilter->GetXaxis()->SetBinLabel(1,"raw");
   h_metFilter->GetXaxis()->SetBinLabel(2,"globalTightHalo2016Filter");
@@ -317,7 +353,6 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   //  pat::MET::METCorrectionLevel metcor = pat::MET::METCorrectionLevel::Type1XY;
   
   // Use for Top pt re-weighting
-  is2017     = (string(proc_.c_str()).find("2017") != string::npos);
   if(is2017)
       isMC_ttbar = isMC_ && (string(proc_.c_str()).find("TeV_TTTo") != string::npos);
   else
@@ -677,7 +712,43 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      
    } // end MC
    
- //
+  // Filling histograms for BTagging Efficiency
+  if(is2017)
+    {DeepCSVLooseWP = 0.1522; DeepCSVMediumWP = 0.4941; DeepCSVTightWP = 0.8001;}
+  else
+    {DeepCSVLooseWP = 0.2219;  DeepCSVMediumWP = 0.6324; DeepCSVTightWP = 0.8958;}
+
+  pat::JetCollection jets;
+  edm::Handle< pat::JetCollection > jetsHandle;
+  event.getByToken(jetTag_, jetsHandle);
+  if(jetsHandle.isValid()){ jets = *jetsHandle;}
+  if(isMC_){
+    for (pat::Jet &j : jets) {
+      Float_t btag_dsc = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+      int partonFlavor = j.partonFlavour();
+      if( fabs(partonFlavor)==5 ){
+        h2_BTaggingEff_Denom_b->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepCSVLooseWP ) h2_LooseBTaggingEff_Num_b->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepCSVMediumWP ) h2_MediumBTaggingEff_Num_b->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepCSVTightWP ) h2_TightBTaggingEff_Num_b->Fill(j.pt(), j.eta());
+      }
+      else if( fabs(partonFlavor)==4 ){
+        h2_BTaggingEff_Denom_c->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepCSVLooseWP ) h2_LooseBTaggingEff_Num_c->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepCSVMediumWP ) h2_MediumBTaggingEff_Num_c->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepCSVTightWP ) h2_TightBTaggingEff_Num_c->Fill(j.pt(), j.eta());
+      }
+      else{
+        h2_BTaggingEff_Denom_udsg->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepCSVLooseWP ) h2_LooseBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepCSVMediumWP ) h2_MediumBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepCSVTightWP ) h2_TightBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
+      }
+   }
+  }
+
+
+
        // Trigger
        //
    edm::Handle<edm::TriggerResults> triggerBits; 
@@ -964,10 +1035,10 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
           //
        // jet selection (ak4PFJetsCHS)
        //
-       pat::JetCollection jets;
-       edm::Handle< pat::JetCollection > jetsHandle;
-       event.getByToken(jetTag_, jetsHandle);
-       if(jetsHandle.isValid()){ jets = *jetsHandle;}
+//       pat::JetCollection jets;
+//       edm::Handle< pat::JetCollection > jetsHandle;
+//       event.getByToken(jetTag_, jetsHandle);
+//       if(jetsHandle.isValid()){ jets = *jetsHandle;}
        
        ev.jet=0;
        //       PFJetIDSelectionFunctor looseJetIdSelector(PFJetIDSelectionFunctor::FIRSTDATA,PFJetIDSelectionFunctor::LOOSE);

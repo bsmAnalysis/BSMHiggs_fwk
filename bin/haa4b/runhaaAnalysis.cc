@@ -41,7 +41,7 @@
 #include "TMath.h"
 
 #include <unistd.h>
-//#define YEAR_2017
+////#define YEAR_2017
 using namespace std;
 
 
@@ -137,6 +137,8 @@ int main(int argc, char* argv[])
     TString proc=runProcess.getParameter<std::string>("proc");
     TString dtag=runProcess.getParameter<std::string>("tag");
     TString suffix=runProcess.getParameter<std::string>("suffix");
+
+    TString btagDir=runProcess.getParameter<std::string>("btagDir");
 
     bool is2016data = (!isMC && dtag.Contains("2016"));
     bool is2016MC = (isMC && !dtag.Contains("2017"));
@@ -473,6 +475,10 @@ int main(int argc, char* argv[])
       h->GetXaxis()->SetBinLabel(8,"==4b-tags");  
     }
  
+    mon.addHistogram( new TH1F ("btagEff_b", ";;Events", 200,0,2) );
+    mon.addHistogram( new TH1F ("btagEff_c", ";;Events", 200,0,2) );
+    mon.addHistogram( new TH1F ("btagEff_udsg", ";;Events", 200,0,2) );
+
     //generator level plots
     mon.addHistogram( new TH1F( "pileup", ";pileup;Events", 100,-0.5,99.5) );
     
@@ -871,6 +877,23 @@ int main(int argc, char* argv[])
         MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file->Get("TightISO_TightID_pt_eta/pt_abseta_ratio");
 
     //####################################################################################################################
+    //###########################################           BTaggingMC         ###########################################
+    //####################################################################################################################
+    TH2F* btagEff_b = new TH2F();
+    TH2F* btagEff_c = new TH2F(); 
+    TH2F* btagEff_udsg = new TH2F();
+    TFile *btagfile = new TFile();
+    if(isMC){
+      TString btagfilename = btagDir + "/" + proc + "_BTaggEff.root";
+      btagfile = TFile::Open(btagfilename);
+      if(btagfile->IsZombie() || !btagfile->IsOpen()) {std::cout<<"Error, cannot open file: "<<btagfilename<<std::endl;return -1;}
+      btagEff_b = (TH2F *)btagfile->Get("Loose_efficiency_b");
+      btagEff_c = (TH2F *)btagfile->Get("Loose_efficiency_c");
+      btagEff_udsg = (TH2F *)btagfile->Get("Loose_efficiency_udsg");
+    }
+    
+    
+    //####################################################################################################################
     //###########################################           MVAHandler         ###########################################
     //####################################################################################################################
     //construct MVA out put file name
@@ -1121,7 +1144,7 @@ int main(int argc, char* argv[])
 		double sigma=0.0;
 #ifdef YEAR_2017
 		//https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2#2017_MiniAOD_V2
-		//		sigma = ilep.en_enSmearNrSigma;
+		sigma = ilep.en_enSmearNrSigma;
 #else
 		sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed,0,0);
 #endif
@@ -1134,7 +1157,7 @@ int main(int argc, char* argv[])
 	      } else {
 		double scale_corr=1.0;
 #ifdef YEAR_2017
-		//		scale_corr = ilep.en_enScaleValue;
+		scale_corr = ilep.en_enScaleValue;
 #else
 		scale_corr = eScaler_.ScaleCorrection(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed); 
 #endif
@@ -1177,7 +1200,7 @@ int main(int argc, char* argv[])
 		if(ivar==1) { //stat electron up
 		  double error_scale=0.0;
 #ifdef YEAR_2017
-		  //		  error_scale = ilep.en_enScaleStatUp/ilep.E()-1;
+		  error_scale = ilep.en_enScaleStatUp/ilep.E()-1;
 //      printf("Electron stat up error scale: %f\n",error_scale);
 #else
 		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_stat);
@@ -1187,7 +1210,7 @@ int main(int argc, char* argv[])
 		}if(ivar==2) { //stat electron down
 		  double error_scale=0.0;
 #ifdef YEAR_2017
-		  //		  error_scale = ilep.en_enScaleStatDown/ilep.E()-1;
+		  error_scale = ilep.en_enScaleStatDown/ilep.E()-1;
 //      printf("Electron stat down error scale: %f\n",error_scale);
 #else
 		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_stat); 
@@ -1197,7 +1220,7 @@ int main(int argc, char* argv[])
 		}if(ivar==3) { //systematic electron up
 		  double error_scale=0.0;
 #ifdef YEAR_2017
-		  //		  error_scale = ilep.en_enScaleSystUp/ilep.E()-1;
+		  error_scale = ilep.en_enScaleSystUp/ilep.E()-1;
 //      printf("Electron sys up error scale: %f\n",error_scale);
 #else
 		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_syst);
@@ -1207,7 +1230,7 @@ int main(int argc, char* argv[])
 		}if(ivar==4) { //systematic electron down
 		  double error_scale=0.0;
 #ifdef YEAR_2017
-		  //		  error_scale = ilep.en_enScaleSystDown/ilep.E()-1;
+		  error_scale = ilep.en_enScaleSystDown/ilep.E()-1;
 //      printf("Electron stat down error scale: %f\n",error_scale);
 #else
 		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_syst);
@@ -1217,7 +1240,7 @@ int main(int argc, char* argv[])
 		}if(ivar==5) { //gain switch electron up
 		  double error_scale=0.0;
 #ifdef YEAR_2017
-		  //      error_scale = ilep.en_enScaleGainUp/ilep.E()-1;
+		  error_scale = ilep.en_enScaleGainUp/ilep.E()-1;
 //      printf("Electron gain up error scale: %f\n",error_scale);
 #else
 		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_gain);
@@ -1227,7 +1250,7 @@ int main(int argc, char* argv[])
 		}if(ivar==6) { //gain switch electron down
 		  double error_scale=0.0;  
 #ifdef YEAR_2017
-		  //		  error_scale = ilep.en_enScaleGainDown/ilep.E()-1;
+		  error_scale = ilep.en_enScaleGainDown/ilep.E()-1;
 //      printf("Electron gain down error scale: %f\n",error_scale);
 #else	      
 		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_gain);      
@@ -1237,7 +1260,7 @@ int main(int argc, char* argv[])
 		}if(ivar==7) { //rho resolution Electron up
 		  double smearValue = 1.0;
 #ifdef YEAR_2017
-		  //		  smearValue = ilep.en_enSigmaRhoUp/ilep.E();
+		  smearValue = ilep.en_enSigmaRhoUp/ilep.E();
 //      printf("Electron rho up smear value: %f\n",smearValue);
 #else
 		  double sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,1,0);
@@ -1250,7 +1273,7 @@ int main(int argc, char* argv[])
 		}if(ivar==8) { //rho resolution Electron down
 		  double smearValue = 1.0;       
 #ifdef YEAR_2017
-		  //		  smearValue = ilep.en_enSigmaRhoDown/ilep.E();
+		  smearValue = ilep.en_enSigmaRhoDown/ilep.E();
 //      printf("Electron rho down smear value: %f\n",smearValue);
 #else
 		  double sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,-1,0);
@@ -1263,7 +1286,7 @@ int main(int argc, char* argv[])
 		}if(ivar==9) { //phi resolution Electron down
 		  double smearValue = 1.0;
 #ifdef YEAR_2017
-		  //		  smearValue = ilep.en_enSigmaPhiDown/ilep.E();
+		  smearValue = ilep.en_enSigmaPhiDown/ilep.E();
 //      printf("Electron phi down smear value: %f\n",smearValue);
 #else
 		  double sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,0,-1);
@@ -1914,11 +1937,20 @@ int main(int argc, char* argv[])
 	      bool hasCSVtagDown = hasCSVtag;
 	      
 	      if (isMC) { 
+
 		//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X
 		btsfutil.SetSeed(ev.event*10 + ijet*10000);// + ivar*10);
 		
 		if(abs(vJets[ijet].flavid)==5) {
-		  if(use_DeepCSV) beff=btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE");   
+		  if(use_DeepCSV) {
+//        beff=btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE");   
+        mon.fillHisto("btagEff_b","default",btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE"),1.0);
+        //std::cout << "B loose: default Btag Eff: " << beff;
+//        if(is2017MC) {
+          beff=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEff_b); 
+          mon.fillHisto("btagEff_b","new",beff, 1.0); 
+//        }//std::cout << ", new Btag Eff: " << beff << std::endl;}
+      }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_btagup") {
 		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_B ,
@@ -1931,7 +1963,16 @@ int main(int argc, char* argv[])
 										       vJets[ijet].eta(), vJets[ijet].pt()), beff); 
 		  }
 		} else if(abs(vJets[ijet].flavid)==4) {
-		  if(use_DeepCSV) beff=btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE");      
+		  if(use_DeepCSV){ 
+//        beff=btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE");
+        //std::cout << "C loose: default Btag Eff: " << beff;
+        mon.fillHisto("btagEff_c","default",btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE"),1.0);
+//        if(is2017MC) 
+//        {
+          beff=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEff_c); 
+          mon.fillHisto("btagEff_c","new",beff, 1.0);
+//        }//std::cout << ", new Btag Eff: " << beff << std::endl;}
+      }
 		  //  80X recommendation
 		   if (varNames[ivar]=="_ctagup") {
 		     btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_C , 
@@ -1944,7 +1985,16 @@ int main(int argc, char* argv[])
 										     vJets[ijet].eta(), vJets[ijet].pt()), beff);
 		   }
 		} else {
-		  if(use_DeepCSV) leff=btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE");      
+		  if(use_DeepCSV){
+//        leff=btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE");      
+        //std::cout << "Light loose: default Btag Eff: " << beff;
+        mon.fillHisto("btagEff_udsg","default",btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE"),1.0);
+//        if(is2017MC) 
+//        {
+          leff=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEff_udsg);
+          mon.fillHisto("btagEff_udsg","new",leff, 1.0); 
+//        }//std::cout << ", new Btag Eff: " << beff << std::endl;}
+      }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_ltagup") {
 		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_UDSG   , 
@@ -2499,6 +2549,8 @@ int main(int argc, char* argv[])
     E_TIGHTID_SF_file->Close();
     MU_TRG_SF_file->Close();
     
+    btagfile->Close();
+
     printf("\n");
     file->Close();
 

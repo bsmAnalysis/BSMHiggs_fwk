@@ -27,6 +27,7 @@ runProcess = cms.PSet(
     runSystematics = cms.bool(@runSystematics),
     reweightTopPt = cms.bool(@reweightTopPt),
     runMVA = cms.bool(@runMVA),
+    btagDir = cms.string("@btagDir"),
     ele_trgSF = cms.string("${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/weights/2017Feb-A-Popov_TriggerSF_Run2016All_v1.root"),
     ele_recoSF = cms.string("${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/weights/2017/egammaEffi.txt_EGM2D_runBCDEF_passingRECO.root"),
     ele_TightIdSF = cms.string("${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/weights/2017/egammaEffi.txt_EGM2D_runBCDEF_passingTight94X.root"),
