@@ -66,6 +66,7 @@ PLOTTER=$MAINDIR/plotter${SUFFIX}
 ####################### Settings for Ntuple Analysis ##################
 NTPL_INPUT=results$SUFFIX
 
+BTAG_NTPL_OUTDIR=$MAINDIR/btag_Ntpl$SUFFIX
 NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX
 #NTPL_OUTDIR=/eos/cms/store/user/georgia/results_Ntpl$SUFFIX #only for Data
 RUNLOG=$NTPL_OUTDIR/LOGFILES/runSelection.log
@@ -107,6 +108,16 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $FULLANALYSISCFG -l results$SUFFIX -p "@verbose=False" --key haa_signal -s crab 
    fi    
 
+   if [[ $step == 1.01 ]]; then  # compute BTagging efficiency
+       echo "Merge and Calculate BTag Efficiency in MC"
+       echo -e "Input: " $NTPL_INPUT "\n Output: " $BTAG_NTPL_OUTDIR
+       ## if the output directory does not exist, create it:
+       if [ ! -d "$BTAG_NTPL_OUTDIR" ]; then
+	   mkdir $BTAG_NTPL_OUTDIR
+       fi
+       computeBTagRatio.py -j $NTPL_JSON -d $NTPL_INPUT -o $BTAG_NTPL_OUTDIR # -t MC13TeV_TTTo
+   fi
+   
    if [[ $step == 1.1 ]]; then  #submit jobs for h->aa->XXYY analysis
        echo "JOB SUBMISSION for BSM h->aa Analysis"
        echo -e "Input: " $NTPL_JSON "\n Output: " $NTPL_OUTDIR

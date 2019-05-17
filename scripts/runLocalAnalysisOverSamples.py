@@ -159,13 +159,17 @@ for proc in procList :
                     rsegment=0
                     for cfgfile in failedList: 
                         os.system('mkdir -p ' + queuelog)
+                        htlog = os.path.join( queuelog, 'HTCondor_Data')
+                        if(not isdata):
+                            htlog = os.path.join( queuelog, 'HTCondor_MC')
+                        os.system('mkdir -p ' + htlog)
                         SCRIPT.writelines('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(rsegment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile + '\n\n')
                         SCRIPT_L.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+str(rsegment)+'.log'+' & \n\n')
                         count = count + 1
                         
                         SCRIPT_Temp.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' & \n\n')
                         SCRIPT_DTag.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' & \n\n')
-                        PythonLists.writelines(cfgfile+' '+queuelog+'/'+dtag+'_'+str(rsegment)+'\n')
+                        PythonLists.writelines(cfgfile+' '+htlog+'/'+dtag+'_'+str(rsegment)+'\n')
                         #sys.exit(0)
 #                        os.system('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(rsegment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
                         rsegment+=1 
@@ -227,13 +231,18 @@ for proc in procList :
                         os.system(theExecutable + ' ' + cfgfile)
                     else :
                         os.system('mkdir -p ' + queuelog)
+                        htlog = os.path.join( queuelog, 'HTCondor_Data')
+                        if(not isdata): 
+                            htlog = os.path.join( queuelog, 'HTCondor_MC')
+                        os.system('mkdir -p ' + htlog)
+                        
                         SCRIPT.writelines('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile + '\n\n')
                         SCRIPT_L.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+str(segment)+'.log'+' & \n\n')
                         count = count + 1
                         
                         SCRIPT_Temp.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' & \n\n')
                         SCRIPT_DTag.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' & \n\n')
-                        PythonLists.writelines(cfgfile+' '+queuelog+'/'+dtag+'_'+str(segment)+'\n')
+                        PythonLists.writelines(cfgfile+' '+htlog+'/'+dtag+'_'+str(segment)+'\n')
                         #sys.exit(0)
 #                        os.system('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile)
 

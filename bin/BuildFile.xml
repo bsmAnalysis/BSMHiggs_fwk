@@ -32,6 +32,7 @@
 <!-- Analysis specific code (please keep that in subdirectories and refer to test/<subdir> for instructions) -->
 <!--  <bin name="runNtuplizer"                file="common/runNtuplizer.cc"></bin> --> 
   <bin name="runhaaAnalysis"              file="haa4b/runhaaAnalysis.cc"></bin>  
+<!--  <bin name="BTaggingEffAnalyzer"              file="haa4b/BTaggingEffAnalyzer.cc"></bin> --> 
   <bin name="genParticleDump"                file="common/genParticleDump.cc"></bin>
 </environment>
 

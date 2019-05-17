@@ -10,7 +10,7 @@ git cms-init
 
 #Packages to rerun electrons energy correction
 #https://twiki.cern.ch/twiki/bin/view/CMS/EgammaMiniAODV2#2017%20MiniAOD%20V2
-git cms-merge-topic cms-egamma:EgammaPostRecoTools_940
+git cms-merge-topic cms-egamma:EgammaPostRecoTools
 scram b -j 4
 
 #Calculating corrections and uncertainties on MET
@@ -20,7 +20,7 @@ scram b -j 4
 
 #Add Fall17_94X_V2 ID for electrons
 #https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2
-git cms-merge-topic guitargeek:EgammaID_9_4_X
+git cms-merge-topic cms-egamma:EgammaID_949
 scram b -j 4
 
 #Add Fall17_94X_V2 ID for photons
