@@ -197,16 +197,11 @@ namespace xsecWeightCalculator
             }
         }
 
-//        if      (lheNJets == 0) return this_kf / (this_events[0] / this_xsec[0]);
-//        else if (lheNJets == 1) return this_kf / (this_events[1] / this_xsec[1] + this_events[0] / this_xsec[0]);
-//        else if (lheNJets == 2) return this_kf / (this_events[2] / this_xsec[2] + this_events[0] / this_xsec[0]);
-//        else if (lheNJets == 3) return this_kf / (this_events[3] / this_xsec[3] + this_events[0] / this_xsec[0]);
-//        else if (lheNJets == 4) return this_kf / (this_events[4] / this_xsec[4] + this_events[0] / this_xsec[0]);
-        if      (lheNJets == 0) { std::cout << "0 Jets, xsec: " << this_kf / (this_events[0] / this_xsec[0]) << std::endl; return this_kf / (this_events[0] / this_xsec[0]);}
-        else if (lheNJets == 1) { std::cout << "1 Jets, 0 xsec: " << this_kf / (this_events[0] / this_xsec[0]) << " , xsec: " << this_kf / (this_events[1] / this_xsec[1] + this_events[0] / this_xsec[0]) << std::endl; return this_kf / (this_events[1] / this_xsec[1] + this_events[0] / this_xsec[0]);}
-        else if (lheNJets == 2) { std::cout << "2 Jets, 0 xsec: " << this_kf / (this_events[0] / this_xsec[0]) << " , xsec: " << this_kf / (this_events[2] / this_xsec[2] + this_events[0] / this_xsec[0]) << std::endl; return this_kf / (this_events[2] / this_xsec[2] + this_events[0] / this_xsec[0]);}
-        else if (lheNJets == 3) { std::cout << "3 Jets, 0 xsec: " << this_kf / (this_events[0] / this_xsec[0]) << " , xsec: " << this_kf / (this_events[3] / this_xsec[3] + this_events[0] / this_xsec[0]) << std::endl; return this_kf / (this_events[3] / this_xsec[3] + this_events[0] / this_xsec[0]);}
-        else if (lheNJets == 4) { std::cout << "4 Jets, 0 xsec: " << this_kf / (this_events[0] / this_xsec[0]) << " , xsec: " << this_kf / (this_events[4] / this_xsec[4] + this_events[0] / this_xsec[0]) << std::endl; return this_kf / (this_events[4] / this_xsec[4] + this_events[0] / this_xsec[0]);}
+        if      (lheNJets == 0) return this_kf / (this_events[0] / this_xsec[0]);
+        else if (lheNJets == 1) return this_kf / (this_events[1] / this_xsec[1] + this_events[0] / this_xsec[0]);
+        else if (lheNJets == 2) return this_kf / (this_events[2] / this_xsec[2] + this_events[0] / this_xsec[0]);
+        else if (lheNJets == 3) return this_kf / (this_events[3] / this_xsec[3] + this_events[0] / this_xsec[0]);
+        else if (lheNJets == 4) return this_kf / (this_events[4] / this_xsec[4] + this_events[0] / this_xsec[0]);
         else { std::cout << "### There is a problem here!" << std::endl; return 0; }
         return 0;
     }
