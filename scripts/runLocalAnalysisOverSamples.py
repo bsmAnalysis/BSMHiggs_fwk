@@ -38,7 +38,7 @@ def getByLabel(desc,key,defaultVal=None) :
 #parse the options
 try:
      # retrive command line options
-     shortopts  = "b:s:e:j:d:o:c:l:p:t:g:r:?" #RJ
+     shortopts  = "s:e:j:d:o:c:l:p:t:g:r:?" #RJ
      opts, args = getopt.getopt( sys.argv[1:], shortopts )
 except getopt.GetoptError:
      # print help information and exit:
@@ -59,7 +59,6 @@ segment=0
 params=''
 onlytag='all'
 queuelog=''
-btagdir=''
 resubmit=False
 
 DtagsList = []
@@ -88,7 +87,6 @@ for o,a in opts:
     elif o in('-t'): onlytag = a
     elif o in('-g'): queuelog = a #RJ
     elif o in('-r'): resubmit = a
-    elif o in('-b'): btagdir = a
 
 #open the file which describes the sample
 jsonFile = open(samplesDB,'r')
@@ -205,7 +203,6 @@ for proc in procList :
                     sedcmd += 's%"@outdir"%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
                     sedcmd += 's%"@suffix"%' + suffix + '%;'
                     sedcmd += 's%"@proc"%' + dtag + '%;'
-                    sedcmd += 's%"@btagDir"%' + btagdir + '%;'
                     sedcmd += 's%"@tag"%' +(dtag + suffix + '_' + str(segment))+'%;'#RJ
                 #                sedcmd += 's%"@tag"%' +str(getByLabel(desc,'tag',-1))+'%;'#RJ
                     if(params.find('@useMVA')<0) :          params = '@useMVA=False ' + params
