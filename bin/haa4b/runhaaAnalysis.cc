@@ -1086,7 +1086,7 @@ int main(int argc, char* argv[])
 	//	METUtils::computeVariation(phys.jets, phys.leptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc);
 
 	PhysicsObjectJetCollection &corrJets = phys.jets; 
-        PhysicsObjectFatJetCollection &fatJets = phys.fatjets;
+	//        PhysicsObjectFatJetCollection &fatJets = phys.fatjets;
         PhysicsObjectSVCollection &secVs = phys.svs;
 
         //

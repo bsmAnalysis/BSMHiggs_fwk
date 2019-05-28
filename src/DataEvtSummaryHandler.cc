@@ -291,6 +291,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
 
 
     //fjet (ak8PFJetsCHS)
+    /*
     t_->Branch("fjet",                    &evSummary_.fjet,                   "fjet/I");
     t_->Branch("fjet_px",                 evSummary_.fjet_px,                 "fjet_px[fjet]/F");
     t_->Branch("fjet_py",                 evSummary_.fjet_py,                 "fjet_py[fjet]/F");
@@ -319,7 +320,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("fjet_subjets_py",         &evSummary_.fjet_subjets_py,        "fjet_subjets_py[fjet][2]/F");
     t_->Branch("fjet_subjets_pz",         &evSummary_.fjet_subjets_pz,        "fjet_subjets_pz[fjet][2]/F"); 
     t_->Branch("fjet_subjets_en",         &evSummary_.fjet_subjets_en,        "fjet_subjets_en[fjet][2]/F"); 
-
+    */
     //met
     t_->Branch("imet_pt",                &evSummary_.imet_pt,                 "imet_pt[11]/F");    
     t_->Branch("imet_phi",               &evSummary_.imet_phi,                "imet_phi[11]/F");      
@@ -654,6 +655,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     */
 
     //fjet (ak8PFJetsCHS)
+    /*
     t_->SetBranchAddress("fjet",                    &evSummary_.fjet);
     t_->SetBranchAddress("fjet_px",                 evSummary_.fjet_px);
     t_->SetBranchAddress("fjet_py",                 evSummary_.fjet_py);
@@ -676,13 +678,13 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("fjet_parton_py",          evSummary_.fjet_parton_py);
     t_->SetBranchAddress("fjet_parton_pz",          evSummary_.fjet_parton_pz);
     t_->SetBranchAddress("fjet_parton_en",          evSummary_.fjet_parton_en);
-
+    
     t_->SetBranchAddress("fjet_subjet_count",       evSummary_.fjet_subjet_count);
     t_->SetBranchAddress("fjet_subjets_px",         &evSummary_.fjet_subjets_px);
     t_->SetBranchAddress("fjet_subjets_py",         &evSummary_.fjet_subjets_py);
     t_->SetBranchAddress("fjet_subjets_pz",         &evSummary_.fjet_subjets_pz);
     t_->SetBranchAddress("fjet_subjets_en",         &evSummary_.fjet_subjets_en);
-
+    */
     //met
     t_->SetBranchAddress("imet_pt",                  &evSummary_.imet_pt);
     t_->SetBranchAddress("imet_phi",                 &evSummary_.imet_phi); 
@@ -723,7 +725,7 @@ void DataEvtSummaryHandler::resetStruct()
     evSummary_.jet=0;
     evSummary_.sv=0;
     //evSummary_.pjet=0;
-    evSummary_.fjet=0;
+    //    evSummary_.fjet=0;
     evSummary_.npdfs=0;
     evSummary_.nalphaS=0;
 

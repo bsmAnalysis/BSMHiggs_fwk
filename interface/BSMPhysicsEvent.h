@@ -199,7 +199,7 @@ public :
     Float_t genPt;
 
 };
-
+/*
 class PhysicsObject_FatJet : public LorentzVector {
  public:
  PhysicsObject_FatJet(LorentzVector vec) :
@@ -253,6 +253,7 @@ class PhysicsObject_FatJet : public LorentzVector {
   Float_t parton_px, parton_py, parton_pz, parton_en;
 
 };
+*/
 
 class PhysicsObject_SV : public LorentzVector {
  public:
@@ -289,7 +290,7 @@ class PhysicsObject_SV : public LorentzVector {
 typedef std::vector<PhysicsObject>        PhysicsObjectCollection;
 typedef std::vector<PhysicsObject_Lepton> PhysicsObjectLeptonCollection;
 typedef std::vector<PhysicsObject_Jet>    PhysicsObjectJetCollection;
-typedef std::vector<PhysicsObject_FatJet> PhysicsObjectFatJetCollection;
+//typedef std::vector<PhysicsObject_FatJet> PhysicsObjectFatJetCollection;
 typedef std::vector<PhysicsObject_SV>     PhysicsObjectSVCollection;
 
 
@@ -300,7 +301,7 @@ struct PhysicsEvent_t {
   
   PhysicsObjectLeptonCollection leptons;
   PhysicsObjectJetCollection jets;
-  PhysicsObjectFatJetCollection fatjets;
+  //  PhysicsObjectFatJetCollection fatjets;
   PhysicsObjectSVCollection svs;
   LorentzVector met, metNoHF;
   LorentzVector imet[11];

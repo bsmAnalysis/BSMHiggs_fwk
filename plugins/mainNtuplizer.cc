@@ -135,7 +135,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
     // edm::EDGetTokenT<pat::PhotonCollection> photonTag_;
     edm::EDGetTokenT<pat::JetCollection> jetTag_;
 //    edm::EDGetTokenT<pat::JetCollection> jetPuppiTag_;
-    edm::EDGetTokenT<pat::JetCollection> fatjetTag_;
+//    edm::EDGetTokenT<pat::JetCollection> fatjetTag_;
     edm::EDGetTokenT<pat::METCollection> metTag_;
     edm::EDGetTokenT<pat::METCollection> metTagData_;
     edm::EDGetTokenT<pat::METCollection> metNoHFTag_;
@@ -245,7 +245,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
 //   photonTag_(		consumes<pat::PhotonCollection>(iConfig.getParameter<edm::InputTag>("photonsTag"))		),
     jetTag_(		consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("jetsTag"))			),
 //    jetPuppiTag_(       consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("jetsPuppiTag"))               ),
-    fatjetTag_(		consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("fatjetsTag"))			),
+//    fatjetTag_(		consumes<pat::JetCollection>(iConfig.getParameter<edm::InputTag>("fatjetsTag"))			),
     metTag_(		consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metsTag"))			),
     metTagData_(		consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metsTagData"))			),
     metNoHFTag_(        consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metsNoHFTag"))                ),
@@ -1140,7 +1140,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        //
        // jet selection (AK8Jets)
        //
-
+  /*
   if(!is2017){//disable fatjet for 2017
        pat::JetCollection fatjets; 
        edm::Handle< pat::JetCollection > jetsAK8Handle; 
@@ -1169,21 +1169,21 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 		  ) ;
          }  
 	 
-   if(is2017){
-      ev.fjet_prunedM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSValueMap:ak8PFJetsCHSPrunedMass");
-      ev.fjet_softdropM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSValueMap:ak8PFJetsCHSSoftDropMass");
-      ev.fjet_tau1[ev.fjet] =  (float) j.userFloat("ak8PFJetsCHSValueMap:NjettinessAK8CHSTau1");
-      ev.fjet_tau2[ev.fjet] =  (float) j.userFloat("ak8PFJetsCHSValueMap:NjettinessAK8CHSTau2");
-      ev.fjet_tau3[ev.fjet] =  (float) j.userFloat("ak8PFJetsCHSValueMap:NjettinessAK8CHSTau3");
-   }else{//2016
-	    ev.fjet_prunedM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSPrunedMass");
-	    ev.fjet_softdropM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSSoftDropMass");
-	    //	 ev.fjet_filteredM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSFilteredLinks");
-	    ev.fjet_tau1[ev.fjet] =  (float) j.userFloat("NjettinessAK8CHS:tau1");
-	    ev.fjet_tau2[ev.fjet] =  (float) j.userFloat("NjettinessAK8CHS:tau2");
-	    ev.fjet_tau3[ev.fjet] =  (float) j.userFloat("NjettinessAK8CHS:tau3");
-   }
-
+	 if(is2017){
+	   ev.fjet_prunedM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSValueMap:ak8PFJetsCHSPrunedMass");
+	   ev.fjet_softdropM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSValueMap:ak8PFJetsCHSSoftDropMass");
+	   ev.fjet_tau1[ev.fjet] =  (float) j.userFloat("ak8PFJetsCHSValueMap:NjettinessAK8CHSTau1");
+	   ev.fjet_tau2[ev.fjet] =  (float) j.userFloat("ak8PFJetsCHSValueMap:NjettinessAK8CHSTau2");
+	   ev.fjet_tau3[ev.fjet] =  (float) j.userFloat("ak8PFJetsCHSValueMap:NjettinessAK8CHSTau3");
+	 }else{//2016
+	   ev.fjet_prunedM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSPrunedMass");
+	   ev.fjet_softdropM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSSoftDropMass");
+	   //	 ev.fjet_filteredM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSFilteredLinks");
+	   ev.fjet_tau1[ev.fjet] =  (float) j.userFloat("NjettinessAK8CHS:tau1");
+	   ev.fjet_tau2[ev.fjet] =  (float) j.userFloat("NjettinessAK8CHS:tau2");
+	   ev.fjet_tau3[ev.fjet] =  (float) j.userFloat("NjettinessAK8CHS:tau3");
+	 }
+	 
 
 	 // Add soft drop subjets
 
@@ -1288,7 +1288,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ifjet++;
        }
   }
-         
+  */     
      pat::METCollection mets;
      edm::Handle< pat::METCollection > metsHandle;
      // if(isMC_)
