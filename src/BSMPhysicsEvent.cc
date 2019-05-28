@@ -117,6 +117,7 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
     }
 
     // fat Jet
+    /*
     size_t nfatjet(0);
     for(Int_t i=0; i<ev.fjet; i++) {
       LorentzVector P4( ev.fjet_px[i],ev.fjet_py[i],ev.fjet_pz[i],ev.fjet_en[i] );
@@ -131,7 +132,7 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
 	nfatjet++;
       }
     }
-
+    */
 
     // secondary vertices 
     size_t nsv(0);
