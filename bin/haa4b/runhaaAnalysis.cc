@@ -1023,7 +1023,7 @@ int main(int argc, char* argv[])
 	
 	
 	// All: "Raw" (+Trigger)
-	mon.fillHisto("eventflow","all",0,weight);
+	mon.fillHisto("eventflow","full",0,weight);
 	mon.fillHisto("eventflow","e",0,weight); 
 	mon.fillHisto("eventflow","mu",0,weight); 
 
@@ -1517,7 +1517,7 @@ int main(int argc, char* argv[])
         }
 
 	// 1-lepton
-        mon.fillHisto("eventflow","all",1,weight); 
+        mon.fillHisto("eventflow","full",1,weight); 
         if (evcat==E || evcat==EE) { 
           mon.fillHisto("eventflow","e",1,weight); 
         } 
@@ -1616,13 +1616,13 @@ int main(int argc, char* argv[])
 	
 	    
 	    // Trigger
-	mon.fillHisto("eventflow","all",2,weight);
+	mon.fillHisto("eventflow","full",2,weight);
 	if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",2,weight);
 	if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",2,weight);
 	
         // pielup reweightiing
-        mon.fillHisto("nvtx_raw",   "all", phys.nvtx,      xsecWeight*genWeight);
-        mon.fillHisto("nvtxwgt_raw","all", phys.nvtx,      weight);
+        mon.fillHisto("nvtx_raw",   "full", phys.nvtx,      xsecWeight*genWeight);
+        mon.fillHisto("nvtxwgt_raw","full", phys.nvtx,      weight);
 
 	// ---------------------------------------------------------------------------
 	
@@ -1819,7 +1819,7 @@ int main(int argc, char* argv[])
 	  
 	  weight = iweight; // reset to nominal weight
 
-	  LorentzVector imet = variedMET[0];
+	  LorentzVector imet(metP4); // = variedMET[0];
 	  if(varNames[ivar]=="_jerup" ) imet = variedMET[3]; 
 	  if(varNames[ivar]=="_jerdown") imet = variedMET[4];
 	  if(string(varNames[ivar].Data()).find("_jesup") != string::npos) imet = variedMET[1];
@@ -2200,13 +2200,13 @@ int main(int argc, char* argv[])
 	  // N-1 Plots
 	  if (ivar==0) {
 	    if (passMet25) {
-	      mon.fillHisto("eventflow","all",3,weight);
+	      mon.fillHisto("eventflow","full",3,weight);
 	      if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",3,weight);
 	      if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",3,weight);
 	      
 	      // MT CUT
 	      if (passMt) {
-		mon.fillHisto("eventflow","all",4,weight);
+		mon.fillHisto("eventflow","full",4,weight);
 		if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",4,weight);
 		if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",4,weight);
 		
@@ -2224,7 +2224,7 @@ int main(int argc, char* argv[])
 		
 		// NJET CUT
 		if (passNJ2) {
-		  mon.fillHisto("eventflow","all",5,weight);
+		  mon.fillHisto("eventflow","full",5,weight);
 		  if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",5,weight);
 		  if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",5,weight);
 		  
@@ -2310,12 +2310,12 @@ int main(int argc, char* argv[])
 	  if (ivar==0) {
 	    if (passMet25 && passMt) {  
 	      if (tag_subcat=="SR_3b") {
-		mon.fillHisto("eventflow","all",6,weight);
+		mon.fillHisto("eventflow","full",6,weight);
 		if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",6,weight);
 		if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",6,weight);
 	      }
 	      if (tag_subcat=="SR_4b") {
-		mon.fillHisto("eventflow","all",7,weight);
+		mon.fillHisto("eventflow","full",7,weight);
 		if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",7,weight);
 		if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",7,weight);
 	      }
