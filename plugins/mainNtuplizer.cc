@@ -1295,6 +1295,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      event.getByToken(metTag_, metsHandle);
      //     if(!isMC_)event.getByToken(metTagData_, metsHandle);
      if(metsHandle.isValid()){ mets = *metsHandle;}
+     else { printf("\n\n *** bad handle for pat::METCollection\n\n") ; gSystem -> Exit(-1) ; }
+
      pat::MET met = mets[0];
 
      //       const pat::MET &met = mets.front();
