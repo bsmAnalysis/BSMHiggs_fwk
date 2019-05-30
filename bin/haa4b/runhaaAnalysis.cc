@@ -1023,9 +1023,11 @@ int main(int argc, char* argv[])
 	
 	
 	// All: "Raw" (+Trigger)
-	mon.fillHisto("eventflow","full",0,weight);
 	mon.fillHisto("eventflow","e",0,weight); 
 	mon.fillHisto("eventflow","mu",0,weight); 
+	mon.fillHisto("eventflow","ee",0,weight);  
+	mon.fillHisto("eventflow","mumu",0,weight); 
+	mon.fillHisto("eventflow","emu",0,weight);   
 
         //only take up and down from pileup effect
         double TotalWeight_plus = 1.0;
@@ -1517,13 +1519,8 @@ int main(int argc, char* argv[])
         }
 
 	// 1-lepton
-        mon.fillHisto("eventflow","full",1,weight); 
-        if (evcat==E || evcat==EE) { 
-          mon.fillHisto("eventflow","e",1,weight); 
-        } 
-        if (evcat==MU || evcat==MUMU) { 
-          mon.fillHisto("eventflow","mu",1,weight); 
-        }
+        mon.fillHisto("eventflow",tag_cat,1,weight); 
+
 
         bool hasTrigger(false);
 	if(!isMC) {
@@ -1616,13 +1613,11 @@ int main(int argc, char* argv[])
 	
 	    
 	    // Trigger
-	mon.fillHisto("eventflow","full",2,weight);
-	if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",2,weight);
-	if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",2,weight);
+	mon.fillHisto("eventflow",tag_cat,2,weight);
 	
         // pielup reweightiing
-        mon.fillHisto("nvtx_raw",   "full", phys.nvtx,      xsecWeight*genWeight);
-        mon.fillHisto("nvtxwgt_raw","full", phys.nvtx,      weight);
+        mon.fillHisto("nvtx_raw",   tag_cat, phys.nvtx,      xsecWeight*genWeight);
+        mon.fillHisto("nvtxwgt_raw",tag_cat, phys.nvtx,      weight);
 
 	// ---------------------------------------------------------------------------
 	
@@ -1937,20 +1932,18 @@ int main(int argc, char* argv[])
 	      bool hasCSVtagDown = hasCSVtag;
 	      
 	      if (isMC) { 
-
 		//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X
 		btsfutil.SetSeed(ev.event*10 + ijet*10000);// + ivar*10);
 		
 		if(abs(vJets[ijet].flavid)==5) {
 		  if(use_DeepCSV) {
-//        beff=btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE");   
-        mon.fillHisto("btagEff_b","default",btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE"),1.0);
-        //std::cout << "B loose: default Btag Eff: " << beff;
-//        if(is2017MC) {
-          beff=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEff_b); 
-          mon.fillHisto("btagEff_b","new",beff, 1.0); 
-//        }//std::cout << ", new Btag Eff: " << beff << std::endl;}
-      }
+		    //        beff=btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE");   
+		    if(ivar==0)mon.fillHisto("btagEff_b","default",btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE"),1.0);
+		    //std::cout << "B loose: default Btag Eff: " << beff;
+		    beff=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEff_b); 
+		    if(ivar==0)mon.fillHisto("btagEff_b","new",beff, 1.0); 
+		    //        }//std::cout << ", new Btag Eff: " << beff << std::endl;}
+		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_btagup") {
 		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_B ,
@@ -1964,37 +1957,34 @@ int main(int argc, char* argv[])
 		  }
 		} else if(abs(vJets[ijet].flavid)==4) {
 		  if(use_DeepCSV){ 
-//        beff=btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE");
-        //std::cout << "C loose: default Btag Eff: " << beff;
-        mon.fillHisto("btagEff_c","default",btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE"),1.0);
-//        if(is2017MC) 
-//        {
-          beff=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEff_c); 
-          mon.fillHisto("btagEff_c","new",beff, 1.0);
-//        }//std::cout << ", new Btag Eff: " << beff << std::endl;}
-      }
+		    //        beff=btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE");
+		    //std::cout << "C loose: default Btag Eff: " << beff;
+		    if(ivar==0)mon.fillHisto("btagEff_c","default",btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE"),1.0);
+		    //        {
+		    beff=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEff_c); 
+		    if(ivar==0)mon.fillHisto("btagEff_c","new",beff, 1.0);
+		    //        }//std::cout << ", new Btag Eff: " << beff << std::endl;}
+		  }
 		  //  80X recommendation
-		   if (varNames[ivar]=="_ctagup") {
-		     btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_C , 
-											   vJets[ijet].eta(), vJets[ijet].pt()), beff);hasCSVtag=hasCSVtagUp;
-		   } else if ( varNames[ivar]=="_ctagdown") {
-		     btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_C , 
-		  								      vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagDown;
-		   } else {
-		      btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_C ,
-										     vJets[ijet].eta(), vJets[ijet].pt()), beff);
-		   }
+		  if (varNames[ivar]=="_ctagup") {
+		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_C , 
+											  vJets[ijet].eta(), vJets[ijet].pt()), beff);hasCSVtag=hasCSVtagUp;
+		  } else if ( varNames[ivar]=="_ctagdown") {
+		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_C , 
+											  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagDown;
+		  } else {
+		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_C ,
+										       vJets[ijet].eta(), vJets[ijet].pt()), beff);
+		  }
 		} else {
 		  if(use_DeepCSV){
-//        leff=btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE");      
-        //std::cout << "Light loose: default Btag Eff: " << beff;
-        mon.fillHisto("btagEff_udsg","default",btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE"),1.0);
-//        if(is2017MC) 
-//        {
-          leff=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEff_udsg);
-          mon.fillHisto("btagEff_udsg","new",leff, 1.0); 
-//        }//std::cout << ", new Btag Eff: " << beff << std::endl;}
-      }
+		    //        leff=btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE");      
+		    //std::cout << "Light loose: default Btag Eff: " << beff;
+		    if(ivar==0)mon.fillHisto("btagEff_udsg","default",btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE"),1.0);
+		    leff=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEff_udsg);
+		    if(ivar==0)mon.fillHisto("btagEff_udsg","new",leff, 1.0); 
+		    //        }//std::cout << ", new Btag Eff: " << beff << std::endl;}
+		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_ltagup") {
 		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_UDSG   , 
@@ -2012,7 +2002,6 @@ int main(int argc, char* argv[])
 
 
 	      if ( verbose) {
-
 		printf("AK4-Jet has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",     
 		       vJets[ijet].pt(),    
 		       vJets[ijet].eta(),  
@@ -2200,15 +2189,11 @@ int main(int argc, char* argv[])
 	  // N-1 Plots
 	  if (ivar==0) {
 	    if (passMet25) {
-	      mon.fillHisto("eventflow","full",3,weight);
-	      if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",3,weight);
-	      if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",3,weight);
+	      mon.fillHisto("eventflow",tag_cat,3,weight);
 	      
 	      // MT CUT
 	      if (passMt) {
-		mon.fillHisto("eventflow","full",4,weight);
-		if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",4,weight);
-		if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",4,weight);
+		mon.fillHisto("eventflow",tag_cat,4,weight);
 		
 		// Lepton kinematics
 		if (evcat==E || evcat==EE) {
@@ -2224,9 +2209,7 @@ int main(int argc, char* argv[])
 		
 		// NJET CUT
 		if (passNJ2) {
-		  mon.fillHisto("eventflow","full",5,weight);
-		  if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",5,weight);
-		  if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",5,weight);
+		  mon.fillHisto("eventflow",tag_cat,5,weight);
 		  
 		  // Lepton kinematics
 		  if (abs(selLeptons[0].id)==11) {
@@ -2310,14 +2293,10 @@ int main(int argc, char* argv[])
 	  if (ivar==0) {
 	    if (passMet25 && passMt) {  
 	      if (tag_subcat=="SR_3b") {
-		mon.fillHisto("eventflow","full",6,weight);
-		if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",6,weight);
-		if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",6,weight);
+		mon.fillHisto("eventflow",tag_cat,6,weight);
 	      }
 	      if (tag_subcat=="SR_4b") {
-		mon.fillHisto("eventflow","full",7,weight);
-		if (evcat==E || evcat==EE) mon.fillHisto("eventflow","e",7,weight);
-		if (evcat==MU || evcat==MUMU) mon.fillHisto("eventflow","mu",7,weight);
+		mon.fillHisto("eventflow",tag_cat,7,weight);
 	      }
 	    }
 	  }
