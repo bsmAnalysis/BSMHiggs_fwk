@@ -1590,9 +1590,9 @@ int main(int argc, char* argv[])
 	  }
 	    //	    weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	  //weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h2);
-	  mon.fillHisto("leadlep_pt_raw","e",selLeptons[0].pt(),weight);   
-	  mon.fillHisto("leadlep_eta_raw","e",selLeptons[0].eta(),weight);     
-	  mon.fillHisto("lep_reliso","e",selLeptons[0].en_relIso,weight);
+	  mon.fillHisto("leadlep_pt_raw",tag_cat,selLeptons[0].pt(),weight);   
+	  mon.fillHisto("leadlep_eta_raw",tag_cat,selLeptons[0].eta(),weight);     
+	  mon.fillHisto("lep_reliso",tag_cat,selLeptons[0].en_relIso,weight);
 	  
 	  myrelIso=selLeptons[0].en_relIso;
 	  
@@ -1602,10 +1602,10 @@ int main(int argc, char* argv[])
 	    weight *= (getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h ));
 	  }
 	     
-	  mon.fillHisto("leadlep_pt_raw","mu",selLeptons[0].pt(),weight);
-	  mon.fillHisto("leadlep_eta_raw","mu",selLeptons[0].eta(),weight);
-	  mon.fillHisto("lep_reliso","mu",selLeptons[0].mn_relIso,weight);       
-	  mon.fillHisto("lep_reliso","mutrk",selLeptons[0].mn_trkrelIso,weight);   
+	  mon.fillHisto("leadlep_pt_raw",tag_cat,selLeptons[0].pt(),weight);
+	  mon.fillHisto("leadlep_eta_raw",tag_cat,selLeptons[0].eta(),weight);
+	  mon.fillHisto("lep_reliso",tag_cat,selLeptons[0].mn_relIso,weight);       
+	  mon.fillHisto("lep_reliso",tag_cat+"_trk",selLeptons[0].mn_trkrelIso,weight);   
 
 	  myrelIso=selLeptons[0].mn_relIso;
 	  //	  mytrkrelIso=selLeptons[0].mn_trkrelIso;
@@ -2196,29 +2196,16 @@ int main(int argc, char* argv[])
 		mon.fillHisto("eventflow",tag_cat,4,weight);
 		
 		// Lepton kinematics
-		if (evcat==E || evcat==EE) {
-		  mon.fillHisto("leadlep_pt_raw","e_metmt",selLeptons[0].pt(),weight);
-		  mon.fillHisto("leadlep_eta_raw","e_metmt",selLeptons[0].eta(),weight);
-		  
-		}
-		if (evcat==MU || evcat==MUMU) {
-		  mon.fillHisto("leadlep_pt_raw","mu_metmt",selLeptons[0].pt(),weight);
-		  mon.fillHisto("leadlep_eta_raw","mu_metmt",selLeptons[0].eta(),weight);
-		  
-		}
+		mon.fillHisto("leadlep_pt_raw",tag_cat+"_metmt",selLeptons[0].pt(),weight);
+		mon.fillHisto("leadlep_eta_raw",tag_cat+"_metmt",selLeptons[0].eta(),weight);
 		
 		// NJET CUT
 		if (passNJ2) {
 		  mon.fillHisto("eventflow",tag_cat,5,weight);
 		  
 		  // Lepton kinematics
-		  if (abs(selLeptons[0].id)==11) {
-		    mon.fillHisto("leadlep_pt_raw","e_nj2",selLeptons[0].pt(),weight);
-		    mon.fillHisto("leadlep_eta_raw","e_nj2",selLeptons[0].eta(),weight);
-		  } else if (abs(selLeptons[0].id)==13) {
-		    mon.fillHisto("leadlep_pt_raw","mu_nj2",selLeptons[0].pt(),weight);
-		    mon.fillHisto("leadlep_eta_raw","mu_nj2",selLeptons[0].eta(),weight);
-		  }
+		  mon.fillHisto("leadlep_pt_raw",tag_cat+"_nj2",selLeptons[0].pt(),weight);
+		  mon.fillHisto("leadlep_eta_raw",tag_cat+"_nj2",selLeptons[0].eta(),weight);
 		}
 		
 		
