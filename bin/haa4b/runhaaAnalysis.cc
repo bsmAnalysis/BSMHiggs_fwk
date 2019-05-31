@@ -41,7 +41,7 @@
 #include "TMath.h"
 
 #include <unistd.h>
-//#define YEAR_2017
+////#define YEAR_2017
 using namespace std;
 
 
@@ -144,6 +144,8 @@ int main(int argc, char* argv[])
     bool is2016MC = (isMC && !dtag.Contains("2017"));
     bool is2017data = (!isMC && dtag.Contains("2017"));
     bool is2017MC = (isMC && dtag.Contains("2017"));
+    bool is2018data = (!isMC && dtag.Contains("2018"));
+    bool is2018MC = (isMC && dtag.Contains("2018"));
     bool is2017BCdata = (is2017data && (dtag.Contains("2017B") || dtag.Contains("2017C")));
 
     bool verbose = runProcess.getParameter<bool>("verbose");
@@ -165,12 +167,21 @@ int main(int argc, char* argv[])
     TString url = runProcess.getParameter<std::string>("input");
     TString outFileUrl( dtag ); //gSystem->BaseName(url));
 
+    if(!use_DeepCSV && (is2018data || is2018MC)){
+      std::cout << "2018 Data does not have CSV, use DeepCSV instead!" << std::endl;
+      exit(0);
+    }
+
     if(is2017data || is2017MC){
       // 2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
         CSVLooseWP = 0.5803; CSVMediumWP = 0.8838; CSVTightWP = 0.9693;
         DeepCSVLooseWP = 0.1522; DeepCSVMediumWP = 0.4941; DeepCSVTightWP = 0.8001;
 	//        mu_threshold_=30.;
 	//        ele_threshold_=35.;
+    }
+
+    if(is2018data || is2018MC){ // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
+      DeepCSVLooseWP = 0.1241; DeepCSVMediumWP = 0.4184; DeepCSVTightWP = 0.7527;
     }
 
     // if(mctruthmode!=0) {
@@ -220,7 +231,7 @@ int main(int argc, char* argv[])
     bool isMCBkg_runPDFQCDscale = (isMC_ZZ || isMC_WZ || isMC_VVV);
 
     bool isMC_ttbar = isMC && (string(url.Data()).find("TeV_TTJets")  != string::npos);
-    if(is2017data || is2017MC) isMC_ttbar = isMC && (string(url.Data()).find("TeV_TTTo")  != string::npos);
+    if(is2017data || is2017MC || is2018data || is2018MC) isMC_ttbar = isMC && (string(url.Data()).find("TeV_TTTo")  != string::npos);
     bool isMC_stop  = isMC && (string(url.Data()).find("TeV_SingleT")  != string::npos);
 
     bool isMC_WJets = isMC && ( (string(url.Data()).find("MC13TeV_WJets")  != string::npos) || (string(url.Data()).find("MC13TeV_W1Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W2Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W3Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W4Jets")  != string::npos) );
@@ -277,6 +288,10 @@ int main(int argc, char* argv[])
           csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                           "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V4_B_F.csv";       
       }
+      if(is2018data || is2018MC){
+        csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
+                        "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_102XSF_V1.csv";
+      }
       LooseWP = DeepCSVLooseWP;
       MediumWP = DeepCSVMediumWP;
       TightWP = DeepCSVTightWP;
@@ -295,7 +310,14 @@ int main(int argc, char* argv[])
     //gSystem->ExpandPathName(uncFile);
     cout << "Loading jet energy scale uncertainties from: " << jecDir << endl;
 
-    if(is2017MC || is2017data){
+    if(is2018MC || is2018data){
+        if     (dtag.Contains("2018A")) jecDir+="102X/Autumn18_V8_RunA/Autumn18_RunA_V8_";
+        else if(dtag.Contains("2018B")) jecDir+="102X/Autumn18_V8_RunB/Autumn18_RunB_V8_";
+        else if(dtag.Contains("2018C")) jecDir+="102X/Autumn18_V8_RunC/Autumn18_RunC_V8_";
+        else if(dtag.Contains("2018D")) jecDir+="102X/Autumn18_V8_RunD/Autumn18_RunD_V8_";
+        if(isMC) {jecDir+="102X/Autumn18_V8_MC/Autumn18_V8_";}
+    }
+    else if(is2017MC || is2017data){
         if     (dtag.Contains("2017B")) jecDir+="94X/Fall17_17Nov2017B_V32_DATA/Fall17_17Nov2017B_V32_";
         else if(dtag.Contains("2017C")) jecDir+="94X/Fall17_17Nov2017C_V32_DATA/Fall17_17Nov2017C_V32_";
         else if(dtag.Contains("2017D") || dtag.Contains("2017E")) jecDir+="94X/Fall17_17Nov2017DE_V32_DATA/Fall17_17Nov2017DE_V32_";

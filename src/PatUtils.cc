@@ -1,7 +1,11 @@
+#define YEAR_2017
 #include "UserCode/bsmhiggs_fwk/interface/PatUtils.h"
 
 #include "DataFormats/METReco/interface/HcalNoiseSummary.h"
 
+#ifdef YEAR_2017
+#define numberOfHits(a) numberOfAllHits(a)
+#endif
 namespace patUtils
 {
 
@@ -927,7 +931,14 @@ namespace patUtils
 }
 
   bool passPhotonTrigger(fwlite::Event &ev, float &triggerThreshold, float &triggerPrescale, float& triggerThresholdHigh ){
+#ifdef YEAR_2017
+    fwlite::Handle<edm::TriggerResults> hTriggerResults;
+    hTriggerResults.getByLabel(ev,"TriggerResults", "", "HLT");
+    if (!hTriggerResults.isValid()) return false;
+    edm::TriggerResultsByName tr = ev.triggerResultsByName(*hTriggerResults.product());
+#else
     edm::TriggerResultsByName tr = ev.triggerResultsByName("HLT");
+#endif    
     if( !tr.isValid() ) return false;
 
     bool hasPhotonTrigger(false);
@@ -1004,7 +1015,14 @@ namespace patUtils
 
   bool passVBFPhotonTrigger(fwlite::Event &ev, float &triggerThreshold,
 			    float &triggerPrescale, float &triggerThresholdHigh ){
+#ifdef YEAR_2017
+    fwlite::Handle<edm::TriggerResults> hTriggerResults;
+    hTriggerResults.getByLabel(ev,"TriggerResults", "", "HLT");
+    if (!hTriggerResults.isValid()) return false;
+    edm::TriggerResultsByName tr = ev.triggerResultsByName(*hTriggerResults.product());
+#else
     edm::TriggerResultsByName tr = ev.triggerResultsByName("HLT");
+#endif
     if( !tr.isValid() ) return false;
 
     bool hasPhotonTrigger(false);
@@ -1338,8 +1356,23 @@ void MetFilter::FillBadEvents(std::string path){
 
     if(map.find( RuLuEv(ev.eventAuxiliary().run(), ev.eventAuxiliary().luminosityBlock(), ev.eventAuxiliary().event()))!=map.end())return 1;
 
+#ifdef YEAR_2017
+    fwlite::Handle<edm::TriggerResults> hTriggerResults;
+    hTriggerResults.getByLabel(ev,"TriggerResults", "", "PAT");
+    if (!hTriggerResults.isValid()) return false;
+    edm::TriggerResultsByName metFilters = ev.triggerResultsByName(*hTriggerResults.product());
+#else
     edm::TriggerResultsByName metFilters = ev.triggerResultsByName("PAT");   //is present only if PAT (and miniAOD) is not run simultaniously with RECO
-    if(!metFilters.isValid()){metFilters = ev.triggerResultsByName("RECO");} //if not present, then it's part of RECO
+#endif
+    if(!metFilters.isValid()){
+#ifdef YEAR_2017
+    hTriggerResults.getByLabel(ev,"TriggerResults", "", "RECO");  
+    if (!hTriggerResults.isValid()) return false;
+    metFilters = ev.triggerResultsByName(*hTriggerResults.product());
+#else
+    metFilters = ev.triggerResultsByName("RECO");
+#endif
+    } //if not present, then it's part of RECO
     if(!metFilters.isValid()){
       printf("TriggerResultsByName for MET filters is not found in the process, as a consequence the MET filter is disabled for this event\n");
     }
