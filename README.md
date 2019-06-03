@@ -1,5 +1,43 @@
 # Installation for 94X (2017) 
 ```bash
+export SCRAM_ARCH=slc6_amd64_gcc700
+#or
+setenv  SCRAM_ARCH slc6_amd64_gcc700
+cmsrel CMSSW_10_2_10
+cd CMSSW_10_2_10/src
+cmsenv
+git cms-init
+
+# checkout Gamma Preliminary Energy Corrections
+# https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPostRecoRecipes
+git cms-merge-topic cms-egamma:EgammaPostRecoTools #just adds in an extra file to have a setup function to make things easier
+git cms-merge-topic cms-egamma:PhotonIDValueMapSpeedup1029 #optional but speeds up the photon ID value module so things fun faster
+git cms-merge-topic cms-egamma:slava77-btvDictFix_10210 #fixes the Run2018D dictionary issue, see https://github.com/cms-sw/cmssw/issues/26182
+scram b -j 8
+
+git cms-addpkg EgammaAnalysis/ElectronTools
+rm EgammaAnalysis/ElectronTools/data -rf
+git clone git@github.com:cms-egamma/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data
+cd EgammaAnalysis/ElectronTools/data
+git checkout ScalesSmearing2018_Dev
+cd -
+git cms-merge-topic cms-egamma:EgammaPostRecoTools_dev
+scram b -j 8
+
+git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
+cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
+git checkout -b modified
+wget https://raw.githubusercontent.com/Wallace-Chen/BSMHiggs_fwk/2017_Development/src/PatUtils.cc -O src/PatUtils.cc
+cd test/haa4b
+sh ./converter # input 1 when you are prompted to select
+cd $CMSSW_BASE/src
+
+#And compile
+scram b -j 4
+```
+
+# Installation for 94X (2017) 
+```bash
 export SCRAM_ARCH=slc6_amd64_gcc630
 #or
 setenv SCRAM_ARCH slc6_amd64_gcc630
