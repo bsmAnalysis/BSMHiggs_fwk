@@ -205,12 +205,12 @@ int main(int argc, char* argv[])
     if(dtag.Contains("DoubleMuon"))  fType=MUMU;
     if(dtag.Contains("MuEG"))    fType=EMU;
     if(dtag.Contains("SingleMuon")) {
-      if (runZH) fType=MUMU;
-      else fType=MU;
+      //      if (runZH) fType=MUMU;
+      fType=MU;
     }
     if(dtag.Contains("SingleElectron")) {
-      if(runZH) fType=EE;
-      else fType=E;
+      //      if(runZH) fType=EE;
+      fType=E;
     }
     bool isSingleMuPD(!isMC && dtag.Contains("SingleMuon"));
     bool isDoubleMuPD(!isMC && dtag.Contains("DoubleMuon"));
