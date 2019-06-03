@@ -41,6 +41,7 @@ runProcess = cms.PSet(
     PU_Down = cms.string("${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/weights/pileup_DATA_80x_full2016_69200_down.root"),
     muscleDir =  cms.string('${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/jec/'),
     jecDir = cms.string('${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/jec/25ns/'),
+    btagDir = cms.string("@btagDir"),
     usemetNoHF = cms.bool(@usemetNoHF),	
     useDeepCSV = cms.bool(@useDeepCSV),
     runQCD = cms.bool(@runQCD), 
