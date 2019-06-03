@@ -1,4 +1,4 @@
-# Installation for 94X (2017) 
+# Installation for 102X (2018) 
 ```bash
 export SCRAM_ARCH=slc6_amd64_gcc700
 #or
