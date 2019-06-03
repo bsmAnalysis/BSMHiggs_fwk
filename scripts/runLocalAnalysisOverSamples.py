@@ -11,6 +11,7 @@ def usage() :
     print ' '
     print 'runLocalAnalysisOverSamples.py [options]'
     print '  -s : submit to queue'
+    print '  -b : btagging folder'
     print '  -e : executable name'
     print '  -j : json file containing the samples'
     print '  -d : input dir with the event summaries'
@@ -38,7 +39,7 @@ def getByLabel(desc,key,defaultVal=None) :
 #parse the options
 try:
      # retrive command line options
-     shortopts  = "s:e:j:d:o:c:l:p:t:g:r:?" #RJ
+     shortopts  = "s:b:e:j:d:o:c:l:p:t:g:r:?" #RJ
      opts, args = getopt.getopt( sys.argv[1:], shortopts )
 except getopt.GetoptError:
      # print help information and exit:
@@ -52,6 +53,7 @@ samplesDB=''
 theExecutable=''
 inputdir=''
 outdir=''
+btagDir=''
 lumi=1
 cfg_file=''
 split=1
@@ -81,6 +83,7 @@ for o,a in opts:
     elif o in('-e'): theExecutable = a
     elif o in('-d'): inputdir = a
     elif o in('-o'): outdir = a
+    elif o in('-b'): btagDir = a
     elif o in('-l'): lumi=float(a)
     elif o in('-c'): cfg_file = a
     elif o in('-p'): params = a
@@ -201,6 +204,7 @@ for proc in procList :
                     
                     sedcmd = 'sed \"s%"@input"%' +eventsFile +'%;'
                     sedcmd += 's%"@outdir"%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
+                    sedcmd += 's%"@btagDir"%' + btagDir + '%;'
                     sedcmd += 's%"@suffix"%' + suffix + '%;'
                     sedcmd += 's%"@proc"%' + dtag + '%;'
                     sedcmd += 's%"@tag"%' +(dtag + suffix + '_' + str(segment))+'%;'#RJ
