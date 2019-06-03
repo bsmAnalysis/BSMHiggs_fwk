@@ -724,7 +724,11 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
   if(jetsHandle.isValid()){ jets = *jetsHandle;}
   if(isMC_){
     for (pat::Jet &j : jets) {
-      Float_t btag_dsc = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+      Float_t btag_dsc;
+      if(is2017)  
+        btag_dsc = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+      else
+        btag_dsc = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
       int partonFlavor = j.partonFlavour();
       if( fabs(partonFlavor)==5 ){
         h2_BTaggingEff_Denom_b->Fill(j.pt(), j.eta());
