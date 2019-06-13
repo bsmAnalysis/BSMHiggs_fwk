@@ -673,7 +673,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DY1JetsToLL_M50_2017",
-                    "xsec": 725
+                    "xsec": 1016
                 },
                 {
                     "br": [ 0.45 ],
@@ -682,7 +682,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DY1JetsToLL_M50_2017_ext1",
-                    "xsec": 725
+                    "xsec": 1016
                 },
                 {
                     "br": [ 0.01 ],
@@ -691,7 +691,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DY2JetsToLL_M50_2017",
-                    "xsec": 394.5
+                    "xsec": 331.4
                 },
                 {
                     "br": [ 0.99 ],
@@ -700,7 +700,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DY2JetsToLL_M50_2017_ext1",
-                    "xsec": 394.5
+                    "xsec": 331.4
                 },
                 {
                     "br": [ 0.17 ],
@@ -709,7 +709,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DY3JetsToLL_M50_2017",
-                    "xsec": 96.47
+                    "xsec": 96.36
                 },
                 {
                     "br": [ 0.83 ],
@@ -718,7 +718,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DY3JetsToLL_M50_2017_ext1",
-                    "xsec": 96.47
+                    "xsec": 96.36
                 },
                 {
                     "br": [ 1.0 ],
@@ -727,7 +727,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DY4JetsToLL_M50_2017",
-                    "xsec": 40.44
+                    "xsec": 51.4
                 },
                 {
                     "br": [ 0.4977 ],
@@ -736,7 +736,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_M50_2017",
-                    "xsec": 6100.8
+                    "xsec": 4895
                 },
                 {
                     "br": [ 0.5023 ],
@@ -745,7 +745,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_M50_2017_ext1",
-                    "xsec": 6100.8
+                    "xsec": 4895
                 }
             ],
             "isdata": false,
@@ -753,7 +753,7 @@
                 "haa_mcbased",
                 "haa_ztoll"
             ],
-            "tag": "DYJets"
+            "tag": "Z#rightarrow ll"
         },
         {
             "color": 622,
