@@ -146,7 +146,6 @@ int main(int argc, char* argv[])
     bool is2017MC = (isMC && dtag.Contains("2017"));
     bool is2017BCdata = (is2017data && (dtag.Contains("2017B") || dtag.Contains("2017C")));
 
-
     bool verbose = runProcess.getParameter<bool>("verbose");
    
     int mctruthmode = runProcess.getParameter<int>("mctruthmode");
@@ -455,8 +454,6 @@ int main(int argc, char* argv[])
     //##################################################################################
 
     SmartSelectionMonitor mon;
-
-    mon.addHistogram( new TH1F ("Systematics", ";;Events", 400,-2,2) );
 
     TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";;Events", 8,0,8) );
     h->GetXaxis()->SetBinLabel(1,"Raw");
@@ -1154,7 +1151,6 @@ int main(int argc, char* argv[])
 #ifdef YEAR_2017
 		//https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2#2017_MiniAOD_V2
 		sigma = ilep.en_enSigmaValue;
-    sigma = 0;
 #else
 		sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed,0,0);
 #endif
@@ -1162,7 +1158,6 @@ int main(int argc, char* argv[])
 		TRandom3 *rgen_ = new TRandom3(0);
 		double smearValue = rgen_->Gaus(1, sigma) ;
 		delete rgen_;
-    mon.fillHisto("Systematics","smearValue",smearValue,1);
 		//TLorentzVector p4        
 		ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue); 
 	      } else {
@@ -1173,7 +1168,6 @@ int main(int argc, char* argv[])
 		scale_corr = eScaler_.ScaleCorrection(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed); 
 #endif
 		//TLorentzVector p4
-    mon.fillHisto("Systematics","scale_corr",scale_corr,1);
 		ilep.SetPxPyPzE(ilep.Px()*scale_corr, ilep.Py()*scale_corr, ilep.Pz()*scale_corr, ilep.E()*scale_corr); 
 	      }
 
@@ -1217,7 +1211,6 @@ int main(int argc, char* argv[])
 #else
 		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_stat);
 #endif
-      mon.fillHisto("Systematics","ScaleStatUp",error_scale,1);
 		  ilep.SetPxPyPzE(ilep.Px()*(1.+error_scale), ilep.Py()*(1.+error_scale), ilep.Pz()*(1.+error_scale), ilep.E()*(1.+error_scale));   
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);
 		}if(ivar==2) { //stat electron down
@@ -1228,7 +1221,6 @@ int main(int argc, char* argv[])
 #else
 		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_stat); 
 #endif
-      mon.fillHisto("Systematics","ScaleStatDown",error_scale,1);
 		  ilep.SetPxPyPzE(ilep.Px()*(1.-error_scale), ilep.Py()*(1.-error_scale), ilep.Pz()*(1.-error_scale), ilep.E()*(1.-error_scale)); 
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);   
 		}if(ivar==3) { //systematic electron up
@@ -1239,7 +1231,6 @@ int main(int argc, char* argv[])
 #else
 		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_syst);
 #endif
-      mon.fillHisto("Systematics","ScaleSystUp",error_scale,1);
 		  ilep.SetPxPyPzE(ilep.Px()*(1.+error_scale), ilep.Py()*(1.+error_scale), ilep.Pz()*(1.+error_scale), ilep.E()*(1.+error_scale)); 
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);   
 		}if(ivar==4) { //systematic electron down
@@ -1250,7 +1241,6 @@ int main(int argc, char* argv[])
 #else
 		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_syst);
 #endif
-      mon.fillHisto("Systematics","ScaleSystDown",error_scale,1);
 		  ilep.SetPxPyPzE(ilep.Px()*(1.-error_scale), ilep.Py()*(1.-error_scale), ilep.Pz()*(1.-error_scale), ilep.E()*(1.-error_scale));
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep); 
 		}if(ivar==5) { //gain switch electron up
@@ -1261,7 +1251,6 @@ int main(int argc, char* argv[])
 #else
 		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_gain);
 #endif
-      mon.fillHisto("Systematics","ScaleGainUp",error_scale,1);
 		  ilep.SetPxPyPzE(ilep.Px()*(1.+error_scale), ilep.Py()*(1.+error_scale), ilep.Pz()*(1.+error_scale), ilep.E()*(1.+error_scale)); 
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep); 
 		}if(ivar==6) { //gain switch electron down
@@ -1272,7 +1261,6 @@ int main(int argc, char* argv[])
 #else	      
 		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_gain);      
 #endif
-      mon.fillHisto("Systematics","ScaleGainDown",error_scale,1);
 		  ilep.SetPxPyPzE(ilep.Px()*(1.-error_scale), ilep.Py()*(1.-error_scale), ilep.Pz()*(1.-error_scale), ilep.E()*(1.-error_scale));   
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);  
 		}if(ivar==7) { //rho resolution Electron up
@@ -1285,7 +1273,6 @@ int main(int argc, char* argv[])
 		  TRandom3 *rgen_ = new TRandom3(0);
 		  smearValue = rgen_->Gaus(1, sigma) ;
 #endif
-      mon.fillHisto("Systematics","SigmaRhoUp",smearValue,1);
 		  ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue);
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);  
 		}if(ivar==8) { //rho resolution Electron down
@@ -1298,7 +1285,6 @@ int main(int argc, char* argv[])
 		  TRandom3 *rgen_ = new TRandom3(0);  
 		  smearValue = rgen_->Gaus(1, sigma) ;        
 #endif
-      mon.fillHisto("Systematics","SigmaRhoDown",smearValue,1);
 		  ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue);      
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);      
 		}if(ivar==9) { //phi resolution Electron down
@@ -1311,7 +1297,6 @@ int main(int argc, char* argv[])
 		  TRandom3 *rgen_ = new TRandom3(0);  
 		  smearValue = rgen_->Gaus(1, sigma);
 #endif 
-      mon.fillHisto("Systematics","SigmaPhiDown",smearValue,1);
 		  ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue);        
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);      
 		}if(ivar==0){ // nominal
@@ -1395,7 +1380,6 @@ int main(int argc, char* argv[])
 	}
 
 
-	
   // Exactly 1 good lepton
 	bool passOneLepton(selLeptons.size()==1);
 	bool passDiLepton(selLeptons.size()==2); // && ( abs(selLeptons[0].id)==abs(selLeptons[1].id) ) );
@@ -1871,7 +1855,6 @@ int main(int argc, char* argv[])
 
 	    //	    imet = variedMET[];
 
-	  
       if (evcat==E) {
 	      selLeptons = selLeptonsVar[varNames[ivar].Data()];
 	    } else { continue; } //selLeptonsVar[varNames[0].Data()]; }
@@ -1879,7 +1862,6 @@ int main(int argc, char* argv[])
 	    selLeptons = selLeptonsVar[varNames[0].Data()]; 
 	  }
 
-	  
     if ( verbose ) {
 	    printf("\nMissing  pt=%6.1f\n", imet.pt());
 	    int ilep(0);
