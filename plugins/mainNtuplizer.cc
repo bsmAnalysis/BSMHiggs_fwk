@@ -1055,8 +1055,9 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 
        //for (std::vector<pat::Jet >::const_iterator j = jets.begin(); j!=jets.end(); j++) 
        int ijet(0), ijet2(0);
+       int nCSVLtags(0);
        for (pat::Jet &j : jets) {
-	        if(j.pt() < 20 || fabs(j.eta())>2.5) continue;
+	 if(j.pt() < 20 || fabs(j.eta())>2.5) continue;
 
 	 //jet id
 	 //	 hasLooseId.set(false);
@@ -1072,10 +1073,17 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.jet_en[ev.jet] = j.energy(); //correctedP4(0).energy();
 
 	 ev.jet_btag0[ev.jet] = j.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-   if(is2017)
-      ev.jet_btag1[ev.jet] = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
-   else
-      ev.jet_btag1[ev.jet] = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
+
+	 double btag1=-1;
+	 if(is2017) {
+	   btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+	   nCSVLtags += (btag1>0.1522);  
+	 //	   ev.jet_btag1[ev.jet] = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+	 } else {
+	   btag1=j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb"); 
+	   nCSVLtags += (btag1>0.2219);  
+	 }
+	   //	   ev.jet_btag1[ev.jet] = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
 	 // ev.jet_btag1[ev.jet] = j.bDiscriminator("pfJetBProbabilityBJetTags");
 	 // ev.jet_btag2[ev.jet] = j.bDiscriminator("pfJetProbabilityBJetTags");
 	 // ev.jet_btag3[ev.jet] = j.bDiscriminator("pfTrackCountingHighPurBJetTags");
@@ -1086,6 +1094,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 // ev.jet_btag8[ev.jet] = j.bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
 	 // ev.jet_btag9[ev.jet] = j.bDiscriminator("pfCombinedSecondaryVertexSoftLeptonBJetTags");
 	 // ev.jet_btag10[ev.jet] = j.bDiscriminator("pfCombinedMVABJetTags");
+
+	 ev.jet_btag1[ev.jet] = btag1;
 
 	 ev.jet_mass[ev.jet] = j.mass(); //correctedP4(0).M();
 	 ev.jet_area[ev.jet] = j.jetArea();
@@ -1140,7 +1150,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.jet++;
          ijet++ ;
        }
-  if((ijet2<2)) return;
+       if((ijet2<2)) return;
+       if(nCSVLtags<2) return;
        //
        // jet selection (AK8Jets)
        //
