@@ -888,8 +888,12 @@ int main(int argc, char* argv[])
       btagfile = TFile::Open(btagfilename);
       if(btagfile->IsZombie() || !btagfile->IsOpen()) {std::cout<<"Error, cannot open file: "<<btagfilename<<std::endl;return -1;}
       btagEff_b = (TH2F *)btagfile->Get("Loose_efficiency_b");
+      btagEff_b->SetDirectory(0); // to decouple it from the open file direcotry
       btagEff_c = (TH2F *)btagfile->Get("Loose_efficiency_c");
+      btagEff_c->SetDirectory(0);
       btagEff_udsg = (TH2F *)btagfile->Get("Loose_efficiency_udsg");
+      btagEff_udsg->SetDirectory(0);
+      btagfile->Close();
     }
     
     
@@ -1146,7 +1150,7 @@ int main(int argc, char* argv[])
 		double sigma=0.0;
 #ifdef YEAR_2017
 		//https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2#2017_MiniAOD_V2
-		sigma = ilep.en_enSmearNrSigma;
+		sigma = ilep.en_enSigmaValue;
 #else
 		sigma = eScaler_.getSmearingSigma(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et,ilep.en_gainSeed,0,0);
 #endif
@@ -1216,7 +1220,7 @@ int main(int argc, char* argv[])
 //      printf("Electron stat down error scale: %f\n",error_scale);
 #else
 		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_stat); 
-#endif		  
+#endif
 		  ilep.SetPxPyPzE(ilep.Px()*(1.-error_scale), ilep.Py()*(1.-error_scale), ilep.Pz()*(1.-error_scale), ilep.E()*(1.-error_scale)); 
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);   
 		}if(ivar==3) { //systematic electron up
@@ -1236,7 +1240,7 @@ int main(int argc, char* argv[])
 //      printf("Electron stat down error scale: %f\n",error_scale);
 #else
 		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_syst);
-#endif		  
+#endif
 		  ilep.SetPxPyPzE(ilep.Px()*(1.-error_scale), ilep.Py()*(1.-error_scale), ilep.Pz()*(1.-error_scale), ilep.E()*(1.-error_scale));
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep); 
 		}if(ivar==5) { //gain switch electron up
@@ -1246,7 +1250,7 @@ int main(int argc, char* argv[])
 //      printf("Electron gain up error scale: %f\n",error_scale);
 #else
 		  error_scale = eScaler_.ScaleCorrectionUncertainty(phys.run,(fabs(ilep.en_EtaSC)<=1.447),ilep.en_R9, ilep.en_EtaSC, et, ilep.en_gainSeed,bit_gain);
-#endif		  
+#endif
 		  ilep.SetPxPyPzE(ilep.Px()*(1.+error_scale), ilep.Py()*(1.+error_scale), ilep.Pz()*(1.+error_scale), ilep.E()*(1.+error_scale)); 
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep); 
 		}if(ivar==6) { //gain switch electron down
@@ -1269,7 +1273,6 @@ int main(int argc, char* argv[])
 		  TRandom3 *rgen_ = new TRandom3(0);
 		  smearValue = rgen_->Gaus(1, sigma) ;
 #endif
-
 		  ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue);
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);  
 		}if(ivar==8) { //rho resolution Electron down
@@ -1282,7 +1285,6 @@ int main(int argc, char* argv[])
 		  TRandom3 *rgen_ = new TRandom3(0);  
 		  smearValue = rgen_->Gaus(1, sigma) ;        
 #endif
-
 		  ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue);      
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);      
 		}if(ivar==9) { //phi resolution Electron down
@@ -1295,7 +1297,6 @@ int main(int argc, char* argv[])
 		  TRandom3 *rgen_ = new TRandom3(0);  
 		  smearValue = rgen_->Gaus(1, sigma);
 #endif 
-
 		  ilep.SetPxPyPzE(ilep.Px()*smearValue, ilep.Py()*smearValue, ilep.Pz()*smearValue, ilep.E()*smearValue);        
 		  selLeptonsVar[eleVarNames[ivar]].push_back(ilep);      
 		}if(ivar==0){ // nominal
@@ -1379,7 +1380,7 @@ int main(int argc, char* argv[])
 	}
 
 
-	// Exactly 1 good lepton
+  // Exactly 1 good lepton
 	bool passOneLepton(selLeptons.size()==1);
 	bool passDiLepton(selLeptons.size()==2); // && ( abs(selLeptons[0].id)==abs(selLeptons[1].id) ) );
 	
@@ -1601,7 +1602,7 @@ int main(int argc, char* argv[])
 	  if(isMC && !isQCD) {
 	    weight *= (getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h ));
 	  }
-	     
+	 
 	  mon.fillHisto("leadlep_pt_raw",tag_cat,selLeptons[0].pt(),weight);
 	  mon.fillHisto("leadlep_eta_raw",tag_cat,selLeptons[0].eta(),weight);
 	  mon.fillHisto("lep_reliso",tag_cat,selLeptons[0].mn_relIso,weight);       
@@ -1854,14 +1855,14 @@ int main(int argc, char* argv[])
 
 	    //	    imet = variedMET[];
 
-	    if (evcat==E) {
+      if (evcat==E) {
 	      selLeptons = selLeptonsVar[varNames[ivar].Data()];
 	    } else { continue; } //selLeptonsVar[varNames[0].Data()]; }
 	  } else {
 	    selLeptons = selLeptonsVar[varNames[0].Data()]; 
 	  }
 
-	  if ( verbose ) {
+    if ( verbose ) {
 	    printf("\nMissing  pt=%6.1f\n", imet.pt());
 	    int ilep(0);
 	    for (auto & i : selLeptons) {
@@ -2515,7 +2516,7 @@ int main(int argc, char* argv[])
     E_TIGHTID_SF_file->Close();
     MU_TRG_SF_file->Close();
     
-    btagfile->Close();
+//    btagfile->Close();
 
     printf("\n");
     file->Close();

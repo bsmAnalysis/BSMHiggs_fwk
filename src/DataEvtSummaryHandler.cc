@@ -197,7 +197,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("en_relIso",             evSummary_.en_relIso,               "en_relIso[en]/F");
 
 #ifdef YEAR_2017
-    t_->Branch("en_enSmearNrSigma",     evSummary_.en_enSmearNrSigma,       "en_enSmearNrSigma[en]/F");
+    t_->Branch("en_enSigmaValue",       evSummary_.en_enSigmaValue,         "en_enSigmaValue[en]/F");
     t_->Branch("en_enScaleValue",       evSummary_.en_enScaleValue,         "en_enScaleValue[en]/F");
     t_->Branch("en_enScaleStatUp",      evSummary_.en_enScaleStatUp,        "en_enScaleStatUp[en]/F");
     t_->Branch("en_enScaleStatDown",    evSummary_.en_enScaleStatDown,      "en_enScaleStatDown[en]/F");
@@ -541,7 +541,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("en_relIso", evSummary_.en_relIso);
 
 #ifdef YEAR_2017
-    t_->SetBranchAddress("en_enSmearNrSigma",     evSummary_.en_enSmearNrSigma);
+    t_->SetBranchAddress("en_enSigmaValue",       evSummary_.en_enSigmaValue);
     t_->SetBranchAddress("en_enScaleValue",       evSummary_.en_enScaleValue);
     t_->SetBranchAddress("en_enScaleStatUp",      evSummary_.en_enScaleStatUp);
     t_->SetBranchAddress("en_enScaleStatDown",    evSummary_.en_enScaleStatDown);

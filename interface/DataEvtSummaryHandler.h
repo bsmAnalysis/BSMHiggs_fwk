@@ -118,7 +118,7 @@ struct DataEvtSummary_t {
     Float_t en_relIso[MAXPARTICLES];
 
 #ifdef YEAR_2017
-    Float_t en_enSmearNrSigma[MAXPARTICLES],en_enScaleValue[MAXPARTICLES];
+    Float_t en_enSigmaValue[MAXPARTICLES],en_enScaleValue[MAXPARTICLES];
     Float_t en_enScaleStatUp[MAXPARTICLES],en_enScaleStatDown[MAXPARTICLES],en_enScaleSystUp[MAXPARTICLES],en_enScaleSystDown[MAXPARTICLES],en_enScaleGainUp[MAXPARTICLES],en_enScaleGainDown[MAXPARTICLES],en_enSigmaRhoUp[MAXPARTICLES],en_enSigmaRhoDown[MAXPARTICLES],en_enSigmaPhiDown[MAXPARTICLES];
 #endif
     //tau
