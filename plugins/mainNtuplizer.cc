@@ -1013,7 +1013,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.en_gainSeed[ev.en] = gainSeed;
 
 #ifdef YEAR_2017
-   ev.en_enSmearNrSigma[ev.en] = el.userFloat("energySmearNrSigma"); ev.en_enScaleValue[ev.en] = el.userFloat("energyScaleValue");
+   ev.en_enSigmaValue[ev.en] = el.userFloat("energySigmaValue"); ev.en_enScaleValue[ev.en] = el.userFloat("energyScaleValue");
    ev.en_enScaleStatUp[ev.en] = el.userFloat("energyScaleStatUp"); ev.en_enScaleStatDown[ev.en] = el.userFloat("energyScaleStatDown"); ev.en_enScaleSystUp[ev.en] = el.userFloat("energyScaleSystUp"); ev.en_enScaleSystDown[ev.en] = el.userFloat("energyScaleSystDown"); ev.en_enScaleGainUp[ev.en] = el.userFloat("energyScaleGainUp"); ev.en_enScaleGainDown[ev.en] = el.userFloat("energyScaleGainDown"); ev.en_enSigmaRhoUp[ev.en] = el.userFloat("energySigmaRhoUp"); ev.en_enSigmaRhoDown[ev.en] = el.userFloat("energySigmaRhoDown"); ev.en_enSigmaPhiDown[ev.en] = el.userFloat("energySigmaPhiDown");
 #endif
 

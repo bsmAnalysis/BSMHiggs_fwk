@@ -104,9 +104,9 @@ public :
     }
 
 #ifdef YEAR_2017
-    void setLeptonScaleFac(float en_enSmearNrSigma_, float en_enScaleValue_,
+    void setLeptonScaleFac(float en_enSigmaValue_, float en_enScaleValue_,
                            float en_enScaleStatUp_, float en_enScaleStatDown_, float en_enScaleSystUp_, float en_enScaleSystDown_, float en_enScaleGainUp_, float en_enScaleGainDown_, float en_enSigmaRhoUp_,  float en_enSigmaRhoDown_, float en_enSigmaPhiDown_) {
-    en_enSmearNrSigma = en_enSmearNrSigma_;
+    en_enSigmaValue = en_enSigmaValue_;
     en_enScaleValue   = en_enScaleValue_;
     en_enScaleStatUp  = en_enScaleStatUp_;
     en_enScaleStatDown= en_enScaleStatDown_;
@@ -152,7 +152,7 @@ public :
     bool ta_IsLooseIso, ta_IsMediumIso, ta_IsTightIso;
 
 #ifdef YEAR_2017
-    float en_enSmearNrSigma, en_enScaleValue;
+    float en_enSigmaValue, en_enScaleValue;
     float en_enScaleStatUp, en_enScaleStatDown, en_enScaleSystUp, en_enScaleSystDown, en_enScaleGainUp, en_enScaleGainDown, en_enSigmaRhoUp,  en_enSigmaRhoDown, en_enSigmaPhiDown;
 #endif
 };

@@ -60,7 +60,7 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
                                                 ev.ta_IsLooseIso[i], ev.ta_IsMediumIso[i], ev.ta_IsTightIso[i], ev.en_relIso[i]
                                                );
 #ifdef YEAR_2017
-            phys.leptons[nlep].setLeptonScaleFac(ev.en_enSmearNrSigma[i],ev.en_enScaleValue[i],
+            phys.leptons[nlep].setLeptonScaleFac(ev.en_enSigmaValue[i],ev.en_enScaleValue[i],
                                                  ev.en_enScaleStatUp[i],ev.en_enScaleStatDown[i],ev.en_enScaleSystUp[i],ev.en_enScaleSystDown[i],ev.en_enScaleGainUp[i],ev.en_enScaleGainDown[i],ev.en_enSigmaRhoUp[i],ev.en_enSigmaRhoDown[i],ev.en_enSigmaPhiDown[i]);
 #endif
 
