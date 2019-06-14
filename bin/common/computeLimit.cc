@@ -1222,7 +1222,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       TH1* h = ch->second.shapes[histoName].histo();
       double valerr = 0.;
-      double val  = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+      double val  = 0.;
+      if (h!=NULL) val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
 
       if(procName.find("Instr. MET")!=std::string::npos) valerr =0.0; //Our systematics on the Instr. MET already includes stat unc. We would want to change that in the future
       double syst_scale = std::max(0.0, ch->second.shapes[histoName].getScaleUncertainty());
@@ -2423,11 +2424,19 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       //      dcName.ReplaceAll("_qcdB","_qcdB");  
 
       combinedcard += (C->first+"=").c_str()+dcName+" ";
-      if(C->first.find("e"  )!=string::npos)eecard   += (C->first+"=").c_str()+dcName+" ";
-      if(C->first.find("mu")!=string::npos)mumucard += (C->first+"=").c_str()+dcName+" ";
+      if(runZh) {
+	if(C->first.find("ee"  )!=string::npos)eecard   += (C->first+"=").c_str()+dcName+" ";
+	if(C->first.find("mumu")!=string::npos)mumucard += (C->first+"=").c_str()+dcName+" ";
 
-      if(C->first.find("e_A_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";  
-      if(C->first.find("mu_A_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" "; 
+	if(C->first.find("ee_A_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";      
+	if(C->first.find("mumu_A_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" ";  
+      } else {
+	if(C->first.find("e"  )!=string::npos)eecard   += (C->first+"=").c_str()+dcName+" ";    
+	if(C->first.find("mu")!=string::npos)mumucard += (C->first+"=").c_str()+dcName+" ";  
+
+	if(C->first.find("e_A_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";  
+	if(C->first.find("mu_A_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" "; 
+      }
 
       bool TTcontrolregion(false);  
       bool nonTTcontrolregion(false); 
@@ -2467,7 +2476,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       fprintf(pFile,"%55s  ", "process"); for(unsigned int j=0; j<clean_procs.size(); j++){ 
 	fprintf(pFile,"%8i ", ((int)j)-(nsign-1)    );}  fprintf(pFile,"\n");
       fprintf(pFile,"%55s  ", "rate");    for(unsigned int j=0; j<clean_procs.size(); j++){ 
-	fprintf(pFile,"%8f ", procs[clean_procs[j]].channels[C->first].shapes[histoName].histo()->Integral() );
+	double fval=0;      
+	if (procs[clean_procs[j]].channels[C->first].shapes[histoName].histo()!=NULL) { 
+	  fval=procs[clean_procs[j]].channels[C->first].shapes[histoName].histo()->Integral();}    
+	fprintf(pFile,"%8f ", fval);     
+	//	fprintf(pFile,"%8f ", procs[clean_procs[j]].channels[C->first].shapes[histoName].histo()->Integral() );
       }
       fprintf(pFile,"\n");
       fprintf(pFile, "-------------------------------\n");
@@ -2481,7 +2494,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         bool isNonNull = false;
         for(unsigned int j=0; j<clean_procs.size(); j++){
           ShapeData_t& shapeInfo = procs[clean_procs[j]].channels[C->first].shapes[histoName];
-          double integral = shapeInfo.histo()->Integral();
+          double integral = 0.;
+	  if (shapeInfo.histo()!=NULL) integral=shapeInfo.histo()->Integral();
           if(shapeInfo.uncScale.find(U->first)!=shapeInfo.uncScale.end()){   isNonNull = true;   
 	    if(U->second) sprintf(line,"%s%8s ",line,"       1");
             else if(integral>0)sprintf(line,"%s%8f ",line,1+(shapeInfo.uncScale[U->first]/integral));
