@@ -1,0 +1,69 @@
+import FWCore.ParameterSet.Config as cms
+
+from UserCode.bsmhiggs_fwk.mainNtuplizer_cfi import *
+
+from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+
+process.load("FWCore.MessageService.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = 5000
+
+process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
+process.load("Configuration.EventContent.EventContent_cff")
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+
+#load run conditions
+#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.load('Configuration.Geometry.GeometryIdeal_cff')
+process.load('Configuration.StandardSequences.MagneticField_38T_cff')
+
+#------ Declare the correct global tag ------#
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+#process.GlobalTag.globaltag = '94X_dataRun2_v6'
+process.GlobalTag.globaltag = '94X_mc2017_realistic_v14'
+process.GlobalTag.globaltag = '@gtag'
+
+process.options   = cms.untracked.PSet(
+   allowUnscheduled = cms.untracked.bool(True)
+)
+
+#rerun energy correction for electrons
+setupEgammaPostRecoSeq(process,
+    era='2018-Prompt')
+
+runOnMC=@isMC
+
+if runOnMC:
+  runMetCorAndUncFromMiniAOD(process,
+    isData=False,
+  )
+
+else:
+  runMetCorAndUncFromMiniAOD(process,
+      isData=True,
+  )
+
+process.mainNtuplizer.isMC = cms.bool(@isMC)
+process.mainNtuplizer.dtag = cms.string("@dtag")
+process.mainNtuplizer.xsec = cms.double(@xsec)
+process.mainNtuplizer.mctruthmode = cms.int32(@mctruthmode)
+process.mainNtuplizer.verbose = cms.bool(@verbose)
+process.mainNtuplizer.metFilterBitsTag = cms.InputTag('TriggerResults','','HLT')
+
+process.source = cms.Source("PoolSource",
+        fileNames = cms.untracked.vstring(),
+        inputCommands=cms.untracked.vstring( 
+        'keep *', 
+        'drop *_ctppsLocalTrackLiteProducer_*_RECO'
+        )
+)
+
+process.TFileService = cms.Service("TFileService",
+			fileName = cms.string("analysis.root")
+)
+
+process.p = cms.Path( 
+    process.fullPatMetSequence *
+    process.egammaPostRecoSeq *
+    process.mainNtuplizer 
+    )	

@@ -1544,7 +1544,7 @@
                         "/SUSYWHToAA_AATo4B_M-20_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_Wh_amass20",
+                    "dtag": "MC13TeV_Wh_amass20_2016",
                     "xsec": 1.37
                 },
 		{
@@ -1555,7 +1555,7 @@
                         "/SUSYZHToAA_AATo4B_M-20_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_Zh_amass20",
+                    "dtag": "MC13TeV_Zh_amass20_2016",
                     "xsec": 0.8594 
                 }
             ],
@@ -1584,7 +1584,7 @@
                         "/SUSYWHToAA_AATo4B_M-50_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_Wh_amass50",
+                    "dtag": "MC13TeV_Wh_amass50i_2016",
                     "xsec": 1.37
                 },
 		            {
@@ -1595,7 +1595,7 @@
                         "/SUSYZHToAA_AATo4B_M-50_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_Zh_amass50",
+                    "dtag": "MC13TeV_Zh_amass50_2016",
                     "xsec": 0.8594 
                 }
             ],
@@ -1624,7 +1624,7 @@
                         "/SUSYWHToAA_AATo4B_M-12_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_Wh_amass12",
+                    "dtag": "MC13TeV_Wh_amass12_2016",
                     "xsec": 1.37
                 },
 		            {
@@ -1635,7 +1635,7 @@
                         "/SUSYZHToAA_AATo4B_M-12_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_Zh_amass12",
+                    "dtag": "MC13TeV_Zh_amass12_2016",
                     "xsec": 0.8594 
                 }
             ],
@@ -1664,7 +1664,7 @@
                         "/SUSYWHToAA_AATo4B_M-15_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_Wh_amass15",
+                    "dtag": "MC13TeV_Wh_amass15_2016",
                     "xsec": 1.37
                 }
             ],
@@ -1693,7 +1693,7 @@
                         "/SUSYWHToAA_AATo4B_M-25_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_Wh_amass25",
+                    "dtag": "MC13TeV_Wh_amass25_2016",
                     "xsec": 1.37
                 },
 		{
@@ -1704,7 +1704,7 @@
                         "/SUSYZHToAA_AATo4B_M-25_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_Zh_amass25",
+                    "dtag": "MC13TeV_Zh_amass25_2016",
                     "xsec": 0.8594 
                 }
             ],
@@ -1733,7 +1733,7 @@
                         "/SUSYWHToAA_AATo4B_M-30_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_Wh_amass30",
+                    "dtag": "MC13TeV_Wh_amass30_2016",
                     "xsec": 1.37
                 },
 		{
@@ -1744,7 +1744,7 @@
                         "/SUSYZHToAA_AATo4B_M-30_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_Zh_amass30",
+                    "dtag": "MC13TeV_Zh_amass30_2016",
                     "xsec": 0.8594 
                 }
             ],
@@ -1773,7 +1773,7 @@
                         "/SUSYWHToAA_AATo4B_M-40_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_Wh_amass40",
+                    "dtag": "MC13TeV_Wh_amass40_2016",
                     "xsec": 1.37
                 },
 		 {
@@ -1784,7 +1784,7 @@
                         "/SUSYZHToAA_AATo4B_M-40_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_Zh_amass40",
+                    "dtag": "MC13TeV_Zh_amass40_2016",
                     "xsec": 0.8594 
                 }
             ],
@@ -1813,7 +1813,7 @@
                         "/SUSYWHToAA_AATo4B_M-60_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_Wh_amass60",
+                    "dtag": "MC13TeV_Wh_amass60_2016",
                     "xsec": 1.37
                 },
 		  {
@@ -1824,7 +1824,7 @@
                         "/SUSYZHToAA_AATo4B_M-60_TuneCUETP8M1_13TeV_madgraph_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/MINIAODSIM"
                     ],
                     "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_Zh_amass60",
+                    "dtag": "MC13TeV_Zh_amass60_2016",
                     "xsec": 0.8594 
                 }
             ],

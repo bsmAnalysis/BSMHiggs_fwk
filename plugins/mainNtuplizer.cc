@@ -201,6 +201,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
 
   bool isMC_ttbar;
   bool is2017;
+  bool is2018;
   
   //BTagging
   //2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
@@ -303,6 +304,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   }
 
   is2017     = (string(proc_.c_str()).find("2017") != string::npos);
+  is2018     = (string(proc_.c_str()).find("2018") != string::npos);
   
   printf("Definition of plots\n");
   h_nevents = fs->make< TH1F>("nevents",";nevents; nevents",1,-0.5,0.5);
@@ -353,7 +355,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   //  pat::MET::METCorrectionLevel metcor = pat::MET::METCorrectionLevel::Type1XY;
   
   // Use for Top pt re-weighting
-  if(is2017)
+  if(is2017 || is2018)
       isMC_ttbar = isMC_ && (string(proc_.c_str()).find("TeV_TTTo") != string::npos);
   else
       isMC_ttbar = isMC_ && (string(proc_.c_str()).find("TeV_TTJets") != string::npos);
@@ -713,7 +715,9 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    } // end MC
    
   // Filling histograms for BTagging Efficiency
-  if(is2017)
+  if (is2018) //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
+    {DeepCSVLooseWP = 0.1241; DeepCSVMediumWP = 0.4184; DeepCSVTightWP = 0.7527;}
+  else if(is2017) //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
     {DeepCSVLooseWP = 0.1522; DeepCSVMediumWP = 0.4941; DeepCSVTightWP = 0.8001;}
   else
     {DeepCSVLooseWP = 0.2219;  DeepCSVMediumWP = 0.6324; DeepCSVTightWP = 0.8958;}
@@ -792,7 +796,16 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    bool eeTrigger(false); bool eTrigger(false); bool eTrigger2(false); bool emuTrigger(false);
    bool highPTeTrigger(false);
    
-   if(is2017){
+   if(is2018){
+      //https://twiki.cern.ch/twiki/bin/view/CMS/MuonHLT2018 
+      mumuTrigger        = utils::passTriggerPatterns(tr,"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*");
+      muTrigger          = utils::passTriggerPatterns(tr,"HLT_IsoMu24_v*");
+      //https://twiki.cern.ch/twiki/bin/view/CMS/EgHLTRunIISummary 
+      eeTrigger          = utils::passTriggerPatterns(tr,"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_DoubleEle25_CaloIdL_MW_v*");
+      eTrigger           = utils::passTriggerPatterns(tr,"HLT_Ele32_WPTight_Gsf_v*");
+      //emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+      emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
+   }else if(is2017){
       //https://indico.cern.ch/event/682891/contributions/2810364/attachments/1570825/2820752/20171206_CMSWeek_MuonHLTReport_KPLee_v3_4.pdf
       mumuTrigger        = utils::passTriggerPatterns(tr,"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*");
       muTrigger          = utils::passTriggerPatterns(tr,"HLT_IsoMu24_v*","HLT_IsoMu24_eta2p1_v*","HLT_IsoMu27_v*");
@@ -1075,6 +1088,10 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.jet_btag0[ev.jet] = j.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
 
 	 double btag1=-1;
+   if(is2018){
+      btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+      nCSVLtags += (btag1>0.1241);
+   }
 	 if(is2017) {
 	   btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
 	   nCSVLtags += (btag1>0.1522);  
@@ -1156,7 +1173,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        // jet selection (AK8Jets)
        //
   /*
-  if(!is2017){//disable fatjet for 2017
+  if(!(is2017 && is2018)){//disable fatjet for 2017
        pat::JetCollection fatjets; 
        edm::Handle< pat::JetCollection > jetsAK8Handle; 
        event.getByToken(fatjetTag_, jetsAK8Handle);
@@ -1184,7 +1201,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 		  ) ;
          }  
 	 
-	 if(is2017){
+	 if(is2017 || is2018){
 	   ev.fjet_prunedM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSValueMap:ak8PFJetsCHSPrunedMass");
 	   ev.fjet_softdropM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSValueMap:ak8PFJetsCHSSoftDropMass");
 	   ev.fjet_tau1[ev.fjet] =  (float) j.userFloat("ak8PFJetsCHSValueMap:NjettinessAK8CHSTau1");
@@ -1213,7 +1230,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 }
 
    std::string subjet_label;
-   if(is2017)
+   if(is2017 || is2018)
       subjet_label = "SoftDropPuppi";
    else
       subjet_label = "SoftDrop";
@@ -1275,7 +1292,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.fjet_parton_en[ev.fjet] = 0.; 
 	 
 	 if (isMC_) {
-     if(!is2017){ //2016
+     if(!(is2017 && is2018)){ //2016
 	      const reco::GenParticle *pJet = j.genParton();
 	      if (pJet) {
 	          const reco::Candidate* mom = findFirstMotherWithDifferentID(&(*pJet));
