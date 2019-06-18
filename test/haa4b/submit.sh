@@ -193,7 +193,7 @@ if [[ $step > 2.999 && $step < 4 ]]; then
     if [[ $step == 3 || $step == 3.01 ]]; then  # make plots and combined root files for limits only
 	echo "MAKE SUMMARY ROOT FILE FOR LIMITS, BASED ON AN INTEGRATED LUMINOSITY OF $INTLUMI" 
 	echo "Input DIR = "$NTPL_OUTDIR  
-	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}_v1/ --outFile ${PLOTTER}_forLimits_v1.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "all_optim_systs|all_optim_cut|(e|mu)_(A|B|C|D)_(SR|CR|CR5j)_(3b|4b)_(bdt)(|_shapes)(|_umetup|_umetdown|_jerup|_jerdown|_(SubTotalPileUp|SubTotalRelative|SubTotalPt|SubTotalScale|SubTotalAbsolute|SubTotalMC)_jes(up|down)|_stat_eup|_stat_edown|_stat_eup|_stat_edown|_sys_eup|_sys_edown|_GS_eup|_GS_edown|_resRho_eup|_resRho_edown|_puup|_pudown|_pdfup|_pdfdown|_lesup|_lesdown|_softbup|_softbdown|_(b|c|l)tag(up|down))" $arguments
+	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outFile ${PLOTTER}_forLimits.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "all_optim_systs|all_optim_cut|(e|mu|ee|mumu|emu)_(A|B|C|D)_(SR|CR|CR5j)_(3b|4b)_(bdt)(|_shapes)(|_umetup|_umetdown|_jerup|_jerdown|_(SubTotalPileUp|SubTotalRelative|SubTotalPt|SubTotalScale|SubTotalAbsolute|SubTotalMC)_jes(up|down)|_stat_eup|_stat_edown|_stat_eup|_stat_edown|_sys_eup|_sys_edown|_GS_eup|_GS_edown|_resRho_eup|_resRho_edown|_puup|_pudown|_pdfup|_pdfdown|_lesup|_lesdown|_softbup|_softbdown|_(b|c|l)tag(up|down))" $arguments
     fi
 
     if [[ $step == 3.02 ]]; then # make plots for data-driven QCD bkg

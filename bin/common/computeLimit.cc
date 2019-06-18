@@ -123,7 +123,7 @@ int indexvbf = -1;
 int massL=-1, massR=-1;
 
 
-double dropBckgBelow=0.01; //0.01;
+double dropBckgBelow=0.01; 
 
 bool matchKeyword(JSONWrapper::Object& process, std::vector<string>& keywords){
   if(keywords.size()<=0)return true;
@@ -305,11 +305,14 @@ class ShapeData_t
        	TString systName = var->first.c_str();
        	if(var->first=="")continue; //Skip Nominal shape
        	if(!systName.Contains(upORdown))continue; //only look for syst up or down at a time (upORdown should be either "Up" or "Down"
+
        	TH1* hvar = (TH1*)(var->second->Clone((name+var->first).c_str()));
 
 	double varYield = hvar->Integral();
-	TH1* h = (TH1*)(this->histo()->Clone((name+"Nominal").c_str()));
-	double yield = h->Integral();
+	TH1* h = NULL;
+	if (this->histo()!=NULL) h = (TH1*)(this->histo()->Clone((name+"Nominal").c_str()));
+	double yield = 0.; 
+	if (h!=NULL) yield = h->Integral();
        	Total+=pow(varYield-yield,2); //the total shape unc is the sqrt of the quadratical sum of the difference between the nominal and the variated yields.
      	}     
      	return Total>0?sqrt(Total):-1;
@@ -565,7 +568,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--statBinByBin")    !=string::npos) { sscanf(argv[i+1],"%f",&statBinByBin); i++; printf("statBinByBin = %f\n", statBinByBin);}
     else if(arg.find("--dropBckgBelow")   !=string::npos) { sscanf(argv[i+1],"%lf",&dropBckgBelow); i++; printf("dropBckgBelow = %f\n", dropBckgBelow);}
     else if(arg.find("--key"          )   !=string::npos && i+1<argc){ keywords.push_back(argv[i+1]); printf("Only samples matching this (regex) expression '%s' are processed\n", argv[i+1]); i++;  }
-    if(arg.find("--runZh") !=string::npos) { runZh=true; printf("runZh = True");}
+    if(arg.find("--runZh") !=string::npos) { runZh=true; printf("runZh = True\n");}
     if(arg.find("--modeDD") !=string::npos) { modeDD=true; printf("modeDD = True\n");} 
     if(arg.find("--postfit")  !=string::npos) { postfit=true; printf("postfit = True\n");}   
   }
@@ -1225,7 +1228,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       double val  = 0.;
       if (h!=NULL) val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
 
-      if(procName.find("Instr. MET")!=std::string::npos) valerr =0.0; //Our systematics on the Instr. MET already includes stat unc. We would want to change that in the future
       double syst_scale = std::max(0.0, ch->second.shapes[histoName].getScaleUncertainty());
       double syst_shapeUp = std::max(0.0, ch->second.shapes[histoName].getIntegratedShapeUncertainty((it->first+ch->first).c_str(), "Up"));
       double syst_shapeDown = std::max(0.0, ch->second.shapes[histoName].getIntegratedShapeUncertainty((it->first+ch->first).c_str(), "Down"));
@@ -1251,11 +1253,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       TString LabelText = TString("$") + ch->second.channel+ " " +ch->second.bin + TString("$");
       LabelText.ReplaceAll("eq"," ="); LabelText.ReplaceAll("g =","\\geq"); LabelText.ReplaceAll("l =","\\leq"); 
-      LabelText.ReplaceAll("_OS","OS "); LabelText.ReplaceAll("el","e"); LabelText.ReplaceAll("mu","\\mu");  LabelText.ReplaceAll("ha","\\tau_{had}");
+      //      LabelText.ReplaceAll("_OS","OS "); LabelText.ReplaceAll("el","e"); LabelText.ReplaceAll("mu","\\mu");  LabelText.ReplaceAll("ha","\\tau_{had}");
 
       TString BinText = TString("$") + ch->second.bin + TString("$");
       BinText.ReplaceAll("eq"," ="); BinText.ReplaceAll("g =","\\geq"); BinText.ReplaceAll("l =","\\leq");
-      BinText.ReplaceAll("_OS","OS "); BinText.ReplaceAll("el","e"); BinText.ReplaceAll("mu","\\mu");  BinText.ReplaceAll("ha","\\tau_{had}");
+      //      BinText.ReplaceAll("_OS","OS "); BinText.ReplaceAll("el","e"); BinText.ReplaceAll("mu","\\mu");  BinText.ReplaceAll("ha","\\tau_{had}");
 
 
       bin_val   [BinText.Data()] = val;
@@ -1425,16 +1427,16 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	//	map_yields[it->first] += ch->second.shapes[histoName].histo()->Integral();
 	TH1 *h=ch->second.shapes[histoName].histo();
         if (h!=NULL) { map_yields[it->first] += h->Integral();}
-	else {map_yields[it->first] += 0.;}
+	//	else {map_yields[it->first] += 0.;}
       }
     }
 
     double total = map_yields["total"];
     for(std::map<string, double>::iterator Y=map_yields.begin();Y!=map_yields.end();Y++){
       if(Y->first.find("ddqcd")<std::string::npos)continue;//never drop this background
-      if(Y->first.find("VV")<std::string::npos)continue;//never drop this background
-      if(Y->first.find("Vh")<std::string::npos)continue;//never drop this background 
-      if(Y->first.find("t#bar{t}+#gammaZW")<std::string::npos)continue;//never drop this background    
+      //      if(Y->first.find("VV")<std::string::npos)continue;//never drop this background
+      // if(Y->first.find("Vh")<std::string::npos)continue;//never drop this background 
+      //      if(Y->first.find("t#bar{t}+#gammaZW")<std::string::npos)continue;//never drop this background    
       if(Y->second/total<threshold){
         printf("Drop %s from the list of backgrounds because of negligible rate (%f%% of total bckq)\n", Y->first.c_str(), Y->second/total);
         for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==Y->first ){sorted_procs.erase(p);break;}}
@@ -2222,6 +2224,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
         ShapeData_t& shapeInfo = ch->second.shapes[histoName];      
         TH1* h = shapeInfo.histo();
+	if(h==NULL)continue;
 	//                 shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), it->second.isSign );//add stat uncertainty to the uncertainty map;
         //shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );//add stat uncertainty to the uncertainty map;
 
