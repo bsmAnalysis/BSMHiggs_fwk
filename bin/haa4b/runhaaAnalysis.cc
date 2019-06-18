@@ -972,7 +972,9 @@ int main(int argc, char* argv[])
 	    { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(0, ev.lheNJets, is2017MC); }
           else if( isMC_DY ) {
 	    if (string(url.Data()).find("10to50")  != string::npos)
-	      { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(1, ev.lheNJets, is2017MC); }
+	      { 
+          if (is2016MC) xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(1, ev.lheNJets, is2017MC);        
+        }
             else
 	      { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(2, ev.lheNJets, is2017MC); }
           }
