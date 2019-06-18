@@ -207,7 +207,7 @@
             "tag": "data"
         },
         {
-            "color": 595,
+            "color": 852,
             "data": [
                 {
                     "br": [
@@ -600,7 +600,7 @@
                 "haa_mcbased",
                 "haa_ztoll"
             ],
-            "tag": "DYJets"
+            "tag": "Z#rightarrow ll"
         },
         {
             "color": 622,
