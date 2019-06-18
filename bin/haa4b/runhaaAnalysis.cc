@@ -141,9 +141,11 @@ int main(int argc, char* argv[])
     TString btagDir=runProcess.getParameter<std::string>("btagDir");
 
     bool is2016data = (!isMC && dtag.Contains("2016"));
-    bool is2016MC = (isMC && !dtag.Contains("2017"));
+    bool is2016MC = (isMC && dtag.Contains("2016"));
     bool is2017data = (!isMC && dtag.Contains("2017"));
     bool is2017MC = (isMC && dtag.Contains("2017"));
+    bool is2018data = (!isMC && dtag.Contains("2018"));
+    bool is2018MC = (isMC && dtag.Contains("2018"));
     bool is2017BCdata = (is2017data && (dtag.Contains("2017B") || dtag.Contains("2017C")));
 
     bool verbose = runProcess.getParameter<bool>("verbose");
@@ -165,12 +167,22 @@ int main(int argc, char* argv[])
     TString url = runProcess.getParameter<std::string>("input");
     TString outFileUrl( dtag ); //gSystem->BaseName(url));
 
+    if(!use_DeepCSV && (is2018data || is2018MC)){
+      std::cout << "2018 Data does not have CSV, use DeepCSV instead!" << std::endl;
+      exit(0);
+    }
+
     if(is2017data || is2017MC){
       // 2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
         CSVLooseWP = 0.5803; CSVMediumWP = 0.8838; CSVTightWP = 0.9693;
         DeepCSVLooseWP = 0.1522; DeepCSVMediumWP = 0.4941; DeepCSVTightWP = 0.8001;
 	//        mu_threshold_=30.;
 	//        ele_threshold_=35.;
+    }
+
+    if(is2018data || is2018MC){ // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
+      DeepCSVLooseWP = 0.1241; DeepCSVMediumWP = 0.4184; DeepCSVTightWP = 0.7527;
+  //    ele_threshold_=35.; mu_threshold_=25.;
     }
 
     // if(mctruthmode!=0) {
@@ -220,7 +232,7 @@ int main(int argc, char* argv[])
     bool isMCBkg_runPDFQCDscale = (isMC_ZZ || isMC_WZ || isMC_VVV);
 
     bool isMC_ttbar = isMC && (string(url.Data()).find("TeV_TTJets")  != string::npos);
-    if(is2017data || is2017MC) isMC_ttbar = isMC && (string(url.Data()).find("TeV_TTTo")  != string::npos);
+    if(is2017data || is2017MC || is2018data || is2018MC) isMC_ttbar = isMC && (string(url.Data()).find("TeV_TTTo")  != string::npos);
     bool isMC_stop  = isMC && (string(url.Data()).find("TeV_SingleT")  != string::npos);
 
     bool isMC_WJets = isMC && ( (string(url.Data()).find("MC13TeV_WJets")  != string::npos) || (string(url.Data()).find("MC13TeV_W1Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W2Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W3Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W4Jets")  != string::npos) );
@@ -277,6 +289,10 @@ int main(int argc, char* argv[])
           csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                           "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V4_B_F.csv";       
       }
+      if(is2018data || is2018MC){
+        csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
+                        "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_102XSF_V1.csv";
+      }
       LooseWP = DeepCSVLooseWP;
       MediumWP = DeepCSVMediumWP;
       TightWP = DeepCSVTightWP;
@@ -295,7 +311,14 @@ int main(int argc, char* argv[])
     //gSystem->ExpandPathName(uncFile);
     cout << "Loading jet energy scale uncertainties from: " << jecDir << endl;
 
-    if(is2017MC || is2017data){
+    if(is2018MC || is2018data){
+        if     (dtag.Contains("2018A")) jecDir+="102X/Autumn18_V8_RunA/Autumn18_RunA_V8_";
+        else if(dtag.Contains("2018B")) jecDir+="102X/Autumn18_V8_RunB/Autumn18_RunB_V8_";
+        else if(dtag.Contains("2018C")) jecDir+="102X/Autumn18_V8_RunC/Autumn18_RunC_V8_";
+        else if(dtag.Contains("2018D")) jecDir+="102X/Autumn18_V8_RunD/Autumn18_RunD_V8_";
+        if(isMC) {jecDir+="102X/Autumn18_V8_MC/Autumn18_V8_";}
+    }
+    else if(is2017MC || is2017data){
         if     (dtag.Contains("2017B")) jecDir+="94X/Fall17_17Nov2017B_V32_DATA/Fall17_17Nov2017B_V32_";
         else if(dtag.Contains("2017C")) jecDir+="94X/Fall17_17Nov2017C_V32_DATA/Fall17_17Nov2017C_V32_";
         else if(dtag.Contains("2017D") || dtag.Contains("2017E")) jecDir+="94X/Fall17_17Nov2017DE_V32_DATA/Fall17_17Nov2017DE_V32_";
@@ -824,18 +847,24 @@ int main(int argc, char* argv[])
     gSystem->ExpandPathName(muTRG_sf);   
     TFile *MU_TRG_SF_file = TFile::Open(muTRG_sf);  
     TH2F* MU_TRG_SF_h = new TH2F();
-    if(is2017data || is2017MC)
+    if(is2018data || is2018MC)
+        // https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffs2018, run < 316361
+        MU_TRG_SF_h = (TH2F*) MU_TRG_SF_file->Get("IsoMu24_PtEtaBins/pt_abseta_ratio");
+    else if(is2017data || is2017MC)
         MU_TRG_SF_h = (TH2F*) MU_TRG_SF_file->Get("IsoMu27_PtEtaBins/pt_abseta_ratio");
-    else
+    else if(is2016data || is2016MC)
         MU_TRG_SF_h = (TH2F*) MU_TRG_SF_file->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/pt_abseta_ratio");
 
     TString muTRG_sf2 = runProcess.getParameter<std::string>("mu_trgSF2");  
     gSystem->ExpandPathName(muTRG_sf2);         
     TFile *MU_TRG_SF_file2 = TFile::Open(muTRG_sf2);
     TH2F* MU_TRG_SF_h2 = new TH2F(); 
-    if(is2017data || is2017MC)
+    if(is2018data || is2018MC)
+        // https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffs2018, run >= 316361
+        MU_TRG_SF_h2 = (TH2F*) MU_TRG_SF_file->Get("IsoMu24_PtEtaBins/pt_abseta_ratio");
+    else if(is2017data || is2017MC)
         MU_TRG_SF_h2 = (TH2F*) MU_TRG_SF_file->Get("IsoMu27_PtEtaBins/pt_abseta_ratio");
-    else
+    else if(is2016data || is2016MC)
         MU_TRG_SF_h2 = (TH2F*) MU_TRG_SF_file->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/pt_abseta_ratio");
 
      // mu ID SFs
@@ -843,18 +872,24 @@ int main(int argc, char* argv[])
     gSystem->ExpandPathName(muID_sf);   
     TFile *MU_ID_SF_file = TFile::Open(muID_sf);  
     TH2F* MU_ID_SF_h = new TH2F();
-    if(is2017data || is2017MC)
+    if(is2018data || is2018MC)
+      // https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffs2018
+        MU_ID_SF_h = (TH2F*) MU_ID_SF_file->Get("NUM_TightID_DEN_TrackerMuons_pt_abseta");
+    else if(is2017data || is2017MC)
         MU_ID_SF_h = (TH2F*) MU_ID_SF_file->Get("NUM_TightID_DEN_genTracks_pt_abseta");
-    else
+    else if(is2016data || is2016MC)
         MU_ID_SF_h = (TH2F*) MU_ID_SF_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio");
     
     TString muID_sf2 = runProcess.getParameter<std::string>("mu_idSF2");    
     gSystem->ExpandPathName(muID_sf2); 
     TFile *MU_ID_SF_file2 = TFile::Open(muID_sf2);  
     TH2F* MU_ID_SF_h2 = new TH2F();
-    if(is2017data || is2017MC)
+    if(is2018data || is2018MC)
+      // https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffs2018
+        MU_ID_SF_h2 = (TH2F*) MU_ID_SF_file->Get("NUM_TightID_DEN_TrackerMuons_pt_abseta");
+    else if(is2017data || is2017MC)
         MU_ID_SF_h2 = (TH2F*) MU_ID_SF_file->Get("NUM_TightID_DEN_genTracks_pt_abseta");
-    else
+    else if(is2016data || is2016MC)
         MU_ID_SF_h2 = (TH2F*) MU_ID_SF_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio");
 
     // mu ISO SFs
@@ -862,18 +897,24 @@ int main(int argc, char* argv[])
     gSystem->ExpandPathName(muISO_sf);   
     TFile *MU_ISO_SF_file = TFile::Open(muISO_sf);  
     TH2F* MU_ISO_SF_h = new TH2F();
-    if(is2017data || is2017MC)
+    if(is2018data || is2018MC)
+      // https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffs2018
         MU_ISO_SF_h = (TH2F*) MU_ISO_SF_file->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
-    else
+    else if(is2017data || is2017MC)
+        MU_ISO_SF_h = (TH2F*) MU_ISO_SF_file->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
+    else if(is2016data || is2016MC)
         MU_ISO_SF_h = (TH2F*) MU_ISO_SF_file->Get("TightISO_TightID_pt_eta/pt_abseta_ratio");
 
     TString muISO_sf2 = runProcess.getParameter<std::string>("mu_isoSF2");        
     gSystem->ExpandPathName(muISO_sf2);       
     TFile *MU_ISO_SF_file2 = TFile::Open(muISO_sf2);   
     TH2F* MU_ISO_SF_h2 = new TH2F();
-    if(is2017data || is2017MC)
+    if(is2018data || is2018MC)
+      // https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffs2018
         MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
-    else
+    else if(is2017data || is2017MC)
+        MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
+    else if(is2016data || is2016MC)
         MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file->Get("TightISO_TightID_pt_eta/pt_abseta_ratio");
 
     //####################################################################################################################
@@ -1590,7 +1631,9 @@ int main(int argc, char* argv[])
 	    weight*=getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	  } else if(is2017MC && !isQCD){//2017 ele TRG scale factor: https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#E/gamma%20Trigger%20Recomendations
 	    weight*=0.991;
-	  }
+	  } else if(is2018MC && !isQCD){ // https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations
+      weight*=1.0;
+    }
 	    //	    weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	  //weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h2);
 	  mon.fillHisto("leadlep_pt_raw",tag_cat,selLeptons[0].pt(),weight);   

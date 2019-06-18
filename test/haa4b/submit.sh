@@ -175,10 +175,15 @@ if [[ $step > 2.999 && $step < 4 ]]; then
         echo "Please run step==2 above to calculate int. luminosity for 2016 data!" 
       else
         if [[ $JSON =~ "2017" ]]; then
-          INTLUMI=41529.343
+          INTLUMI=41529.152
 	        echo "Please run step==2 above to calculate int. luminosity for 2017 data!"
         else
-	        echo "Please run step==2 above to calculate int. luminosity!"
+          if [[ $JSON =~ "2018" ]]; then
+            INTLUMI=59740.565
+            echo "Please run step==2 above to calculate int. luminosity for 2018 data!"
+          else
+	          echo "Please run step==2 above to calculate int. luminosity!"
+          fi
         fi                                                                                                                   
       fi
 	echo "WARNING: $RESULTSDIR/LUMI.txt file is missing so use fixed integrated luminosity value, this might be different than the dataset you ran on"
