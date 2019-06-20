@@ -828,7 +828,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
       emuTrigger         = utils::passTriggerPatterns(tr, "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*" , "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
    }
    
-   ev.hasTrigger  = ( mumuTrigger||muTrigger||muTrigger2||eeTrigger||highPTeTrigger||eTrigger||eTrigger2||emuTrigger );
+   ev.hasTrigger  = ( mumuTrigger||muTrigger||muTrigger2||eeTrigger||eeTrigger2||highPTeTrigger||eTrigger||eTrigger2||emuTrigger );
    //ev.hasTrigger  = ( muTrigger||eTrigger||emuTrigger ); 
    
    ev.triggerType = ( mumuTrigger  << 0 )
