@@ -110,16 +110,16 @@ using namespace std;
 
 //the functions which actually match the trigger objects and see if it passes
 namespace{
-	std::vector<const pat::TriggerObjectStandAlone*> getMatchedObjs(const float eta,const float phi,const std::vector<pat::TriggerObjectStandAlone>& trigObjs,const float maxDeltaR=0.1)
-	{
-		std::vector<const pat::TriggerObjectStandAlone*> matchedObjs;
-		const float maxDR2 = maxDeltaR*maxDeltaR;
-		for(auto& trigObj : trigObjs){
-			const float dR2 = reco::deltaR2(eta,phi,trigObj.eta(),trigObj.phi());
-			if(dR2<maxDR2) matchedObjs.push_back(&trigObj);
-		}
-		return matchedObjs;
-	}
+  std::vector<const pat::TriggerObjectStandAlone*> getMatchedObjs(const float eta,const float phi,const std::vector<pat::TriggerObjectStandAlone>& trigObjs,const float maxDeltaR=0.1)
+  {
+    std::vector<const pat::TriggerObjectStandAlone*> matchedObjs;
+    const float maxDR2 = maxDeltaR*maxDeltaR;
+    for(auto& trigObj : trigObjs){
+      const float dR2 = reco::deltaR2(eta,phi,trigObj.eta(),trigObj.phi());
+      if(dR2<maxDR2) matchedObjs.push_back(&trigObj);
+    }
+    return matchedObjs;
+  }
 }
 
 // If the analyzer does not use TFileService, please remove
@@ -844,7 +844,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
       emuTrigger         = utils::passTriggerPatterns(tr, "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*" , "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
    }
    // special treatment for 2017 single electron triggers
-   // requiring https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#Double%20Electron%20Triggers
+   // requiring trigger object passing hltEle32L1DoubleEGWPTightGsfTrackIsoFilter to also pass hltEGL1SingleEGOrFilter
    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#Double%20Electron%20Triggers
    // https://github.com/Sam-Harper/usercode/blob/100XNtup/TrigTools/plugins/Ele32DoubleL1ToSingleL1Example.cc
    // https://github.com/Sam-Harper/usercode/blob/100XNtup/TrigTools/test/ele32DoubleToSingle.py
@@ -853,7 +853,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
       std::vector<pat::TriggerObjectStandAlone> unpackedTrigObjs;
       for(auto& trigObj: *triggerObjects){
          unpackedTrigObjs.push_back(trigObj);
-				 unpackedTrigObjs.back().unpackFilterLabels(event,*triggerBits);
+         unpackedTrigObjs.back().unpackFilterLabels(event,*triggerBits);
       }
       pat::ElectronCollection electrons;
       edm::Handle< pat::ElectronCollection > elesHandle;
@@ -861,22 +861,22 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
       if(elesHandle.isValid()){ electrons = *elesHandle;}
       for(auto& ele : electrons){
          //the eta/phi of e/gamma trigger objects is the supercluster eta/phi
-	 const float eta = ele.superCluster()->eta();
-	 const float phi = ele.superCluster()->phi();
+         const float eta = ele.superCluster()->eta();
+         const float phi = ele.superCluster()->phi();
 	 
-	 //now match ALL objects in a cone of DR<0.1
-	 //it is important to match all objects as there are different ways to reconstruct the same electron
-	 //eg, L1 seeded, unseeded, as a jet etc
-	 //and so you want to be sure you get all possible objects
-	 std::vector<const pat::TriggerObjectStandAlone*> matchedTrigObjs = getMatchedObjs(eta,phi,unpackedTrigObjs,0.1);
-	 bool passFilters(false);
-	 for(const auto trigObj : matchedTrigObjs){
-	    //now just check if it passes the two filters
-      if(trigObj->hasFilterLabel("hltEle32L1DoubleEGWPTightGsfTrackIsoFilter") &&
-	       trigObj->hasFilterLabel("hltEGL1SingleEGOrFilter") )
-	    passFilters = true;
-	 }
-	 if(passFilters)  eTrigger = true;
+         //now match ALL objects in a cone of DR<0.1
+         //it is important to match all objects as there are different ways to reconstruct the same electron
+         //eg, L1 seeded, unseeded, as a jet etc
+         //and so you want to be sure you get all possible objects
+        std::vector<const pat::TriggerObjectStandAlone*> matchedTrigObjs = getMatchedObjs(eta,phi,unpackedTrigObjs,0.1);
+        bool passFilters(false);
+        for(const auto trigObj : matchedTrigObjs){
+          //now just check if it passes the two filters
+          if(trigObj->hasFilterLabel("hltEle32L1DoubleEGWPTightGsfTrackIsoFilter") &&
+             trigObj->hasFilterLabel("hltEGL1SingleEGOrFilter") )
+            passFilters = true;
+	      }
+        if(passFilters)  eTrigger = true;
 //	    std::cout <<" ele "<<ele.et()<<" "<<eta<<" "<<phi<<" passes HLT_Ele32_WPTight_Gsf"<<std::endl;
       }
    }
