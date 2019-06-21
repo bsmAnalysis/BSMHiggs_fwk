@@ -1618,8 +1618,8 @@ int main(int argc, char* argv[])
 	} else {
 	  if(evcat==E && hasEtrigger ) hasTrigger=true;   
 	  if(evcat==MU && hasMtrigger ) hasTrigger=true;   
-	  if( is2017data && evcat==EE && ((hasEEtrigger||hasEEtrigger2) || hasEtrigger)) hasTrigger=true; 
-	  if(!is2017data && evcat==EE && (hasEEtrigger || hasEtrigger)) hasTrigger=true; 
+	  if( is2017MC && evcat==EE && ((hasEEtrigger||hasEEtrigger2) || hasEtrigger)) hasTrigger=true; 
+	  if(!is2017MC && evcat==EE && (hasEEtrigger || hasEtrigger)) hasTrigger=true; 
 	  if(evcat==MUMU && (hasMMtrigger || hasMtrigger)) hasTrigger=true; 
 	  if(evcat==EMU  && hasEMtrigger ) hasTrigger=true;  
 	}
