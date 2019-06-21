@@ -217,6 +217,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
   bool isMC_ttbar;
   bool is2017;
   bool is2018;
+  bool is2017BC;
   
   //BTagging
   //2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
@@ -319,6 +320,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   }
 
   is2017     = (string(proc_.c_str()).find("2017") != string::npos);
+  is2017BC   = (string(proc_.c_str()).find("2017B") != string::npos || string(proc_.c_str()).find("2017C") != string::npos);
   is2018     = (string(proc_.c_str()).find("2018") != string::npos);
   
   printf("Definition of plots\n");
@@ -828,8 +830,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
       //   https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#E/gamma%20Trigger%20Recomendations
       eeTrigger          = utils::passTriggerPatterns(tr,"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");// isolation version
       eeTrigger2         = utils::passTriggerPatterns(tr,"HLT_DoubleEle33_CaloIdL_MW_v*","HLT_DoubleEle25_CaloIdL_MW_v*"); // non isolation version
-      // 2017 single electron trigger needs special treatment, see below
-      //eTrigger           = utils::passTriggerPatterns(tr,"HLT_Ele32_WPTight_Gsf_v*","HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*");
+      // 2017 RunB and C single electron trigger needs special treatment, see below
+      eTrigger           = utils::passTriggerPatterns(tr,"HLT_Ele32_WPTight_Gsf_v*"); //"HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*";
       //eTrigger2          = utils::passTriggerPatterns(tr,"HLT_Ele35_WPTight_Gsf_v*");
       emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
    } else{
@@ -843,12 +845,12 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
       eTrigger           = utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") ;
       emuTrigger         = utils::passTriggerPatterns(tr, "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*" , "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
    }
-   // special treatment for 2017 single electron triggers
+   // special treatment for 2017 single electron triggers in RunB and C
    // requiring trigger object passing hltEle32L1DoubleEGWPTightGsfTrackIsoFilter to also pass hltEGL1SingleEGOrFilter
    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#Double%20Electron%20Triggers
    // https://github.com/Sam-Harper/usercode/blob/100XNtup/TrigTools/plugins/Ele32DoubleL1ToSingleL1Example.cc
    // https://github.com/Sam-Harper/usercode/blob/100XNtup/TrigTools/test/ele32DoubleToSingle.py
-   if(is2017){
+   if(is2017BC){
       //so the filter names are all packed in miniAOD so we need to create a new collection of them which are unpacked
       std::vector<pat::TriggerObjectStandAlone> unpackedTrigObjs;
       for(auto& trigObj: *triggerObjects){
