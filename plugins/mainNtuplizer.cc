@@ -107,6 +107,21 @@ using namespace edm;
 using namespace reco;
 using namespace pat;
 using namespace std;
+
+//the functions which actually match the trigger objects and see if it passes
+namespace{
+  std::vector<const pat::TriggerObjectStandAlone*> getMatchedObjs(const float eta,const float phi,const std::vector<pat::TriggerObjectStandAlone>& trigObjs,const float maxDeltaR=0.1)
+  {
+    std::vector<const pat::TriggerObjectStandAlone*> matchedObjs;
+    const float maxDR2 = maxDeltaR*maxDeltaR;
+    for(auto& trigObj : trigObjs){
+      const float dR2 = reco::deltaR2(eta,phi,trigObj.eta(),trigObj.phi());
+      if(dR2<maxDR2) matchedObjs.push_back(&trigObj);
+    }
+    return matchedObjs;
+  }
+}
+
 // If the analyzer does not use TFileService, please remove
 // the template argument to the base class so the class inherits
 // from  edm::one::EDAnalyzer<> and also remove the line from
@@ -202,6 +217,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
   bool isMC_ttbar;
   bool is2017;
   bool is2018;
+  bool is2017BC;
   
   //BTagging
   //2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
@@ -304,6 +320,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   }
 
   is2017     = (string(proc_.c_str()).find("2017") != string::npos);
+  is2017BC   = (string(proc_.c_str()).find("2017B") != string::npos || string(proc_.c_str()).find("2017C") != string::npos);
   is2018     = (string(proc_.c_str()).find("2018") != string::npos);
   
   printf("Definition of plots\n");
@@ -793,7 +810,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    
    // float triggerPrescale(1.0),triggerThreshold(0), triggerThresholdHigh(99999);
    bool mumuTrigger(false); bool muTrigger(false); bool muTrigger2(false);
-   bool eeTrigger(false); bool eTrigger(false); bool eTrigger2(false); bool emuTrigger(false);
+   bool eeTrigger(false); bool eeTrigger2(false); bool eTrigger(false); bool eTrigger2(false); bool emuTrigger(false);
    bool highPTeTrigger(false);
    
    if(is2018){
@@ -807,14 +824,16 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
       emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
    }else if(is2017){
       //https://indico.cern.ch/event/682891/contributions/2810364/attachments/1570825/2820752/20171206_CMSWeek_MuonHLTReport_KPLee_v3_4.pdf
-      mumuTrigger        = utils::passTriggerPatterns(tr,"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*");
-      muTrigger          = utils::passTriggerPatterns(tr,"HLT_IsoMu24_v*","HLT_IsoMu24_eta2p1_v*","HLT_IsoMu27_v*");
+      mumuTrigger        = utils::passTriggerPatterns(tr,"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
+      muTrigger          = utils::passTriggerPatterns(tr,"HLT_IsoMu24_eta2p1_v*","HLT_IsoMu27_v*","HLT_IsoMu24_v*");
       // For 2017, muTrigger2 is always set to True
       //   https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#E/gamma%20Trigger%20Recomendations
-      eeTrigger          = utils::passTriggerPatterns(tr,"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_DoubleEle33_CaloIdL_MW_v*","HLT_DoubleEle25_CaloIdL_MW_v*");
-      eTrigger           = utils::passTriggerPatterns(tr,"HLT_Ele32_WPTight_Gsf_v*","HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*");
-      eTrigger2          = utils::passTriggerPatterns(tr,"HLT_Ele35_WPTight_Gsf_v*");
-      emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+      eeTrigger          = utils::passTriggerPatterns(tr,"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");// isolation version
+      eeTrigger2         = utils::passTriggerPatterns(tr,"HLT_DoubleEle33_CaloIdL_MW_v*","HLT_DoubleEle25_CaloIdL_MW_v*"); // non isolation version
+      // 2017 RunB and C single electron trigger needs special treatment, see below
+      eTrigger           = utils::passTriggerPatterns(tr,"HLT_Ele32_WPTight_Gsf_v*"); //"HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*";
+      //eTrigger2          = utils::passTriggerPatterns(tr,"HLT_Ele35_WPTight_Gsf_v*");
+      emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
    } else{
       mumuTrigger        = utils::passTriggerPatterns(tr, "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*" , "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
       //   muTrigger          = utils::passTriggerPatterns(tr, "HLT_IsoMu22_v*","HLT_IsoTkMu22_v*", "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*");
@@ -826,8 +845,46 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
       eTrigger           = utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") ;
       emuTrigger         = utils::passTriggerPatterns(tr, "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*" , "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
    }
-   
-   ev.hasTrigger  = ( mumuTrigger||muTrigger||muTrigger2||eeTrigger||highPTeTrigger||eTrigger||eTrigger2||emuTrigger );
+   // special treatment for 2017 single electron triggers in RunB and C
+   // requiring trigger object passing hltEle32L1DoubleEGWPTightGsfTrackIsoFilter to also pass hltEGL1SingleEGOrFilter
+   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#Double%20Electron%20Triggers
+   // https://github.com/Sam-Harper/usercode/blob/100XNtup/TrigTools/plugins/Ele32DoubleL1ToSingleL1Example.cc
+   // https://github.com/Sam-Harper/usercode/blob/100XNtup/TrigTools/test/ele32DoubleToSingle.py
+   if(is2017BC){
+      //so the filter names are all packed in miniAOD so we need to create a new collection of them which are unpacked
+      std::vector<pat::TriggerObjectStandAlone> unpackedTrigObjs;
+      for(auto& trigObj: *triggerObjects){
+         unpackedTrigObjs.push_back(trigObj);
+         unpackedTrigObjs.back().unpackFilterLabels(event,*triggerBits);
+      }
+      pat::ElectronCollection electrons;
+      edm::Handle< pat::ElectronCollection > elesHandle;
+      event.getByToken(electronTag_, elesHandle);
+      if(elesHandle.isValid()){ electrons = *elesHandle;}
+      for(auto& ele : electrons){
+         //the eta/phi of e/gamma trigger objects is the supercluster eta/phi
+         const float eta = ele.superCluster()->eta();
+         const float phi = ele.superCluster()->phi();
+	 
+         //now match ALL objects in a cone of DR<0.1
+         //it is important to match all objects as there are different ways to reconstruct the same electron
+         //eg, L1 seeded, unseeded, as a jet etc
+         //and so you want to be sure you get all possible objects
+         std::vector<const pat::TriggerObjectStandAlone*> matchedTrigObjs = getMatchedObjs(eta,phi,unpackedTrigObjs,0.1);
+         bool passFilters(false);
+         for(const auto trigObj : matchedTrigObjs){
+            //now just check if it passes the two filters
+            if(trigObj->hasFilterLabel("hltEle32L1DoubleEGWPTightGsfTrackIsoFilter") &&
+               trigObj->hasFilterLabel("hltEGL1SingleEGOrFilter") )
+            passFilters = true;
+         }
+      if(passFilters)  eTrigger = true;
+//	    std::cout <<" ele "<<ele.et()<<" "<<eta<<" "<<phi<<" passes HLT_Ele32_WPTight_Gsf"<<std::endl;
+      }
+   }
+
+
+   ev.hasTrigger  = ( mumuTrigger||muTrigger||muTrigger2||eeTrigger||eeTrigger2||highPTeTrigger||eTrigger||eTrigger2||emuTrigger );
    //ev.hasTrigger  = ( muTrigger||eTrigger||emuTrigger ); 
    
    ev.triggerType = ( mumuTrigger  << 0 )
@@ -837,7 +894,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
      | ( eTrigger << 4 )
      | ( emuTrigger << 5 ) 
      | ( muTrigger2 << 6 )
-     | ( eTrigger2 << 7 );
+     | ( eTrigger2 << 7 )
+     | ( eeTrigger2 << 8 );
    
    //if(!isMC__ && !ev.hasTrigger) return; // skip the event if no trigger, only for Data
    if(!ev.hasTrigger) return; // skip the event if no trigger, for both Data and MC
