@@ -1574,8 +1574,8 @@ int main(int argc, char* argv[])
 	  if(evcat==E && !(hasEtrigger)) continue;
 	  if(evcat==MU && !(hasMtrigger)) continue;
 
-	  if( is2017data && evcat==EE	&& !((hasEEtrigger||hasEEtrigger2) || hasEtrigger) ) continue;
-	  if( !is2017data && evcat==EE   && !(hasEEtrigger||hasEtrigger) ) continue;
+	  if( is2017data && evcat==EE && !((hasEEtrigger||hasEEtrigger2) || hasEtrigger) ) continue;
+	  if(!is2017data && evcat==EE && !(hasEEtrigger||hasEtrigger) ) continue;
 	  if(evcat==MUMU && !(hasMMtrigger||hasMtrigger) ) continue;
 	  if(evcat==EMU && !hasEMtrigger ) continue;
 
@@ -1592,11 +1592,11 @@ int main(int argc, char* argv[])
 	  if(isSingleElePD) {
 	    if(!hasEtrigger) continue;
 	    if( is2017data && hasEtrigger && (hasEEtrigger||hasEEtrigger2) ) continue;
-	    if( !is2017data && hasEtrigger && (hasEEtrigger)) continue; //|| hasMtrigger || hasMMtrigger ) ) continue;
+	    if(!is2017data && hasEtrigger && (hasEEtrigger)) continue; //|| hasMtrigger || hasMMtrigger ) ) continue;
 	  }
 	  if(isDoubleElePD) {
 	    if( is2017data && !(hasEEtrigger || hasEEtrigger2) ) continue;
-	    if( !is2017data && !hasEEtrigger) continue;
+	    if(!is2017data && !hasEEtrigger) continue;
 	    //	    if(hasEEtrigger && (hasMtrigger || hasMMtrigger) ) continue;
 	  }
 	  /*
@@ -1618,7 +1618,7 @@ int main(int argc, char* argv[])
 	} else {
 	  if(evcat==E && hasEtrigger ) hasTrigger=true;   
 	  if(evcat==MU && hasMtrigger ) hasTrigger=true;   
-	  if(is2017data && evcat==EE && ((hasEEtrigger||hasEEtrigger2) || hasEtrigger)) hasTrigger=true; 
+	  if( is2017data && evcat==EE && ((hasEEtrigger||hasEEtrigger2) || hasEtrigger)) hasTrigger=true; 
 	  if(!is2017data && evcat==EE && (hasEEtrigger || hasEtrigger)) hasTrigger=true; 
 	  if(evcat==MUMU && (hasMMtrigger || hasMtrigger)) hasTrigger=true; 
 	  if(evcat==EMU  && hasEMtrigger ) hasTrigger=true;  
