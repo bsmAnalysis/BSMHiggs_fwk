@@ -1120,7 +1120,7 @@ int main(int argc, char* argv[])
         if(is2017MC || is2017data) hasEEtrigger = hasEEtrigger || hasEEtrigger2;// use isolation OR nonisolation ee trigger path for 2017
         // Follow the EG POG recommendation, require pass HLT_Ele32_WPTight_L1DoubleEG and HLT_Ele35_WPTight at the same time when is 2017 RunB or RunC
         // https://indico.cern.ch/event/662751/contributions/2778365/attachments/1561439/2458438/egamma_workshop_triggerTalk.pdf
-        if(is2017BCdata) hasEtrigger = hasEtrigger && hasEtrigger2;
+        //if(is2017BCdata) {hasEtrigger = hasEtrigger && hasEtrigger2;printf("hasEtrigger:%d\n",hasEtrigger);}
         //#########################################################################
         //#####################      Objects Selection       ######################
         //######################################################################### 
