@@ -868,15 +868,15 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
          //it is important to match all objects as there are different ways to reconstruct the same electron
          //eg, L1 seeded, unseeded, as a jet etc
          //and so you want to be sure you get all possible objects
-        std::vector<const pat::TriggerObjectStandAlone*> matchedTrigObjs = getMatchedObjs(eta,phi,unpackedTrigObjs,0.1);
-        bool passFilters(false);
-        for(const auto trigObj : matchedTrigObjs){
-          //now just check if it passes the two filters
-          if(trigObj->hasFilterLabel("hltEle32L1DoubleEGWPTightGsfTrackIsoFilter") &&
-             trigObj->hasFilterLabel("hltEGL1SingleEGOrFilter") )
+         std::vector<const pat::TriggerObjectStandAlone*> matchedTrigObjs = getMatchedObjs(eta,phi,unpackedTrigObjs,0.1);
+         bool passFilters(false);
+         for(const auto trigObj : matchedTrigObjs){
+            //now just check if it passes the two filters
+            if(trigObj->hasFilterLabel("hltEle32L1DoubleEGWPTightGsfTrackIsoFilter") &&
+               trigObj->hasFilterLabel("hltEGL1SingleEGOrFilter") )
             passFilters = true;
-	      }
-        if(passFilters)  eTrigger = true;
+         }
+      if(passFilters)  eTrigger = true;
 //	    std::cout <<" ele "<<ele.et()<<" "<<eta<<" "<<phi<<" passes HLT_Ele32_WPTight_Gsf"<<std::endl;
       }
    }
