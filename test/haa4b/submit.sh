@@ -105,7 +105,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "JOB SUBMISSION for Ntuplization using full CMSSW fwk"
        echo -e "Input: " $JSON "\nOutput: " $RESULTSDIR
        #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -s crab 
-       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $FULLANALYSISCFG -l results$SUFFIX -p "@verbose=False" --key haa_signal -s crab
+       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $FULLANALYSISCFG -l results$SUFFIX -p "@verbose=False" --key haa_prod -s crab
    fi    
 
    if [[ $step == 1.01 ]]; then  # compute BTagging efficiency

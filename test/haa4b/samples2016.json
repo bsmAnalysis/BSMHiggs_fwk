@@ -487,6 +487,7 @@
             "fill": 0,
             "isdata": true,
             "keys": [
+		"haa_prod",
                 "haa_mcbased",
 		"haa_dataOnly"
             ],
@@ -708,6 +709,7 @@
             ],
             "isdata": false,
             "keys": [
+		"haa_prod",
                 "haa_mcbased"
             ],
             "tag": "Single Top"
@@ -773,6 +775,7 @@
             ],
             "isdata": false,
             "keys": [
+		"haa_prod", 
 	        "haa_mcbased"	
             ],
 	     "mctruthmode": 1,
@@ -839,6 +842,7 @@
             ],
             "isdata": false,
             "keys": [
+		"haa_prod", 
                 "haa_mcbased"
             ],
             "tag": "t#bar{t}+#gammaZW"
@@ -948,6 +952,7 @@
             ],
             "isdata": false,
             "keys": [
+		"haa_prod", 
                 "haa_mcbased",
                 "haa_ztoll"
             ],
@@ -1069,6 +1074,7 @@
             ],
             "isdata": false,
             "keys": [
+		"haa_prod", 
                 "haa_mcbased"
             ],
             "tag": "W#rightarrow l#nu"
@@ -1453,6 +1459,7 @@
             ],
             "isdata": false,
             "keys": [
+		"haa_prod", 
                 "haa_mcbased"
             ],
             "tag": "QCD"
@@ -1564,6 +1571,7 @@
             "isinvisible": false,
             "issignal": true,
             "keys": [
+		"haa_prod", 
                 "haa_signal",
                 "haa_mcbased"
             ],
@@ -1604,6 +1612,7 @@
             "isinvisible": true,
             "issignal": true,
             "keys": [
+		"haa_prod", 
                 "haa_signal",
                 "haa_mcbased"
             ],
@@ -1644,6 +1653,7 @@
             "isinvisible": true,
             "issignal": true,
             "keys": [
+		"haa_prod", 
                 "haa_signal",
                 "haa_mcbased"
             ],
@@ -1673,6 +1683,7 @@
             "isinvisible": true,
             "issignal": true,
             "keys": [
+		"haa_prod", 
                 "haa_signal",
                 "haa_mcbased"
             ],
@@ -1713,6 +1724,7 @@
             "isinvisible": true,
             "issignal": true,
             "keys": [
+		"haa_prod", 
                 "haa_signal",
                 "haa_mcbased"
             ],
@@ -1753,6 +1765,7 @@
             "isinvisible": true,
             "issignal": true,
             "keys": [
+		"haa_prod", 
                 "haa_signal",
                 "haa_mcbased"
             ],
@@ -1793,6 +1806,7 @@
             "isinvisible": true,
             "issignal": true,
             "keys": [
+		"haa_prod", 
                 "haa_signal",
                 "haa_mcbased"
             ],
@@ -1833,6 +1847,7 @@
             "isinvisible": false,
             "issignal": true,
             "keys": [
+		"haa_prod", 
                 "haa_signal",
                 "haa_mcbased"
             ],
