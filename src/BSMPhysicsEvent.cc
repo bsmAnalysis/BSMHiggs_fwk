@@ -1,7 +1,7 @@
 //
 //  BSMPhysicsEvent.cc
 //
-#define YEAR_2017
+//#define YEAR_2017
 #include "UserCode/bsmhiggs_fwk/interface/BSMPhysicsEvent.h"
 
 using namespace std;
