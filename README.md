@@ -19,6 +19,11 @@ rm EgammaAnalysis/ElectronTools/data -rf
 git clone git@github.com:cms-data/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data
 scram b -j 8
 
+# get code to run ecalBadCalibReducedMINIAODFilter on MiniAOD
+# https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2
+git cms-addpkg RecoMET/METFilters
+scram b
+
 git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
 cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
 git checkout -b modified
@@ -71,6 +76,11 @@ git clone https://github.com/lsoffi/RecoEgamma-ElectronIdentification.git data/R
 cd data/RecoEgamma/ElectronIdentification/data
 git checkout CMSSW_9_4_0_pre3_TnP
 cd $CMSSW_BASE/src
+
+# get code to run ecalBadCalibReducedMINIAODFilter on MiniAOD
+# https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2
+git cms-addpkg RecoMET/METFilters
+scram b
 
 git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
 cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk

@@ -40,11 +40,15 @@ double response(LorentzVector &Z, LorentzVector &MET)
 
 
 //Jet energy resoltuion, 13TeV scale factors, updated on 30/08/2018
-PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, int mode)
+PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, Int_t yearBits, int mode)
 {
   if (mode==0) return origJet;
 
     if(genJetPt<=0) return origJet;
+
+    bool is2017 = yearBits & 0x01;
+    bool is2018 = (yearBits >> 1 ) & 0x01;
+    bool is2016 = !(is2017 || is2018);
 
     //smearing factors are described in https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
     double eta=fabs(origJet.eta());
@@ -52,58 +56,144 @@ PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, 
     //https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
     // Spring16_25nsV10 (80X, 2016, BCD+GH PromtReco) DATA/MC SFs 
     double ptSF(1.0), ptSF_up(1.0), ptSF_down(1.0);
-    if(eta<0.522)			   {
-      //      ptSF=1.1595;
-      ptSF_up=ptSF+0.0645;
-      ptSF_down=ptSF-0.0645;
-    } else if(eta>=0.522 && eta<0.783) {
-      //    ptSF=1.1948;
-      ptSF_up=ptSF+0.0652;
-      ptSF_down=ptSF-0.0652;
-    } else if(eta>=0.783 && eta<1.131) {
-      //      ptSF=1.1464;
-      ptSF_up=ptSF+0.0632;
-      ptSF_down=ptSF-0.0632;
-    } else if(eta>=1.131 && eta<1.305) {
-      //      ptSF=1.1609;
-      ptSF_up=ptSF+0.1025;
-      ptSF_down=ptSF-0.1025;
-    } else if(eta>=1.305 && eta<1.740) {
-      //      ptSF=1.1278;
-      ptSF_up=ptSF+0.0986;
-      ptSF_down=ptSF-0.0986;
-    } else if(eta>=1.740 && eta<1.930) {
-      //      ptSF=1.1000;
-      ptSF_up=ptSF+0.1079;
-      ptSF_down=ptSF-0.1079;
-    } else if(eta>=1.930 && eta<2.043) {
-      //      ptSF=1.1426;
-      ptSF_up=ptSF+0.1214;
-      ptSF_down=ptSF-0.1214;
-    } else if(eta>=2.043 && eta<2.322) {
-      //      ptSF=1.1512;
-      ptSF_up=ptSF+0.1140;
-      ptSF_down=ptSF-0.1140;
-    } else if(eta>=2.322 && eta<2.5) {
-      //      ptSF=1.2963;
-      ptSF_up=ptSF+0.2371;
-      ptSF_down=ptSF-0.2371;
-    } else if(eta>=2.5 && eta<2.853) {
-      //      ptSF=1.3418;
-      ptSF_up=ptSF+0.2091;
-      ptSF_down=ptSF-0.2091;
-    } else if(eta>=2.853 && eta<2.964) {
-      //      ptSF=1.7788;
-      ptSF_up=ptSF+0.2008;
-      ptSF_down=ptSF-0.2008;
-    } else if(eta>=2.964 && eta<3.139) {
-      //      ptSF=1.1869;
-      ptSF_up=ptSF+0.1243;
-      ptSF_down=ptSF-0.1243;
-    } else if(eta>=3.139 && eta<5.191) {
-      //      ptSF=1.1922;
-      ptSF_up=ptSF+0.1488;
-      ptSF_down=ptSF-0.1488;
+    if(is2016){
+      if(eta<0.522)			   {
+        //      ptSF=1.1595;
+        ptSF_up=ptSF+0.0645;
+        ptSF_down=ptSF-0.0645;
+      } else if(eta>=0.522 && eta<0.783) {
+        //    ptSF=1.1948;
+        ptSF_up=ptSF+0.0652;
+        ptSF_down=ptSF-0.0652;
+      } else if(eta>=0.783 && eta<1.131) {
+        //      ptSF=1.1464;
+        ptSF_up=ptSF+0.0632;
+        ptSF_down=ptSF-0.0632;
+      } else if(eta>=1.131 && eta<1.305) {
+        //      ptSF=1.1609;
+        ptSF_up=ptSF+0.1025;
+        ptSF_down=ptSF-0.1025;
+      } else if(eta>=1.305 && eta<1.740) {
+        //      ptSF=1.1278;
+        ptSF_up=ptSF+0.0986;
+        ptSF_down=ptSF-0.0986;
+      } else if(eta>=1.740 && eta<1.930) {
+        //      ptSF=1.1000;
+        ptSF_up=ptSF+0.1079;
+        ptSF_down=ptSF-0.1079;
+      } else if(eta>=1.930 && eta<2.043) {
+        //      ptSF=1.1426;
+        ptSF_up=ptSF+0.1214;
+        ptSF_down=ptSF-0.1214;
+      } else if(eta>=2.043 && eta<2.322) {
+        //      ptSF=1.1512;
+        ptSF_up=ptSF+0.1140;
+        ptSF_down=ptSF-0.1140;
+      } else if(eta>=2.322 && eta<2.5) {
+        //      ptSF=1.2963;
+        ptSF_up=ptSF+0.2371;
+        ptSF_down=ptSF-0.2371;
+      } else if(eta>=2.5 && eta<2.853) {
+        //      ptSF=1.3418;
+        ptSF_up=ptSF+0.2091;
+        ptSF_down=ptSF-0.2091;
+      } else if(eta>=2.853 && eta<2.964) {
+        //      ptSF=1.7788;
+        ptSF_up=ptSF+0.2008;
+        ptSF_down=ptSF-0.2008;
+      } else if(eta>=2.964 && eta<3.139) {
+        //      ptSF=1.1869;
+        ptSF_up=ptSF+0.1243;
+        ptSF_down=ptSF-0.1243;
+      } else if(eta>=3.139 && eta<5.191) {
+        //      ptSF=1.1922;
+        ptSF_up=ptSF+0.1488;
+        ptSF_down=ptSF-0.1488;
+      }
+    }// end 2016
+    else if(is2017){
+      if(eta<0.522)			   {
+        ptSF_up=ptSF+0.0222;
+        ptSF_down=ptSF-0.0222;
+      } else if(eta>=0.522 && eta<0.783) {
+        ptSF_up=ptSF+0.0484;
+        ptSF_down=ptSF-0.0484;
+      } else if(eta>=0.783 && eta<1.131) {
+        ptSF_up=ptSF+0.0456;
+        ptSF_down=ptSF-0.0456;
+      } else if(eta>=1.131 && eta<1.305) {
+        ptSF_up=ptSF+0.1397;
+        ptSF_down=ptSF-0.1397;
+      } else if(eta>=1.305 && eta<1.740) {
+        ptSF_up=ptSF+0.1470;
+        ptSF_down=ptSF-0.1470;
+      } else if(eta>=1.740 && eta<1.930) {
+        ptSF_up=ptSF+0.0976;
+        ptSF_down=ptSF-0.0976;
+      } else if(eta>=1.930 && eta<2.043) {
+        ptSF_up=ptSF+0.1909;
+        ptSF_down=ptSF-0.1909;
+      } else if(eta>=2.043 && eta<2.322) {
+        ptSF_up=ptSF+0.1501;
+        ptSF_down=ptSF-0.1501;
+      } else if(eta>=2.322 && eta<2.5) {
+        ptSF_up=ptSF+0.2020;
+        ptSF_down=ptSF-0.2020;
+      } else if(eta>=2.5 && eta<2.853) {
+        ptSF_up=ptSF+0.5684;
+        ptSF_down=ptSF-0.5684;
+      } else if(eta>=2.853 && eta<2.964) {
+        ptSF_up=ptSF+0.3743;
+        ptSF_down=ptSF-0.3743;
+      } else if(eta>=2.964 && eta<3.139) {
+        ptSF_up=ptSF+0.1089;
+        ptSF_down=ptSF-0.1089;
+      } else if(eta>=3.139 && eta<5.191) {
+        ptSF_up=ptSF+0.1524;
+        ptSF_down=ptSF-0.1524;
+      }
+    }//end 2017
+    else if(is2018){
+      if(eta<0.522)			   {
+        ptSF_up=ptSF+0.043;
+        ptSF_down=ptSF-0.043;
+      } else if(eta>=0.522 && eta<0.783) {
+        ptSF_up=ptSF+0.08;
+        ptSF_down=ptSF-0.08;
+      } else if(eta>=0.783 && eta<1.131) {
+        ptSF_up=ptSF+0.052;
+        ptSF_down=ptSF-0.052;
+      } else if(eta>=1.131 && eta<1.305) {
+        ptSF_up=ptSF+0.112;
+        ptSF_down=ptSF-0.112;
+      } else if(eta>=1.305 && eta<1.740) {
+        ptSF_up=ptSF+0.211;
+        ptSF_down=ptSF-0.211;
+      } else if(eta>=1.740 && eta<1.930) {
+        ptSF_up=ptSF+0.159;
+        ptSF_down=ptSF-0.159;
+      } else if(eta>=1.930 && eta<2.043) {
+        ptSF_up=ptSF+0.209;
+        ptSF_down=ptSF-0.209;
+      } else if(eta>=2.043 && eta<2.322) {
+        ptSF_up=ptSF+0.191;
+        ptSF_down=ptSF-0.191;
+      } else if(eta>=2.322 && eta<2.5) {
+        ptSF_up=ptSF+0.274;
+        ptSF_down=ptSF-0.274;
+      } else if(eta>=2.5 && eta<2.853) {
+        ptSF_up=ptSF+0.524;
+        ptSF_down=ptSF-0.524;
+      } else if(eta>=2.853 && eta<2.964) {
+        ptSF_up=ptSF+0.941;
+        ptSF_down=ptSF-0.941;
+      } else if(eta>=2.964 && eta<3.139) {
+        ptSF_up=ptSF+0.194;
+        ptSF_down=ptSF-0.194;
+      } else if(eta>=3.139 && eta<5.191) {
+        ptSF_up=ptSF+0.198;
+        ptSF_down=ptSF-0.198;
+      }
     }
 
     if(mode==1) ptSF = ptSF_up;
@@ -127,7 +217,8 @@ PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, 
   void computeJetVariation(PhysicsObjectJetCollection& jets,
                       PhysicsObjectLeptonCollection& leptons,
                        std::vector<PhysicsObjectJetCollection>& jetsVar,
- 		      std::vector<JetCorrectionUncertainty*> &jecUnc)
+ 		      std::vector<JetCorrectionUncertainty*> &jecUnc,
+		      Int_t yearBits)
 		      //                      JetCorrectionUncertainty *jecUnc)
 {
     jetsVar.clear();
@@ -138,7 +229,7 @@ PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, 
         LorentzVector jetDiff(0,0,0,0);
         for(size_t ijet=0; ijet<jets.size(); ijet++) {
 
-	  PhysicsObject_Jet iSmearJet=METUtils::smearedJet(jets[ijet],jets[ijet].genPt,ivar);
+	  PhysicsObject_Jet iSmearJet=METUtils::smearedJet(jets[ijet],jets[ijet].genPt,yearBits,ivar);
 	  jetDiff += (iSmearJet-jets[ijet]);
 	  newJets.push_back( iSmearJet );
 
@@ -200,7 +291,8 @@ void computeVariation(PhysicsObjectJetCollection& jets,
                       LorentzVector& met,
                       std::vector<PhysicsObjectJetCollection>& jetsVar,
                       LorentzVectorCollection& metsVar,
-		      std::vector<JetCorrectionUncertainty*> &jecUnc)
+		      std::vector<JetCorrectionUncertainty*> &jecUnc,
+		      Int_t yearBits)
 		      //                      JetCorrectionUncertainty *jecUnc)
 {
     jetsVar.clear();
@@ -213,7 +305,7 @@ void computeVariation(PhysicsObjectJetCollection& jets,
         LorentzVector newMET(met), jetDiff(0,0,0,0), lepDiff(0,0,0,0), unclustDiff(0,0,0,0), clusteredFlux(0,0,0,0);
         for(size_t ijet=0; ijet<jets.size(); ijet++) {
 	  if(ivar==JER || ivar==JER_UP || ivar==JER_DOWN) {  
-                PhysicsObject_Jet iSmearJet=METUtils::smearedJet(jets[ijet],jets[ijet].genPt,ivar);
+                PhysicsObject_Jet iSmearJet=METUtils::smearedJet(jets[ijet],jets[ijet].genPt,yearBits,ivar);
                 jetDiff += (iSmearJet-jets[ijet]);
                 newJets.push_back( iSmearJet );
 	  // } else if(ivar==JES_UP || ivar==JES_DOWN) {
