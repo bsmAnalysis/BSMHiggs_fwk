@@ -19,10 +19,15 @@ rm EgammaAnalysis/ElectronTools/data -rf
 git clone git@github.com:cms-data/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data
 scram b -j 8
 
+# get code to run ecalBadCalibReducedMINIAODFilter on MiniAOD
+# https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2
+git cms-addpkg RecoMET/METFilters
+scram b
+
 git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
 cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
 git checkout -b modified
-wget https://raw.githubusercontent.com/Wallace-Chen/BSMHiggs_fwk/2017_Development/src/PatUtils.cc -O src/PatUtils.cc
+#Switching from 2016 version to 2017 (compatible with 2018) by running:
 cd test/haa4b
 sh ./converter.sh # input 1 when you are prompted to select
 cd $CMSSW_BASE/src
@@ -72,11 +77,14 @@ cd data/RecoEgamma/ElectronIdentification/data
 git checkout CMSSW_9_4_0_pre3_TnP
 cd $CMSSW_BASE/src
 
+# get code to run ecalBadCalibReducedMINIAODFilter on MiniAOD
+# https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2
+git cms-addpkg RecoMET/METFilters
+scram b
+
 git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
 cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
 git checkout -b modified #copy the branch to a new one to host future modifications (ease pull request and code merging)
-#PatUtils.cc is broken under 94X, has to be reloaded
-wget https://raw.githubusercontent.com/Wallace-Chen/BSMHiggs_fwk/2017_Development/src/PatUtils.cc -O src/PatUtils.cc
 #Switching from 2016 version to 2017 by running:
 cd test/haa4b
 sh ./converter.sh # input 1 when you are prompted to select

@@ -1,7 +1,11 @@
+//#define YEAR_2017
 #include "UserCode/bsmhiggs_fwk/interface/PatUtils.h"
 
 #include "DataFormats/METReco/interface/HcalNoiseSummary.h"
 
+#ifdef YEAR_2017
+#define numberOfHits(a) numberOfAllHits(a)
+#endif
 namespace patUtils
 {
 
@@ -363,6 +367,35 @@ namespace patUtils
             }
       break;
 
+    case CutVersion::Fall17v2 :
+	switch(IdLevel){
+	  case llvvElecId::Loose :
+	    if(el.electronID("cutBasedElectronID-Fall17-94X-V2-loose")) return true;
+	  break;
+
+	  case llvvElecId::Medium :
+	    if(el.electronID("cutBasedElectronID-Fall17-94X-V2-medium")) return true;
+	  break;
+
+	  case llvvElecId::Tight :
+	    if(el.electronID("cutBasedElectronID-Fall17-94X-V2-tight")) return true;
+	  break;
+
+	  case llvvElecId::wp80MVA :
+	    if(el.electronID("mvaEleID-Fall17-iso-V2-wp80")) return true;
+	  break;
+
+	  case llvvElecId::wp90MVA :
+	    if(el.electronID("mvaEleID-Fall17-iso-V2-wp90")) return true;
+	  break;
+
+	  default:
+	    printf("FIXME ElectronId llvvElecId::%i is unkown\n", IdLevel);
+	    return false;
+	    break;
+	}
+	break;
+
     default:
       printf("FIXME CutVersion::%i is unkown\n", cutVersion);
       return false;
@@ -461,6 +494,33 @@ namespace patUtils
               break;
             }
 	break;
+
+#ifdef YEAR_2017
+    case CutVersion::Fall17v2 :
+	switch(IdLevel){
+	  case llvvMuonId::Loose :
+	    if(mu.passed(reco::Muon::CutBasedIdLoose)) return true;
+	  break;
+
+	  case llvvMuonId::Medium :
+	    if(mu.passed(reco::Muon::CutBasedIdMedium)) return true;
+	  break;
+
+	  case llvvMuonId::Soft :
+	    if(mu.passed(reco::Muon::SoftCutBasedId)) return true;
+	  break;
+
+	  case llvvMuonId::Tight :
+	    if(mu.passed(reco::Muon::CutBasedIdTight)) return true;
+	  break;
+
+	  default:
+	  printf("FIXME MuonId llvvMuonId::%i is unkown in Fall17v2\n", IdLevel);
+	  return false;
+	  break;
+	}
+	break;
+#endif
     default:
         printf("FIXME MuonID CutVersion::%i is unkown\n", cutVersion);
         return false;
@@ -775,7 +835,24 @@ namespace patUtils
                 break;
            }
            break;
+#ifdef YEAR_2017
+       case CutVersion::Fall17v2 :
+	   switch(IsoLevel){
+	      case llvvMuonIso::Loose :
+	        if(mu.passed(reco::Muon::PFIsoLoose)) return true;
+	      break;
 
+	      case llvvMuonIso::Tight :
+	        if(mu.passed(reco::Muon::PFIsoTight)) return true;
+	      break;
+
+	      default:
+	        printf("FIXME MuonIso llvvMuonIso::%i is unkown in Fall17v2\n", IsoLevel);
+		return false;
+	      break;
+	   }
+	   break;
+#endif
        default:
            printf("FIXME MuonIsolation  CutVersion::%i is unkown\n", cutVersion);
            return false;
@@ -927,7 +1004,14 @@ namespace patUtils
 }
 
   bool passPhotonTrigger(fwlite::Event &ev, float &triggerThreshold, float &triggerPrescale, float& triggerThresholdHigh ){
+#ifdef YEAR_2017
+    fwlite::Handle<edm::TriggerResults> hTriggerResults;
+    hTriggerResults.getByLabel(ev,"TriggerResults", "", "HLT");
+    if (!hTriggerResults.isValid()) return false;
+    edm::TriggerResultsByName tr = ev.triggerResultsByName(*hTriggerResults.product());
+#else
     edm::TriggerResultsByName tr = ev.triggerResultsByName("HLT");
+#endif    
     if( !tr.isValid() ) return false;
 
     bool hasPhotonTrigger(false);
@@ -1004,7 +1088,14 @@ namespace patUtils
 
   bool passVBFPhotonTrigger(fwlite::Event &ev, float &triggerThreshold,
 			    float &triggerPrescale, float &triggerThresholdHigh ){
+#ifdef YEAR_2017
+    fwlite::Handle<edm::TriggerResults> hTriggerResults;
+    hTriggerResults.getByLabel(ev,"TriggerResults", "", "HLT");
+    if (!hTriggerResults.isValid()) return false;
+    edm::TriggerResultsByName tr = ev.triggerResultsByName(*hTriggerResults.product());
+#else
     edm::TriggerResultsByName tr = ev.triggerResultsByName("HLT");
+#endif
     if( !tr.isValid() ) return false;
 
     bool hasPhotonTrigger(false);
@@ -1070,8 +1161,11 @@ namespace patUtils
 
 
   bool passPFJetID(std::string label,
-                  pat::Jet jet){
+                  pat::Jet jet, Int_t yearBits){
 
+    bool is2017 = yearBits & 0x01;
+    bool is2018 = (yearBits >> 1 ) & 0x01;
+    bool is2016 = !(is2017 || is2018);
     bool passID = false;
 
     float rawJetEn(jet.correctedJet("Uncorrected").energy() );
@@ -1087,15 +1181,31 @@ namespace patUtils
     float NumNeutralParticles = jet.neutralMultiplicity();
 
     //https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2016 (27-dec-2016)
-    if (label == "Loose"){
+    if (is2016 && label == "Loose"){
       if( fabs(jet.eta()) <= 2.7) passID = ( (nhf<0.99  && nef<0.99 && nconst>1) && ( fabs(jet.eta())>2.4 || (fabs(jet.eta()) <= 2.4 && chf>0 && nch>0 && cef<0.99) ) );
       if( fabs(jet.eta()) > 2.7 && fabs(jet.eta()) <= 3.0) passID = ( nef>0.01 && nhf<0.98 && NumNeutralParticles > 2);
       if( fabs(jet.eta()) > 3.0) passID = (nef<0.90 && NumNeutralParticles > 10);
     }
-    if (label == "Tight"){
-      if( fabs(jet.eta()) <= 2.7) passID = ( (nhf<0.90  && nef<0.90 && nconst>1) && ( fabs(jet.eta())>2.4 || (fabs(jet.eta()) <= 2.4 && chf>0 && nch>0 && cef<0.99) ) );
-      if( fabs(jet.eta()) > 2.7 && fabs(jet.eta()) <= 3.0) passID = ( nef>0.01 && nhf<0.98 && NumNeutralParticles > 2);
-      if( fabs(jet.eta()) > 3.0) passID = (nef<0.90 && NumNeutralParticles > 10);
+    //Loose is not recommended for 2017 and 2018
+    //https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017
+    //https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2018
+    if (is2017 || is2018 || label == "Tight"){
+      if(is2016){
+        if( fabs(jet.eta()) <= 2.7) passID = ( (nhf<0.90  && nef<0.90 && nconst>1) && ( fabs(jet.eta())>2.4 || (fabs(jet.eta()) <= 2.4 && chf>0 && nch>0 && cef<0.99) ) );
+        if( fabs(jet.eta()) > 2.7 && fabs(jet.eta()) <= 3.0) passID = ( nef>0.01 && nhf<0.98 && NumNeutralParticles > 2);
+        if( fabs(jet.eta()) > 3.0) passID = (nef<0.90 && NumNeutralParticles > 10);
+      }
+      else if(is2017){
+	if( fabs(jet.eta()) <= 2.7) passID = ( (nhf<0.90 && nef<0.90 && nconst>1) && (fabs(jet.eta())>2.4 || (fabs(jet.eta()) <= 2.4 && chf>0 && nch>0)) );
+	if( fabs(jet.eta()) > 2.7 && fabs(jet.eta()) <= 3.0) passID = ( nef>0.02 && nef<0.99 && NumNeutralParticles > 2 );
+	if( fabs(jet.eta()) > 3.0) passID = ( nef<0.90 && nhf>0.02 && NumNeutralParticles > 10 );
+      }
+      else if(is2018){
+	if( fabs(jet.eta()) <= 2.6) passID = ( nhf<0.90  && nef<0.90 && nconst>1 && chf>0 && nch>0 );
+	if( fabs(jet.eta()) > 2.6 && fabs(jet.eta()) <= 2.7) passID = ( nhf<0.90 && nef<0.99 && nch>0 );
+	if( fabs(jet.eta()) > 2.7 && fabs(jet.eta()) <= 3.0) passID = ( nef>0.02 && nef<0.99 && NumNeutralParticles > 2 );
+	if( fabs(jet.eta()) > 3.0) passID = ( nef<0.90 && nhf>0.2 && NumNeutralParticles > 10 );
+      }
     }
     return passID;
   }
@@ -1338,8 +1448,23 @@ void MetFilter::FillBadEvents(std::string path){
 
     if(map.find( RuLuEv(ev.eventAuxiliary().run(), ev.eventAuxiliary().luminosityBlock(), ev.eventAuxiliary().event()))!=map.end())return 1;
 
+#ifdef YEAR_2017
+    fwlite::Handle<edm::TriggerResults> hTriggerResults;
+    hTriggerResults.getByLabel(ev,"TriggerResults", "", "PAT");
+    if (!hTriggerResults.isValid()) return false;
+    edm::TriggerResultsByName metFilters = ev.triggerResultsByName(*hTriggerResults.product());
+#else
     edm::TriggerResultsByName metFilters = ev.triggerResultsByName("PAT");   //is present only if PAT (and miniAOD) is not run simultaniously with RECO
-    if(!metFilters.isValid()){metFilters = ev.triggerResultsByName("RECO");} //if not present, then it's part of RECO
+#endif
+    if(!metFilters.isValid()){
+#ifdef YEAR_2017
+    hTriggerResults.getByLabel(ev,"TriggerResults", "", "RECO");  
+    if (!hTriggerResults.isValid()) return false;
+    metFilters = ev.triggerResultsByName(*hTriggerResults.product());
+#else
+    metFilters = ev.triggerResultsByName("RECO");
+#endif
+    } //if not present, then it's part of RECO
     if(!metFilters.isValid()){
       printf("TriggerResultsByName for MET filters is not found in the process, as a consequence the MET filter is disabled for this event\n");
     }

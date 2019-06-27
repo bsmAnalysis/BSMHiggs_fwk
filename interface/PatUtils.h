@@ -74,12 +74,12 @@ namespace patUtils
 	 pat::Tau     tau;
    };
 
-   namespace llvvElecId { enum ElecId  {Veto, Loose, Medium, Tight, LooseMVA, MediumMVA, TightMVA}; }
-   namespace llvvMuonId { enum MuonId  {Loose, Soft, Tight, tkHighPT, TightAndTlkHighPt, StdLoose, StdSoft, StdMedium, StdTight}; }
+   namespace llvvElecId { enum ElecId  {Veto, Loose, Medium, Tight, LooseMVA, MediumMVA, TightMVA, wp80MVA, wp90MVA}; }
+   namespace llvvMuonId { enum MuonId  {Loose, Medium, Soft, Tight, tkHighPT, TightAndTlkHighPt, StdLoose, StdSoft, StdMedium, StdTight}; }
    namespace llvvPhotonId { enum PhotonId  {Loose, Medium, Tight}; }
    namespace llvvElecIso{ enum ElecIso {Veto, Loose, Medium, Tight}; }
    namespace llvvMuonIso{ enum MuonIso {Loose,Tight, H4lWP, TightBoosted, TightAndTkRelatBoosted}; }
-   namespace CutVersion { enum CutSet {Spring15Cut25ns, ICHEP16Cut, Moriond17Cut}; }
+   namespace CutVersion { enum CutSet {Spring15Cut25ns, ICHEP16Cut, Moriond17Cut, Fall17v2}; }
 
    unsigned int GainSeed (pat::Electron &electron, const EcalRecHitCollection* recHits);
    unsigned int GainSeed (pat::Photon &photon, const EcalRecHitCollection* recHits);
@@ -94,7 +94,7 @@ namespace patUtils
    bool passIso(pat::Muon& mu, int IsoLevel, int cutVersion, std::vector<pat::PackedCandidate> thePats, pat::MuonCollection muons, reco::Vertex& vertex );
    bool passPhotonTrigger(fwlite::Event &ev, float &triggerThreshold, float &triggerPrescale, float& triggerThresholdHigh);
    bool passVBFPhotonTrigger(fwlite::Event &ev, float &triggerThreshold, float &triggerPrescale, float& triggerThresholdHigh);
-   bool passPFJetID(std::string label, pat::Jet jet);
+   bool passPFJetID(std::string label, pat::Jet jet, Int_t yearBits);
    bool passPUJetID(pat::Jet j);
 
    bool exclusiveDataEventFilter(const double&run, const bool& isMC, const bool& isPromptReco);

@@ -157,6 +157,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
     edm::EDGetTokenT<pat::METCollection> metPuppiTag_;
 
     edm::EDGetTokenT<edm::TriggerResults> metFilterBitsTag_;
+    edm::EDGetTokenT< bool > ecalBadCalibFilterUpdate_token;
 
     edm::EDGetTokenT<reco::VertexCompositePtrCandidateCollection> svTag_;
   
@@ -268,6 +269,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
     metNoHFTag_(        consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metsNoHFTag"))                ),
     metPuppiTag_(       consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metsPuppiTag"))               ),
     metFilterBitsTag_(	consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("metFilterBitsTag"))		),
+    ecalBadCalibFilterUpdate_token(consumes< bool >(edm::InputTag("ecalBadCalibReducedMINIAODFilter"))			),
     svTag_(		consumes<reco::VertexCompositePtrCandidateCollection>(iConfig.getParameter<edm::InputTag>("svTag"))			),
     prunedGenTag_(	consumes<edm::View<reco::GenParticle> >(iConfig.getParameter<edm::InputTag>("prunedTag"))	),
     puInfoTag_(         consumes<std::vector<PileupSummaryInfo> >(iConfig.getParameter<edm::InputTag>("puInfoTag"))     ),
@@ -833,7 +835,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
       // 2017 RunB and C single electron trigger needs special treatment, see below
       eTrigger           = utils::passTriggerPatterns(tr,"HLT_Ele32_WPTight_Gsf_v*"); //"HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*";
       //eTrigger2          = utils::passTriggerPatterns(tr,"HLT_Ele35_WPTight_Gsf_v*");
-      emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+      emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
    } else{
       mumuTrigger        = utils::passTriggerPatterns(tr, "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*" , "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
       //   muTrigger          = utils::passTriggerPatterns(tr, "HLT_IsoMu22_v*","HLT_IsoTkMu22_v*", "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*");
@@ -850,6 +852,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#Double%20Electron%20Triggers
    // https://github.com/Sam-Harper/usercode/blob/100XNtup/TrigTools/plugins/Ele32DoubleL1ToSingleL1Example.cc
    // https://github.com/Sam-Harper/usercode/blob/100XNtup/TrigTools/test/ele32DoubleToSingle.py
+#ifdef YEAR_2017
    if(is2017BC){
       //so the filter names are all packed in miniAOD so we need to create a new collection of them which are unpacked
       std::vector<pat::TriggerObjectStandAlone> unpackedTrigObjs;
@@ -882,7 +885,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 //	    std::cout <<" ele "<<ele.et()<<" "<<eta<<" "<<phi<<" passes HLT_Ele32_WPTight_Gsf"<<std::endl;
       }
    }
-
+#endif
 
    ev.hasTrigger  = ( mumuTrigger||muTrigger||muTrigger2||eeTrigger||eeTrigger2||highPTeTrigger||eTrigger||eTrigger2||emuTrigger );
    //ev.hasTrigger  = ( muTrigger||eTrigger||emuTrigger ); 
@@ -902,6 +905,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    
    //##############################################   EVENT PASSED THE TRIGGER   ######################################
    //met filters
+   //https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2
     edm::Handle<edm::TriggerResults> metFilterBits;
     event.getByToken(metFilterBitsTag_, metFilterBits);
     const edm::TriggerNames &metNames = event.triggerNames(*metFilterBits);
@@ -915,16 +919,22 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
             passMETFilters &= metFilterBits->accept(i);
         }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_HBHENoiseIsoFilter") == 0){
             passMETFilters &= metFilterBits->accept(i);
-        }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_globalTightHalo2016Filter") == 0){
+        }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_globalSuperTightHalo2016Filter") == 0){
             passMETFilters &= metFilterBits->accept(i);
         }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_EcalDeadCellTriggerPrimitiveFilter") == 0){
             passMETFilters &= metFilterBits->accept(i);
-	}else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadChargedCandidateFilter") == 0){
-            passMETFilters &= metFilterBits->accept(i);
+	//}else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadChargedCandidateFilter") == 0){
+        //    passMETFilters &= metFilterBits->accept(i);
 	}else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadPFMuonFilter") == 0){
             passMETFilters &= metFilterBits->accept(i);
 	}
 	
+    }
+ 
+    if(is2017 || is2018){
+	edm::Handle< bool > passecalBadCalibFilterUpdate;
+	event.getByToken(ecalBadCalibFilterUpdate_token,passecalBadCalibFilterUpdate);
+	passMETFilters &= (*passecalBadCalibFilterUpdate);
     }
   
     if(!passMETFilters) return;
@@ -971,7 +981,9 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        //       for (std::vector<pat::Muon >::const_iterator mu = muons.begin(); mu!=muons.end(); mu++) 
        for(pat::Muon &mu : muons) {
 	 if(mu.pt() < 10.) continue;
-	 bool passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::ICHEP16Cut);
+	 bool passId;
+	 if(is2017 || is2018) passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::Fall17v2);
+	 else passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::ICHEP16Cut);
 	 if(!passId) continue;
 
 	 ev.mn_px[ev.mn] = mu.px();
@@ -1011,10 +1023,18 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.mn_pixelLayersWithMeasurement[ev.mn] = mu.isTrackerMuon() ? mu.innerTrack()->hitPattern().pixelLayersWithMeasurement() : 0.;
 
          float relIso_mu = -1, trkrelIso = -1;
-	 ev.mn_passId[ev.mn]  = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::ICHEP16Cut);
-	 ev.mn_passIdLoose[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Loose, patUtils::CutVersion::ICHEP16Cut);
-	 ev.mn_passSoftMuon[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Soft, patUtils::CutVersion::ICHEP16Cut);
-	 ev.mn_passIso[ev.mn] = patUtils::passIso(mu, patUtils::llvvMuonIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_mu, &trkrelIso);
+	 if(is2017 || is2018){
+	   ev.mn_passId[ev.mn]  = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::Fall17v2);
+	   ev.mn_passIdLoose[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Loose, patUtils::CutVersion::Fall17v2);
+	   ev.mn_passSoftMuon[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Soft, patUtils::CutVersion::Fall17v2);
+	   ev.mn_passIso[ev.mn] = patUtils::passIso(mu, patUtils::llvvMuonIso::Tight, patUtils::CutVersion::Fall17v2, &relIso_mu, &trkrelIso);
+	 }
+	 else{//2016
+	   ev.mn_passId[ev.mn]  = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::ICHEP16Cut);
+	   ev.mn_passIdLoose[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Loose, patUtils::CutVersion::ICHEP16Cut);
+	   ev.mn_passSoftMuon[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Soft, patUtils::CutVersion::ICHEP16Cut);
+	   ev.mn_passIso[ev.mn] = patUtils::passIso(mu, patUtils::llvvMuonIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_mu, &trkrelIso);
+	 }
          ev.mn_relIso[ev.mn] = relIso_mu;
          ev.mn_trkrelIso[ev.mn] = trkrelIso;
 
@@ -1047,7 +1067,9 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 float pt_ = el.pt();
 	 if (pt_ < 15.) continue;
 
-	 bool passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut);
+	 bool passId;
+	 if(is2017 || is2018) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2);
+	 else passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut);
 	 if(!passId) continue;
 
 	 // Kinematics
@@ -1073,8 +1095,13 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.en_neutralHadIso[ev.en] = pfIso.sumNeutralHadronEt;
 	 */
          float relIso_el = -1;
-	 ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut);
-	 ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut);
+	 if(is2017 || is2018){
+	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2);
+	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v2);
+	 } else{ //2016
+	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut);
+	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut);
+	 }
 	 ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_el, rho) ;
          ev.en_relIso[ev.en] = relIso_el;
 
@@ -1135,8 +1162,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 //hasTightId.set(false);
 	 //bool passLooseId(looseJetIdSelector( j, hasLooseId ));
 	 //bool passTightId(tightJetIdSelector( j, hasTightId ));
-	 ev.jet_PFLoose[ev.jet] = patUtils::passPFJetID("Loose", j);
-	 ev.jet_PFTight[ev.jet] = patUtils::passPFJetID("Tight", j);
+	 ev.jet_PFLoose[ev.jet] = patUtils::passPFJetID("Loose", j, (is2017 << 0) | (is2018 << 1));
+	 ev.jet_PFTight[ev.jet] = patUtils::passPFJetID("Tight", j, (is2017 << 0) | (is2018 << 1));
 
 	 ev.jet_px[ev.jet] = j.px(); //correctedP4(0).px();
 	 ev.jet_py[ev.jet] = j.py(); //correctedP4(0).py();
@@ -1180,13 +1207,13 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
          if ( verbose_ ) {
             printf("    %2d : pt=%6.1f, eta=%7.3f, phi=%7.3f : ID=%s%s, bCSV=%7.3f, PUID=%7.3f\n",
                 ijet, j.pt(), j.eta(), j.phi(),
-                (patUtils::passPFJetID("Loose", j)?"L":" "),
-                (patUtils::passPFJetID("Tight", j)?"T":" "),
+                (patUtils::passPFJetID("Loose", j, (is2017 << 0) | (is2018 << 1))?"L":" "),
+                (patUtils::passPFJetID("Tight", j, (is2017 << 0) | (is2018 << 1))?"T":" "),
                 j.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
                 j.userFloat("pileupJetId:fullDiscriminant")
              ) ;
          }
-	 if(patUtils::passPFJetID("Loose", j))  ijet2++;
+	 if(patUtils::passPFJetID("Loose", j, (is2017 << 0) | (is2018 << 1)))  ijet2++;
 
 	 ev.jet_mother_id[ev.jet] = 0;
 	 

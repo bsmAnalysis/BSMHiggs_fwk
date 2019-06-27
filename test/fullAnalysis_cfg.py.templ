@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 from UserCode.bsmhiggs_fwk.mainNtuplizer_cfi import *
 
-from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
+#from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
 
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
 
@@ -57,7 +57,7 @@ process.mainNtuplizer.xsec = cms.double(@xsec)
 process.mainNtuplizer.mctruthmode = cms.int32(@mctruthmode)
 process.mainNtuplizer.verbose = cms.bool(@verbose)
 process.mainNtuplizer.jetsTag = cms.InputTag('selectedUpdatedPatJets')
-process.mainNtuplizer.fatjetsTag = cms.InputTag('packedPatJetsAK8PFCHSSoftDrop')
+#process.mainNtuplizer.fatjetsTag = cms.InputTag('packedPatJetsAK8PFCHSSoftDrop')
 
 process.source = cms.Source("PoolSource",
 	       	     fileNames = cms.untracked.vstring(),
@@ -67,7 +67,7 @@ process.source = cms.Source("PoolSource",
 			   )        
 )
 
-jetToolbox(process, 'ak8', 'jetSequence', 'out', PUMethod='CHS', addPruning=True, addSoftDrop=True,addNsubSubjets=True,addSoftDropSubjets=True,addNsub=True,Cut="pt>20")
+#jetToolbox(process, 'ak8', 'jetSequence', 'out', PUMethod='CHS', addPruning=True, addSoftDrop=True,addNsubSubjets=True,addSoftDropSubjets=True,addNsub=True,Cut="pt>20")
 
 process.TFileService = cms.Service("TFileService",
 			fileName = cms.string("analysis.root")
