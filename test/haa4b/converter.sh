@@ -19,7 +19,7 @@ else
 fi
 
  path=`pwd`
- Files=("/../../interface/DataEvtSummaryHandler.h" "/../../src/DataEvtSummaryHandler.cc" "/../../plugins/mainNtuplizer.cc" "/../../interface/BSMPhysicsEvent.h" "/../../src/BSMPhysicsEvent.cc" "/../../bin/haa4b/runhaaAnalysis.cc")
+ Files=("/../../interface/DataEvtSummaryHandler.h" "/../../src/DataEvtSummaryHandler.cc" "/../../plugins/mainNtuplizer.cc" "/../../interface/BSMPhysicsEvent.h" "/../../src/BSMPhysicsEvent.cc" "/../../bin/haa4b/runhaaAnalysis.cc" "/../../src/PatUtils.cc")
  for file in "${Files[@]}"
  do
     file="${path}${file}"

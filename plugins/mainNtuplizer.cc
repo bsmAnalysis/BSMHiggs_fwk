@@ -852,6 +852,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#Double%20Electron%20Triggers
    // https://github.com/Sam-Harper/usercode/blob/100XNtup/TrigTools/plugins/Ele32DoubleL1ToSingleL1Example.cc
    // https://github.com/Sam-Harper/usercode/blob/100XNtup/TrigTools/test/ele32DoubleToSingle.py
+#ifdef YEAR_2017
    if(is2017BC){
       //so the filter names are all packed in miniAOD so we need to create a new collection of them which are unpacked
       std::vector<pat::TriggerObjectStandAlone> unpackedTrigObjs;
@@ -884,7 +885,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 //	    std::cout <<" ele "<<ele.et()<<" "<<eta<<" "<<phi<<" passes HLT_Ele32_WPTight_Gsf"<<std::endl;
       }
    }
-
+#endif
 
    ev.hasTrigger  = ( mumuTrigger||muTrigger||muTrigger2||eeTrigger||eeTrigger2||highPTeTrigger||eTrigger||eTrigger2||emuTrigger );
    //ev.hasTrigger  = ( muTrigger||eTrigger||emuTrigger ); 
@@ -1068,7 +1069,9 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 float pt_ = el.pt();
 	 if (pt_ < 15.) continue;
 
-	 bool passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2);//patUtils::CutVersion::ICHEP16Cut
+	 bool passId;
+	 if(is2017 || is2018) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2);
+	 else passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut);
 	 if(!passId) continue;
 
 	 // Kinematics
@@ -1094,8 +1097,13 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.en_neutralHadIso[ev.en] = pfIso.sumNeutralHadronEt;
 	 */
          float relIso_el = -1;
-	 ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2);//patUtils::CutVersion::ICHEP16Cut
-	 ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v2);//patUtils::CutVersion::ICHEP16Cut
+	 if(is2017 || is2018){
+	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2);
+	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v2);
+	 } else{ //2016
+	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut);
+	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut);
+	 }
 	 ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_el, rho) ;
          ev.en_relIso[ev.en] = relIso_el;
 
