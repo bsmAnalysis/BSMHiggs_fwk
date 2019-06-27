@@ -27,7 +27,7 @@ scram b
 git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
 cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
 git checkout -b modified
-wget https://raw.githubusercontent.com/Wallace-Chen/BSMHiggs_fwk/2017_Development/src/PatUtils.cc -O src/PatUtils.cc
+#Switching from 2016 version to 2017 (compatible with 2018) by running:
 cd test/haa4b
 sh ./converter.sh # input 1 when you are prompted to select
 cd $CMSSW_BASE/src
@@ -85,8 +85,6 @@ scram b
 git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
 cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
 git checkout -b modified #copy the branch to a new one to host future modifications (ease pull request and code merging)
-#PatUtils.cc is broken under 94X, has to be reloaded
-wget https://raw.githubusercontent.com/Wallace-Chen/BSMHiggs_fwk/2017_Development/src/PatUtils.cc -O src/PatUtils.cc
 #Switching from 2016 version to 2017 by running:
 cd test/haa4b
 sh ./converter.sh # input 1 when you are prompted to select
