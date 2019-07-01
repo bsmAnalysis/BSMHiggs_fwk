@@ -1156,7 +1156,7 @@ int main(int argc, char* argv[])
 	std::vector<LorentzVector> extraLeptons;
 	std::vector<LorentzVector> vetoLeptons; // ---> Use this collection to remove jet-lepton overlaps for e/mu below 30(25) GeV. 
 
-	float lep_threshold(25.);
+	float lep_threshold(10.);
 	float eta_threshold=2.5;
 
 	for (auto &ilep : leps) {
@@ -1413,13 +1413,25 @@ int main(int argc, char* argv[])
 	// Lepton thresholds
 	if (selLeptons.size()>0) {
 	  if(abs(selLeptons[0].id)==11) {
-	    if((is2016data || is2016MC) && selLeptons[0].pt()<30.) continue; 
-	    if((is2017data || is2017MC) && selLeptons[0].pt()<35.) continue;
+	    if(is2016data || is2016MC) {
+	      if (runZH && selLeptons[0].pt()<25.) continue; 
+	      if (!runZH && selLeptons[0].pt()<30.) continue;  
+	    }
+	    if(is2017data || is2017MC) {
+	      if (runZH && selLeptons[0].pt()<25.) continue;
+	      if (!runZH && selLeptons[0].pt()<35.) continue;
+	    }
 	    //	    if(!runZH && selLeptons[0].pt()<30.) continue;
 	  }else if(abs(selLeptons[0].id)==13){
-	    if((is2016data || is2016MC) && selLeptons[0].pt()<25.) continue;    
-	    if((is2017data || is2017MC) && selLeptons[0].pt()<30.) continue;
-	    //	    if(!runZH && selLeptons[0].pt()<25.) continue; 
+	    if(is2016data || is2016MC) {     
+	      if (runZH && selLeptons[0].pt()<20.) continue;    
+	      if (!runZH && selLeptons[0].pt()<25.) continue; 
+	    }
+	    if(is2017data || is2017MC) {    
+	      if (runZH && selLeptons[0].pt()<20.) continue; 
+	      if (!runZH && selLeptons[0].pt()<30.) continue;     
+	    }		  //	    if((is2016data || is2016MC) && selLeptons[0].pt()<20.) continue;    
+	    // if((is2017data || is2017MC) && selLeptons[0].pt()<25.) continue;
 	  }
 	}
 
