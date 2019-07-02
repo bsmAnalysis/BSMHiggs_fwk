@@ -1607,6 +1607,7 @@ int main(int argc, char* argv[])
 	    if(!is2017data && hasEtrigger && (hasEEtrigger)) continue; //|| hasMtrigger || hasMMtrigger ) ) continue;
 	  }
 	  if(isDoubleElePD) {
+	    //	    if(!hasEEtrigger) continue;  
 	    if( is2017data && !(hasEEtrigger || hasEEtrigger2) ) continue;
 	    if(!is2017data && !hasEEtrigger) continue;
 	    //	    if(hasEEtrigger && (hasMtrigger || hasMMtrigger) ) continue;
@@ -1630,9 +1631,9 @@ int main(int argc, char* argv[])
 	} else {
 	  if(evcat==E && hasEtrigger ) hasTrigger=true;   
 	  if(evcat==MU && hasMtrigger ) hasTrigger=true;   
-	  if( is2017MC && evcat==EE && ((hasEEtrigger||hasEEtrigger2) || hasEtrigger)) hasTrigger=true; 
-	  if(!is2017MC && evcat==EE && (hasEEtrigger || hasEtrigger)) hasTrigger=true; 
-	  if(evcat==MUMU && (hasMMtrigger || hasMtrigger)) hasTrigger=true; 
+	  if( is2017MC && evcat==EE && (hasEEtrigger||hasEEtrigger2)) hasTrigger=true; 
+	  if(!is2017MC && evcat==EE && hasEEtrigger) hasTrigger=true; 
+	  if(evcat==MUMU && hasMMtrigger) hasTrigger=true; 
 	  if(evcat==EMU  && hasEMtrigger ) hasTrigger=true;  
 	}
 	// Apply Trigger requirement:
@@ -1916,15 +1917,15 @@ int main(int argc, char* argv[])
 	      varNames[ivar]=="_resRho_eup" || varNames[ivar]=="_resRho_edown" || varNames[ivar]=="_resPhi_edown")  {
 
 	    //	    imet = variedMET[];
-
-      if (evcat==E) {
+	    
+	    if (evcat==E || evcat==EE) {
 	      selLeptons = selLeptonsVar[varNames[ivar].Data()];
 	    } else { continue; } //selLeptonsVar[varNames[0].Data()]; }
 	  } else {
 	    selLeptons = selLeptonsVar[varNames[0].Data()]; 
 	  }
-
-    if ( verbose ) {
+	  
+	  if ( verbose ) {
 	    printf("\nMissing  pt=%6.1f\n", imet.pt());
 	    int ilep(0);
 	    for (auto & i : selLeptons) {
