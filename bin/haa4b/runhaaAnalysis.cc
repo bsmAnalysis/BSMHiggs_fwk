@@ -1586,9 +1586,11 @@ int main(int argc, char* argv[])
 	  if(evcat==E && !(hasEtrigger)) continue;
 	  if(evcat==MU && !(hasMtrigger)) continue;
 
-	  if( is2017data && evcat==EE && !((hasEEtrigger||hasEEtrigger2) || hasEtrigger) ) continue;
-	  if(!is2017data && evcat==EE && !(hasEEtrigger||hasEtrigger) ) continue;
-	  if(evcat==MUMU && !(hasMMtrigger||hasMtrigger) ) continue;
+	  if( is2017data && evcat==EE && !(hasEEtrigger||hasEEtrigger2) ) continue;
+	  if(!is2017data && evcat==EE && !hasEEtrigger) continue;
+	  //	  if( is2017data && evcat==EE && !((hasEEtrigger||hasEEtrigger2) || hasEtrigger) ) continue;
+	  //	  if(!is2017data && evcat==EE && !(hasEEtrigger||hasEtrigger) ) continue;
+	  if(evcat==MUMU && !(hasMMtrigger)) continue; //||hasMtrigger) ) continue;
 	  if(evcat==EMU && !hasEMtrigger ) continue;
 
 	  //this is a safety veto for the single mu PD
