@@ -367,6 +367,36 @@ namespace patUtils
             }
       break;
 
+    //https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations#Example_accessing_IDs
+    case CutVersion::Fall17v1 :
+	switch(IdLevel){
+	  case llvvElecId::Loose :
+	    if(el.electronID("cutBasedElectronID-Fall17-94X-V1-loose")) return true;
+	  break;
+
+	  case llvvElecId::Medium :
+	    if(el.electronID("cutBasedElectronID-Fall17-94X-V1-medium")) return true;
+	  break;
+
+	  case llvvElecId::Tight :
+	    if(el.electronID("cutBasedElectronID-Fall17-94X-V1-tight")) return true;
+	  break;
+
+	  case llvvElecId::wp80MVA :
+	    if(el.electronID("mvaEleID-Fall17-iso-V1-wp80")) return true;
+	  break;
+
+	  case llvvElecId::wp90MVA :
+	    if(el.electronID("mvaEleID-Fall17-iso-V1-wp90")) return true;
+	  break;
+
+	  default:
+	    printf("FIXME ElectronId llvvElecId::%i is unkown\n", IdLevel);
+	    return false;
+	    break;
+	}
+	break;
+    
     case CutVersion::Fall17v2 :
 	switch(IdLevel){
 	  case llvvElecId::Loose :
@@ -548,13 +578,13 @@ namespace patUtils
     double eta=photon.superCluster()->eta();
 
     float chIso = photon.chargedHadronIso();
-    float chArea = utils::cmssw::getEffectiveArea(22,eta,"chIso");
+    float chArea = utils::cmssw::getEffectiveArea(22,eta,0,"chIso");
 
     float nhIso = photon.neutralHadronIso();
-    float nhArea = utils::cmssw::getEffectiveArea(22,eta,"nhIso");
+    float nhArea = utils::cmssw::getEffectiveArea(22,eta,0,"nhIso");
 
     float gIso = photon.photonIso();
-    float gArea = utils::cmssw::getEffectiveArea(22,eta,"gIso");
+    float gArea = utils::cmssw::getEffectiveArea(22,eta,0,"gIso");
 
     bool barrel = (fabs(eta) <= 1.479);
     bool endcap = (!barrel && fabs(eta) < 2.5);
@@ -633,7 +663,7 @@ namespace patUtils
     return false;
   }
 
-  float relIso(patUtils::GenericLepton& lep, double rho){
+  float relIso(patUtils::GenericLepton& lep, double rho, Int_t yearBits){
 
     int lid=lep.pdgId();
     float relIso = 0.0;
@@ -659,7 +689,7 @@ namespace patUtils
 	relIso  = (chIso + TMath::Max(0.,nhIso+gIso-0.5*puchIso)) / lep.el.pt();
       }
       else {
-	float effArea = utils::cmssw::getEffectiveArea(11,lep.el.superCluster()->eta());
+	float effArea = utils::cmssw::getEffectiveArea(11,lep.el.superCluster()->eta(),yearBits);
 	relIso  = (chIso + TMath::Max(0.,nhIso+gIso-rho*effArea)) / lep.el.pt();
       }
 
@@ -676,7 +706,7 @@ namespace patUtils
     return true; // Isolation is now embedded into the ID.
   }
 
-  bool passIso(pat::Electron& el, int IsoLevel, int cutVersion, float* relIso_el, double rho ){
+  bool passIso(pat::Electron& el, int IsoLevel, int cutVersion, float* relIso_el, Int_t yearBits, double rho){
          //https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
 	  float  chIso   = el.pfIsolationVariables().sumChargedHadronPt;
           float  nhIso   = el.pfIsolationVariables().sumNeutralHadronEt;
@@ -689,7 +719,7 @@ namespace patUtils
 	    relIso  = (chIso + TMath::Max(0.,nhIso+gIso-0.5*puchIso)) / el.pt();
 	  }
 	  else {
-	    float effArea = utils::cmssw::getEffectiveArea(11,el.superCluster()->eta());
+	    float effArea = utils::cmssw::getEffectiveArea(11,el.superCluster()->eta(),yearBits);
 	    relIso  = (chIso + TMath::Max(0.,nhIso+gIso-rho*effArea)) / el.pt();
 	  }
           *relIso_el = relIso;

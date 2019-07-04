@@ -136,7 +136,7 @@ namespace utils
     typedef std::vector<TGraph *> PuShifter_t;
     enum PuShifterTypes {PUDOWN,PUUP};
     utils::cmssw::PuShifter_t getPUshifters(std::vector< float > &Lumi_distr, float puUnc);
-    Float_t getEffectiveArea(int id, float eta,TString isoSum="");
+    Float_t getEffectiveArea(int id, float eta, Int_t yearBits, TString isoSum="");
 //    double relIso(llvvLepton lep, double rho);
 
     // Single muon trigger efficiency 

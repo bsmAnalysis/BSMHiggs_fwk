@@ -931,11 +931,11 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	
     }
  
-    if(is2017 || is2018){
-	edm::Handle< bool > passecalBadCalibFilterUpdate;
-	event.getByToken(ecalBadCalibFilterUpdate_token,passecalBadCalibFilterUpdate);
-	passMETFilters &= (*passecalBadCalibFilterUpdate);
-    }
+//    if(is2017 || is2018){
+//	edm::Handle< bool > passecalBadCalibFilterUpdate;
+//	event.getByToken(ecalBadCalibFilterUpdate_token,passecalBadCalibFilterUpdate);
+//	passMETFilters &= (*passecalBadCalibFilterUpdate);
+//    }
   
     if(!passMETFilters) return;
    //   if( metFilterValue!=0 ) continue;	 //Note this must also be applied on MC
@@ -1068,7 +1068,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 if (pt_ < 15.) continue;
 
 	 bool passId;
-	 if(is2017 || is2018) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2);
+	 if(is2018) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2);
+	 else if(is2017) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v1);
 	 else passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut);
 	 if(!passId) continue;
 
@@ -1095,14 +1096,17 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.en_neutralHadIso[ev.en] = pfIso.sumNeutralHadronEt;
 	 */
          float relIso_el = -1;
-	 if(is2017 || is2018){
+	 if(is2018){
 	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2);
 	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v2);
+	 }else if(is2017){
+	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v1);
+	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v1);
 	 } else{ //2016
 	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut);
 	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut);
 	 }
-	 ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_el, rho) ;
+	 ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_el, rho, (is2017 << 0) | (is2018 << 1)) ;
          ev.en_relIso[ev.en] = relIso_el;
 
 	 const EcalRecHitCollection* recHits = (el.isEB()) ? recHitCollectionEBHandle.product() : recHitCollectionEEHandle.product();

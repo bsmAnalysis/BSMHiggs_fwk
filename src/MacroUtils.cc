@@ -317,21 +317,35 @@ namespace utils
     
 
     //
-    Float_t getEffectiveArea(int id,float eta,TString isoSum)
+    Float_t getEffectiveArea(int id,float eta,Int_t yearBits,TString isoSum)
     {
+      bool is2017 = yearBits & 0x01;
+      bool is2018 = (yearBits >> 1) & 0x01;
+      bool is2016 = !(is2017 || is2018);
       Float_t Aeff(1.0);
 
       if(abs(id)==11){ // electron
 	//Summer16 EA (Recommended for Moriond) : https://indico.cern.ch/event/482673/contributions/2187022/attachments/1282446/1905912/talk_electron_ID_spring16.pdf
-	
-        if(fabs(eta)<1.0)				Aeff=0.1703;
-        else if(fabs(eta)>1.0 && fabs(eta)<1.479)	Aeff=0.1715;
-        else if(fabs(eta)>1.479 && fabs(eta)<2.0)	Aeff=0.1213;
-        else if(fabs(eta)>2.0 && fabs(eta)<2.2)		Aeff=0.1230;
-        else if(fabs(eta)>2.2 && fabs(eta)<2.3)		Aeff=0.1635;
-        else if(fabs(eta)>2.3 && fabs(eta)<2.4)		Aeff=0.1937;
-        else						Aeff=0.2393;
-       }
+	if(is2016){
+          if(fabs(eta)<1.0)				Aeff=0.1703;
+	  else if(fabs(eta)>1.0 && fabs(eta)<1.479)	Aeff=0.1715;
+          else if(fabs(eta)>1.479 && fabs(eta)<2.0)	Aeff=0.1213;
+          else if(fabs(eta)>2.0 && fabs(eta)<2.2)	Aeff=0.1230;
+          else if(fabs(eta)>2.2 && fabs(eta)<2.3)	Aeff=0.1635;
+          else if(fabs(eta)>2.3 && fabs(eta)<2.4)	Aeff=0.1937;
+          else						Aeff=0.2393;
+	}
+	//https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_94X.txt
+        else if(is2017 || is2018){
+          if(fabs(eta)<1.0)				Aeff=0.1440;
+	  else if(fabs(eta)>1.0 && fabs(eta)<1.479)	Aeff=0.1562;
+          else if(fabs(eta)>1.479 && fabs(eta)<2.0)	Aeff=0.1032;
+          else if(fabs(eta)>2.0 && fabs(eta)<2.2)	Aeff=0.0859;
+          else if(fabs(eta)>2.2 && fabs(eta)<2.3)	Aeff=0.1116;
+          else if(fabs(eta)>2.3 && fabs(eta)<2.4)	Aeff=0.1321;
+          else						Aeff=0.1654;
+        }
+      }
 
       else if(abs(id)==22){ // photon
         // Spring16 EA (Recommended for Moriond) : https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2#Selection_implementation_details

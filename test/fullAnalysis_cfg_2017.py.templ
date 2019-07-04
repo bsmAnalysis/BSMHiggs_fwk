@@ -52,7 +52,7 @@ process.ecalBadCalibReducedMINIAODFilter = cms.EDFilter(
 
 #rerun energy correction for electrons
 setupEgammaPostRecoSeq(process,
-    runVID=True, #if you want the Fall17V2 IDs, set this to True or remove (default is True)
+    runVID=False, #if you want the Fall17V2 IDs, set this to True or remove (default is True)
     era='2017-Nov17ReReco')
 #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
 
@@ -103,7 +103,7 @@ process.TFileService = cms.Service("TFileService",
 )
 
 process.p = cms.Path( 
-    process.ecalBadCalibReducedMINIAODFilter *
+#    process.ecalBadCalibReducedMINIAODFilter *
     process.fullPatMetSequence *
     process.fullPatMetSequenceModifiedMET *
     process.egammaPostRecoSeq *

@@ -7,11 +7,11 @@ from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
 
 process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
 process.load("Configuration.EventContent.EventContent_cff")
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 #load run conditions
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
@@ -55,7 +55,7 @@ process.ecalBadCalibReducedMINIAODFilter = cms.EDFilter(
      )
 #rerun energy correction for electrons
 setupEgammaPostRecoSeq(process,
-    runVID=True, #saves CPU time by not needlessly re-running VID
+    runVID=False, #saves CPU time by not needlessly re-running VID
     era='2017-Nov17ReReco')
 #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
 
@@ -147,7 +147,7 @@ process.dump = cms.EDAnalyzer("EventContentAnalyzer")
 #process.p = cms.Path(process.dump)
 process.p = cms.Path( 
 #    process.fullPatMetSequenceTEST *
-    process.ecalBadCalibReducedMINIAODFilter *
+#    process.ecalBadCalibReducedMINIAODFilter *
     process.fullPatMetSequence *
     process.fullPatMetSequenceModifiedMET *
     process.egammaPostRecoSeq *

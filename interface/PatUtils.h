@@ -79,7 +79,7 @@ namespace patUtils
    namespace llvvPhotonId { enum PhotonId  {Loose, Medium, Tight}; }
    namespace llvvElecIso{ enum ElecIso {Veto, Loose, Medium, Tight}; }
    namespace llvvMuonIso{ enum MuonIso {Loose,Tight, H4lWP, TightBoosted, TightAndTkRelatBoosted}; }
-   namespace CutVersion { enum CutSet {Spring15Cut25ns, ICHEP16Cut, Moriond17Cut, Fall17v2}; }
+   namespace CutVersion { enum CutSet {Spring15Cut25ns, ICHEP16Cut, Moriond17Cut, Fall17v1, Fall17v2}; }
 
    unsigned int GainSeed (pat::Electron &electron, const EcalRecHitCollection* recHits);
    unsigned int GainSeed (pat::Photon &photon, const EcalRecHitCollection* recHits);
@@ -87,9 +87,9 @@ namespace patUtils
    bool passId (pat::Electron& el,  reco::Vertex& vtx, int IdLevel, int cutVersion, bool is2016=true); // Old PHYS14 ID
    bool passId (pat::Muon&     mu,  reco::Vertex& vtx, int IdLevel, int cutVersion);
    bool passId (pat::Photon& photon,  double rho, int IdLevel);
-   float relIso(patUtils::GenericLepton& lep, double rho);
+   float relIso(patUtils::GenericLepton& lep, double rho, Int_t yearBits);
    bool passIso (VersionedPatElectronSelector id, pat::Electron& el);
-   bool passIso(pat::Electron& el,  int IsoLevel, int cutVersion, float* relIso_el, double rho=0.0 ); // Old PHYS15 Iso
+   bool passIso(pat::Electron& el,  int IsoLevel, int cutVersion, float* relIso_el, Int_t yearBits, double rho=0.0); // Old PHYS15 Iso
    bool passIso(pat::Muon&     mu,  int IsoLevel, int cutVersion, float* relIso_mu, float* trkrelIso_);
    bool passIso(pat::Muon& mu, int IsoLevel, int cutVersion, std::vector<pat::PackedCandidate> thePats, pat::MuonCollection muons, reco::Vertex& vertex );
    bool passPhotonTrigger(fwlite::Event &ev, float &triggerThreshold, float &triggerPrescale, float& triggerThresholdHigh);
