@@ -267,7 +267,7 @@ for proc in procList :
                 SCRIPT2HTCondor.writelines('output                = $(log).out\n')
                 SCRIPT2HTCondor.writelines('error                 = $(log).err\n')
                 SCRIPT2HTCondor.writelines('log                   = $(log).log\n')
-                SCRIPT2HTCondor.writelines('request_cpus          = 2\n')
+                SCRIPT2HTCondor.writelines('request_cpus          = 6\n')
                 SCRIPT2HTCondor.writelines('+JobFlavour           = "'+queue+'"\n')
                 SCRIPT2HTCondor.writelines('queue cfg,log from '+queuelog+'/all/'+dtag+'_PythonList.txt')
                 SCRIPT2HTCondor.close()
