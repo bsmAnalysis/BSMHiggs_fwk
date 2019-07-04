@@ -164,6 +164,11 @@ int main(int argc, char* argv[])
     
     bool usemetNoHF = runProcess.getParameter<bool>("usemetNoHF");
     
+    // choose which method to use to apply btagging efficiency scale factors
+    // nMethod=1 is Jet-by-jet updating of b-tagging status https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#2a_Jet_by_jet_updating_of_the_b
+    // nMethod=2 is event reweighting https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#1d_Event_reweighting_using_discr
+    int nMethod = runProcess.getParameter<int>("btagSFMethod");
+
     TString url = runProcess.getParameter<std::string>("input");
     TString outFileUrl( dtag ); //gSystem->BaseName(url));
 
@@ -1997,7 +2002,41 @@ int main(int argc, char* argv[])
 	      bool hasCSVtagUp = hasCSVtag;
 	      bool hasCSVtagDown = hasCSVtag;
 	      
-	      if (isMC) { 
+	      //https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration
+	      //Using .csv files and the BTagCalibrationReader
+	      if(nMethod == 2 && isMC) {
+	        double btagSF = 1.;
+		if(abs(vJets[ijet].flavid)==5){
+		  if (varNames[ivar]=="_btagup") {
+		    btagSF = btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_B, vJets[ijet].eta(), vJets[ijet].pt());
+		  } else if ( varNames[ivar]=="_btagdown") {
+		    btagSF = btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_B, vJets[ijet].eta(), vJets[ijet].pt());
+		  } else{
+		    btagSF = btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_B, vJets[ijet].eta(), vJets[ijet].pt());
+		  }
+		}else if(abs(vJets[ijet].flavid)==4){
+		  if (varNames[ivar]=="_btagup") {
+		    btagSF = btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_C, vJets[ijet].eta(), vJets[ijet].pt());
+		  } else if ( varNames[ivar]=="_btagdown") {
+		    btagSF = btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_C, vJets[ijet].eta(), vJets[ijet].pt());
+		  } else{
+		    btagSF = btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_C, vJets[ijet].eta(), vJets[ijet].pt());
+		  }
+		}else{
+		  if (varNames[ivar]=="_btagup") {
+		    btagSF = btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_UDSG, vJets[ijet].eta(), vJets[ijet].pt());
+		  } else if ( varNames[ivar]=="_btagdown") {
+		    btagSF = btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_UDSG, vJets[ijet].eta(), vJets[ijet].pt());
+		  } else{
+		    btagSF = btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, vJets[ijet].eta(), vJets[ijet].pt());
+		  }
+		}
+//		printf("Btagging SF: %f\n",btagSF);
+		weight *= btagSF;
+	      } //end isMC
+
+	      
+	      if (nMethod == 1 && isMC) { 
 		//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X
 		btsfutil.SetSeed(ev.event*10 + ijet*10000);// + ivar*10);
 		

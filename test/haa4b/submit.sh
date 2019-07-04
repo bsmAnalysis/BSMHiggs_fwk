@@ -125,7 +125,9 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        if [ ! -d "$NTPL_OUTDIR" ]; then
 	   mkdir $NTPL_OUTDIR
        fi
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=False @runMVA=False @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False @runZH=True" -s $queue # -t MC13TeV_TTTo  -r True
+	# @btagSFMethod=1: Jet-by-jet updating of b-tagging status
+	# @btagSFMethod=2: Event reweighting using discriminator-dependent scale factors
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=False @runMVA=False @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False @runZH=True @btagSFMethod=2" -s $queue # -t MC13TeV_TTTo  -r True
    fi
 fi
 
