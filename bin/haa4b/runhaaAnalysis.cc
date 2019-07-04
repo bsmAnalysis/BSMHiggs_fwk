@@ -1997,6 +1997,40 @@ int main(int argc, char* argv[])
 	      bool hasCSVtagUp = hasCSVtag;
 	      bool hasCSVtagDown = hasCSVtag;
 	      
+	      //https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration
+	      //Using .csv files and the BTagCalibrationReader
+	      if(isMC) {
+	        double btagSF = 1.;
+		if(abs(vJets[ijet].flavid)==5){
+		  if (varNames[ivar]=="_btagup") {
+		    btagSF = btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_B, vJets[ijet].eta(), vJets[ijet].pt());
+		  } else if ( varNames[ivar]=="_btagdown") {
+		    btagSF = btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_B, vJets[ijet].eta(), vJets[ijet].pt());
+		  } else{
+		    btagSF = btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_B, vJets[ijet].eta(), vJets[ijet].pt());
+		  }
+		}else if(abs(vJets[ijet].flavid)==4){
+		  if (varNames[ivar]=="_btagup") {
+		    btagSF = btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_C, vJets[ijet].eta(), vJets[ijet].pt());
+		  } else if ( varNames[ivar]=="_btagdown") {
+		    btagSF = btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_C, vJets[ijet].eta(), vJets[ijet].pt());
+		  } else{
+		    btagSF = btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_C, vJets[ijet].eta(), vJets[ijet].pt());
+		  }
+		}else{
+		  if (varNames[ivar]=="_btagup") {
+		    btagSF = btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_UDSG, vJets[ijet].eta(), vJets[ijet].pt());
+		  } else if ( varNames[ivar]=="_btagdown") {
+		    btagSF = btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_UDSG, vJets[ijet].eta(), vJets[ijet].pt());
+		  } else{
+		    btagSF = btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, vJets[ijet].eta(), vJets[ijet].pt());
+		  }
+		}
+//		printf("Btagging SF: %f\n",btagSF);
+		weight *= btagSF;
+	      } //end isMC
+
+/*	      
 	      if (isMC) { 
 		//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X
 		btsfutil.SetSeed(ev.event*10 + ijet*10000);// + ivar*10);
@@ -2065,7 +2099,7 @@ int main(int argc, char* argv[])
 		}
 		
 	      } // isMC
-
+*/
 
 	      if ( verbose) {
 		printf("AK4-Jet has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",     
