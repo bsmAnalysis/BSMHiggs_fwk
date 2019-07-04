@@ -164,6 +164,11 @@ int main(int argc, char* argv[])
     
     bool usemetNoHF = runProcess.getParameter<bool>("usemetNoHF");
     
+    // choose which method to use to apply btagging efficiency scale factors
+    // nMethod=1 is Jet-by-jet updating of b-tagging status https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#2a_Jet_by_jet_updating_of_the_b
+    // nMethod=2 is event reweighting https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#1d_Event_reweighting_using_discr
+    int nMethod = runProcess.getParameter<int>("btagSFMethod");
+
     TString url = runProcess.getParameter<std::string>("input");
     TString outFileUrl( dtag ); //gSystem->BaseName(url));
 
@@ -1999,7 +2004,7 @@ int main(int argc, char* argv[])
 	      
 	      //https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration
 	      //Using .csv files and the BTagCalibrationReader
-	      if(isMC) {
+	      if(nMethod == 2 && isMC) {
 	        double btagSF = 1.;
 		if(abs(vJets[ijet].flavid)==5){
 		  if (varNames[ivar]=="_btagup") {
@@ -2030,8 +2035,8 @@ int main(int argc, char* argv[])
 		weight *= btagSF;
 	      } //end isMC
 
-/*	      
-	      if (isMC) { 
+	      
+	      if (nMethod == 1 && isMC) { 
 		//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X
 		btsfutil.SetSeed(ev.event*10 + ijet*10000);// + ivar*10);
 		
@@ -2099,7 +2104,7 @@ int main(int argc, char* argv[])
 		}
 		
 	      } // isMC
-*/
+
 
 	      if ( verbose) {
 		printf("AK4-Jet has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",     
