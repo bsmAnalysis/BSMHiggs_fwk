@@ -2037,7 +2037,7 @@ int main(int argc, char* argv[])
 	      if(nMethod == 2 && isMC) {
 	        double wgt_csv_hf, wgt_csv_lf, wgt_csv_cf;
 		int iSys=0;
-		//determining the iSys numner:
+		//determining the iSys number:
 		if(abs(vJets[ijet].flavid)==5){
 		  if (varNames[ivar]=="_btagup") iSys = 11;//HF (contamination) Up
 		  else if(varNames[ivar]=="_btagdown") iSys = 12;//HF (contamination) Down
