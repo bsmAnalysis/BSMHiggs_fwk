@@ -32,13 +32,13 @@ const std::map<std::string, std::pair <int, float> > mStat =
     { "MC13TeV_TTJets_dl_2016"       , std::make_pair(30444678, 88.2877) }, //0.104012*0.2002 },
     { "MC13TeV_TTJets_dl_ext1_2016"  , std::make_pair(30444678, 88.2877) }, // 0.104012*0.7998 },
     //WJets 2016
-    { "MC13TeV_WJets_2016"     , std::make_pair(86731806, 50690) },//86731806  //61526.7) }, //280929804 }, //30.7868*0.3425 },
-    { "MC13TeV_WJets_ext2_2016", std::make_pair(86731806, 50690) },//86731806  //61526.7) }, //280929804 }, // 30.7868*0.6575 },
+    { "MC13TeV_WJets_2016"     , std::make_pair(263909540, 50690) },//86731806  //61526.7) }, //280929804 }, //30.7868*0.3425 },
+    { "MC13TeV_WJets_ext2_2016", std::make_pair(263909540, 50690) },//86731806  //61526.7) }, //280929804 }, // 30.7868*0.6575 },
     { "MC13TeV_W1Jets_2016"     , std::make_pair(45367044.0, 9493) },//45367044
     { "MC13TeV_W2Jets_2016"     , std::make_pair(60197766, 3120) },//60197766
     { "MC13TeV_W2Jets_ext1_2016", std::make_pair(60197766, 3120) },//60197766
-    { "MC13TeV_W3Jets_2016"     , std::make_pair(59067548, 942.3) },//56623793
-    { "MC13TeV_W3Jets_ext1_2016", std::make_pair(59067548, 942.3) },//56623793
+    { "MC13TeV_W3Jets_2016"     , std::make_pair(56623793, 942.3) },//56623793
+    { "MC13TeV_W3Jets_ext1_2016", std::make_pair(56623793, 942.3) },//56623793
     { "MC13TeV_W4Jets_2016"     , std::make_pair(29995313, 524.2) },//29995313
     { "MC13TeV_W4Jets_ext1_2016", std::make_pair(29995313, 524.2) },//29995313
     { "MC13TeV_W4Jets_ext2_2016", std::make_pair(29995313, 524.2) },//29995313
@@ -61,19 +61,19 @@ const std::map<std::string, std::pair <int, float> > mStat =
     { "MC13TeV_W4Jets_2017"    , std::make_pair(11074019, 524.2) },
     
     //DY 2016
-    { "MC13TeV_DYJetsToLL_10to50_2016"      , std::make_pair(37055846.0, 18610) }, //35291566  //12.9777*0.434 },
-    { "MC13TeV_DYJetsToLL_10to50_ext1_2016" , std::make_pair(37055846.0, 18610) }, //35291566  //12.9777*0.566 },
-    { "MC13TeV_DY1JetsToLL_10to50_2016" , std::make_pair(43425932.0, 725) }, //39840774
-    { "MC13TeV_DY2JetsToLL_10to50_2016" , std::make_pair(26804855.0, 394.5) }, //19442927
-    { "MC13TeV_DY3JetsToLL_10to50_2016" , std::make_pair(7363429.0, 96.47) }, //4964197
-    { "MC13TeV_DY4JetsToLL_10to50_2016" , std::make_pair(2087849.0, 34.84) }, //2087849
+    { "MC13TeV_DYJetsToLL_10to50_2016"      , std::make_pair(83238085, 18610) }, //35291566  //12.9777*0.434 },
+    { "MC13TeV_DYJetsToLL_10to50_ext1_2016" , std::make_pair(83238085, 18610) }, //35291566  //12.9777*0.566 },
+    { "MC13TeV_DY1JetsToLL_10to50_2016" , std::make_pair(39840774, 725) }, //39840774
+    { "MC13TeV_DY2JetsToLL_10to50_2016" , std::make_pair(19442927, 394.5) }, //19442927
+    { "MC13TeV_DY3JetsToLL_10to50_2016" , std::make_pair(4964197, 96.47) }, //4964197
+    { "MC13TeV_DY4JetsToLL_10to50_2016" , std::make_pair(2087849, 34.84) }, //2087849
 
-    { "MC13TeV_DYJetsToLL_50toInf_ext1_2016", std::make_pair(171939568, 4895) },//145803217  //5765.4) }, //81781064 }, //2.52854 },
-    { "MC13TeV_DYJetsToLL_50toInf_ext2_2016", std::make_pair(171939568, 4895) },//145803217 5765.4) },
-    { "MC13TeV_DY1JetsToLL_50toInf_2016" , std::make_pair(62143359.0, 1016) }, //62627174
-    { "MC13TeV_DY2JetsToLL_50toInf_2016" , std::make_pair(20815654.0, 331.3) }, //19970551
-    { "MC13TeV_DY3JetsToLL_50toInf_2016" , std::make_pair(7122696.0, 96.6) }, //5856110
-    { "MC13TeV_DY4JetsToLL_50toInf_2016" , std::make_pair(5822585.0, 51.4) }, //4197868
+    { "MC13TeV_DYJetsToLL_50toInf_ext1_2016", std::make_pair(227292516, 4895) },//145803217  //5765.4) }, //81781064 }, //2.52854 },
+    { "MC13TeV_DYJetsToLL_50toInf_ext2_2016", std::make_pair(227292516, 4895) },//145803217 5765.4) },
+    { "MC13TeV_DY1JetsToLL_50toInf_2016" , std::make_pair(62627174, 1016) }, //62627174
+    { "MC13TeV_DY2JetsToLL_50toInf_2016" , std::make_pair(19970551, 331.3) }, //19970551
+    { "MC13TeV_DY3JetsToLL_50toInf_2016" , std::make_pair(5856110, 96.6) }, //5856110
+    { "MC13TeV_DY4JetsToLL_50toInf_2016" , std::make_pair(4197868, 51.4) }, //4197868
     //{ "MC13TeV_DYJetsToLL_50toInf_ext3_2016", std::make_pair(238454920, 5765.4) },
     //{ "MC13TeV_DYJetsToLL_50toInf_ext4_2016", std::make_pair(238454920, 5765.4) },
     //{ "MC13TeV_DYJetsToLL_50toInf_ext5_2016", std::make_pair(238454920, 5765.4) },
