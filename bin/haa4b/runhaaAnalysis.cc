@@ -44,6 +44,12 @@
 //#define YEAR_2017
 using namespace std;
 
+// histograms and functions for btagging SFs
+TH1D* h_csv_wgt_hf[9][5];
+TH1D* c_csv_wgt_hf[9][5];
+TH1D* h_csv_wgt_lf[9][4][3];
+void fillCSVhistos(TFile *fileHF, TFile *fileLF);
+double get_csv_wgt(double jetPt, double jetEta, double jetCSV, int jetFlavor, int iSys, double &csvWgtHF, double &csvWgtLF, double &scvWgtCF);
 
 namespace LHAPDF {
 void initPDFSet(int nset, const std::string& filename, int member=0);
@@ -265,6 +271,21 @@ int main(int argc, char* argv[])
     BTagSFUtil btsfutil;
     float beff(0.68), sfb(0.99), sfbunc(0.015);
     float leff(0.13), sfl(1.05), sflunc(0.12);
+
+    //read btagging efficiency SFs from root files
+    //https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration
+    std::string inputFileHF, inputFileLF;
+    inputFileHF = "sfs_deepcsv_2016_hf.root";
+    inputFileLF = "sfs_deepcsv_2016_lf.root";
+    if(is2017data || is2017MC){
+      inputFileHF = "sfs_deepcsv_2017_hf.root";
+      inputFileLF = "sfs_deepcsv_2017_lf.root";
+    } else if (is2018data || is2018MC){
+      inputFileHF = "sfs_deepcsv_2018_hf.root";
+      inputFileLF = "sfs_deepcsv_2018_lf.root";
+    }
+    TFile* f_CSVwgt_HF = new TFile((std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/bsmhiggs_fwk/data/weights/" + inputFileHF).c_str());
+    TFile* f_CSVwgt_LF = new TFile((std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/bsmhiggs_fwk/data/weights/" + inputFileLF).c_str());
 
     //setup calibration readers 80X
     std::string b_tagging_name, csv_file_path;
@@ -702,6 +723,8 @@ int main(int argc, char* argv[])
     //##################################################################################
     //#############         GET READY FOR THE EVENT LOOP           #####################
     //##################################################################################
+
+    if(nMethod == 2) fillCSVhistos(f_CSVwgt_HF, f_CSVwgt_LF);
 
     //open the file and get events tree
     DataEvtSummaryHandler summaryHandler_;
@@ -2003,36 +2026,32 @@ int main(int argc, char* argv[])
 	      bool hasCSVtagDown = hasCSVtag;
 	      
 	      //https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration
-	      //Using .csv files and the BTagCalibrationReader
+	      //Using .root histogram files
+	      //Quick guide to iSys number and systematic to which it represents:
+	      //iSys       :      7,	    8,			   9,			   10,			  11,			   12,		 13,		 14
+	      //Systematics: JES Up, JES Down, LF (contamination) Up, LF (contamination) Down, HF (contamination) Up, HF (contamination) Down, HF Stats1 Up, HF Stats1 Down
+	      //iSys       :	       15,	       16,	     17,	     18,	   19,		   20,		  21,		   22,		  23,		   24
+	      //Systematics: HF Stats2 Up, HF Stats2 Down, LF Stats1 Up, LF Stats1 Down, LF Stats2 Up, LF Stats2 Down, Charm Err1 Up, Charm Err1 Down, Charm Err2 Up, Charm Err2 Down
 	      if(nMethod == 2 && isMC) {
-	        double btagSF = 1.;
+	        double wgt_csv_hf, wgt_csv_lf, wgt_csv_cf;
+		int iSys=0;
+		//determining the iSys numner:
 		if(abs(vJets[ijet].flavid)==5){
-		  if (varNames[ivar]=="_btagup") {
-		    btagSF = btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_B, vJets[ijet].eta(), vJets[ijet].pt());
-		  } else if ( varNames[ivar]=="_btagdown") {
-		    btagSF = btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_B, vJets[ijet].eta(), vJets[ijet].pt());
-		  } else{
-		    btagSF = btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_B, vJets[ijet].eta(), vJets[ijet].pt());
-		  }
-		}else if(abs(vJets[ijet].flavid)==4){
-		  if (varNames[ivar]=="_btagup") {
-		    btagSF = btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_C, vJets[ijet].eta(), vJets[ijet].pt());
-		  } else if ( varNames[ivar]=="_btagdown") {
-		    btagSF = btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_C, vJets[ijet].eta(), vJets[ijet].pt());
-		  } else{
-		    btagSF = btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_C, vJets[ijet].eta(), vJets[ijet].pt());
-		  }
-		}else{
-		  if (varNames[ivar]=="_btagup") {
-		    btagSF = btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_UDSG, vJets[ijet].eta(), vJets[ijet].pt());
-		  } else if ( varNames[ivar]=="_btagdown") {
-		    btagSF = btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_UDSG, vJets[ijet].eta(), vJets[ijet].pt());
-		  } else{
-		    btagSF = btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_UDSG, vJets[ijet].eta(), vJets[ijet].pt());
-		  }
+		  if (varNames[ivar]=="_btagup") iSys = 11;//HF (contamination) Up
+		  else if(varNames[ivar]=="_btagdown") iSys = 12;//HF (contamination) Down
+		  else iSys = 0; //nominal
+		} else if(abs(vJets[ijet].flavid)==4) {
+		  if (varNames[ivar]=="_ctagup") iSys = 11;//HF (contamination) Up
+		  else if (varNames[ivar]=="_ctagdown")	iSys = 12;//HF (contamination) Down
+		  else  iSys = 0; //nominal
+		}else {
+		  if (varNames[ivar]=="_ltagup") iSys = 9;//LF (contamination) Up
+		  else if (varNames[ivar]=="_ltagdown") iSys = 10;//LF (contamination) Down
+		  else iSys = 0; //nominal
 		}
-//		printf("Btagging SF: %f\n",btagSF);
-		weight *= btagSF;
+		double wgt_csv = get_csv_wgt(vJets[ijet].pt(), vJets[ijet].eta(), btag_dsc, vJets[ijet].flavid, iSys, wgt_csv_hf, wgt_csv_lf, wgt_csv_cf);
+		//printf("Btagging SF: %f\n", wgt_csv);
+		weight *= wgt_csv;
 	      } //end isMC
 
 	      
@@ -2654,4 +2673,155 @@ int main(int argc, char* argv[])
     ofile->Close();
 
     if ( outTxtFile_final ) fclose(outTxtFile_final);
+}
+
+// fill the histograms (done once)
+// https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration
+void fillCSVhistos(TFile* fileHF, TFile* fileLF){
+  for( int iSys=0; iSys<9; iSys++ ){
+    for( int iPt=0; iPt<5; iPt++ ) h_csv_wgt_hf[iSys][iPt] = NULL;
+    for( int iPt=0; iPt<3; iPt++ ){
+      for( int iEta=0; iEta<3; iEta++ )h_csv_wgt_lf[iSys][iPt][iEta] = NULL;
+    }
+  }
+  for( int iSys=0; iSys<5; iSys++ ){
+    for( int iPt=0; iPt<5; iPt++ ) c_csv_wgt_hf[iSys][iPt] = NULL;
+  }
+
+  // CSV reweighting /// only care about the nominal ones
+  for( int iSys=0; iSys<9; iSys++ ){
+    TString syst_csv_suffix_hf = "final";
+    TString syst_csv_suffix_c = "final";
+    TString syst_csv_suffix_lf = "final";
+
+    switch(iSys){
+    case 0:
+      // this is the nominal case
+      break;
+    case 1:
+      // JESUp
+      syst_csv_suffix_hf = "final_JESUp"; syst_csv_suffix_lf = "final_JESUp";
+      syst_csv_suffix_c  = "final_cErr1Up";
+      break;
+    case 2:
+      // JESDown
+      syst_csv_suffix_hf = "final_JESDown"; syst_csv_suffix_lf = "final_JESDown";
+      syst_csv_suffix_c  = "final_cErr1Down";
+      break;
+    case 3:
+      // purity up
+      syst_csv_suffix_hf = "final_LFUp"; syst_csv_suffix_lf = "final_HFUp";
+      syst_csv_suffix_c  = "final_cErr2Up";
+      break;
+    case 4:
+      // purity down
+      syst_csv_suffix_hf = "final_LFDown"; syst_csv_suffix_lf = "final_HFDown";
+      syst_csv_suffix_c  = "final_cErr2Down";
+      break;
+    case 5:
+      // stats1 up
+      syst_csv_suffix_hf = "final_Stats1Up"; syst_csv_suffix_lf = "final_Stats1Up";
+      break;
+    case 6:
+      // stats1 down
+      syst_csv_suffix_hf = "final_Stats1Down"; syst_csv_suffix_lf = "final_Stats1Down";
+      break;
+    case 7:
+      // stats2 up
+      syst_csv_suffix_hf = "final_Stats2Up"; syst_csv_suffix_lf = "final_Stats2Up";
+      break;
+    case 8:
+      // stats2 down
+      syst_csv_suffix_hf = "final_Stats2Down"; syst_csv_suffix_lf = "final_Stats2Down";
+      break;
+    }
+
+    for( int iPt=0; iPt<5; iPt++ ) h_csv_wgt_hf[iSys][iPt] = (TH1D*)fileHF->Get( Form("csv_ratio_Pt%i_Eta0_%s",iPt,syst_csv_suffix_hf.Data()) );
+
+    if( iSys<5 ){
+      for( int iPt=0; iPt<5; iPt++ ) c_csv_wgt_hf[iSys][iPt] = (TH1D*)fileHF->Get( Form("c_csv_ratio_Pt%i_Eta0_%s",iPt,syst_csv_suffix_c.Data()) );
+    }
+
+    for( int iPt=0; iPt<4; iPt++ ){
+      for( int iEta=0; iEta<3; iEta++ )h_csv_wgt_lf[iSys][iPt][iEta] = (TH1D*)fileLF->Get( Form("csv_ratio_Pt%i_Eta%i_%s",iPt,iEta,syst_csv_suffix_lf.Data()) );
+    }
+  }
+
+  return;
+}
+
+double get_csv_wgt(double jetPt, double JetEta, double csv, int flavor, int iSys, double &csvWgtHF, double &csvWgtLF, double &csvWgtCF){
+
+  int iSysHF = 0;
+  switch(iSys){
+    case 7:  iSysHF=1; break; //JESUp
+    case 8:  iSysHF=2; break; //JESDown
+    case 9:  iSysHF=3; break; //LFUp
+    case 10: iSysHF=4; break; //LFDown
+    case 13: iSysHF=5; break; //Stats1Up
+    case 14: iSysHF=6; break; //Stats1Down
+    case 15: iSysHF=7; break; //Stats2Up
+    case 16: iSysHF=8; break; //Stats2Down
+    default : iSysHF = 0; break; //NoSys
+  }
+
+  int iSysC = 0;
+  switch(iSys){
+    case 21: iSysC=1; break;
+    case 22: iSysC=2; break;
+    case 23: iSysC=3; break;
+    case 24: iSysC=4; break;
+    default : iSysC = 0; break;
+   }
+
+  int iSysLF = 0;
+  switch(iSys){
+    case 7:  iSysLF=1; break; //JESUp
+    case 8:  iSysLF=2; break; //JESDown
+    case 11: iSysLF=3; break; //HFUp
+    case 12: iSysLF=4; break; //HFDown
+    case 17: iSysLF=5; break; //Stats1Up
+    case 18: iSysLF=6; break; //Stats1Down
+    case 19: iSysLF=7; break; //Stats2Up
+    case 20: iSysLF=8; break; //Stats2Down
+    default : iSysLF = 0; break; //NoSys
+  }
+
+  csvWgtHF = 1.;
+  csvWgtLF = 1.;
+  csvWgtCF = 1.;
+
+  double jetAbsEta = abs(csvWgtCF);
+  int iPt = -1; int iEta = -1;
+
+  if (jetPt >=19.99 && jetPt<30) iPt = 0;
+  else if (jetPt >=30 && jetPt<40) iPt = 1;
+  else if (jetPt >=40 && jetPt<60) iPt = 2;
+  else if (jetPt >=60 && jetPt<100) iPt = 3;
+  else if (jetPt >=100) iPt = 4;
+
+  if (jetAbsEta >=0 &&  jetAbsEta<0.8 ) iEta = 0;
+  else if ( jetAbsEta>=0.8 && jetAbsEta<1.6 )  iEta = 1;
+  else if ( jetAbsEta>=1.6 && jetAbsEta<2.41 ) iEta = 2;
+
+  if (iPt < 0 || iEta < 0) std::cout << "Error, couldn't find Pt, Eta bins for this b-flavor jet, jetPt = " << jetPt << ", jetAbsEta = " << jetAbsEta << std::endl;
+
+  if(abs(flavor)==5){
+    int useCSVBin = (csv>=0.) ? h_csv_wgt_hf[iSysHF][iPt]->FindBin(csv) : 1;
+    double iCSVWgtHF = h_csv_wgt_hf[iSysHF][iPt]->GetBinContent(useCSVBin);
+    if( iCSVWgtHF!=0 ) csvWgtHF *= iCSVWgtHF;
+  }
+  else if( abs(flavor) == 4 ){
+    int useCSVBin = (csv>=0.) ? c_csv_wgt_hf[iSysC][iPt]->FindBin(csv) : 1;
+    double iCSVWgtC = c_csv_wgt_hf[iSysC][iPt]->GetBinContent(useCSVBin);
+    if( iCSVWgtC!=0 ) csvWgtCF *= iCSVWgtC;
+  }
+  else{
+    if (iPt >=3) iPt=3;       /// [30-40], [40-60] and [60-10000] only 3 Pt bins for lf
+    int useCSVBin = (csv>=0.) ? h_csv_wgt_lf[iSysLF][iPt][iEta]->FindBin(csv) : 1;
+    double iCSVWgtLF = h_csv_wgt_lf[iSysLF][iPt][iEta]->GetBinContent(useCSVBin);
+    if( iCSVWgtLF!=0 ) csvWgtLF *= iCSVWgtLF;
+  }
+  double csvWgtTotal = csvWgtHF * csvWgtCF * csvWgtLF;
+  return csvWgtTotal;
 }
