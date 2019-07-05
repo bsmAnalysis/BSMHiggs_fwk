@@ -284,8 +284,6 @@ int main(int argc, char* argv[])
       inputFileHF = "sfs_deepcsv_2018_hf.root";
       inputFileLF = "sfs_deepcsv_2018_lf.root";
     }
-    TFile* f_CSVwgt_HF = new TFile((std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/bsmhiggs_fwk/data/weights/" + inputFileHF).c_str());
-    TFile* f_CSVwgt_LF = new TFile((std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/bsmhiggs_fwk/data/weights/" + inputFileLF).c_str());
 
     //setup calibration readers 80X
     std::string b_tagging_name, csv_file_path;
@@ -724,8 +722,12 @@ int main(int argc, char* argv[])
     //#############         GET READY FOR THE EVENT LOOP           #####################
     //##################################################################################
 
-    if(nMethod == 2) fillCSVhistos(f_CSVwgt_HF, f_CSVwgt_LF);
-
+    TFile *f_CSVwgt_HF = new TFile(), *f_CSVwgt_LF = new TFile();
+    if(nMethod == 2) {
+      f_CSVwgt_HF = new TFile((std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/bsmhiggs_fwk/data/weights/" + inputFileHF).c_str());
+      f_CSVwgt_LF = new TFile((std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/bsmhiggs_fwk/data/weights/" + inputFileLF).c_str());
+      fillCSVhistos(f_CSVwgt_HF, f_CSVwgt_LF);
+    }
     //open the file and get events tree
     DataEvtSummaryHandler summaryHandler_;
 
@@ -2638,7 +2640,11 @@ int main(int argc, char* argv[])
     E_TRG_SF_file->Close(); E_RECO_SF_file->Close(); 
     E_TIGHTID_SF_file->Close();
     MU_TRG_SF_file->Close();
-    
+   
+    if(nMethod == 2){
+      f_CSVwgt_HF->Close();
+      f_CSVwgt_LF->Close();	    
+    }
 //    btagfile->Close();
 
     printf("\n");
@@ -2736,14 +2742,14 @@ void fillCSVhistos(TFile* fileHF, TFile* fileLF){
       break;
     }
 
-    for( int iPt=0; iPt<5; iPt++ ) h_csv_wgt_hf[iSys][iPt] = (TH1D*)fileHF->Get( Form("csv_ratio_Pt%i_Eta0_%s",iPt,syst_csv_suffix_hf.Data()) );
+    for( int iPt=0; iPt<5; iPt++ ) {h_csv_wgt_hf[iSys][iPt] = (TH1D*)fileHF->Get( Form("csv_ratio_Pt%i_Eta0_%s",iPt,syst_csv_suffix_hf.Data()) );}
 
     if( iSys<5 ){
-      for( int iPt=0; iPt<5; iPt++ ) c_csv_wgt_hf[iSys][iPt] = (TH1D*)fileHF->Get( Form("c_csv_ratio_Pt%i_Eta0_%s",iPt,syst_csv_suffix_c.Data()) );
+      for( int iPt=0; iPt<5; iPt++ ) {c_csv_wgt_hf[iSys][iPt] = (TH1D*)fileHF->Get( Form("c_csv_ratio_Pt%i_Eta0_%s",iPt,syst_csv_suffix_c.Data()) );}
     }
 
     for( int iPt=0; iPt<4; iPt++ ){
-      for( int iEta=0; iEta<3; iEta++ )h_csv_wgt_lf[iSys][iPt][iEta] = (TH1D*)fileLF->Get( Form("csv_ratio_Pt%i_Eta%i_%s",iPt,iEta,syst_csv_suffix_lf.Data()) );
+      for( int iEta=0; iEta<3; iEta++ ) {h_csv_wgt_lf[iSys][iPt][iEta] = (TH1D*)fileLF->Get( Form("csv_ratio_Pt%i_Eta%i_%s",iPt,iEta,syst_csv_suffix_lf.Data()) );}
     }
   }
 
