@@ -748,7 +748,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
   if(isMC_){
     for (pat::Jet &j : jets) {
       Float_t btag_dsc;
-      if(is2017)  
+      if(is2017 || is2018)  
         btag_dsc = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
       else
         btag_dsc = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
@@ -785,7 +785,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    event.getByToken(triggerObjects_, triggerObjects);
    event.getByToken(triggerPrescales_, triggerPrescales);
 
-   bool debug_=false;
+   bool debug_= false;
    if (debug_) {
      
      const edm::TriggerNames &names = event.triggerNames(*triggerBits); 
@@ -1047,7 +1047,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	   | (mu.isRPCMuon()<< 6);
 	 ev.mn++;
        } // mu
-
+       
 
        pat::ElectronCollection electrons;
        edm::Handle< pat::ElectronCollection > electronsHandle;
@@ -1135,7 +1135,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 */
 	 ev.en++;
        } // el
-
+       
        int nlep=(ev.en+ev.mn);
        if(nlep<1) return;
           //

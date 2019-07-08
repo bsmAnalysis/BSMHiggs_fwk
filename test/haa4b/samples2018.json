@@ -916,7 +916,7 @@
                       "/WplusH_HToBB_WToQQ_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"
                     ],
                     "gtag": "102X_upgrade2018_realistic_v18",
-                    "dtag": "MC13TeV_WplusH_HToBB_WToLNu_2017",
+                    "dtag": "MC13TeV_WplusH_HToBB_WToLNu_2018",
                     "xsec": 0.053
                 },
                 {
@@ -927,7 +927,7 @@
                       "/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM"
                     ],
                     "gtag": "102X_upgrade2018_realistic_v18",
-                    "dtag": "MC13TeV_WplusH_HToBB_WToLNu_ext1_2017",
+                    "dtag": "MC13TeV_WplusH_HToBB_WToLNu_ext1_2018",
                     "xsec": 0.053
                 },
                 {

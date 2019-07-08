@@ -1451,6 +1451,10 @@ int main(int argc, char* argv[])
 	      if (runZH && selLeptons[0].pt()<25.) continue;
 	      if (!runZH && selLeptons[0].pt()<35.) continue;
 	    }
+	    if(is2018data || is2018MC) {
+	      if (runZH && selLeptons[0].pt()<25.) continue;
+	      if (!runZH && selLeptons[0].pt()<35.) continue;
+	    }
 	    //	    if(!runZH && selLeptons[0].pt()<30.) continue;
 	  }else if(abs(selLeptons[0].id)==13){
 	    if(is2016data || is2016MC) {     
@@ -1460,7 +1464,12 @@ int main(int argc, char* argv[])
 	    if(is2017data || is2017MC) {    
 	      if (runZH && selLeptons[0].pt()<20.) continue; 
 	      if (!runZH && selLeptons[0].pt()<30.) continue;     
-	    }		  //	    if((is2016data || is2016MC) && selLeptons[0].pt()<20.) continue;    
+	    }		  
+	    if(is2018data || is2018MC) {    
+	      if (runZH && selLeptons[0].pt()<20.) continue; 
+	      if (!runZH && selLeptons[0].pt()<25.) continue;     
+	    }		  
+	    //	    if((is2016data || is2016MC) && selLeptons[0].pt()<20.) continue;    
 	    // if((is2017data || is2017MC) && selLeptons[0].pt()<25.) continue;
 	  }
 	}
