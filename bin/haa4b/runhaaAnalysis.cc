@@ -954,7 +954,7 @@ int main(int argc, char* argv[])
     TH2F* btagEff_c = new TH2F(); 
     TH2F* btagEff_udsg = new TH2F();
     TFile *btagfile = new TFile();
-    if(isMC){
+    if(isMC && nMethod==1){
       TString btagfilename = btagDir + "/" + proc + "_BTaggEff.root";
       btagfile = TFile::Open(btagfilename);
       if(btagfile->IsZombie() || !btagfile->IsOpen()) {std::cout<<"Error, cannot open file: "<<btagfilename<<std::endl;return -1;}
