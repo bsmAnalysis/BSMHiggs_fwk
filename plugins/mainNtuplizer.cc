@@ -1256,8 +1256,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.jet++;
          ijet++ ;
        }
-       if((ijet2<2)) return;
-       if(nCSVLtags<2) return;
+       if((ijet2<3)) return;
+       //       if(nCSVLtags<2) return;
        //
        // jet selection (AK8Jets)
        //
