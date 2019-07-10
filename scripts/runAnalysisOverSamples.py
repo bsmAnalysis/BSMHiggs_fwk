@@ -369,20 +369,16 @@ for procBlock in procList :
                           LaunchOnCondor.Jobs_CRABlumiMask = str(getByLabel(procData,'lumiMask',''))
                           LaunchOnCondor.Jobs_CRABcfgFile  = cfgfile
                           LaunchOnCondor.Jobs_CRABexe      = opt.theExecutable
-                          if(commands.getstatusoutput("whoami")[1]=='georgia'):
-                              LaunchOnCondor.Jobs_CRABStorageSite = 'T2_CH_CERN'
-                          elif(commands.getstatusoutput("whoami")[1]=='hwei'):
-                              LaunchOnCondor.Jobs_CRABStorageSite = 'T3_US_FNALLPC'
-                          else: LaunchOnCondor.Jobs_CRABStorageSite = 'T2_CH_CERN'
+                          LaunchOnCondor.Jobs_CRABStorageSite = 'T2_CH_CERN'
                           if(isdata): 
                               LaunchOnCondor.Jobs_CRABsplitting = 'LumiBased'
-                              LaunchOnCondor.Jobs_CRABUnitPerJob = 200 
+                              LaunchOnCondor.Jobs_CRABUnitPerJob = 100 
                           else: 
                               LaunchOnCondor.Jobs_CRABsplitting = 'FileBased'
-                              LaunchOnCondor.Jobs_CRABUnitPerJob = 10
+                              LaunchOnCondor.Jobs_CRABUnitPerJob = 5
                           LaunchOnCondor.Jobs_CRABname     = dtag + '_' + str(s)
                           if( 'signal' in opt.onlykeyword):
-                            LaunchOnCondor.Jobs_CRABInDBS    = getByLabel(procData,'dbsURL','phys03')
+                            LaunchOnCondor.Jobs_CRABInDBS    = getByLabel(procData,'dbsURL','global')
                           else:
                             LaunchOnCondor.Jobs_CRABInDBS    = getByLabel(procData,'dbsURL','global')
 #                          if(split>0):
