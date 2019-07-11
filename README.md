@@ -187,13 +187,13 @@ cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
 sh ./converter # input 2 when you are prompted to select
 cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
 ```
-If work under 94X, be sure that do not commit src/PatUtils.cc, use the below instead:
-```
-git add -u
-git reset src/PatUtils.cc
-git commit -m "Added feature A, B, C"
-git push
-```
+<!--- If work under 94X, be sure that do not commit src/PatUtils.cc, use the below instead:
+ ```
+ git add -u
+ git reset src/PatUtils.cc
+ git commit -m "Added feature A, B, C"
+ git push
+ ``` -->
 - Make a pull request against the bsmAnalysis. See [details](https://help.github.com/articles/using-pull-requests/)
 
 

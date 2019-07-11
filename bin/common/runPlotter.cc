@@ -603,7 +603,8 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, TFile* OutputF
 	   // Overwrite weight for W+Nj and DY+Nj samples
 	   if (dirProc.find("W#rightarrow l#nu")!=std::string::npos) Weight=iLumi;
 	   if (dirProc.find("Z#rightarrow ll")!=std::string::npos) {
-        if ((Samples[j])["dtag"].toString().find("10to50")!=std::string::npos && (Samples[j])["dtag"].toString().find("2017")!=std::string::npos) ; //except for 2017 low-mass DY samples
+        if ((Samples[j])["dtag"].toString().find("10to50")!=std::string::npos
+		&& ( (Samples[j])["dtag"].toString().find("2017")!=std::string::npos || (Samples[j])["dtag"].toString().find("2018")!=std::string::npos) ); //except for 2017 and 2018 low-mass DY samples
         else Weight=iLumi;
      }
 	   //	   if (Process[i].getStringFromKeyword(matchingKeyword, "tag", "W#rightarrow l#nu")) Weight=iLumi;
