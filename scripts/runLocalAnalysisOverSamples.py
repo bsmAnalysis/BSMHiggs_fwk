@@ -142,7 +142,8 @@ for proc in procList :
 
             ## submit or resubmit
             if(resubmit) :
-                status, output = commands.getstatusoutput('ls ' + outdir +'/'+ dtag + '_' + '*_cfg.py')
+		if isdata:	status, output = commands.getstatusoutput('ls ' + outdir +'/DATA/'+ dtag + '_' + '*_cfg.py')
+		else:		status, output = commands.getstatusoutput('ls ' + outdir +'/MC/'+ dtag + '_' + '*_cfg.py')
                 if status > 0 :
                     print "No python configuation files for tag: " + dtag 
                     continue
@@ -194,16 +195,20 @@ for proc in procList :
                 SCRIPT_DTag.writelines('cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/; \n\n')
                 
             # Loop over files for given dtag name:
-                ntplpath = '/eos/cms/store/user/' + who + '/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
+                #ntplpath = '/eos/cms/store/user/' + who + '/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
+                ntplpath = '/eos/cms/store/user/zhangyi/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
                 # FileList = [file for file in glob.glob(ntplpath+'analysis_*.root')] 
                 
                 segment=0
+		if isdata: ntpl_out = outdir + '/DATA'
+		else:	   ntpl_out = outdir + '/MC'
+		os.system('mkdir -p ' + ntpl_out)
                 for file in glob.glob(ntplpath+'analysis_*.root'):
                     eventsFile = file
 #            eventsFile = ', \n '.join('"' + item + '"' for item in FileList)
                     
                     sedcmd = 'sed \"s%"@input"%' +eventsFile +'%;'
-                    sedcmd += 's%"@outdir"%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
+                    sedcmd += 's%"@outdir"%' + ntpl_out +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
                     sedcmd += 's%"@btagDir"%' + btagDir + '%;'
                     sedcmd += 's%"@suffix"%' + suffix + '%;'
                     sedcmd += 's%"@proc"%' + dtag + '%;'
@@ -267,7 +272,7 @@ for proc in procList :
                 SCRIPT2HTCondor.writelines('output                = $(log).out\n')
                 SCRIPT2HTCondor.writelines('error                 = $(log).err\n')
                 SCRIPT2HTCondor.writelines('log                   = $(log).log\n')
-                SCRIPT2HTCondor.writelines('request_cpus          = 6\n')
+                SCRIPT2HTCondor.writelines('request_cpus          = 2\n')
                 SCRIPT2HTCondor.writelines('+JobFlavour           = "'+queue+'"\n')
                 SCRIPT2HTCondor.writelines('queue cfg,log from '+queuelog+'/all/'+dtag+'_PythonList.txt')
                 SCRIPT2HTCondor.close()

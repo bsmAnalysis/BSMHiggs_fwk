@@ -168,7 +168,9 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
               for(int s=0; s<(split>0?split:999); s++){                 
                  char buf[255]; sprintf(buf,"_%i",s); string segmentExt = buf;                 
 		 //                 string FileName = RootDir + dtag +  suffix + segmentExt + filtExt; 
-		 string FileName = RootDir + dtag +  suffix + filtExt + segmentExt;   
+		 string FileName;
+		 if(isData) FileName = RootDir + "DATA/" + dtag +  suffix + filtExt + segmentExt;
+		 else	    FileName = RootDir + "MC/" + dtag +  suffix + filtExt + segmentExt;
 
                  if(split<0){ //autosplitting --> check if there is a cfg file before checking if there is a .root file
                     FILE* pFile = fopen((FileName+"_cfg.py").c_str(), "r");
