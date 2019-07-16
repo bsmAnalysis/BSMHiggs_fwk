@@ -163,9 +163,7 @@ for proc in procList :
                     rsegment=0
                     for cfgfile in failedList: 
                         os.system('mkdir -p ' + queuelog)
-                        htlog = os.path.join( queuelog, 'HTCondor_Data')
-                        if(not isdata):
-                            htlog = os.path.join( queuelog, 'HTCondor_MC')
+                        htlog = os.path.join( queuelog, dtag)
                         os.system('mkdir -p ' + htlog)
                         SCRIPT.writelines('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(rsegment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile + '\n\n')
                         SCRIPT_L.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+str(rsegment)+'.log'+' & \n\n')
@@ -195,8 +193,7 @@ for proc in procList :
                 SCRIPT_DTag.writelines('cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/; \n\n')
                 
             # Loop over files for given dtag name:
-                #ntplpath = '/eos/cms/store/user/' + who + '/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
-                ntplpath = '/eos/cms/store/user/zhangyi/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
+                ntplpath = '/eos/cms/store/user/' + who + '/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
                 # FileList = [file for file in glob.glob(ntplpath+'analysis_*.root')] 
                 
                 segment=0
@@ -240,9 +237,7 @@ for proc in procList :
                         os.system(theExecutable + ' ' + cfgfile)
                     else :
                         os.system('mkdir -p ' + queuelog)
-                        htlog = os.path.join( queuelog, 'HTCondor_Data')
-                        if(not isdata): 
-                            htlog = os.path.join( queuelog, 'HTCondor_MC')
+                        htlog = os.path.join( queuelog, dtag)
                         os.system('mkdir -p ' + htlog)
                         
                         SCRIPT.writelines('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile + '\n\n')
@@ -272,7 +267,7 @@ for proc in procList :
                 SCRIPT2HTCondor.writelines('output                = $(log).out\n')
                 SCRIPT2HTCondor.writelines('error                 = $(log).err\n')
                 SCRIPT2HTCondor.writelines('log                   = $(log).log\n')
-                SCRIPT2HTCondor.writelines('request_cpus          = 2\n')
+                SCRIPT2HTCondor.writelines('request_cpus          = 6\n')
                 SCRIPT2HTCondor.writelines('+JobFlavour           = "'+queue+'"\n')
                 SCRIPT2HTCondor.writelines('queue cfg,log from '+queuelog+'/all/'+dtag+'_PythonList.txt')
                 SCRIPT2HTCondor.close()
