@@ -142,7 +142,8 @@ for proc in procList :
 
             ## submit or resubmit
             if(resubmit) :
-                status, output = commands.getstatusoutput('ls ' + outdir +'/'+ dtag + '_' + '*_cfg.py')
+		if isdata:	status, output = commands.getstatusoutput('ls ' + outdir +'/DATA/'+ dtag + '_' + '*_cfg.py')
+		else:		status, output = commands.getstatusoutput('ls ' + outdir +'/MC/'+ dtag + '_' + '*_cfg.py')
                 if status > 0 :
                     print "No python configuation files for tag: " + dtag 
                     continue
@@ -162,9 +163,7 @@ for proc in procList :
                     rsegment=0
                     for cfgfile in failedList: 
                         os.system('mkdir -p ' + queuelog)
-                        htlog = os.path.join( queuelog, 'HTCondor_Data')
-                        if(not isdata):
-                            htlog = os.path.join( queuelog, 'HTCondor_MC')
+                        htlog = os.path.join( queuelog, dtag)
                         os.system('mkdir -p ' + htlog)
                         SCRIPT.writelines('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(rsegment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(rsegment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile + '\n\n')
                         SCRIPT_L.writelines(theExecutable + ' ' + cfgfile + ' >& '+queuelog+'/'+dtag+str(rsegment)+'.log'+' & \n\n')
@@ -198,12 +197,15 @@ for proc in procList :
                 # FileList = [file for file in glob.glob(ntplpath+'analysis_*.root')] 
                 
                 segment=0
+		if isdata: ntpl_out = outdir + '/DATA'
+		else:	   ntpl_out = outdir + '/MC'
+		os.system('mkdir -p ' + ntpl_out)
                 for file in glob.glob(ntplpath+'analysis_*.root'):
                     eventsFile = file
 #            eventsFile = ', \n '.join('"' + item + '"' for item in FileList)
                     
                     sedcmd = 'sed \"s%"@input"%' +eventsFile +'%;'
-                    sedcmd += 's%"@outdir"%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
+                    sedcmd += 's%"@outdir"%' + ntpl_out +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
                     sedcmd += 's%"@btagDir"%' + btagDir + '%;'
                     sedcmd += 's%"@suffix"%' + suffix + '%;'
                     sedcmd += 's%"@proc"%' + dtag + '%;'
@@ -227,7 +229,7 @@ for proc in procList :
                     sedcmd += '\"'
                         
                     
-                    cfgfile=outdir +'/'+ dtag + suffix + '_' + str(segment) + '_cfg.py'
+                    cfgfile= ntpl_out +'/'+ dtag + suffix + '_' + str(segment) + '_cfg.py'
 #                    print cfgfile    
                     os.system('cat ' + cfg_file + ' | ' + sedcmd + ' > ' + cfgfile)
 
@@ -235,9 +237,7 @@ for proc in procList :
                         os.system(theExecutable + ' ' + cfgfile)
                     else :
                         os.system('mkdir -p ' + queuelog)
-                        htlog = os.path.join( queuelog, 'HTCondor_Data')
-                        if(not isdata): 
-                            htlog = os.path.join( queuelog, 'HTCondor_MC')
+                        htlog = os.path.join( queuelog, dtag)
                         os.system('mkdir -p ' + htlog)
                         
                         SCRIPT.writelines('submit2batch.sh -q'+queue+' -G'+queuelog+'/'+dtag+'_'+str(segment)+'.log'+' -R"' + requirementtoBatch + '" -J' + dtag + str(segment) + ' ${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh ' + theExecutable + ' ' + cfgfile + '\n\n')
