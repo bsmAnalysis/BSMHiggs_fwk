@@ -229,7 +229,7 @@ for proc in procList :
                     sedcmd += '\"'
                         
                     
-                    cfgfile=outdir +'/'+ dtag + suffix + '_' + str(segment) + '_cfg.py'
+                    cfgfile= ntpl_out +'/'+ dtag + suffix + '_' + str(segment) + '_cfg.py'
 #                    print cfgfile    
                     os.system('cat ' + cfg_file + ' | ' + sedcmd + ' > ' + cfgfile)
 
