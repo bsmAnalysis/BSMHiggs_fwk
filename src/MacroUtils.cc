@@ -481,7 +481,8 @@ namespace utils
     }
     
     double power = floor(log10(value));
-    if(power<=-3)     {power=power+3;}
+    //if(power<=-3)     {power=power+3;}
+    if(power<=-2)     {power=power;}
     else if(power>=2) {power=power-2;}
     else              {power=0;}
     
