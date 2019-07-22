@@ -1282,7 +1282,8 @@ void ConvertToTex(JSONWrapper::Object& Root, TFile* File, NameAndType& HistoProp
    FILE* pFile = NULL;
 
    std::vector<TObject*> ObjectToDelete;
-   std::vector<TH1*> StacksToDelete;
+   std::vector<TH1*> BkgdToDelete;
+   std::map<string, TH1*> SiglToDelete;
    TH1* stack = NULL; 
    std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
    for(unsigned int i=0;i<Process.size();i++){
@@ -1325,9 +1326,13 @@ void ConvertToTex(JSONWrapper::Object& Root, TFile* File, NameAndType& HistoProp
       if(CleanTag.find("#")!=std::string::npos)CleanTag = string("$") + CleanTag + "$";
       while(CleanTag.find("#")!=std::string::npos)CleanTag.replace(CleanTag.find("#"),1,"\\");
 
+      if(Process[i].getBoolFromKeyword(matchingKeyword, "issignal", false) && CleanTag.find("60")!=std::string::npos){
+	SiglToDelete[Process[i].getStringFromKeyword(matchingKeyword, "resonance", "")] = (TH1*)hist->Clone();
+      }
+
       if(!Process[i].getBoolFromKeyword(matchingKeyword, "spimpose", false)  && !Process[i].getBoolFromKeyword(matchingKeyword, "isdata", false)){
          //Add to Stack
-	if(!stack){stack = (TH1*)hist->Clone("Stack");utils::root::checkSumw2(stack);}else{stack->Add(hist,1.0);}
+	if(!stack && !Process[i].getBoolFromKeyword(matchingKeyword, "issignal", false) ){stack = (TH1*)hist->Clone("Stack");utils::root::checkSumw2(stack);}else if(stack){stack->Add(hist,1.0);}
 
          char numberastext[2048]; numberastext[0] = '\0';
          for(int b=1;b<=hist->GetXaxis()->GetNbins();b++){sprintf(numberastext,"%s & %s",numberastext, utils::toLatexRounded(hist->GetBinContent(b), hist->GetBinError(b),-1,doPowers).c_str());}
@@ -1338,7 +1343,7 @@ void ConvertToTex(JSONWrapper::Object& Root, TFile* File, NameAndType& HistoProp
             char numberastext[2048]; numberastext[0] = '\0';
             for(int b=1;b<=hist->GetXaxis()->GetNbins();b++){sprintf(numberastext,"%s & %s",numberastext, utils::toLatexRounded(stack->GetBinContent(b), stack->GetBinError(b),-1,doPowers).c_str());}
             fprintf(pFile, "%s %s \\\\\n\\hline\n","Total expected", numberastext);
-	     StacksToDelete.push_back(stack);
+	     BkgdToDelete.push_back(stack);
              stack=NULL;
           }
 
@@ -1351,24 +1356,29 @@ void ConvertToTex(JSONWrapper::Object& Root, TFile* File, NameAndType& HistoProp
 
    }
    //printing S/B and S/sqrt(S+B) info
-   if(StacksToDelete.size() == 2){
+   if(BkgdToDelete.size() == 1 && !SiglToDelete.empty()){
       fprintf(pFile, "\\hline \n");
       char numberastext[2048]; numberastext[0] = '\0';
-      for(int b=1;b<=StacksToDelete[0]->GetXaxis()->GetNbins();b++) {
-	double nBkgd = StacksToDelete[0]->GetBinContent(b), nSigl = StacksToDelete[1]->GetBinContent(b), nBkgdError = StacksToDelete[0]->GetBinError(b), nSiglError = StacksToDelete[1]->GetBinError(b);
-	double ratioError = sqrt(pow(nBkgdError/nBkgd,2)+pow(nSiglError/nSigl,2)) * nSigl/nBkgd;
-	sprintf(numberastext,"%s & %s",numberastext,utils::toLatexRounded(nSigl/nBkgd,ratioError,-1,doPowers).c_str());
-      }
-      fprintf(pFile, "%s %s \\\\ \n","$S/B$", numberastext);
 
-      memset(numberastext, 0, 2048);numberastext[0] = '\0';
-      for(int b=1;b<=StacksToDelete[0]->GetXaxis()->GetNbins();b++){
-        double nBkgd = StacksToDelete[0]->GetBinContent(b), nSigl = StacksToDelete[1]->GetBinContent(b), nBkgdError = StacksToDelete[0]->GetBinError(b), nSiglError = StacksToDelete[1]->GetBinError(b);
-	double sum = nBkgd + nSigl, sumError = sqrt(pow(nBkgdError,2) + pow(nSiglError,2));
-	double ratio = nSigl / sqrt(sum), ratioError = sqrt(pow(sumError/sum,2)/4+pow(nSiglError/nSigl,2)) * ratio;
-	sprintf(numberastext,"%s & %s",numberastext,utils::toLatexRounded(ratio,ratioError,-1,doPowers).c_str());
+      for(const auto &pair : SiglToDelete){
+	memset(numberastext, 0, 2048);numberastext[0] = '\0';
+	for(int b=1;b<=pair.second->GetXaxis()->GetNbins();b++) {
+	  double nBkgd = BkgdToDelete[0]->GetBinContent(b), nSigl = pair.second->GetBinContent(b), nBkgdError = BkgdToDelete[0]->GetBinError(b), nSiglError = pair.second->GetBinError(b);
+	  double ratioError = sqrt(pow(nBkgdError/nBkgd,2)+pow(nSiglError/nSigl,2)) * nSigl/nBkgd;
+	  sprintf(numberastext,"%s & %s",numberastext,utils::toLatexRounded(nSigl/nBkgd,ratioError,-1,doPowers).c_str());
+	}
+	fprintf(pFile, "%s[%s] %s \\\\ \n","$S/B$", pair.first.c_str(),numberastext);
+        
+	memset(numberastext, 0, 2048);numberastext[0] = '\0';
+	for(int b=1;b<=pair.second->GetXaxis()->GetNbins();b++){
+	  double nBkgd = BkgdToDelete[0]->GetBinContent(b), nSigl = pair.second->GetBinContent(b), nBkgdError = BkgdToDelete[0]->GetBinError(b), nSiglError = pair.second->GetBinError(b);
+	  double sum = nBkgd + nSigl, sumError = sqrt(pow(nBkgdError,2) + pow(nSiglError,2));
+	  double ratio = nSigl / sqrt(sum), ratioError = sqrt(pow(sumError/sum,2)/4+pow(nSiglError/nSigl,2)) * ratio;
+	  sprintf(numberastext,"%s & %s",numberastext,utils::toLatexRounded(ratio,ratioError,-1,doPowers).c_str());
+	}
+	fprintf(pFile, "%s[%s] %s \\\\\n","$S/\\sqrt{S+B}$", pair.first.c_str(),numberastext);
       }
-      fprintf(pFile, "%s %s \\\\\n","$S/\\sqrt{S+B}$", numberastext);
+
    }
 
    if(pFile){
@@ -1379,7 +1389,8 @@ void ConvertToTex(JSONWrapper::Object& Root, TFile* File, NameAndType& HistoProp
       fclose(pFile);
    }
    for(unsigned int d=0;d<ObjectToDelete.size();d++){delete ObjectToDelete[d];}ObjectToDelete.clear();
-   for(unsigned int d=0;d<StacksToDelete.size();d++){delete StacksToDelete[d];}StacksToDelete.clear();
+   for(unsigned int d=0;d<BkgdToDelete.size();d++){delete BkgdToDelete[d];}BkgdToDelete.clear();
+   SiglToDelete.clear();
 }
 
 
