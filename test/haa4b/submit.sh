@@ -106,6 +106,8 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo -e "Input: " $JSON "\nOutput: " $RESULTSDIR
        #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -s crab 
        runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $FULLANALYSISCFG -l results$SUFFIX -p "@verbose=False" --key haa_prod -s crab
+       # Ntuplize 2016 signal samples under 94X:
+       #runAnalysisOverSamples.py -j $MAINDIR/samples2016.json -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg_2016Signal.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_prod --key haa_signal  -s crab
    fi    
 
    if [[ $step == 1.01 ]]; then  # compute BTagging efficiency

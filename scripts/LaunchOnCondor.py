@@ -252,6 +252,7 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
     config_file.write('config.Data.totalUnits = -1\n')
     config_file.write('config.Data.publication = False\n')
     config_file.write('config.Data.ignoreLocality = True\n')
+    config_file.write('config.Data.allowNonValidInputDataset = True\n')
     if Jobs_CRABLFN == '':
         config_file.write('#config.Data.outLFNDirBase = \'/store/user/<username>/debug\'\n')
     else:
