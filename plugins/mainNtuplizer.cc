@@ -1682,7 +1682,6 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 
         // Fill Tree
        summaryHandler_.fillTree();
-       std::cout << "Filled the tree!" << std::endl;
  
 }
 
