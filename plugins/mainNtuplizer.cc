@@ -75,7 +75,7 @@
 #include "UserCode/bsmhiggs_fwk/interface/DataEvtSummaryHandler.h"
 //#include "UserCode/bsmhiggs_fwk/interface/LeptonEfficiencySF.h"
 #include "UserCode/bsmhiggs_fwk/interface/PDFInfo.h"
-#include "UserCode/bsmhiggs_fwk/interface/rochcor2016.h"
+//#include "UserCode/bsmhiggs_fwk/interface/rochcor2016.h"
 #include "UserCode/bsmhiggs_fwk/interface/muresolution_run2.h"
 #include "UserCode/bsmhiggs_fwk/interface/BTagCalibrationStandalone.h"
 #include "UserCode/bsmhiggs_fwk/interface/BtagUncertaintyComputer.h"
