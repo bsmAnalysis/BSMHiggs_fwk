@@ -1274,9 +1274,9 @@ int main(int argc, char* argv[])
 	      if(isMC){TRandom3* rand_ = new TRandom3(0);float randn = rand_->Uniform(1.);sf = rc.kSmearMC(charge, ilep.pt(), ilep.eta(), ilep.phi(), ilep.mn_trkLayersWithMeasurement, randn, 0, 0);}
 	      else {sf = rc.kScaleDT(charge, ilep.pt(), ilep.eta(), ilep.phi(), 0, 0);}
 	      muDiff -= ilep;
-	      printf("Muon P4 (before roch): px=%f, py=%f, pz=%f, e=%f\n",ilep.Px(),ilep.Py(),ilep.Pz(),ilep.E());
+//	      printf("Muon P4 (before roch): px=%f, py=%f, pz=%f, e=%f\n",ilep.Px(),ilep.Py(),ilep.Pz(),ilep.E());
 	      ilep.SetPxPyPzE(ilep.Px()*sf,ilep.Py()*sf,ilep.Pz()*sf,ilep.E()*sf); muDiff += ilep;
-	      printf("Muon P4 (AFTER roch): px=%f, py=%f, pz=%f, e=%f\n\n",ilep.Px(),ilep.Py(),ilep.Pz(),ilep.E());
+//	      printf("Muon P4 (AFTER roch): px=%f, py=%f, pz=%f, e=%f\n\n",ilep.Px(),ilep.Py(),ilep.Pz(),ilep.E());
 	    }
 	    /*
 	    else if (abs(lepid)==13) { // mu scale corrections    
