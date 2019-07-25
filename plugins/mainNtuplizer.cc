@@ -75,7 +75,7 @@
 #include "UserCode/bsmhiggs_fwk/interface/DataEvtSummaryHandler.h"
 //#include "UserCode/bsmhiggs_fwk/interface/LeptonEfficiencySF.h"
 #include "UserCode/bsmhiggs_fwk/interface/PDFInfo.h"
-#include "UserCode/bsmhiggs_fwk/interface/rochcor2016.h"
+//#include "UserCode/bsmhiggs_fwk/interface/rochcor2016.h"
 #include "UserCode/bsmhiggs_fwk/interface/muresolution_run2.h"
 #include "UserCode/bsmhiggs_fwk/interface/BTagCalibrationStandalone.h"
 #include "UserCode/bsmhiggs_fwk/interface/BtagUncertaintyComputer.h"
@@ -216,6 +216,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
   TH2F *h2_TightBTaggingEff_Num_b, *h2_TightBTaggingEff_Num_c, *h2_TightBTaggingEff_Num_udsg;
 
   bool isMC_ttbar;
+  bool is2016Signal;
   bool is2017;
   bool is2018;
   bool is2017BC;
@@ -321,6 +322,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
      printf("  Verbose set to false.  Will be quiet.\n") ;
   }
 
+  is2016Signal	= (string(proc_.c_str()).find("2016") != string::npos && string(proc_.c_str()).find("h_amass") != string::npos );
   is2017     = (string(proc_.c_str()).find("2017") != string::npos);
   is2017BC   = (string(proc_.c_str()).find("2017B") != string::npos || string(proc_.c_str()).find("2017C") != string::npos);
   is2018     = (string(proc_.c_str()).find("2018") != string::npos);
@@ -736,7 +738,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
   // Filling histograms for BTagging Efficiency
   if (is2018) //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
     {DeepCSVLooseWP = 0.1241; DeepCSVMediumWP = 0.4184; DeepCSVTightWP = 0.7527;}
-  else if(is2017) //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+  else if(is2017 || is2016Signal) //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
     {DeepCSVLooseWP = 0.1522; DeepCSVMediumWP = 0.4941; DeepCSVTightWP = 0.8001;}
   else
     {DeepCSVLooseWP = 0.2219;  DeepCSVMediumWP = 0.6324; DeepCSVTightWP = 0.8958;}
@@ -748,7 +750,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
   if(isMC_){
     for (pat::Jet &j : jets) {
       Float_t btag_dsc;
-      if(is2017 || is2018)  
+      if(is2017 || is2018 || is2016Signal)  
         btag_dsc = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
       else
         btag_dsc = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
@@ -1047,7 +1049,6 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	   | (mu.isRPCMuon()<< 6);
 	 ev.mn++;
        } // mu
-       
 
        pat::ElectronCollection electrons;
        edm::Handle< pat::ElectronCollection > electronsHandle;
@@ -1181,7 +1182,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
       btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
       nCSVLtags += (btag1>0.1241);
    }
-	 if(is2017) {
+	 if(is2017 || is2016Signal) {
 	   btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
 	   nCSVLtags += (btag1>0.1522);  
 	 //	   ev.jet_btag1[ev.jet] = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");

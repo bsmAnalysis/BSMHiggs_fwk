@@ -19,6 +19,7 @@
 <use name="PhysicsTools/UtilAlgos"/>
 <use name="PhysicsTools/Utilities"/>
 <use name="CondFormats/BTauObjects"/>
+<use name="CondTools/BTau"/>
 <use name="roottmva"/>
 <use name="roofit"/>
 <use name="rootrflx"/>

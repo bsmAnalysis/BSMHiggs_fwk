@@ -1,3 +1,5 @@
+//#define YEAR_2017
+
 #include <iostream>
 #include <map>
 
@@ -13,10 +15,11 @@
 #include "UserCode/bsmhiggs_fwk/interface/BSMPhysicsEvent.h"
 #include "UserCode/bsmhiggs_fwk/interface/SmartSelectionMonitor.h"
 #include "UserCode/bsmhiggs_fwk/interface/PDFInfo.h"
-#include "UserCode/bsmhiggs_fwk/interface/rochcor2016.h" 
-#include "UserCode/bsmhiggs_fwk/interface/muresolution_run2.h" 
+//#include "UserCode/bsmhiggs_fwk/interface/rochcor2016.h" 
+#include "UserCode/bsmhiggs_fwk/interface/RoccoR.h" 
+//#include "UserCode/bsmhiggs_fwk/interface/muresolution_run2.h" 
 #include "UserCode/bsmhiggs_fwk/interface/LeptonEfficiencySF.h"
-#include "UserCode/bsmhiggs_fwk/interface/BTagCalibrationStandalone.h"
+//#include "UserCode/bsmhiggs_fwk/interface/BTagCalibrationStandalone.h"
 #include "UserCode/bsmhiggs_fwk/interface/BtagUncertaintyComputer.h"
 #include "UserCode/bsmhiggs_fwk/interface/METUtils.h"
 //#include "UserCode/bsmhiggs_fwk/interface/BTagUtils.h"
@@ -27,6 +30,10 @@
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 //#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
+
+//https://twiki.cern.ch/twiki/bin/view/CMS/BTagCalibration
+#include "CondFormats/BTauObjects/interface/BTagCalibration.h"
+#include "CondTools/BTau/interface/BTagCalibrationReader.h"
 
 #include "TSystem.h"
 #include "TFile.h"
@@ -41,7 +48,6 @@
 #include "TMath.h"
 
 #include <unistd.h>
-//#define YEAR_2017
 using namespace std;
 
 // histograms and functions for btagging SFs
@@ -324,11 +330,15 @@ int main(int argc, char* argv[])
     
     BTagCalibration btagCalib(b_tagging_name, csv_file_path);
     // setup calibration readers 80X
-    BTagCalibrationReader80X btagCal80X(BTagEntry::OP_LOOSE, "central", {"up", "down"});
-    btagCal80X.load(btagCalib, BTagEntry::FLAV_B, "comb");
-    btagCal80X.load(btagCalib, BTagEntry::FLAV_C, "comb");
-    btagCal80X.load(btagCalib, BTagEntry::FLAV_UDSG, "incl");
+    //BTagCalibrationReader80X btagCal80X(BTagEntry::OP_LOOSE, "central", {"up", "down"});
+    //btagCal80X.load(btagCalib, BTagEntry::FLAV_B, "comb");
+    //btagCal80X.load(btagCalib, BTagEntry::FLAV_C, "comb");
+    //btagCal80X.load(btagCalib, BTagEntry::FLAV_UDSG, "incl");
 
+    BTagCalibrationReader reader(BTagEntry::OP_LOOSE, "central", {"up", "down"});
+    reader.load(btagCalib, BTagEntry::FLAV_B, "comb");
+    reader.load(btagCalib, BTagEntry::FLAV_C, "comb");
+    reader.load(btagCalib, BTagEntry::FLAV_UDSG, "incl");
 
     //jet energy scale uncertainties
     TString jecDir = runProcess.getParameter<std::string>("jecDir");
@@ -493,6 +503,13 @@ int main(int argc, char* argv[])
     //    gSystem->ExpandPathName(muscleDir);
 
     //    rochcor2016* muCor2016 = new rochcor2016(); //replace the MuScleFitCorrector we used at run1
+    TString muscleDir = runProcess.getParameter<std::string>("muscleDir");
+    gSystem->ExpandPathName(muscleDir);
+    if(is2016data || is2016MC)	muscleDir += "/RoccoR2016.txt";
+    else if(is2017data || is2017MC)	muscleDir += "/RoccoR2017.txt";
+    else if(is2018data || is2018MC)	muscleDir += "/RoccoR2018.txt";
+    RoccoR rc;
+    rc.init(std::string(muscleDir));
     
     //pdf info
     
@@ -1250,6 +1267,17 @@ int main(int argc, char* argv[])
 	      else elDiff_forMET += ilep*0.015;   
 
 	    } 
+	    //https://twiki.cern.ch/twiki/bin/view/CMS/RochcorMuon#Available_correction_in_the_prod
+	    else if(abs(lepid)==13){
+	      int charge = lepid > 0 ? 1 : -1;
+	      double sf;
+	      if(isMC){TRandom3* rand_ = new TRandom3(0);float randn = rand_->Uniform(1.);sf = rc.kSmearMC(charge, ilep.pt(), ilep.eta(), ilep.phi(), ilep.mn_trkLayersWithMeasurement, randn, 0, 0);}
+	      else {sf = rc.kScaleDT(charge, ilep.pt(), ilep.eta(), ilep.phi(), 0, 0);}
+	      muDiff -= ilep;
+//	      printf("Muon P4 (before roch): px=%f, py=%f, pz=%f, e=%f\n",ilep.Px(),ilep.Py(),ilep.Pz(),ilep.E());
+	      ilep.SetPxPyPzE(ilep.Px()*sf,ilep.Py()*sf,ilep.Pz()*sf,ilep.E()*sf); muDiff += ilep;
+//	      printf("Muon P4 (AFTER roch): px=%f, py=%f, pz=%f, e=%f\n\n",ilep.Px(),ilep.Py(),ilep.Pz(),ilep.E());
+	    }
 	    /*
 	    else if (abs(lepid)==13) { // mu scale corrections    
 	      if(muCor2016){
@@ -2081,13 +2109,19 @@ int main(int argc, char* argv[])
 		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_btagup") {
-		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_B ,
+//		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_B ,
+//											  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagUp;
+		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , reader.eval_auto_bounds("up", BTagEntry::FLAV_B ,
 											  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagUp;
 		  } else if ( varNames[ivar]=="_btagdown") {
-		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_B ,
+//		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_B ,
+//											  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagDown;
+		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, reader.eval_auto_bounds("down", BTagEntry::FLAV_B ,
 											  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagDown;
 		  } else {
-		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_B ,
+//		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_B ,
+//										       vJets[ijet].eta(), vJets[ijet].pt()), beff); 
+		    btsfutil.modifyBTagsWithSF(hasCSVtag , reader.eval_auto_bounds("central", BTagEntry::FLAV_B ,
 										       vJets[ijet].eta(), vJets[ijet].pt()), beff); 
 		  }
 		} else if(abs(vJets[ijet].flavid)==4) {
@@ -2102,13 +2136,19 @@ int main(int argc, char* argv[])
 		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_ctagup") {
-		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_C , 
+//		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_C , 
+//											  vJets[ijet].eta(), vJets[ijet].pt()), beff);hasCSVtag=hasCSVtagUp;
+		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , reader.eval_auto_bounds("up", BTagEntry::FLAV_C , 
 											  vJets[ijet].eta(), vJets[ijet].pt()), beff);hasCSVtag=hasCSVtagUp;
 		  } else if ( varNames[ivar]=="_ctagdown") {
-		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_C , 
+//		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_C , 
+//											  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagDown;
+		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, reader.eval_auto_bounds("down", BTagEntry::FLAV_C , 
 											  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagDown;
 		  } else {
-		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_C ,
+//		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_C ,
+//										       vJets[ijet].eta(), vJets[ijet].pt()), beff);
+		    btsfutil.modifyBTagsWithSF(hasCSVtag , reader.eval_auto_bounds("central", BTagEntry::FLAV_C ,
 										       vJets[ijet].eta(), vJets[ijet].pt()), beff);
 		  }
 		} else {
@@ -2122,13 +2162,19 @@ int main(int argc, char* argv[])
 		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_ltagup") {
-		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_UDSG   , 
+//		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_UDSG   , 
+//		  								      vJets[ijet].eta(), vJets[ijet].pt()), leff);hasCSVtag=hasCSVtagUp;
+		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , reader.eval_auto_bounds("up", BTagEntry::FLAV_UDSG   , 
 		  								      vJets[ijet].eta(), vJets[ijet].pt()), leff);hasCSVtag=hasCSVtagUp;
 		  } else if ( varNames[ivar]=="_ltagdown") {
-		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_UDSG   , 
+//		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_UDSG   , 
+//		  								      vJets[ijet].eta(), vJets[ijet].pt()), leff);hasCSVtag=hasCSVtagDown;
+		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, reader.eval_auto_bounds("down", BTagEntry::FLAV_UDSG   , 
 		  								      vJets[ijet].eta(), vJets[ijet].pt()), leff);hasCSVtag=hasCSVtagDown;
 		  } else {
-		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_UDSG ,
+//		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_UDSG ,
+//										       vJets[ijet].eta(), vJets[ijet].pt()), leff);
+		    btsfutil.modifyBTagsWithSF(hasCSVtag , reader.eval_auto_bounds("central", BTagEntry::FLAV_UDSG ,
 										       vJets[ijet].eta(), vJets[ijet].pt()), leff);
 		  }
 		}
