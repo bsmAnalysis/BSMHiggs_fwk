@@ -154,6 +154,7 @@ int main(int argc, char* argv[])
 
     bool is2016data = (!isMC && dtag.Contains("2016"));
     bool is2016MC = (isMC && dtag.Contains("2016"));
+    bool is2016Signal = (is2016MC && dtag.Contains("h_amass"));
     bool is2017data = (!isMC && dtag.Contains("2017"));
     bool is2017MC = (isMC && dtag.Contains("2017"));
     bool is2018data = (!isMC && dtag.Contains("2018"));
@@ -189,7 +190,7 @@ int main(int argc, char* argv[])
       exit(0);
     }
 
-    if(is2017data || is2017MC){
+    if(is2017data || is2017MC || is2016Signal){
       // 2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
         CSVLooseWP = 0.5803; CSVMediumWP = 0.8838; CSVTightWP = 0.9693;
         DeepCSVLooseWP = 0.1522; DeepCSVMediumWP = 0.4941; DeepCSVTightWP = 0.8001;
@@ -301,7 +302,7 @@ int main(int argc, char* argv[])
        
       csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                       "/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_Moriond17_B_H.csv";
-      if(is2017data || is2017MC){
+      if(is2017data || is2017MC || is2016Signal){
           csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                           "/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_94XSF_V2_B_F.csv";     
           csv_file_path1 = std::string(std::getenv("CMSSW_BASE"))+
@@ -322,7 +323,7 @@ int main(int argc, char* argv[])
        
       csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                       "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_Moriond17_B_H.csv";
-      if(is2017data || is2017MC){
+      if(is2017data || is2017MC || is2016Signal){
           csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                           "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V4_B_F.csv";       
           csv_file_path1 = std::string(std::getenv("CMSSW_BASE"))+
@@ -400,7 +401,8 @@ int main(int argc, char* argv[])
         else if(dtag.Contains("2016E") || dtag.Contains("2016F")) jecDir+="Summer16_80X/Summer16_23Sep2016EFV4_DATA/";
         else if(dtag.Contains("2016G")) jecDir+="Summer16_80X/Summer16_23Sep2016GV4_DATA/";
         else if(dtag.Contains("2016H")) jecDir+="Summer16_80X/Summer16_23Sep2016HV4_DATA/";
-        if(isMC) {jecDir+="Summer16_80X/Summer16_23Sep2016V4_MC/";}
+	if(is2016Signal) {jecDir+="Summer16_94X/Summer16_07Aug2017_V11_MC/Summer16_07Aug2017_V11_";}
+        else if(isMC) {jecDir+="Summer16_80X/Summer16_23Sep2016V4_MC/";}
     }
 
 
