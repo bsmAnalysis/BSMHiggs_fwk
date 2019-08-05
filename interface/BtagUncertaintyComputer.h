@@ -40,6 +40,8 @@ class BTagSFUtil{
   float getBTagEff(double pt, TString key);
   void modifyBTagsWithSF( bool& isBTagged, float Btag_SF = 0.98, float Btag_eff = 1.0);
 
+  void applySF2WPs(bool& isBTaggedL, bool& isBTaggedM, float BtagL_SF, float BtagM_SF, float BtagL_eff, float BtagM_eff);
+
 
  private:
   
@@ -120,5 +122,57 @@ bool BTagSFUtil::applySF(bool& isBTagged, float Btag_SF, float Btag_eff){
   return newBTag;
 }
 
+// function to apply the two btagging working points scale factors with method: Jet-by-jet updating of the b-tagging status
+// https://twiki.cern.ch/twiki/bin/view/CMS/BTagSFMethods#2a_Jet_by_jet_updating_of_the_b
+// reference for the three working points: https://twiki.cern.ch/twiki/pub/CMS/BTagSFMethods/Method2a3OPsExampleCode.txt
+// isBTaggedL: pass the lower WP or not; isBTaggedM: pass the higher WP or not
+void BTagSFUtil::applySF2WPs(bool& isBTaggedL, bool& isBTaggedM, float BtagL_SF, float BtagM_SF, float BtagL_eff, float BtagM_eff){
+  //Jet b-tag status definitions
+  const int csvm = 2; //Higher WP
+  const int csvl = 1; //Lower WP
+  const int csvn = 0; //No tag
+	
+  int jettag;
+  // code the jet btag status
+  if(isBTaggedM) jettag = csvm;
+  else if(isBTaggedL) jettag = csvl;
+  else jettag = csvn;
+  int newtag = jettag;
+  // Get random numbers
+  float rn1 = rand_->Uniform(1.);
+  float rn2 = rand_->Uniform(1.);
+
+  //Modify the newtag accordingly in four cases
+  if(BtagL_SF<=1 && BtagM_SF<=1){
+    if( newtag==csvm && rn1<(1-BtagM_SF) ) newtag--;
+    if( newtag==csvl && rn2<((1-BtagL_SF)/(1-BtagM_SF*BtagM_eff/BtagL_eff)) ) newtag--;
+  }else if(BtagL_SF>=1 && BtagM_SF<=1){
+    if( newtag==csvm && rn1<(1-BtagM_SF) ) newtag--;
+    if( newtag==csvn && rn2<((BtagL_SF-1)/(1./BtagL_eff-1)) ) newtag++;
+  }else if(BtagL_SF>=1 && BtagM_SF>=1){
+    if( newtag==csvn && rn1<((BtagL_SF-1)/(1./BtagL_eff-1)) ) newtag++;
+    if( newtag==csvl && rn2<((BtagM_SF-1)/(BtagM_SF*BtagL_eff/BtagM_eff-1)) ) newtag++;
+  }else if(BtagL_SF<=1 && BtagM_SF>=1){
+    if( newtag==csvl && rn1<((BtagM_SF-1)/(BtagL_eff/BtagM_eff-1)) ) newtag++;
+    if( newtag==csvl && rn2<((1-BtagL_SF)/(1-BtagL_SF*BtagM_eff/BtagL_eff)) ) newtag--;
+  }
+  if(newtag > csvm || newtag < csvn){ 
+    std::cout << "Error in applySF2WPs: newtag out of range! newtag: " << newtag << std::endl;
+    return;
+  }
+
+  //if(newtag != jettag){
+  //  std::cout << "--------------------------------------------------------------------------" << std::endl;
+  //  std::cout << "Loose SF: " << BtagL_SF << ", medium SF: " << BtagM_SF << ", Loose Eff: " << BtagL_eff << ", medium Eff: " << BtagM_eff << std::endl;
+  //  std::cout << "isBTaggedL: " << isBTaggedL << ", isBTaggedM: " << isBTaggedM << std::endl;
+  //}
+  if(newtag==csvm) {isBTaggedL = true; isBTaggedM = true;}
+  if(newtag==csvl) {isBTaggedL = true; isBTaggedM = false;}
+  if(newtag==csvn) {isBTaggedL = false; isBTaggedM = false;}
+
+  //if(newtag != jettag)  std::cout << "isBTaggedL: " << isBTaggedL << ", isBTaggedM: " << isBTaggedM << std::endl;
+
+  return;
+}
 
 #endif
