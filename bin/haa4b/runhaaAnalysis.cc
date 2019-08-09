@@ -275,8 +275,8 @@ int main(int argc, char* argv[])
     //the scale factors are taken as average numbers from the pT dependent curves see:
     //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagPOG#2012_Data_and_MC_EPS13_prescript
     BTagSFUtil btsfutil;
-    float beff(0.68), sfb(0.99), sfbunc(0.015);
-    float leff(0.13), sfl(1.05), sflunc(0.12);
+    float beffLoose(0.68), beffMedium(0.68), sfb(0.99), sfbunc(0.015);
+    float leffLoose(0.13), leffMedium(0.13), sflMedium(1.05), sflunc(0.12);
 
     //read btagging efficiency SFs from root files
     //https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration
@@ -292,7 +292,8 @@ int main(int argc, char* argv[])
     }
 
     //setup calibration readers 80X
-    std::string b_tagging_name, csv_file_path;
+    std::string b_tagging_name, csv_file_path, csv_file_path1, csv_file_path2, csv_file_path3;
+    float  bTag_lumi1 = 4.823, bTag_lumi2 = 21.719, bTag_lumi3 = 15.017; //2017
     float LooseWP = -1, MediumWP = -1, TightWP = -1;
     if (!use_DeepCSV) 
     {
@@ -303,6 +304,12 @@ int main(int argc, char* argv[])
       if(is2017data || is2017MC){
           csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                           "/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_94XSF_V2_B_F.csv";     
+          csv_file_path1 = std::string(std::getenv("CMSSW_BASE"))+
+                          "/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_94XSF_V2_B.csv"; 
+          csv_file_path2 = std::string(std::getenv("CMSSW_BASE"))+
+                          "/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_94XSF_V2_C_E.csv";       
+          csv_file_path3 = std::string(std::getenv("CMSSW_BASE"))+
+                          "/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_94XSF_V2_E_F.csv";       
       }
 
        
@@ -318,6 +325,12 @@ int main(int argc, char* argv[])
       if(is2017data || is2017MC){
           csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                           "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V4_B_F.csv";       
+          csv_file_path1 = std::string(std::getenv("CMSSW_BASE"))+
+                          "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V3_B.csv";       
+          csv_file_path2 = std::string(std::getenv("CMSSW_BASE"))+
+                          "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V3_C_E.csv";       
+          csv_file_path3 = std::string(std::getenv("CMSSW_BASE"))+
+                          "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V3_E_F.csv";       
       }
       if(is2018data || is2018MC){
         csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
@@ -329,16 +342,39 @@ int main(int argc, char* argv[])
     }
     
     BTagCalibration btagCalib(b_tagging_name, csv_file_path);
+    BTagCalibration btagCalib1, btagCalib2, btagCalib3;
     // setup calibration readers 80X
     //BTagCalibrationReader80X btagCal80X(BTagEntry::OP_LOOSE, "central", {"up", "down"});
     //btagCal80X.load(btagCalib, BTagEntry::FLAV_B, "comb");
     //btagCal80X.load(btagCalib, BTagEntry::FLAV_C, "comb");
     //btagCal80X.load(btagCalib, BTagEntry::FLAV_UDSG, "incl");
 
-    BTagCalibrationReader reader(BTagEntry::OP_LOOSE, "central", {"up", "down"});
-    reader.load(btagCalib, BTagEntry::FLAV_B, "comb");
-    reader.load(btagCalib, BTagEntry::FLAV_C, "comb");
-    reader.load(btagCalib, BTagEntry::FLAV_UDSG, "incl");
+    BTagCalibrationReader btagReaderLoose(BTagEntry::OP_LOOSE, "central", {"up", "down"});
+    btagReaderLoose.load(btagCalib, BTagEntry::FLAV_B, "comb");
+    btagReaderLoose.load(btagCalib, BTagEntry::FLAV_C, "comb");
+    btagReaderLoose.load(btagCalib, BTagEntry::FLAV_UDSG, "incl");
+    
+    BTagCalibrationReader btagReaderMedium(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
+    btagReaderMedium.load(btagCalib, BTagEntry::FLAV_B, "comb");
+    btagReaderMedium.load(btagCalib, BTagEntry::FLAV_C, "comb");
+    btagReaderMedium.load(btagCalib, BTagEntry::FLAV_UDSG, "incl");
+
+    BTagCalibrationReader btagReaderLoose1, btagReaderLoose2, btagReaderLoose3, btagReaderMedium1, btagReaderMedium2, btagReaderMedium3;
+    if(is2017data || is2017MC){// b-tag SFs with period dependency for 2017
+      btagCalib1 = BTagCalibration(b_tagging_name+"1", csv_file_path1);
+      btagCalib2 = BTagCalibration(b_tagging_name+"2", csv_file_path2);
+      btagCalib3 = BTagCalibration(b_tagging_name+"3", csv_file_path3);
+
+      btagReaderLoose1 = BTagCalibrationReader(BTagEntry::OP_LOOSE, "central", {"up", "down"}); btagReaderLoose2 = BTagCalibrationReader(BTagEntry::OP_LOOSE, "central", {"up", "down"}); btagReaderLoose3 = BTagCalibrationReader(BTagEntry::OP_LOOSE, "central", {"up", "down"});
+      btagReaderMedium1 = BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", {"up", "down"}); btagReaderMedium2 = BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", {"up", "down"}); btagReaderMedium3 = BTagCalibrationReader(BTagEntry::OP_MEDIUM, "central", {"up", "down"});
+      btagReaderLoose1.load(btagCalib1, BTagEntry::FLAV_B, "comb"); btagReaderLoose1.load(btagCalib1, BTagEntry::FLAV_C, "comb"); btagReaderLoose1.load(btagCalib1, BTagEntry::FLAV_UDSG, "incl");
+      btagReaderLoose2.load(btagCalib2, BTagEntry::FLAV_B, "comb"); btagReaderLoose2.load(btagCalib2, BTagEntry::FLAV_C, "comb"); btagReaderLoose2.load(btagCalib2, BTagEntry::FLAV_UDSG, "incl");
+      btagReaderLoose3.load(btagCalib3, BTagEntry::FLAV_B, "comb"); btagReaderLoose3.load(btagCalib3, BTagEntry::FLAV_C, "comb"); btagReaderLoose3.load(btagCalib3, BTagEntry::FLAV_UDSG, "incl");
+      btagReaderMedium1.load(btagCalib1, BTagEntry::FLAV_B, "comb"); btagReaderMedium1.load(btagCalib1, BTagEntry::FLAV_C, "comb"); btagReaderMedium1.load(btagCalib1, BTagEntry::FLAV_UDSG, "incl");
+      btagReaderMedium2.load(btagCalib2, BTagEntry::FLAV_B, "comb"); btagReaderMedium2.load(btagCalib2, BTagEntry::FLAV_C, "comb"); btagReaderMedium2.load(btagCalib2, BTagEntry::FLAV_UDSG, "incl");
+      btagReaderMedium3.load(btagCalib3, BTagEntry::FLAV_B, "comb"); btagReaderMedium3.load(btagCalib3, BTagEntry::FLAV_C, "comb"); btagReaderMedium3.load(btagCalib3, BTagEntry::FLAV_UDSG, "incl");
+
+    }
 
     //jet energy scale uncertainties
     TString jecDir = runProcess.getParameter<std::string>("jecDir");
@@ -967,20 +1003,27 @@ int main(int argc, char* argv[])
     //####################################################################################################################
     //###########################################           BTaggingMC         ###########################################
     //####################################################################################################################
-    TH2F* btagEff_b = new TH2F();
-    TH2F* btagEff_c = new TH2F(); 
-    TH2F* btagEff_udsg = new TH2F();
+    TH2F* btagEffLoose_b = new TH2F(), *btagEffMedium_b = new TH2F();
+    TH2F* btagEffLoose_c = new TH2F(), *btagEffMedium_c = new TH2F();
+    TH2F* btagEffLoose_udsg = new TH2F(), *btagEffMedium_udsg = new TH2F();
     TFile *btagfile = new TFile();
     if(isMC && nMethod==1){
       TString btagfilename = btagDir + "/" + proc + "_BTaggEff.root";
       btagfile = TFile::Open(btagfilename);
       if(btagfile->IsZombie() || !btagfile->IsOpen()) {std::cout<<"Error, cannot open file: "<<btagfilename<<std::endl;return -1;}
-      btagEff_b = (TH2F *)btagfile->Get("Loose_efficiency_b");
-      btagEff_b->SetDirectory(0); // to decouple it from the open file direcotry
-      btagEff_c = (TH2F *)btagfile->Get("Loose_efficiency_c");
-      btagEff_c->SetDirectory(0);
-      btagEff_udsg = (TH2F *)btagfile->Get("Loose_efficiency_udsg");
-      btagEff_udsg->SetDirectory(0);
+      btagEffLoose_b = (TH2F *)btagfile->Get("Loose_efficiency_b");
+      btagEffLoose_b->SetDirectory(0); // to decouple it from the open file direcotry
+      btagEffLoose_c = (TH2F *)btagfile->Get("Loose_efficiency_c");
+      btagEffLoose_c->SetDirectory(0);
+      btagEffLoose_udsg = (TH2F *)btagfile->Get("Loose_efficiency_udsg");
+      btagEffLoose_udsg->SetDirectory(0);
+      
+      btagEffMedium_b = (TH2F *)btagfile->Get("Medium_efficiency_b");
+      btagEffMedium_b->SetDirectory(0); // to decouple it from the open file direcotry
+      btagEffMedium_c = (TH2F *)btagfile->Get("Medium_efficiency_c");
+      btagEffMedium_c->SetDirectory(0);
+      btagEffMedium_udsg = (TH2F *)btagfile->Get("Medium_efficiency_udsg");
+      btagEffMedium_udsg->SetDirectory(0);
       btagfile->Close();
     }
     
@@ -2050,19 +2093,16 @@ int main(int argc, char* argv[])
 	    
 	    if(vJets[ijet].pt()>20. && fabs(vJets[ijet].eta())<2.4) {
 	      // B-tagging
-	      bool hasCSVtag;
+	      bool hasCSVtagL,hasCSVtagM;
 	      double btag_dsc = -1;
 	      if ( use_DeepCSV ) {btag_dsc = vJets[ijet].btag1;} else {btag_dsc = vJets[ijet].btag0;}
-	      nCSVLtags += (btag_dsc>LooseWP);
-	      nCSVMtags += (btag_dsc>MediumWP);
-	      nCSVTtags += (btag_dsc>TightWP);
 	      if (ivar==0) {
 		mon.fillHisto("b_discrim",b_tagging_name,btag_dsc,weight);
 		//		if (vJets[ijet].motherid == 36) mon.fillHisto("b_discrim",b_tagging_name+"_true",btag_dsc,weight);
 	      }
-	      hasCSVtag = btag_dsc>LooseWP;
-	      bool hasCSVtagUp = hasCSVtag;
-	      bool hasCSVtagDown = hasCSVtag;
+	      hasCSVtagL = btag_dsc>LooseWP; hasCSVtagM = btag_dsc>MediumWP;
+	      bool hasCSVtagLUp = hasCSVtagL, hasCSVtagMUp = hasCSVtagM;
+	      bool hasCSVtagLDown = hasCSVtagL, hasCSVtagMDown = hasCSVtagM;
 	      
 	      //https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration
 	      //Using .root histogram files
@@ -2097,90 +2137,200 @@ int main(int argc, char* argv[])
 	      if (nMethod == 1 && isMC) { 
 		//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation80X
 		btsfutil.SetSeed(ev.event*10 + ijet*10000);// + ivar*10);
-		
+		float bSFLoose, bSFMedium;	
 		if(abs(vJets[ijet].flavid)==5) {
 		  if(use_DeepCSV) {
 		    //        beff=btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE");   
-		    if(ivar==0)mon.fillHisto("btagEff_b","default",btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE"),1.0);
-		    //std::cout << "B loose: default Btag Eff: " << beff;
-		    beff=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEff_b); 
-		    if(ivar==0)mon.fillHisto("btagEff_b","new",beff, 1.0); 
-		    //        }//std::cout << ", new Btag Eff: " << beff << std::endl;}
+		    //if(ivar==0)mon.fillHisto("btagEff_b","default",btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE"),1.0);
+		    beffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_b); 
+		    beffMedium=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffMedium_b); 
+		    //if(ivar==0)mon.fillHisto("btagEff_b","new",beff, 1.0); 
 		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_btagup") {
-//		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_B ,
-//											  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagUp;
-		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , reader.eval_auto_bounds("up", BTagEntry::FLAV_B ,
-											  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagUp;
+		    if(is2017MC || is2017data){
+		      bSFLoose = btagReaderLoose1.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				 btagReaderLoose2.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				 btagReaderLoose3.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		      bSFMedium = btagReaderMedium1.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				  btagReaderMedium2.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				  btagReaderMedium3.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		    }else{
+		      bSFLoose = btagReaderLoose.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
+		      bSFMedium = btagReaderMedium.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
+		    }
+		    //btsfutil.modifyBTagsWithSF(hasCSVtagLUp  , btagReaderLoose.eval_auto_bounds("up", BTagEntry::FLAV_B ,
+		    //									  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtagL=hasCSVtagLUp;
+		    btsfutil.applySF2WPs(hasCSVtagLUp, hasCSVtagMUp, bSFLoose, bSFMedium, beffLoose, beffMedium);
+		    hasCSVtagL=hasCSVtagLUp; hasCSVtagM=hasCSVtagMUp;
 		  } else if ( varNames[ivar]=="_btagdown") {
-//		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_B ,
-//											  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagDown;
-		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, reader.eval_auto_bounds("down", BTagEntry::FLAV_B ,
-											  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagDown;
+		    if(is2017MC || is2017data){
+		      bSFLoose = btagReaderLoose1.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				 btagReaderLoose2.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				 btagReaderLoose3.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		      bSFMedium = btagReaderMedium1.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				  btagReaderMedium2.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				  btagReaderMedium3.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		    }else{
+		      bSFLoose = btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
+		      bSFMedium = btagReaderMedium.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
+		    }
+		    //btsfutil.modifyBTagsWithSF(hasCSVtagLDown, btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_B ,
+		    //									  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtagL=hasCSVtagLDown;
+		    btsfutil.applySF2WPs(hasCSVtagLDown, hasCSVtagMDown, bSFLoose, bSFMedium, beffLoose, beffMedium);
+		    hasCSVtagL=hasCSVtagLDown; hasCSVtagM=hasCSVtagMDown;
 		  } else {
-//		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_B ,
-//										       vJets[ijet].eta(), vJets[ijet].pt()), beff); 
-		    btsfutil.modifyBTagsWithSF(hasCSVtag , reader.eval_auto_bounds("central", BTagEntry::FLAV_B ,
-										       vJets[ijet].eta(), vJets[ijet].pt()), beff); 
+		    if(is2017MC || is2017data){
+		      bSFLoose = btagReaderLoose1.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				 btagReaderLoose2.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				 btagReaderLoose3.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		      bSFMedium = btagReaderMedium1.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				  btagReaderMedium2.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				  btagReaderMedium3.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		    }else{
+		      bSFLoose = btagReaderLoose.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
+		      bSFMedium = btagReaderMedium.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
+		    }
+		    //btsfutil.modifyBTagsWithSF(hasCSVtagL , btagReaderLoose.eval_auto_bounds("central", BTagEntry::FLAV_B ,
+		    //								       vJets[ijet].eta(), vJets[ijet].pt()), beff); 
+		    btsfutil.applySF2WPs(hasCSVtagL, hasCSVtagM, bSFLoose, bSFMedium, beffLoose, beffMedium);
+		
 		  }
 		} else if(abs(vJets[ijet].flavid)==4) {
 		  if(use_DeepCSV){ 
 		    //        beff=btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE");
-		    //std::cout << "C loose: default Btag Eff: " << beff;
-		    if(ivar==0)mon.fillHisto("btagEff_c","default",btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE"),1.0);
-		    //        {
-		    beff=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEff_c); 
-		    if(ivar==0)mon.fillHisto("btagEff_c","new",beff, 1.0);
-		    //        }//std::cout << ", new Btag Eff: " << beff << std::endl;}
+		    //if(ivar==0)mon.fillHisto("btagEff_c","default",btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE"),1.0);
+		    beffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_c); 
+		    beffMedium=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffMedium_c); 
+		    //if(ivar==0)mon.fillHisto("btagEff_c","new",beff, 1.0);
 		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_ctagup") {
-//		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_C , 
-//											  vJets[ijet].eta(), vJets[ijet].pt()), beff);hasCSVtag=hasCSVtagUp;
-		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , reader.eval_auto_bounds("up", BTagEntry::FLAV_C , 
-											  vJets[ijet].eta(), vJets[ijet].pt()), beff);hasCSVtag=hasCSVtagUp;
+		    if(is2017MC || is2017data){
+		      bSFLoose = btagReaderLoose1.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				 btagReaderLoose2.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				 btagReaderLoose3.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		      bSFMedium = btagReaderMedium1.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				  btagReaderMedium2.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				  btagReaderMedium3.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		    }else{
+		      bSFLoose = btagReaderLoose.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
+		      bSFMedium = btagReaderMedium.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
+		    }
+		    //btsfutil.modifyBTagsWithSF(hasCSVtagLUp  , btagReaderLoose.eval_auto_bounds("up", BTagEntry::FLAV_C , 
+		    //									  vJets[ijet].eta(), vJets[ijet].pt()), beff);hasCSVtagL=hasCSVtagLUp;
+		    btsfutil.applySF2WPs(hasCSVtagLUp, hasCSVtagMUp, bSFLoose, bSFMedium, beffLoose, beffMedium);
+		    hasCSVtagL=hasCSVtagLUp; hasCSVtagM=hasCSVtagMUp;
 		  } else if ( varNames[ivar]=="_ctagdown") {
-//		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_C , 
-//											  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagDown;
-		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, reader.eval_auto_bounds("down", BTagEntry::FLAV_C , 
-											  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtag=hasCSVtagDown;
+		    if(is2017MC || is2017data){
+		      bSFLoose = btagReaderLoose1.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				 btagReaderLoose2.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				 btagReaderLoose3.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		      bSFMedium = btagReaderMedium1.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				  btagReaderMedium2.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				  btagReaderMedium3.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		    }else{
+		      bSFLoose = btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
+		      bSFMedium = btagReaderMedium.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
+		    }
+		    //btsfutil.modifyBTagsWithSF(hasCSVtagLDown, btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_C , 
+		    //									  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtagL=hasCSVtagLDown;
+		    btsfutil.applySF2WPs(hasCSVtagLDown, hasCSVtagMDown, bSFLoose, bSFMedium, beffLoose, beffMedium);
+		    hasCSVtagL=hasCSVtagLDown; hasCSVtagM=hasCSVtagMDown;
 		  } else {
-//		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_C ,
-//										       vJets[ijet].eta(), vJets[ijet].pt()), beff);
-		    btsfutil.modifyBTagsWithSF(hasCSVtag , reader.eval_auto_bounds("central", BTagEntry::FLAV_C ,
-										       vJets[ijet].eta(), vJets[ijet].pt()), beff);
+		    if(is2017MC || is2017data){
+		      bSFLoose = btagReaderLoose1.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				 btagReaderLoose2.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				 btagReaderLoose3.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		      bSFMedium = btagReaderMedium1.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				  btagReaderMedium2.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				  btagReaderMedium3.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		    }else{
+		      bSFLoose = btagReaderLoose.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
+		      bSFMedium = btagReaderMedium.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
+		    }
+		    //btsfutil.modifyBTagsWithSF(hasCSVtagL , btagReaderLoose.eval_auto_bounds("central", BTagEntry::FLAV_C ,
+		    //								       vJets[ijet].eta(), vJets[ijet].pt()), beff);
+		    btsfutil.applySF2WPs(hasCSVtagL, hasCSVtagM, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		  }
 		} else {
 		  if(use_DeepCSV){
 		    //        leff=btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE");      
-		    //std::cout << "Light loose: default Btag Eff: " << beff;
-		    if(ivar==0)mon.fillHisto("btagEff_udsg","default",btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE"),1.0);
-		    leff=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEff_udsg);
-		    if(ivar==0)mon.fillHisto("btagEff_udsg","new",leff, 1.0); 
-		    //        }//std::cout << ", new Btag Eff: " << beff << std::endl;}
+		    //if(ivar==0)mon.fillHisto("btagEff_udsg","default",btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE"),1.0);
+		    leffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_udsg);
+		    leffMedium=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffMedium_udsg);
+		    //if(ivar==0)mon.fillHisto("btagEff_udsg","new",leff, 1.0); 
 		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_ltagup") {
-//		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , btagCal80X.eval_auto_bounds("up", BTagEntry::FLAV_UDSG   , 
-//		  								      vJets[ijet].eta(), vJets[ijet].pt()), leff);hasCSVtag=hasCSVtagUp;
-		    btsfutil.modifyBTagsWithSF(hasCSVtagUp  , reader.eval_auto_bounds("up", BTagEntry::FLAV_UDSG   , 
-		  								      vJets[ijet].eta(), vJets[ijet].pt()), leff);hasCSVtag=hasCSVtagUp;
+		    if(is2017MC || is2017data){
+		      bSFLoose = btagReaderLoose1.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				 btagReaderLoose2.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				 btagReaderLoose3.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		      bSFMedium = btagReaderMedium1.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				  btagReaderMedium2.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				  btagReaderMedium3.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		   }else{
+		      bSFLoose = btagReaderLoose.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
+		      bSFMedium = btagReaderMedium.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
+		    }
+		    //btsfutil.modifyBTagsWithSF(hasCSVtagLUp  , btagReaderLoose.eval_auto_bounds("up", BTagEntry::FLAV_UDSG   , 
+		    // 								      vJets[ijet].eta(), vJets[ijet].pt()), leff);hasCSVtagL=hasCSVtagLUp;
+		    btsfutil.applySF2WPs(hasCSVtagLUp, hasCSVtagMUp, bSFLoose, bSFMedium, leffLoose, leffMedium);
+		    hasCSVtagL=hasCSVtagLUp; hasCSVtagM=hasCSVtagMUp;
 		  } else if ( varNames[ivar]=="_ltagdown") {
-//		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, btagCal80X.eval_auto_bounds("down", BTagEntry::FLAV_UDSG   , 
-//		  								      vJets[ijet].eta(), vJets[ijet].pt()), leff);hasCSVtag=hasCSVtagDown;
-		    btsfutil.modifyBTagsWithSF(hasCSVtagDown, reader.eval_auto_bounds("down", BTagEntry::FLAV_UDSG   , 
-		  								      vJets[ijet].eta(), vJets[ijet].pt()), leff);hasCSVtag=hasCSVtagDown;
+		    if(is2017MC || is2017data){
+		      bSFLoose = btagReaderLoose1.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				 btagReaderLoose2.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				 btagReaderLoose3.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		      bSFMedium = btagReaderMedium1.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				  btagReaderMedium2.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				  btagReaderMedium3.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		    }else{  
+		      bSFLoose = btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
+		      bSFMedium = btagReaderMedium.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
+		    }
+		    //btsfutil.modifyBTagsWithSF(hasCSVtagLDown, btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_UDSG   , 
+		    //								      vJets[ijet].eta(), vJets[ijet].pt()), leff);hasCSVtagL=hasCSVtagLDown;
+		    btsfutil.applySF2WPs(hasCSVtagLDown, hasCSVtagMDown, bSFLoose, bSFMedium, leffLoose, leffMedium);
+		    hasCSVtagL=hasCSVtagLDown; hasCSVtagM=hasCSVtagMDown;
 		  } else {
-//		    btsfutil.modifyBTagsWithSF(hasCSVtag , btagCal80X.eval_auto_bounds("central", BTagEntry::FLAV_UDSG ,
-//										       vJets[ijet].eta(), vJets[ijet].pt()), leff);
-		    btsfutil.modifyBTagsWithSF(hasCSVtag , reader.eval_auto_bounds("central", BTagEntry::FLAV_UDSG ,
-										       vJets[ijet].eta(), vJets[ijet].pt()), leff);
+		    if(is2017MC || is2017data){
+		      bSFLoose = btagReaderLoose1.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				 btagReaderLoose2.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				 btagReaderLoose3.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		      bSFMedium = btagReaderMedium1.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
+				  btagReaderMedium2.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
+				  btagReaderMedium3.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
+		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
+		    }else{
+		      bSFLoose = btagReaderLoose.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
+		      bSFMedium = btagReaderMedium.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
+		    }
+		    //btsfutil.modifyBTagsWithSF(hasCSVtagL , btagReaderLoose.eval_auto_bounds("central", BTagEntry::FLAV_UDSG ,
+		    //								       vJets[ijet].eta(), vJets[ijet].pt()), leff);
+		    btsfutil.applySF2WPs(hasCSVtagL, hasCSVtagM, bSFLoose, bSFMedium, leffLoose, leffMedium);
 		  }
 		}
-		
 	      } // isMC
-
+	      
 
 	      if ( verbose) {
 		printf("AK4-Jet has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",     
@@ -2190,7 +2340,7 @@ int main(int argc, char* argv[])
 		       vJets[ijet].M()  
 		       );
 
-		if(hasCSVtag) {
+		if(hasCSVtagL) {
 		  printf("B-Jet has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f\n",   
 			 vJets[ijet].pt(),
 			 vJets[ijet].eta(),
@@ -2200,11 +2350,16 @@ int main(int argc, char* argv[])
 		}
 	      } // verbose
 	      
+	      nCSVLtags += hasCSVtagL;
+	      nCSVMtags += hasCSVtagM;
+	      nCSVTtags += (btag_dsc>TightWP);
+	      
 	      // Fill b-jet vector:
-	      if (hasCSVtag) {  CSVLoosebJets.push_back(vJets[ijet]); }
+	      if (hasCSVtagL) {  CSVLoosebJets.push_back(vJets[ijet]); }
 	    } // b-jet loop
 	    
 	  } // jet loop
+
 
 	  //--------------------------------------------------------------------------
 	  // 	  // AK4 jets:
