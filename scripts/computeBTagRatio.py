@@ -103,7 +103,6 @@ useDeepCSV=True
 
 DtagsList = []
 who = commands.getstatusoutput('whoami')[1]
-who = "zhangyi"
 
 for o,a in opts:
     if o in('-j'): samplesDB = a
