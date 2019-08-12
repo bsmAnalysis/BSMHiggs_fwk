@@ -154,6 +154,7 @@ int main(int argc, char* argv[])
 
     bool is2016data = (!isMC && dtag.Contains("2016"));
     bool is2016MC = (isMC && dtag.Contains("2016"));
+    bool is2016Signal = (is2016MC && dtag.Contains("h_amass"));
     bool is2017data = (!isMC && dtag.Contains("2017"));
     bool is2017MC = (isMC && dtag.Contains("2017"));
     bool is2018data = (!isMC && dtag.Contains("2018"));
@@ -200,6 +201,10 @@ int main(int argc, char* argv[])
     if(is2018data || is2018MC){ // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
       DeepCSVLooseWP = 0.1241; DeepCSVMediumWP = 0.4184; DeepCSVTightWP = 0.7527;
   //    ele_threshold_=35.; mu_threshold_=25.;
+    }
+
+    if(is2016Signal){//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
+      DeepCSVLooseWP = 0.2217; DeepCSVMediumWP = 0.6321; DeepCSVTightWP = 0.8953;
     }
 
     // if(mctruthmode!=0) {
@@ -336,6 +341,10 @@ int main(int argc, char* argv[])
         csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                         "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_102XSF_V1.csv";
       }
+      if(is2016Signal){
+	csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
+			"/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_2016LegacySF_V1.csv";
+      }
       LooseWP = DeepCSVLooseWP;
       MediumWP = DeepCSVMediumWP;
       TightWP = DeepCSVTightWP;
@@ -400,7 +409,8 @@ int main(int argc, char* argv[])
         else if(dtag.Contains("2016E") || dtag.Contains("2016F")) jecDir+="Summer16_80X/Summer16_23Sep2016EFV4_DATA/";
         else if(dtag.Contains("2016G")) jecDir+="Summer16_80X/Summer16_23Sep2016GV4_DATA/";
         else if(dtag.Contains("2016H")) jecDir+="Summer16_80X/Summer16_23Sep2016HV4_DATA/";
-        if(isMC) {jecDir+="Summer16_80X/Summer16_23Sep2016V4_MC/";}
+	if(is2016Signal) {jecDir+="Summer16_94X/Summer16_07Aug2017_V11_MC/Summer16_07Aug2017_V11_";}
+        else if(isMC) {jecDir+="Summer16_80X/Summer16_23Sep2016V4_MC/";}
     }
 
 
@@ -2140,11 +2150,11 @@ int main(int argc, char* argv[])
 		float bSFLoose, bSFMedium;	
 		if(abs(vJets[ijet].flavid)==5) {
 		  if(use_DeepCSV) {
-		    //        beff=btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE");   
+		    //        beff=btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE");
 		    //if(ivar==0)mon.fillHisto("btagEff_b","default",btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE"),1.0);
 		    beffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_b); 
-		    beffMedium=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffMedium_b); 
-		    //if(ivar==0)mon.fillHisto("btagEff_b","new",beff, 1.0); 
+		    beffMedium=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffMedium_b);
+		    //if(ivar==0)mon.fillHisto("btagEff_b","new",beff, 1.0);
 		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_btagup") {
@@ -2267,7 +2277,7 @@ int main(int argc, char* argv[])
 		  }
 		} else {
 		  if(use_DeepCSV){
-		    //        leff=btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE");      
+		    //        leff=btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE");
 		    //if(ivar==0)mon.fillHisto("btagEff_udsg","default",btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE"),1.0);
 		    leffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_udsg);
 		    leffMedium=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffMedium_udsg);

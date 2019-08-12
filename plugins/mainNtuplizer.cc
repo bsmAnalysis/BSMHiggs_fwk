@@ -738,8 +738,10 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
   // Filling histograms for BTagging Efficiency
   if (is2018) //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
     {DeepCSVLooseWP = 0.1241; DeepCSVMediumWP = 0.4184; DeepCSVTightWP = 0.7527;}
-  else if(is2017 || is2016Signal) //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
+  else if(is2017) //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
     {DeepCSVLooseWP = 0.1522; DeepCSVMediumWP = 0.4941; DeepCSVTightWP = 0.8001;}
+  else if(is2016Signal) //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
+    {DeepCSVLooseWP = 0.2217; DeepCSVMediumWP = 0.6321; DeepCSVTightWP = 0.8953;}
   else
     {DeepCSVLooseWP = 0.2219;  DeepCSVMediumWP = 0.6324; DeepCSVTightWP = 0.8958;}
 
@@ -1178,15 +1180,19 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.jet_btag0[ev.jet] = j.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
 
 	 double btag1=-1;
-   if(is2018){
-      btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
-      nCSVLtags += (btag1>0.1241);
-   }
-	 if(is2017 || is2016Signal) {
+	if(is2018){
+	  btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+	  nCSVLtags += (btag1>0.1241);
+	}
+	else if(is2017) {
 	   btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
 	   nCSVLtags += (btag1>0.1522);  
 	 //	   ev.jet_btag1[ev.jet] = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
-	 } else {
+	 } else if(is2016Signal){
+	   btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+	   nCSVLtags += (btag1>0.2217);
+	 }
+	 else{
 	   btag1=j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb"); 
 	   nCSVLtags += (btag1>0.2219);  
 	 }
