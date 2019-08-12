@@ -196,8 +196,7 @@ for proc in procList :
                 SCRIPT_DTag.writelines('cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/; \n\n')
                 
             # Loop over files for given dtag name:
-                #ntplpath = '/eos/cms/store/user/' + who + '/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
-                ntplpath = '/eos/cms/store/user/zhangyi/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
+                ntplpath = '/eos/cms/store/user/' + who + '/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
                 # FileList = [file for file in glob.glob(ntplpath+'analysis_*.root')] 
                 
                 segment=0
@@ -271,7 +270,7 @@ for proc in procList :
                 SCRIPT2HTCondor.writelines('output                = $(log).out\n')
                 SCRIPT2HTCondor.writelines('error                 = $(log).err\n')
                 SCRIPT2HTCondor.writelines('log                   = $(log).log\n')
-                SCRIPT2HTCondor.writelines('request_cpus          = 2\n')
+                SCRIPT2HTCondor.writelines('request_cpus          = 6\n')
                 SCRIPT2HTCondor.writelines('+JobFlavour           = "'+queue+'"\n')
                 SCRIPT2HTCondor.writelines('queue cfg,log from '+queuelog+'/all/'+dtag+'_PythonList.txt')
                 SCRIPT2HTCondor.close()

@@ -1021,21 +1021,18 @@ int main(int argc, char* argv[])
       TString btagfilename = btagDir + "/" + proc + "_BTaggEff.root";
       btagfile = TFile::Open(btagfilename);
       if(btagfile->IsZombie() || !btagfile->IsOpen()) {std::cout<<"Error, cannot open file: "<<btagfilename<<std::endl;return -1;}
-      TString csvTag = "CSV";
-      if(use_DeepCSV) csvTag = "DeepCSV";
-      csvTag = "";
-      btagEffLoose_b = (TH2F *)btagfile->Get(csvTag+"Loose_efficiency_b");
+      btagEffLoose_b = (TH2F *)btagfile->Get("Loose_efficiency_b");
       btagEffLoose_b->SetDirectory(0); // to decouple it from the open file direcotry
-      btagEffLoose_c = (TH2F *)btagfile->Get(csvTag+"Loose_efficiency_c");
+      btagEffLoose_c = (TH2F *)btagfile->Get("Loose_efficiency_c");
       btagEffLoose_c->SetDirectory(0);
-      btagEffLoose_udsg = (TH2F *)btagfile->Get(csvTag+"Loose_efficiency_udsg");
+      btagEffLoose_udsg = (TH2F *)btagfile->Get("Loose_efficiency_udsg");
       btagEffLoose_udsg->SetDirectory(0);
       
-      btagEffMedium_b = (TH2F *)btagfile->Get(csvTag+"Medium_efficiency_b");
+      btagEffMedium_b = (TH2F *)btagfile->Get("Medium_efficiency_b");
       btagEffMedium_b->SetDirectory(0); // to decouple it from the open file direcotry
-      btagEffMedium_c = (TH2F *)btagfile->Get(csvTag+"Medium_efficiency_c");
+      btagEffMedium_c = (TH2F *)btagfile->Get("Medium_efficiency_c");
       btagEffMedium_c->SetDirectory(0);
-      btagEffMedium_udsg = (TH2F *)btagfile->Get(csvTag+"Medium_efficiency_udsg");
+      btagEffMedium_udsg = (TH2F *)btagfile->Get("Medium_efficiency_udsg");
       btagEffMedium_udsg->SetDirectory(0);
       btagfile->Close();
     }
@@ -2152,8 +2149,13 @@ int main(int argc, char* argv[])
 		btsfutil.SetSeed(ev.event*10 + ijet*10000);// + ivar*10);
 		float bSFLoose, bSFMedium;	
 		if(abs(vJets[ijet].flavid)==5) {
-		  beffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_b); 
-		  beffMedium=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffMedium_b); 
+		  if(use_DeepCSV) {
+		    //        beff=btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE");
+		    //if(ivar==0)mon.fillHisto("btagEff_b","default",btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE"),1.0);
+		    beffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_b); 
+		    beffMedium=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffMedium_b);
+		    //if(ivar==0)mon.fillHisto("btagEff_b","new",beff, 1.0);
+		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_btagup") {
 		    if(is2017MC || is2017data){
@@ -2211,8 +2213,13 @@ int main(int argc, char* argv[])
 		
 		  }
 		} else if(abs(vJets[ijet].flavid)==4) {
-		  beffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_c); 
-		  beffMedium=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffMedium_c); 
+		  if(use_DeepCSV){ 
+		    //        beff=btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE");
+		    //if(ivar==0)mon.fillHisto("btagEff_c","default",btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE"),1.0);
+		    beffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_c); 
+		    beffMedium=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffMedium_c); 
+		    //if(ivar==0)mon.fillHisto("btagEff_c","new",beff, 1.0);
+		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_ctagup") {
 		    if(is2017MC || is2017data){
@@ -2269,8 +2276,13 @@ int main(int argc, char* argv[])
 		    btsfutil.applySF2WPs(hasCSVtagL, hasCSVtagM, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		  }
 		} else {
-		  leffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_udsg);
-		  leffMedium=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffMedium_udsg);
+		  if(use_DeepCSV){
+		    //        leff=btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE");
+		    //if(ivar==0)mon.fillHisto("btagEff_udsg","default",btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE"),1.0);
+		    leffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_udsg);
+		    leffMedium=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffMedium_udsg);
+		    //if(ivar==0)mon.fillHisto("btagEff_udsg","new",leff, 1.0); 
+		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_ltagup") {
 		    if(is2017MC || is2017data){
