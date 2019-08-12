@@ -278,7 +278,7 @@ for procBlock in procList :
             dtag = origdtag         
 
             xsec = getByLabel(procData,'xsec',-1)
-	    if( isinstance(xsec, unicode) and "*" in xsec):
+	    if( isinstance(xsec, unicode) ):
 	        multiplications = [float(i) for i in xsec.split('*')]
 		xsec = reduce(lambda x, y: x*y, multiplications)
             br = getByLabel(procData,'br',[])
