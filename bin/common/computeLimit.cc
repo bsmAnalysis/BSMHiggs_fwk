@@ -102,6 +102,7 @@ double shapeMaxVBF = 9999;
 bool doInterf = false;
 double minSignalYield = 0;
 float statBinByBin = -1;
+bool useLogy = true;
 
 bool dirtyFix1 = false;
 bool dirtyFix2 = false;
@@ -446,6 +447,7 @@ class AllInfo_t
     // Handle empty bins
     void HandleEmptyBins(string histoName);
 
+    void debug(TString histoName, string funcName);
 };
 
 
@@ -497,6 +499,7 @@ void printHelp()
   printf("--dropBckgBelow --> drop all background processes that contributes for less than a threshold to the total background yields\n");
   printf("--scaleVBF    --> scale VBF signal by ggH/VBF\n");
   printf("--key        --> provide a key for sample filtering in the json\n");  
+  printf("--noLogy        --> use this flag to make y-axis linear scale\n");  
 }
 
 //
@@ -568,6 +571,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--statBinByBin")    !=string::npos) { sscanf(argv[i+1],"%f",&statBinByBin); i++; printf("statBinByBin = %f\n", statBinByBin);}
     else if(arg.find("--dropBckgBelow")   !=string::npos) { sscanf(argv[i+1],"%lf",&dropBckgBelow); i++; printf("dropBckgBelow = %f\n", dropBckgBelow);}
     else if(arg.find("--key"          )   !=string::npos && i+1<argc){ keywords.push_back(argv[i+1]); printf("Only samples matching this (regex) expression '%s' are processed\n", argv[i+1]); i++;  }
+    else if(arg.find("--noLogy")    !=string::npos) { useLogy=false; printf("useLogy = False\n");}
     if(arg.find("--runZh") !=string::npos) { runZh=true; printf("runZh = True\n");}
     if(arg.find("--modeDD") !=string::npos) { modeDD=true; printf("modeDD = True\n");} 
     if(arg.find("--postfit")  !=string::npos) { postfit=true; printf("postfit = True\n");}   
@@ -1492,6 +1496,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
         TH1* h = ch->second.shapes[histoName.Data()].histo();
 	if (!h) continue;
+	//if( ch->first.find("e_A_SR_3b") != string::npos){
+	//  printf("ShowShape: Name: %s_%s, integral: %f\n",ch->first.c_str(),histoName.Data(),h->Integral());
+	//}
         //if(process.Contains("SOnly_S") ) h->Scale(10);  
         if(it->first=="total"){
           //double Uncertainty = std::max(0.0, ch->second.shapes[histoName.Data()].getScaleUncertainty() / h->Integral() );;
@@ -1632,7 +1639,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       t1->Draw();
       t1->cd();
 
-      t1->SetLogy(true);         
+      t1->SetLogy(useLogy); 
  
       //print histograms
       TH1* axis = (TH1*)map_data[p->first]->Clone("axis");
@@ -1646,12 +1653,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       //axis->SetMaximum(5000.5*std::max(map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum()));
       
       //hard code range
-      if(procs["data"].channels[p->first].bin.find("vbf")!=string::npos){
-        axis->SetMinimum(1E-1);
-        axis->SetMaximum(std::max(axis->GetMaximum(), 5E1));
-      }else{
-        axis->SetMinimum(1E-2);
-        axis->SetMaximum(std::max(axis->GetMaximum(), 1E9));
+      if(useLogy){
+        if(procs["data"].channels[p->first].bin.find("vbf")!=string::npos){
+          axis->SetMinimum(1E-1);
+          axis->SetMaximum(std::max(axis->GetMaximum(), 5E1));
+        }else{
+          axis->SetMinimum(1E-2);
+          axis->SetMaximum(std::max(axis->GetMaximum(), 1E9));
+        }
       }
 
       axis->GetXaxis()->SetLabelOffset(0.007);
@@ -1919,6 +1928,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       //save canvas
       LabelText.ReplaceAll(" ","_"); 
       // c[I]->SaveAs(SaveName+"_Shape.png");
+      c[I]->SaveAs(LabelText+"_Shape.png");
       c[I]->SaveAs(LabelText+"_Shape.pdf");
       c[I]->SaveAs(LabelText+"_Shape.C");
       delete c[I];
@@ -2792,6 +2802,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  }else{
 	    shapeInfo.uncShape[varName.Data()]->Add(hshape);
 	  }
+
+	  //if( string(histoName.Data()).find("e_A_SR_3b") != string::npos){
+	  //  printf("GetShapeFromFile: Name: %s, integral: %f\n",histoName.Data(),hshape->Integral());
+	  //}
         }
       }
     }
@@ -2915,7 +2929,21 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     computeTotalBackground();
   }
 
-
-
+  void AllInfo_t::debug(TString histoName, string funcName){
+    sortProc();
+    for(unsigned int p=0;p<sorted_procs.size();p++){
+      string procName = sorted_procs[p];
+      std::map<string, ProcessInfo_t>::iterator it=procs.find(procName);
+      if(it==procs.end())continue;
+      for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
+	if(ch->second.shapes.find(histoName.Data())==(ch->second.shapes).end())continue;
+	TH1* h = ch->second.shapes[histoName.Data()].histo();
+	if (!h) continue;
+	if( ch->first.find("e_A_SR_3b") != string::npos){
+	  printf("%s: Name: %s_%s, integral: %f\n",funcName.c_str(),ch->first.c_str(),histoName.Data(),h->Integral());
+	}
+      }
+    }
+  }
 
 

@@ -770,8 +770,8 @@ int main(int argc, char* argv[])
 	mon.addHistogram( new TH2F (TString("higgsMass_shapes")+varNames[ivar],";cut index;m_{h} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 40,0.,800.) );
 	mon.addHistogram( new TH2F (TString("higgsPt_shapes")+varNames[ivar],";cut index;p_{T}^{h} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 30,0.,500.));
 	mon.addHistogram( new TH2F (TString("ht_shapes")+varNames[ivar],";cut index;H_{T} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),40,0.,800.) );
-	mon.addHistogram( new TH2F (TString("pfmet_shapes")+varNames[ivar],";cut index;E_{T}^{miss} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),100,0.,800.) );
-	mon.addHistogram( new TH2F (TString("mtw_shapes")+varNames[ivar],";cut index;#it{m}_{T}^{W} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),80,0.,800.) );
+	mon.addHistogram( new TH2F (TString("pfmet_shapes")+varNames[ivar],";cut index;E_{T}^{miss} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),50,0.,400.) );
+	mon.addHistogram( new TH2F (TString("mtw_shapes")+varNames[ivar],";cut index;#it{m}_{T}^{W} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),40,0.,400.) );
 	mon.addHistogram( new TH2F (TString("ptw_shapes")+varNames[ivar],";cut index;#it{p}_{T}^{W} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),30,0.,500.) );
 	mon.addHistogram( new TH2F (TString("dphiWh_shapes")+varNames[ivar],";cut index;#Delta#it{#phi}(#it{W},h);Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),20,0,TMath::Pi()) );
 	mon.addHistogram( new TH2F (TString("dRave_shapes")+varNames[ivar],";cut index;#Delta R(b,b)_{ave};Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),50,0.,5.));
@@ -2191,6 +2191,7 @@ int main(int argc, char* argv[])
 		    }
 		    //btsfutil.modifyBTagsWithSF(hasCSVtagLDown, btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_B ,
 		    //									  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtagL=hasCSVtagLDown;
+		    std::cout << "tag_cat: " << tag_cat << ", bSFLoose: " << bSFLoose << ", bSFMedium: " << bSFMedium << ", beffLoose: " << beffLoose << ", beffMedium: " << beffMedium << std::endl;
 		    btsfutil.applySF2WPs(hasCSVtagLDown, hasCSVtagMDown, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		    hasCSVtagL=hasCSVtagLDown; hasCSVtagM=hasCSVtagMDown;
 		  } else {
@@ -2788,6 +2789,7 @@ int main(int argc, char* argv[])
 	    mon.fillHisto("dmmin",tags,dm, weight);
 	    // BDT
 	    mon.fillHisto("bdt", tags, mvaBDT, weight);
+//	    std::cout << "btd: " << mvaBDT << ", filled into bdt, event: " << ev.event << ", lumi: " << ev.lumi << std::endl;
 	      
 	    
 	    //##############################################################################
@@ -2830,6 +2832,7 @@ int main(int argc, char* argv[])
 	    //scan the BDT cut and fill the shapes
 	    for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){
 	      if(mvaBDT>optim_Cuts1_bdt[index]){
+//	        std::cout << "btd: " << mvaBDT << ", cut index: " << index << ", cut: " << optim_Cuts1_bdt[index] << ", filled into bdt shapes, event: " << ev.event << ", lumi: " << ev.lumi << std::endl;
 		mon.fillHisto(TString("bdt_shapes")+varNames[ivar],tags,index, mvaBDT,weight);
 		if (ivar==0) {
 		  mon.fillHisto(TString("higgsMass_shapes")+varNames[ivar],tags,index, allHadronic.mass(),weight);  

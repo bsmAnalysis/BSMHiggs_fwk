@@ -129,7 +129,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        fi
 	# @btagSFMethod=1: Jet-by-jet updating of b-tagging status
 	# @btagSFMethod=2: Event reweighting using discriminator-dependent scale factors
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=False @runMVA=False @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False @runZH=True @btagSFMethod=2" -s $queue # -t MC13TeV_TTTo  -r True
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=False @runMVA=False @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False @runZH=True @btagSFMethod=1" -s $queue # -t MC13TeV_TTTo  -r True
    fi
 fi
 
@@ -207,7 +207,7 @@ if [[ $step > 2.999 && $step < 4 ]]; then
 
     if [[ $step == 3.02 ]]; then # make plots for data-driven QCD bkg
 	echo "MAKE SUMMARY ROOT FILE, for data-driven QCD estimate"
-	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outFile ${PLOTTER}_qcd.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "(all_optim_systs|all_optim_cut|(e|mu)_(A|B|C|D)_(SR|CR|CR5j)_(3b|4b)_(bdt)(|_shapes)(|_umetup|_umetdown|_jerup|_jerdown|_jesup|_jesdown|_scale_mup|_scale_mdown|_stat_eup|_stat_edown|_stat_eup|_stat_edown|_sys_eup|_sys_edown|_GS_eup|_GS_edown|_resRho_eup|_resRho_edown|_puup|_pudown|_pdfup|_pdfdown|_btagup|_btagdown))" $arguments
+	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outFile ${PLOTTER}_qcd.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "(all_optim_systs|all_optim_cut|(e|mu)_(A|B|C|D)_(SR|CR|CR5j)_(3b|4b)_(bdt|higgsMass|higgsPt|ht|pfmet|ptw|mtw|dphiWh|dRave|dmmin|dphijmet|lep_pt_raw)(|_shapes)(|_umetup|_umetdown|_jerup|_jerdown|_jesup|_jesdown|_scale_mup|_scale_mdown|_stat_eup|_stat_edown|_stat_eup|_stat_edown|_sys_eup|_sys_edown|_GS_eup|_GS_edown|_resRho_eup|_resRho_edown|_puup|_pudown|_pdfup|_pdfdown|_btagup|_btagdown))" $arguments
 	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outDir $PLOTSDIR/mcbased_qcd/ --outFile ${PLOTTER}_qcd.root  --json $JSON --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --only "(e|mu)_(A|B|C|D)_(SR|CR|CR5j)_(3b|4b)_bdt" $arguments
     fi
 

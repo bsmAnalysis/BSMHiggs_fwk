@@ -1540,87 +1540,7 @@
 	         "haa_mcbased"	
             ],
              "tag": "Vh(bb)"
-       },
-       {
-            "data": [
-                {
-                    "br": [
-                        0.3257
-                    ],
-                    "dset": [
-			"/SUSYWHToAA_AATo4B_M-20_TuneCUETP8M1_PSweights_13TeV-madgraph_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
-                    ],
-                    "gtag": "94X_mcRun2_asymptotic_v3",
-                    "dtag": "MC13TeV_Wh_amass20_2016",
-                    "xsec": "1.37*0.61"
-                },
-		{
-                    "br": [
-                        0.10099
-                    ],
-                    "dset": [
-			"/SUSYZHToAA_AATo4B_M-20_TuneCUETP8M1_PSweights_13TeV-madgraph_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
-                    ],
-                    "gtag": "94X_mcRun2_asymptotic_v3",
-                    "dtag": "MC13TeV_Zh_amass20_2016",
-                    "xsec": "0.8594*0.7435"
-                }
-            ],
-            "fill": 0,
-            "isdata": false,
-            "isinvisible": false,
-            "issignal": true,
-            "keys": [
-                "haa_signal",
-                "haa_mcbased"
-            ],
-            "lcolor": 1,
-            "lwidth": 3,
-	    "lstyle":2,
-            "resonance": 20,
-            "spimpose": true,
-            "tag": "Wh (20)"
-        },
-        {
-            "data": [
-                {
-                    "br": [
-                        0.3257
-                    ],
-                    "dset": [
-			"/SUSYWHToAA_AATo4B_M-50_TuneCUETP8M1_PSweights_13TeV-madgraph_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
-                    ],
-                    "gtag": "94X_mcRun2_asymptotic_v3",
-                    "dtag": "MC13TeV_Wh_amass50_2016",
-                    "xsec": "1.37*0.61"
-                },
-		            {
-                    "br": [
-                        0.10099
-                    ],
-                    "dset": [
-			"/SUSYZHToAA_AATo4B_M-50_TuneCUETP8M1_PSweights_13TeV-madgraph_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
-                    ],
-                    "gtag": "94X_mcRun2_asymptotic_v3",
-                    "dtag": "MC13TeV_Zh_amass50_2016",
-                    "xsec": "0.8594*0.7435"
-                }
-            ],
-            "fill": 0,
-            "isdata": false,
-            "isinvisible": true,
-            "issignal": true,
-            "keys": [
-                "haa_signal",
-                "haa_mcbased"
-            ],
-            "lcolor": 2,
-            "lwidth": 3,
-            "lstyle": 2,
-            "resonance": 50,
-            "spimpose": false,
-            "tag": "Wh (50)"
-        },
+	 },
         {
             "data": [
                 {
@@ -1658,7 +1578,7 @@
             "lwidth": 3,
             "lstyle": 3,
             "resonance": 12,
-            "spimpose": false,
+            "spimpose": true,
             "tag": "Wh (12)"
         },
         {
@@ -1700,6 +1620,46 @@
             "resonance": 15,
             "spimpose": false,
             "tag": "Wh (15)"
+        },
+       {
+            "data": [
+                {
+                    "br": [
+                        0.3257
+                    ],
+                    "dset": [
+			"/SUSYWHToAA_AATo4B_M-20_TuneCUETP8M1_PSweights_13TeV-madgraph_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
+                    ],
+                    "gtag": "94X_mcRun2_asymptotic_v3",
+                    "dtag": "MC13TeV_Wh_amass20_2016",
+                    "xsec": "1.37*0.61"
+                },
+		{
+                    "br": [
+                        0.10099
+                    ],
+                    "dset": [
+			"/SUSYZHToAA_AATo4B_M-20_TuneCUETP8M1_PSweights_13TeV-madgraph_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
+                    ],
+                    "gtag": "94X_mcRun2_asymptotic_v3",
+                    "dtag": "MC13TeV_Zh_amass20_2016",
+                    "xsec": "0.8594*0.7435"
+                }
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": false,
+            "issignal": true,
+            "keys": [
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lwidth": 3,
+	    "lstyle":2,
+            "resonance": 20,
+            "spimpose": false,
+            "tag": "Wh (20)"
         },
         {   
             "data": [
@@ -1820,6 +1780,46 @@
             "resonance": 40,
             "spimpose": false,
             "tag": "Wh (40)"
+        },
+        {
+            "data": [
+                {
+                    "br": [
+                        0.3257
+                    ],
+                    "dset": [
+			"/SUSYWHToAA_AATo4B_M-50_TuneCUETP8M1_PSweights_13TeV-madgraph_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
+                    ],
+                    "gtag": "94X_mcRun2_asymptotic_v3",
+                    "dtag": "MC13TeV_Wh_amass50_2016",
+                    "xsec": "1.37*0.61"
+                },
+		            {
+                    "br": [
+                        0.10099
+                    ],
+                    "dset": [
+			"/SUSYZHToAA_AATo4B_M-50_TuneCUETP8M1_PSweights_13TeV-madgraph_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
+                    ],
+                    "gtag": "94X_mcRun2_asymptotic_v3",
+                    "dtag": "MC13TeV_Zh_amass50_2016",
+                    "xsec": "0.8594*0.7435"
+                }
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 2,
+            "lwidth": 3,
+            "lstyle": 2,
+            "resonance": 50,
+            "spimpose": false,
+            "tag": "Wh (50)"
         },
         {
             "data": [

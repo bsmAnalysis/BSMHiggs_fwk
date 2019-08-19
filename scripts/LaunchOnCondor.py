@@ -45,6 +45,7 @@ Jobs_CRABUnitPerJob = 5
 Jobs_CRABLFN = ''
 Jobs_List = []
 Jobs_LocalNJobs = 8
+HtCondor_Sub = ''
 
 def KillProcess(processName):
     for line in os.popen("ps"):
@@ -161,7 +162,7 @@ def CreateTheShellFile(argv):
         shell_file.write(Jobs_InitCmds[i]+'\n')
 
     if   argv[0]=='BASH':                 
-        shell_file.write(argv[1] + " %s\n" % function_argument)
+	shell_file.write(argv[1] + " %s\n" % function_argument)
     elif argv[0]=='ROOT':
         function_argument='('+function_argument+')'
         shell_file.write('root -l -b << EOF\n')
@@ -323,19 +324,18 @@ def CreateTheCmdFile():
     global subTool
     global Path_Cmd
     global CopyRights
+    global HtCondor_Sub
     Path_Cmd   = Farm_Directories[1]+Jobs_Name+'.cmd'
     cmd_file=open(Path_Cmd,'w')
     if subTool=='condor':
-        cmd_file.write('Universe                = vanilla\n')
-        cmd_file.write('Environment             = CONDORJOBID=$(Process)\n')
-        cmd_file.write('notification            = Error\n')
-        cmd_file.write('on_exit_remove          = ((ExitBySignal == False) && (ExitCode == 0)) || (JobRunCount > 3)\n')
-        #site specific code
-        if  (commands.getstatusoutput("hostname -f")[1].find("ucl.ac.be" )!=-1):    cmd_file.write('requirements            = (CMSFARM=?=True)&&(Memory > 200)\n')
-        elif(commands.getstatusoutput("uname -n"   )[1].find("purdue.edu")!=-1):    cmd_file.write('requirements            = (request_memory > 200)\n')
-        else:                                                                       cmd_file.write('requirements            = (Memory > 200)\n')
-        cmd_file.write('should_transfer_files   = YES\n')
-        cmd_file.write('when_to_transfer_output = ON_EXIT\n')
+	HtCondor_Sub = os.getcwd() + "/" + Farm_Directories[1]+Jobs_Name+'.sub'
+        cmd_file.write('Executable              = $(exe)\n')
+        cmd_file.write('output                  = $(log).out\n')
+        cmd_file.write('error                   = $(log).err\n')
+        cmd_file.write('log                     = $(log).out\n')
+        cmd_file.write('request_cpus            = 2\n')
+        cmd_file.write('+JobFlavour             = "microcentury"\n')
+	cmd_file.write('queue exe,log from ' + HtCondor_Sub)
     else:
         cmd_file.write(CopyRights + '\n')
     cmd_file.close()
@@ -349,6 +349,7 @@ def AddJobToCmdFile():
     global absoluteShellPath
     global Jobs_EmailReport
     global Jobs_List
+    global HtCondor_Sub
     Path_Out   = Farm_Directories[3] + Jobs_Index + Jobs_Name
     Path_Log   = Farm_Directories[2] + Jobs_Index + Jobs_Name
 
@@ -385,13 +386,13 @@ def AddJobToCmdFile():
         if(not os.path.isabs(absoluteShellPath)): absoluteShellPath= os.getcwd() + "/"+absoluteShellPath
         Jobs_List.extend([absoluteShellPath])
     else:
-        os.system('rm -f ' +os.path.relpath(Path_Log) + '.log') #delete log file to be sure there is no overlap
-        cmd_file.write('\n')
-        cmd_file.write('Executable              = %s\n'     % os.path.relpath(Path_Shell) )
-        cmd_file.write('output                  = %s.out\n' % os.path.relpath(Path_Log) )
-        cmd_file.write('error                   = %s.out\n' % os.path.relpath(Path_Log) )
-        cmd_file.write('log                     = %s.log\n' % os.path.relpath(Path_Log) ) 
-        cmd_file.write('Queue 1\n')
+	abs_Path_Log = Path_Log
+	if(not os.path.isabs(abs_Path_Log)): abs_Path_Log = os.getcwd() + "/" + abs_Path_Log
+	abs_Path_Shell = Path_Shell
+	if(not os.path.isabs(abs_Path_Shell)): abs_Path_Shell = os.getcwd() + "/" + abs_Path_Shell
+	htcondor_sub = open(HtCondor_Sub,'a')
+	htcondor_sub.write('%s %s\n' % (abs_Path_Shell,abs_Path_Log))
+	htcondor_sub.close()
     cmd_file.close()
 
 def CreateDirectoryStructure(FarmDirectory):
@@ -439,7 +440,7 @@ def SendCluster_Create(FarmDirectory, JobName):
         if( commands.getstatusoutput("ls /gstore/t3cms" )[1].find("store")==0): qbatchTestCommand="qstat"
         if( 'iihe.ac.be' in hostname): qbatchTestCommand="qstat"
 
-        if(  commands.getstatusoutput("bjobs"          )[1].find("command not found")<0):   subTool = 'bsub'
+        # if(  commands.getstatusoutput("bjobs"          )[1].find("command not found")<0):   subTool = 'bsub'
         elif(commands.getstatusoutput(qbatchTestCommand)[1].find("command not found")<0):   subTool = 'qsub'
         else:                                                                               subTool = 'condor'
     if(Jobs_Queue.find('crab')>=0):                                                     subTool = 'crab'
