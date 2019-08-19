@@ -102,6 +102,7 @@ double shapeMaxVBF = 9999;
 bool doInterf = false;
 double minSignalYield = 0;
 float statBinByBin = -1;
+bool useLogy = true;
 
 bool dirtyFix1 = false;
 bool dirtyFix2 = false;
@@ -497,6 +498,7 @@ void printHelp()
   printf("--dropBckgBelow --> drop all background processes that contributes for less than a threshold to the total background yields\n");
   printf("--scaleVBF    --> scale VBF signal by ggH/VBF\n");
   printf("--key        --> provide a key for sample filtering in the json\n");  
+  printf("--noLogy        --> use this flag to make y-axis linear scale\n");  
 }
 
 //
@@ -568,6 +570,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--statBinByBin")    !=string::npos) { sscanf(argv[i+1],"%f",&statBinByBin); i++; printf("statBinByBin = %f\n", statBinByBin);}
     else if(arg.find("--dropBckgBelow")   !=string::npos) { sscanf(argv[i+1],"%lf",&dropBckgBelow); i++; printf("dropBckgBelow = %f\n", dropBckgBelow);}
     else if(arg.find("--key"          )   !=string::npos && i+1<argc){ keywords.push_back(argv[i+1]); printf("Only samples matching this (regex) expression '%s' are processed\n", argv[i+1]); i++;  }
+    else if(arg.find("--noLogy")    !=string::npos) { useLogy=false; printf("useLogy = False\n");}
     if(arg.find("--runZh") !=string::npos) { runZh=true; printf("runZh = True\n");}
     if(arg.find("--modeDD") !=string::npos) { modeDD=true; printf("modeDD = True\n");} 
     if(arg.find("--postfit")  !=string::npos) { postfit=true; printf("postfit = True\n");}   
@@ -1632,7 +1635,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       t1->Draw();
       t1->cd();
 
-      t1->SetLogy(true);         
+      t1->SetLogy(useLogy); 
  
       //print histograms
       TH1* axis = (TH1*)map_data[p->first]->Clone("axis");
@@ -1646,12 +1649,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       //axis->SetMaximum(5000.5*std::max(map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum()));
       
       //hard code range
-      if(procs["data"].channels[p->first].bin.find("vbf")!=string::npos){
-        axis->SetMinimum(1E-1);
-        axis->SetMaximum(std::max(axis->GetMaximum(), 5E1));
-      }else{
-        axis->SetMinimum(1E-2);
-        axis->SetMaximum(std::max(axis->GetMaximum(), 1E9));
+      if(useLogy){
+        if(procs["data"].channels[p->first].bin.find("vbf")!=string::npos){
+          axis->SetMinimum(1E-1);
+          axis->SetMaximum(std::max(axis->GetMaximum(), 5E1));
+        }else{
+          axis->SetMinimum(1E-2);
+          axis->SetMaximum(std::max(axis->GetMaximum(), 1E9));
+        }
       }
 
       axis->GetXaxis()->SetLabelOffset(0.007);
@@ -2914,8 +2919,5 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     //recompute total background
     computeTotalBackground();
   }
-
-
-
 
 
