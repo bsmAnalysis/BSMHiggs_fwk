@@ -447,7 +447,6 @@ class AllInfo_t
     // Handle empty bins
     void HandleEmptyBins(string histoName);
 
-    void debug(TString histoName, string funcName);
 };
 
 
@@ -1496,9 +1495,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
         TH1* h = ch->second.shapes[histoName.Data()].histo();
 	if (!h) continue;
-	//if( ch->first.find("e_A_SR_3b") != string::npos){
-	//  printf("ShowShape: Name: %s_%s, integral: %f\n",ch->first.c_str(),histoName.Data(),h->Integral());
-	//}
         //if(process.Contains("SOnly_S") ) h->Scale(10);  
         if(it->first=="total"){
           //double Uncertainty = std::max(0.0, ch->second.shapes[histoName.Data()].getScaleUncertainty() / h->Integral() );;
@@ -1928,7 +1924,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       //save canvas
       LabelText.ReplaceAll(" ","_"); 
       // c[I]->SaveAs(SaveName+"_Shape.png");
-      c[I]->SaveAs(LabelText+"_Shape.png");
       c[I]->SaveAs(LabelText+"_Shape.pdf");
       c[I]->SaveAs(LabelText+"_Shape.C");
       delete c[I];
@@ -2802,10 +2797,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  }else{
 	    shapeInfo.uncShape[varName.Data()]->Add(hshape);
 	  }
-
-	  //if( string(histoName.Data()).find("e_A_SR_3b") != string::npos){
-	  //  printf("GetShapeFromFile: Name: %s, integral: %f\n",histoName.Data(),hshape->Integral());
-	  //}
         }
       }
     }
@@ -2927,23 +2918,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
     //recompute total background
     computeTotalBackground();
-  }
-
-  void AllInfo_t::debug(TString histoName, string funcName){
-    sortProc();
-    for(unsigned int p=0;p<sorted_procs.size();p++){
-      string procName = sorted_procs[p];
-      std::map<string, ProcessInfo_t>::iterator it=procs.find(procName);
-      if(it==procs.end())continue;
-      for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
-	if(ch->second.shapes.find(histoName.Data())==(ch->second.shapes).end())continue;
-	TH1* h = ch->second.shapes[histoName.Data()].histo();
-	if (!h) continue;
-	if( ch->first.find("e_A_SR_3b") != string::npos){
-	  printf("%s: Name: %s_%s, integral: %f\n",funcName.c_str(),ch->first.c_str(),histoName.Data(),h->Integral());
-	}
-      }
-    }
   }
 
 

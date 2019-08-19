@@ -2191,7 +2191,6 @@ int main(int argc, char* argv[])
 		    }
 		    //btsfutil.modifyBTagsWithSF(hasCSVtagLDown, btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_B ,
 		    //									  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtagL=hasCSVtagLDown;
-		    std::cout << "tag_cat: " << tag_cat << ", bSFLoose: " << bSFLoose << ", bSFMedium: " << bSFMedium << ", beffLoose: " << beffLoose << ", beffMedium: " << beffMedium << std::endl;
 		    btsfutil.applySF2WPs(hasCSVtagLDown, hasCSVtagMDown, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		    hasCSVtagL=hasCSVtagLDown; hasCSVtagM=hasCSVtagMDown;
 		  } else {
@@ -2789,7 +2788,6 @@ int main(int argc, char* argv[])
 	    mon.fillHisto("dmmin",tags,dm, weight);
 	    // BDT
 	    mon.fillHisto("bdt", tags, mvaBDT, weight);
-//	    std::cout << "btd: " << mvaBDT << ", filled into bdt, event: " << ev.event << ", lumi: " << ev.lumi << std::endl;
 	      
 	    
 	    //##############################################################################
@@ -2832,7 +2830,6 @@ int main(int argc, char* argv[])
 	    //scan the BDT cut and fill the shapes
 	    for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){
 	      if(mvaBDT>optim_Cuts1_bdt[index]){
-//	        std::cout << "btd: " << mvaBDT << ", cut index: " << index << ", cut: " << optim_Cuts1_bdt[index] << ", filled into bdt shapes, event: " << ev.event << ", lumi: " << ev.lumi << std::endl;
 		mon.fillHisto(TString("bdt_shapes")+varNames[ivar],tags,index, mvaBDT,weight);
 		if (ivar==0) {
 		  mon.fillHisto(TString("higgsMass_shapes")+varNames[ivar],tags,index, allHadronic.mass(),weight);  
