@@ -604,11 +604,11 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, TFile* OutputF
 	   Weight=iLumi/fileList.size();
 	   // Overwrite weight for W+Nj and DY+Nj samples
 	   if (dirProc.find("W#rightarrow l#nu")!=std::string::npos) Weight=iLumi;
-	   if (dirProc.find("Z#rightarrow ll")!=std::string::npos) {
-        if ((Samples[j])["dtag"].toString().find("10to50")!=std::string::npos
-		&& ( (Samples[j])["dtag"].toString().find("2017")!=std::string::npos || (Samples[j])["dtag"].toString().find("2018")!=std::string::npos) ); //except for 2017 and 2018 low-mass DY samples
-        else Weight=iLumi;
-     }
+	   if (dirProc.find("Z#rightarrow ll")!=std::string::npos && (Samples[j])["dtag"].toString().find("amcNLO")==std::string::npos) {
+	     if ((Samples[j])["dtag"].toString().find("10to50")!=std::string::npos && 
+		  ( (Samples[j])["dtag"].toString().find("2017")!=std::string::npos || (Samples[j])["dtag"].toString().find("2018")!=std::string::npos) );
+	     else Weight=iLumi;
+	   }
 	   //	   if (Process[i].getStringFromKeyword(matchingKeyword, "tag", "W#rightarrow l#nu")) Weight=iLumi;
 	 } else {Weight=1.0;}  
 	 //	 {Weight= iLumi/fileList.size();}else{Weight=1.0;}
@@ -1326,7 +1326,7 @@ void ConvertToTex(JSONWrapper::Object& Root, TFile* File, NameAndType& HistoProp
       if(CleanTag.find("#")!=std::string::npos)CleanTag = string("$") + CleanTag + "$";
       while(CleanTag.find("#")!=std::string::npos)CleanTag.replace(CleanTag.find("#"),1,"\\");
 
-      if(Process[i].getBoolFromKeyword(matchingKeyword, "issignal", false) && CleanTag.find("60")!=std::string::npos){
+      if(Process[i].getBoolFromKeyword(matchingKeyword, "issignal", false) && (CleanTag.find("60")!=std::string::npos)){ // || CleanTag.find("20")!=std::string::npos)){
 	SiglToDelete[Process[i].getStringFromKeyword(matchingKeyword, "resonance", "")] = (TH1*)hist->Clone();
       }
 
@@ -1342,7 +1342,7 @@ void ConvertToTex(JSONWrapper::Object& Root, TFile* File, NameAndType& HistoProp
           if(stack){
             char numberastext[2048]; numberastext[0] = '\0';
             for(int b=1;b<=hist->GetXaxis()->GetNbins();b++){sprintf(numberastext,"%s & %s",numberastext, utils::toLatexRounded(stack->GetBinContent(b), stack->GetBinError(b),-1,doPowers).c_str());}
-            fprintf(pFile, "%s %s \\\\\n\\hline\n","Total expected", numberastext);
+            fprintf(pFile, "%s %s \\\\\n\\hline\n","Bkg total expected", numberastext);
 	     BkgdToDelete.push_back(stack);
              stack=NULL;
           }
