@@ -662,6 +662,36 @@
         {
             "color": 624,
             "data": [
+		{
+		    "br": [ 0.13 ],
+		    "dset":[
+		        "/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"
+		    ],
+		    "gtag": "94X_mc2017_realistic_v14",
+		    "dtag": "MC13TeV_DYJetsToLL_M50_2017_amcNLO",
+		    "xsec": 18610 
+		},
+		{
+		    "br": [ 0.87 ],
+		    "dset":[
+		        "/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM"
+		    ],
+		    "gtag": "94X_mc2017_realistic_v14",
+		    "dtag": "MC13TeV_DYJetsToLL_M50_2017_sxt1_amcNLO",
+		    "xsec": 18610 
+		}
+            ],
+            "isdata": false,
+            "keys": [
+		"haa_prod", 
+                "haa_mcbased",
+                "haa_ztoll"
+            ],
+            "tag": "Z#rightarrow ll"
+        },
+        {
+            "color": 624,
+            "data": [
                 {
                     "br": [ 1.0 ],
                     "dset": [
@@ -756,7 +786,6 @@
             "isdata": false,
             "keys": [
 		"haa_prod", 
-                "haa_mcbased",
                 "haa_ztoll"
             ],
             "tag": "Z#rightarrow ll"

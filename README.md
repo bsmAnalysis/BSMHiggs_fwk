@@ -148,8 +148,9 @@ cd $CMSSW_BASE/src
 git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
 cd HiggsAnalysis/CombinedLimit
 git fetch origin
-##Update to a reccomended tag - currently the reccomended tag is v7.0.6
-git checkout v7.0.6
+##Update to a reccomended tag - currently the reccomended tag is v7.0.13
+# http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/
+git checkout v7.0.13
 scramv1 b clean; scramv1 b # always make a clean build
 cd ../../
 

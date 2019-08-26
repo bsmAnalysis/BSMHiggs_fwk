@@ -2517,28 +2517,31 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       //      if (simfit) {
       fprintf(pFile, "-------------------------------\n");  
       fprintf(pFile,"\n");
-      //      if(C->first.find("e" )!=string::npos) {
-      fprintf(pFile,"tt_norm rateParam bin1 ttbarbba 1\n");
-      fprintf(pFile,"tt_norm rateParam bin1 ttbarcba 1\n");  
+      if(C->first.find("e" )!=string::npos) {
+	fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");
+	fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");  
 	//	fprintf(pFile,"ttc_norm_e rateParam bin1 ttbarcba 1\n"); 
-      if(runZh) {
-	if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b rateParam bin1 zll 1 \n");    
-	if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b rateParam bin1 zll 1 \n"); 
-      } else {
-	if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b rateParam bin1 wlnu 1 \n");    
-	if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b rateParam bin1 wlnu 1 \n"); 
-      }
-      //}
-      /*
-      if(C->first.find("mu")!=string::npos) {
+	if(runZh) {
+	  if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b_e rateParam bin1 zll 1 \n");    
+	  if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_e rateParam bin1 zll 1 \n"); 
+	} else {
+	  if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b_e rateParam bin1 wlnu 1 \n");    
+	  if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_e rateParam bin1 wlnu 1 \n"); 
+	}
+      } else if(C->first.find("mu")!=string::npos) {
 	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");
+	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");   
 	//	fprintf(pFile,"ttc_norm_mu rateParam bin1 ttbarcba 1\n");  
-	if (C->first.find("3b")!=string::npos) fprintf(pFile,"w_norm_3b_mu rateParam bin1 wlnu 1 \n"); 
-	if (C->first.find("4b")!=string::npos) fprintf(pFile,"w_norm_4b_mu rateParam bin1 wlnu 1 \n"); 
+	if(runZh) {        
+          if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b_mu rateParam bin1 zll 1 \n"); 
+          if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_mu rateParam bin1 zll 1 \n"); 
+        } else {
+          if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b_mu rateParam bin1 wlnu 1 \n"); 
+          if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_mu rateParam bin1 wlnu 1 \n"); 
+        }                  
       }
-      */
+
       fprintf(pFile, "-------------------------------\n");  
-      //}
       
       fclose(pFile);
     }

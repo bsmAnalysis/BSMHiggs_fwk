@@ -387,12 +387,12 @@ for signalSuffix in signalSuffixVec :
            if(ASYMTOTICLIMIT==True):
               SCRIPT.writelines("tt_e=`cat simfit_m"+ str(m) +".txt | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("tt_mu=`cat simfit_m"+ str(m) +".txt | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
-              SCRIPT.writelines("w_3b_e=`cat simfit_m"+ str(m) +".txt | grep 'w_norm_3b_e' | awk '{print $4;}'`;\n") 
-              SCRIPT.writelines("w_4b_e=`cat simfit_m"+ str(m) +".txt | grep 'w_norm_4b_e' | awk '{print $4;}'`;\n")
-              SCRIPT.writelines("w_3b_mu=`cat simfit_m"+ str(m) +".txt | grep 'w_norm_3b_mu' | awk '{print $4;}'`;\n")
-              SCRIPT.writelines("w_4b_mu=`cat simfit_m"+ str(m) +".txt | grep 'w_norm_4b_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("v_3b_e=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_3b_e' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("v_4b_e=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_4b_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("v_3b_mu=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_3b_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("v_4b_mu=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_4b_mu' | awk '{print $4;}'`;\n")
 #              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root --run blind -v 3 >  COMB.log;\n") 
-              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root -t -1 --setParameters tt_norm_e=$tt_e,w_norm_3b_e=$w_3b_e,w_norm_4b_e=$w_4b_e,tt_norm_mu=$tt_mu,w_norm_3b_mu=$w_3b_mu,w_norm_4b_mu=$w_4b_mu > COMB.log;\n")  
+              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root -t -1 --setParameters tt_norm_e=$tt_e,v_norm_3b_e=$v_3b_e,v_norm_4b_e=$v_4b_e,tt_norm_mu=$tt_mu,v_norm_3b_mu=$v_3b_mu,v_norm_4b_mu=$v_4b_mu > COMB.log;\n")  
 
            ### THIS is for toy (hybridNew) fit
            else:
