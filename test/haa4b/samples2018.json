@@ -552,7 +552,7 @@
 		    ],
 		    "gtag": "102X_upgrade2018_realistic_v18",
 		    "dtag": "MC13TeV_DYJetsToLL_M50_2018_amcNLO",
-		    "xsec": 18610
+		    "xsec": 5765.4
 		},
 		{
 		    "br": [ 0.995 ],
@@ -561,7 +561,7 @@
 		    ],
 		    "gtag": "102X_upgrade2018_realistic_v18",
 		    "dtag": "MC13TeV_DYJetsToLL_M50_2018_ext2_amcNLO",
-		    "xsec": 18610
+		    "xsec": 5765.4
 		},
             ],
             "isdata": false,
@@ -640,6 +640,44 @@
         {
             "color": 622,
             "data": [
+	        {
+		    "br": [ 1.0 ],
+		    "dset": [
+			"/WJetsToLNu_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"
+		    ],
+		    "gtag": "102X_upgrade2018_realistic_v18",
+		    "dtag": "MC13TeV_W0Jets_2018_amcNLO",
+		    "xsec":
+		},
+	        {
+		    "br": [ 1.0 ],
+		    "dset": [
+		        "/WJetsToLNu_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"
+		    ],
+		    "gtag": "102X_upgrade2018_realistic_v18",
+		    "dtag": "MC13TeV_W1Jets_2018_amcNLO",
+		    "xsec":
+		},
+	        {
+		    "br": [ 1.0 ],
+		    "dset": [
+		        "/WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"
+		    ],
+		    "gtag": "102X_upgrade2018_realistic_v18",
+		    "dtag": "MC13TeV_W2Jets_2018_amcNLO",
+		    "xsec":
+		}
+            ],
+            "isdata": false,
+            "keys": [
+		"haa_prod", 
+                "haa_mcbased"
+            ],
+            "tag": "W#rightarrow l#nu"
+        },
+        {
+            "color": 622,
+            "data": [
                 {
                     "br": [
                         1.0
@@ -698,8 +736,7 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_prod", 
-                "haa_mcbased"
+		"haa_prod"
             ],
             "tag": "W#rightarrow l#nu"
         },

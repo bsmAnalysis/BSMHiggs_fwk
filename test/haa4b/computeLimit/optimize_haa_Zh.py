@@ -18,7 +18,7 @@ BIN             = []
 MODEL           = []
 
 LaunchOnCondor.Jobs_Queue='cmscaf1nd'
-FarmDirectory  = "FARM"
+FarmDirectory  = "FARM_Zh"
 JobName        = "computeLimits"
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
 CWD=os.getcwd()
@@ -48,7 +48,7 @@ for model in MODELS:
          if(model=="SM"):
             suffix = "" 
             signalSuffixVec += [ suffix ]
-            OUTName         += ["SB13TeV_SM_Wh"]
+            OUTName         += ["SB13TeV_SM_Zh"]
             LandSArgOptions += [" --histo " + shape + "  --systpostfix _13TeV --shape "]
             BIN             += [bin]
             MODEL           += [model]
@@ -128,7 +128,7 @@ for signalSuffix in signalSuffixVec :
    DataCardsDir='cards_'+OUTName[iConf]+signalSuffix+binSuffix
 
    #prepare the output
-   OUT = CWD+'/JOBS/'+OUTName[iConf]+signalSuffix+binSuffix+'/'
+   OUT = CWD+'/JOBS_Zh/'+OUTName[iConf]+signalSuffix+binSuffix+'/'
    os.system('mkdir -p ' + OUT)
 
    #get the cuts
@@ -320,7 +320,7 @@ for signalSuffix in signalSuffixVec :
                Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #also add a graph for shapeMax
 
                INbinSuffix = "_" + bin 
-               IN = CWD+'/JOBS/'+OUTName[iConf]+signalSuffix+INbinSuffix+'/'
+               IN = CWD+'/JOBS_Zh/'+OUTName[iConf]+signalSuffix+INbinSuffix+'/'
                try:
                   listcuts = open(IN+'cuts.txt',"r")
                   mi=0
@@ -369,16 +369,17 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines('cd -;\n')
 
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
-           SCRIPT.writelines('mkdir -p out;\ncd out;\n') #--blind instead of --simfit
+           SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
 #           SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --blind --index 1 --rebin 6 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
-           SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --rebin 6 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --subFake --modeDD " + " " + LandSArg + cutStr  +" ;\n")
+           #SCRIPT.writelines("computeLimit --runZh  --m " + str(m) + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --rebin 6 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --subFake --modeDD " + " " + LandSArg + cutStr  +" ;\n")
+           SCRIPT.writelines("computeLimit --runZh  --m " + str(m) + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --rebin 6 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
            SCRIPT.writelines("sh combineCards.sh;\n"); 
 #           SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root --PO verbose --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n") 
            SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n")  
            #compute pvalue
            SCRIPT.writelines("combine -M ProfileLikelihood --signif --pvalue -m " +  str(m) + " workspace.root > COMB.log;\n")
 #           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -v 3 --plots --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --rMin=-20 --rMax=20 --robustFit 1 > log.txt \n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3  --plots --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-20 --rMax=20 --stepSize=0.05 --robustFit 1 --setParameters mask_e_A_SR_3b=1,mask_mu_A_SR_3b=1,mask_e_A_SR_4b=1,mask_mu_A_SR_4b=1 > log.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3  --plots --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-20 --rMax=20 --stepSize=0.05 --robustFit 1 --setParameters mask_ee_A_SR_3b=1,mask_mumu_A_SR_3b=1,mask_ee_A_SR_4b=1,mask_mumu_A_SR_4b=1 > log.txt \n") 
            # save likelihood fit info
            SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnostics.root > simfit_m"+ str(m)+".txt \n")
 	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnostics.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +".txt\n")

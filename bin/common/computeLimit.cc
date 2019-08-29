@@ -2356,7 +2356,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	if(it->second.shortName.find("vhbb")!=string::npos){shapeInfo.uncScale["norm_vhbb"] = integral*0.10;}     
 
 	if(it->second.shortName.find("ttbarlig")!=string::npos){shapeInfo.uncScale["norm_toplight"] = integral*0.06;} 
-	//if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_topcc"] = integral*0.50;} 
+	//	if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_topcc"] = integral*0.50;} 
 	if(it->second.shortName.find("ttbargam")!=string::npos){shapeInfo.uncScale["norm_topgzw"] = integral*0.15;} 
 	if(it->second.shortName.find("singleto")!=string::npos){shapeInfo.uncScale["norm_singletop"] = integral*0.05;}
 	if (!subFake){
@@ -2517,18 +2517,20 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       //      if (simfit) {
       fprintf(pFile, "-------------------------------\n");  
       fprintf(pFile,"\n");
-      if(C->first.find("e" )!=string::npos) {
-	fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");
-	fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");  
-	//	fprintf(pFile,"ttc_norm_e rateParam bin1 ttbarcba 1\n"); 
-	if(runZh) {
-	  if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b_e rateParam bin1 zll 1 \n");    
-	  if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_e rateParam bin1 zll 1 \n"); 
-	} else {
-	  if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b_e rateParam bin1 wlnu 1 \n");    
-	  if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_e rateParam bin1 wlnu 1 \n"); 
-	}
-      } else if(C->first.find("mu")!=string::npos) {
+      //      if(C->first.find("e" )!=string::npos) {
+      fprintf(pFile,"tt_norm rateParam bin1 ttbarbba 1\n");
+      fprintf(pFile,"tt_norm rateParam bin1 ttbarcba 1\n");  
+      //	fprintf(pFile,"ttc_norm rateParam bin1 ttbarcba 1\n"); 
+      if(runZh) {
+	if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b rateParam bin1 zll 1 \n");    
+	if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b rateParam bin1 zll 1 \n"); 
+      } else {
+	if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b rateParam bin1 wlnu 1 \n");    
+	if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b rateParam bin1 wlnu 1 \n"); 
+      }
+      //} 
+      /*
+      if(C->first.find("mu")!=string::npos) {
 	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");
 	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");   
 	//	fprintf(pFile,"ttc_norm_mu rateParam bin1 ttbarcba 1\n");  
@@ -2540,7 +2542,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_mu rateParam bin1 wlnu 1 \n"); 
         }                  
       }
-
+      */
       fprintf(pFile, "-------------------------------\n");  
       
       fclose(pFile);

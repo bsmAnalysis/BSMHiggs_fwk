@@ -1699,6 +1699,10 @@ int main(int argc, char* argv[])
         mon.fillHisto("eventflow",tag_cat,1,weight); 
 
 
+	if(is2017MC || is2017data){
+	    hasEMtrigger = hasEMtrigger || hasEMtrigger2;
+	    hasMMtrigger = hasMMtrigger || hasMMtrigger2;
+	}
         bool hasTrigger(false);
 	if(!isMC) {
 	  if(evcat!=fType) continue; 
@@ -2365,7 +2369,8 @@ int main(int argc, char* argv[])
 	      nCSVTtags += (btag_dsc>TightWP);
 	      
 	      // Fill b-jet vector:
-	      if (hasCSVtagL) {  CSVLoosebJets.push_back(vJets[ijet]); }
+	      //if (hasCSVtagL) {  CSVLoosebJets.push_back(vJets[ijet]); }
+	      if (hasCSVtagM) {  CSVLoosebJets.push_back(vJets[ijet]); }
 	    } // b-jet loop
 	    
 	  } // jet loop
@@ -2483,7 +2488,8 @@ int main(int argc, char* argv[])
 
 	  if (runZH){
 	    LorentzVector zll(selLeptons[0]+selLeptons[1]);    
-	    passZmass=(fabs(zll.mass()-91)<15);        
+	    //passZmass=(fabs(zll.mass()-91)<15);        
+	    passZmass=(zll.mass()<100. && zll.mass()>85.);
 
 	    wsum+=selLeptons[1];
 

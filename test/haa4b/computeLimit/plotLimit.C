@@ -88,7 +88,7 @@ void printLimits(FILE* pFile, TGraph* graph, double Mmin=12, double Mmax=60){
 
 
 
-void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", bool strengthLimit=true, bool blind=false, double energy=7, double luminosity=5.035, TString legendName="Wh channels")
+void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", bool strengthLimit=true, bool blind=false, double energy=7, double luminosity=5.035, TString legendName="Wh channels", bool logY=true)
 {
    setTDRStyle();  
    gStyle->SetPadTopMargin   (0.05);
@@ -206,13 +206,28 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   framework->GetYaxis()->SetTitleOffset(1.70);
   if(strengthLimit){
     framework->GetYaxis()->SetTitle("#mu = #sigma_{95%} / #sigma_{th}");
-    framework->GetYaxis()->SetRangeUser(1E-2,1E3);
-    c->SetLogy(true);
+    if(logY){
+      framework->GetYaxis()->SetRangeUser(1E-1,1E3);
+      c->SetLogy(true);
+      outputDir += "log/";
+    }else{
+      framework->GetYaxis()->SetRangeUser(1E-2,5);
+      c->SetLogy(false);
+      outputDir += "linear/";
+    }
   }else{
     framework->GetYaxis()->SetTitle((string("#sigma_{95%} (") + prod +") x BR (pb)").c_str());
-    framework->GetYaxis()->SetRangeUser(1E-2,1E3);
-    c->SetLogy(true);
+    if(logY){
+      framework->GetYaxis()->SetRangeUser(1E-1,1E3);
+      c->SetLogy(true);
+      outputDir += "log/";
+    }else{
+      framework->GetYaxis()->SetRangeUser(1E-2,5);
+      c->SetLogy(false);
+      outputDir += "linear/";
+    }
   }
+  system(string("mkdir -p " + outputDir).c_str());
   framework->GetXaxis()->SetLabelOffset(0.007);
   framework->GetXaxis()->SetLabelSize(0.03);
   framework->GetXaxis()->SetTitleOffset(1.0);

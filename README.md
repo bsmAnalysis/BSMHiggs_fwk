@@ -223,3 +223,9 @@ runLocalAnalysisOverSamples.py -e my_exe -j data/my_samples.json -d my_input_dir
  UserCode/bsmhiggs_fwk/test/haa4b/bin directory (also add it to the
  Buildfile there)
 
+# NTuple locations (29 Aug 2019 Updated)
+- 2016 DATA  and  MC Samples: ```/eos/cms/store/user/georgia/results_2019_07_10```
+  2016 MC New Signal Samples: ```/eos/cms/store/user/yuanc/results_2019_08_09```
+  2016 MC AMC NLO DY Samples: ```/eos/cms/store/user/yuanc/results_2019_08_23```
+- 2017 DATA  and  MC Samples: ```/eos/cms/store/user/zhangyi/results_2019_08_12```
+- 2018 DATA  and  MC Samples: ```/eos/cms/store/user/yuanc/results_2019_08_08```

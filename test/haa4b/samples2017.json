@@ -669,7 +669,7 @@
 		    ],
 		    "gtag": "94X_mc2017_realistic_v14",
 		    "dtag": "MC13TeV_DYJetsToLL_M50_2017_amcNLO",
-		    "xsec": 18610 
+		    "xsec": 5765.4 
 		},
 		{
 		    "br": [ 0.87 ],
@@ -678,7 +678,7 @@
 		    ],
 		    "gtag": "94X_mc2017_realistic_v14",
 		    "dtag": "MC13TeV_DYJetsToLL_M50_2017_ext1_amcNLO",
-		    "xsec": 18610 
+		    "xsec": 5765.4
 		}
             ],
             "isdata": false,
@@ -793,6 +793,62 @@
         {
             "color": 622,
             "data": [
+	        {
+		    "br": [ 1.0 ],
+		    "dset": [
+			"/WJetsToLNu_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"
+		    ],
+		    "gtag": "94X_mc2017_realistic_v14",
+		    "dtag": "MC13TeV_W0Jets_2017_amcNLO",
+		    "xsec":
+		},
+	        {
+		    "br": [ 0.35 ],
+		    "dset": [
+		        "/WJetsToLNu_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"
+		    ],
+		    "gtag": "94X_mc2017_realistic_v14",
+		    "dtag": "MC13TeV_W1Jets_2017_amcNLO",
+		    "xsec":
+		},
+	        {
+		    "br": [ 0.65 ],
+		    "dset": [
+		        "/WJetsToLNu_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM"
+		    ],
+		    "gtag": "94X_mc2017_realistic_v14",
+		    "dtag": "MC13TeV_W1Jets_2017_ext1_amcNLO",
+		    "xsec":
+		},
+	        {
+		    "br": [ 0.49 ],
+		    "dset": [
+		        "/WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"
+		    ],
+		    "gtag": "94X_mc2017_realistic_v14",
+		    "dtag": "MC13TeV_W2Jets_2017_amcNLO",
+		    "xsec":
+		},
+	        {
+		    "br": [ 0.51 ],
+		    "dset": [
+		        "/WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/MINIAODSIM"
+		    ],
+		    "gtag": "94X_mc2017_realistic_v14",
+		    "dtag": "MC13TeV_W2Jets_2017_ext1_amcNLO",
+		    "xsec":
+		}
+            ],
+            "isdata": false,
+            "keys": [
+		"haa_prod", 
+                "haa_mcbased"
+            ],
+            "tag": "W#rightarrow l#nu"
+        },
+        {
+            "color": 622,
+            "data": [
                 {
                     "br": [
                         0.6
@@ -862,8 +918,7 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_prod", 
-                "haa_mcbased"
+		"haa_prod"
             ],
             "tag": "W#rightarrow l#nu"
         },
