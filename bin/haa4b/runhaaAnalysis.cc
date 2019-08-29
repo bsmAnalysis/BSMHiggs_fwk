@@ -1699,6 +1699,10 @@ int main(int argc, char* argv[])
         mon.fillHisto("eventflow",tag_cat,1,weight); 
 
 
+	if(is2017MC || is2017data){
+	    hasEMtrigger = hasEMtrigger || hasEMtrigger2;
+	    hasMMtrigger = hasMMtrigger || hasMMtrigger2;
+	}
         bool hasTrigger(false);
 	if(!isMC) {
 	  if(evcat!=fType) continue; 

@@ -669,7 +669,7 @@
 		    ],
 		    "gtag": "94X_mc2017_realistic_v14",
 		    "dtag": "MC13TeV_DYJetsToLL_M50_2017_amcNLO",
-		    "xsec": 18610 
+		    "xsec": 5765.4 
 		},
 		{
 		    "br": [ 0.87 ],
@@ -678,7 +678,7 @@
 		    ],
 		    "gtag": "94X_mc2017_realistic_v14",
 		    "dtag": "MC13TeV_DYJetsToLL_M50_2017_ext1_amcNLO",
-		    "xsec": 18610 
+		    "xsec": 5765.4
 		}
             ],
             "isdata": false,
@@ -862,8 +862,8 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_prod", 
-                "haa_mcbased"
+		"haa_prod",
+		"haa_mcbased"
             ],
             "tag": "W#rightarrow l#nu"
         },
