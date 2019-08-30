@@ -1215,8 +1215,11 @@ int main(int argc, char* argv[])
 	bool hasHighPtEtrigger  = (ev.triggerType >> 3 ) & 0x1;
         bool hasEtrigger  = (ev.triggerType >> 4 ) & 0x1;
         bool hasEMtrigger = (ev.triggerType >> 5 ) & 0x1;
+	bool hasMtrigger2 = (ev.triggerType >> 6 ) & 0x1;
         bool hasEtrigger2  = (ev.triggerType >> 7 ) & 0x1;
         bool hasEEtrigger2  = (ev.triggerType >> 8 ) & 0x1;
+	bool hasMMtrigger2 = (ev.triggerType >> 9 ) & 0x1;
+	bool hasEMtrigger2 = (ev.triggerType >> 10) & 0x1;
         // Follow the EG POG recommendation, require pass HLT_Ele32_WPTight_L1DoubleEG and HLT_Ele35_WPTight at the same time when is 2017 RunB or RunC
         // https://indico.cern.ch/event/662751/contributions/2778365/attachments/1561439/2458438/egamma_workshop_triggerTalk.pdf
         //if(is2017BCdata) {hasEtrigger = hasEtrigger && hasEtrigger2;printf("hasEtrigger:%d\n",hasEtrigger);}
