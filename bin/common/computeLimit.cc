@@ -94,7 +94,9 @@ bool subWZ = false;
 bool subFake = false;
 bool blindData = false;
 bool blindWithSignal = false; 
+
 TString inFileUrl(""),jsonFile("");
+
 double shapeMin =-9999;
 double shapeMax = 9999;
 double shapeMinVBF =-9999;
@@ -122,7 +124,6 @@ std::vector<string> keywords;
 
 int indexvbf = -1;
 int massL=-1, massR=-1;
-
 
 double dropBckgBelow=0.01; 
 
@@ -2438,6 +2439,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 	if(C->first.find("ee_A_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";      
 	if(C->first.find("mumu_A_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" ";  
+	
+	if(C->first.find("emu_A"  )!=string::npos){
+	  eecard   += (C->first+"=").c_str()+dcName+" ";mumucard += (C->first+"=").c_str()+dcName+" ";
+	}        
+
       } else {
 	if(C->first.find("e"  )!=string::npos)eecard   += (C->first+"=").c_str()+dcName+" ";    
 	if(C->first.find("mu")!=string::npos)mumucard += (C->first+"=").c_str()+dcName+" ";  
@@ -2514,45 +2520,55 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       }
 
       // Add lines for simultaneous fit in the CRs:  
-      //      if (simfit) {
       fprintf(pFile, "-------------------------------\n");  
       fprintf(pFile,"\n");
-      //      if(C->first.find("e" )!=string::npos) {
-      fprintf(pFile,"tt_norm rateParam bin1 ttbarbba 1\n");
-      fprintf(pFile,"tt_norm rateParam bin1 ttbarcba 1\n");  
-      //	fprintf(pFile,"ttc_norm rateParam bin1 ttbarcba 1\n"); 
+
       if(runZh) {
-	if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b rateParam bin1 zll 1 \n");    
-	if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b rateParam bin1 zll 1 \n"); 
+	if(C->first.find("ee" )!=string::npos) {         
+	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n"); 
+	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");    
+	  if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b_e rateParam bin1 zll 1 \n");    
+	  if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_e rateParam bin1 zll 1 \n");
+	} else if (C->first.find("mumu" )!=string::npos) {  
+	    fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n"); 
+	    fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");    
+	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b_mu rateParam bin1 zll 1 \n");  
+	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_mu rateParam bin1 zll 1 \n");   
+	} else if  (C->first.find("emu" )!=string::npos) {     
+	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");   
+	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");  
+	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");   
+	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");  
+	} 
       } else {
-	if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b rateParam bin1 wlnu 1 \n");    
-	if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b rateParam bin1 wlnu 1 \n"); 
+	if(C->first.find("e" )!=string::npos) {             
+	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");      
+	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");   
+	  if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b_e rateParam bin1 wlnu 1 \n");     
+	  if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_e rateParam bin1 wlnu 1 \n");         
+	} else if (C->first.find("mu" )!=string::npos) {    
+	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");            
+	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n"); 
+	  if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b_mu rateParam bin1 wlnu 1 \n"); 
+	  if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_mu rateParam bin1 wlnu 1 \n"); 
+	}                  
       }
-      //} 
-      /*
-      if(C->first.find("mu")!=string::npos) {
-	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");
-	fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");   
-	//	fprintf(pFile,"ttc_norm_mu rateParam bin1 ttbarcba 1\n");  
-	if(runZh) {        
-          if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b_mu rateParam bin1 zll 1 \n"); 
-          if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_mu rateParam bin1 zll 1 \n"); 
-        } else {
-          if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b_mu rateParam bin1 wlnu 1 \n"); 
-          if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_mu rateParam bin1 wlnu 1 \n"); 
-        }                  
-      }
-      */
-      fprintf(pFile, "-------------------------------\n");  
       
+      fprintf(pFile, "-------------------------------\n");  
       fclose(pFile);
+
+      
+
     }
 
-
-    FILE* pFile = fopen("combineCards.sh","w");
+    FILE* pFile = fopen("combineCards.sh","w");   
     fprintf(pFile,"%s;\n",(TString("combineCards.py ") + combinedcard + " > " + "card_combined.dat").Data());
     fprintf(pFile,"%s;\n",(TString("combineCards.py ") + eecard       + " > " + "card_e.dat").Data());
     fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mumucard     + " > " + "card_mu.dat").Data());
+    
+    fprintf(pFile,"%s;\n",(TString("sed -i '/tt_norm_mu/d' card_e.dat")).Data());                   
+    fprintf(pFile,"%s;\n",(TString("sed -i '/tt_norm_e/d' card_mu.dat")).Data());         
+
     fclose(pFile);         
 
   }
