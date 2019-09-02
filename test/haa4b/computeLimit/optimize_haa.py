@@ -62,7 +62,8 @@ def help() :
    print '\t 1 --> compute limit for all possible selection cuts  (in view of optimization)'
    print '\t 2 --> wrap-up and order the results either by best significance or best limit'
    print '\t 3 --> choose the best cuts for the selection and produce limits and control plots for this selection'
-   print '\t 4 --> produce final limit plot (brazilian flag plot)'
+   print '\t 4 --> produce final limit plot in WH channel (brazilian flag plot)'
+   print '\t 5 --> produce final limit plot in ZH channel (brazilian flag plot)'
    print '\nNote: CMSSW_BASE must be set when launching optimize.py (current values is: ' + CMSSW_BASE + ')\n' 
    
 #parse the options
@@ -125,6 +126,8 @@ for signalSuffix in signalSuffixVec :
    binSuffix = ""
    if(',' not in BIN[iConf]):binSuffix="_"+ BIN[iConf]   
 
+   if(phase == 5):
+      OUTName[iConf].replace('Wh','Zh')
    DataCardsDir='cards_'+OUTName[iConf]+signalSuffix+binSuffix
 
    #prepare the output
@@ -369,7 +372,7 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines('cd -;\n')
 
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
-           SCRIPT.writelines('mkdir -p out;\ncd out;\n') #--blind instead of --simfit
+           SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
 #           SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --blind --index 1 --rebin 6 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
            SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --rebin 6 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --subFake --modeDD " + " " + LandSArg + cutStr  +" ;\n")
            SCRIPT.writelines("sh combineCards.sh;\n"); 
@@ -426,10 +429,133 @@ for signalSuffix in signalSuffixVec :
            LaunchOnCondor.SendCluster_Push(["BASH", 'sh ' + OUT+'script_mass_'+str(m)+'.sh'])
       LaunchOnCondor.SendCluster_Submit()
 
+   elif(phase == 5 ):
+      LaunchOnCondor.Jobs_RunHere        = 0
+      print '# FINAL COMBINED LIMITS  for ' + DataCardsDir + '#\n'
+      LaunchOnCondor.SendCluster_Create(FarmDirectory, JobName + "_"+signalSuffix+binSuffix+OUTName[iConf])
+      for m in SUBMASS:
+           SideMasses = findSideMassPoint(m)
+           indexString = ' '
+           indexLString = ' '
+           indexRString = ' '
+           for bin in BIN[iConf].split(',') :
+               Gcut  = []
+               for c in range(1, cutsH.GetYaxis().GetNbins()+1):
+                 Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #add a graph for each cut
+               Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #also add a graph for shapeMin
+               Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #also add a graph for shapeMax
+
+               INbinSuffix = "_" + bin 
+               IN = CWD+'/JOBS/'+OUTName[iConf]+signalSuffix+INbinSuffix+'/'
+               try:
+                  listcuts = open(IN+'cuts.txt',"r")
+                  mi=0
+                  for line in listcuts :
+                     vals=line.split(' ')
+                     for c in range(1, cutsH.GetYaxis().GetNbins()+3):
+                        #FIXME FORCE INDEX TO BE 17 (Met>125GeV)
+                        Gcut[c-1].SetPoint(mi, 17, float(125));
+   #                     Gcut[c-1].SetPoint(mi, float(vals[0]), float(vals[c+1]));
+                     mi+=1
+                  for c in range(1, cutsH.GetYaxis().GetNbins()+3): Gcut[c-1].Set(mi);
+                  listcuts.close();          
+               except:
+                  mi=0
+                  for mtmp in SUBMASS:
+                     for c in range(1, cutsH.GetYaxis().GetNbins()+3):
+                        #FIXME FORCE INDEX TO BE 17 (Met>125GeV)
+                        Gcut[c-1].SetPoint(mi, 17, float(125));
+                     mi+=1
+                  for c in range(1, cutsH.GetYaxis().GetNbins()+3): Gcut[c-1].Set(mi);
+
+               #add comma to index string if it is not empty
+               if(indexString!=' '):
+                  indexString+=','
+                  if(not (SideMasses[0]==SideMasses[1])):
+                     indexLString+=','
+                     indexRString+=','
+
+               #find the cut index for the current mass point
+               indexString += str(findCutIndex(cutsH, Gcut, m));
+               if(not (SideMasses[0]==SideMasses[1])):
+                  indexLString = str(findCutIndex(cutsH, Gcut, SideMasses[0]));
+                  indexRString = str(findCutIndex(cutsH, Gcut, SideMasses[1]));
+
+           #print indexString
+
+           cutStr = " "
+           SideMassesArgs = ""
+           if(not (SideMasses[0]==SideMasses[1])):
+               SideMassesArgs += "--mL " + str(SideMasses[0]) + " --mR " + str(SideMasses[1]) + " --indexL " + indexLString +  " --indexR " + indexRString + " "
+
+           SCRIPT = open(OUT+'/script_mass_'+str(m)+'.sh',"w")
+           SCRIPT.writelines('cd ' + CMSSW_BASE + ';\n')
+           SCRIPT.writelines("export SCRAM_ARCH="+os.getenv("SCRAM_ARCH","slc6_amd64_gcc491")+";\n")
+           SCRIPT.writelines("eval `scram r -sh`;\n")
+           SCRIPT.writelines('cd -;\n')
+
+           cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
+           SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
+           SCRIPT.writelines("computeLimit --runZh --m " + str(m) + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --rebin 6 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
+           SCRIPT.writelines("sh combineCards.sh;\n"); 
+
+           SCRIPT.writelines("\ntext2workspace.py card_e.dat -o workspace_e.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n")  
+           SCRIPT.writelines("combine -M ProfileLikelihood --signif --pvalue -m " +  str(m) + " workspace_e.root > COMB.log;\n")
+           SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3  --plots --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-20 --rMax=20 --stepSize=0.05 --robustFit 1 --setParameters mask_ee_A_SR_3b=1,mask_ee_A_SR_4b=1 > log_e.txt \n") 
+           SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnostics.root > simfit_m"+ str(m)+"_e.txt \n")
+	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnostics.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_e.txt\n")
+
+           SCRIPT.writelines("\ntext2workspace.py card_mu.dat -o workspace_mu.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n")  
+           SCRIPT.writelines("combine -M ProfileLikelihood --signif --pvalue -m " +  str(m) + " workspace_mu.root > COMB.log;\n")
+           SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3  --plots --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-50 --rMax=50 --stepSize=0.05 --robustFit 1 --setParameters mask_mumu_A_SR_3b=1,mask_mumu_A_SR_4b=1 > log_mu.txt \n") 
+           SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnostics.root > simfit_m"+ str(m)+"_mu.txt \n")
+	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnostics.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_mu.txt\n")
+
+           SCRIPT.writelines("\ntext2workspace.py card_combined.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n")  
+           ### THIS IS FOR Asymptotic fit
+           if(ASYMTOTICLIMIT==True):
+           ### THIS is for toy (hybridNew) fit
+              SCRIPT.writelines("tt_e=`cat simfit_m"+ str(m) +"_e.txt | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("tt_mu=`cat simfit_m"+ str(m) +"_mu.txt | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("v_3b_e=`cat simfit_m"+ str(m) +"_e.txt | grep 'v_norm_3b_e' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("v_4b_e=`cat simfit_m"+ str(m) +"_e.txt | grep 'v_norm_4b_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("v_3b_mu=`cat simfit_m"+ str(m) +"_mu.txt | grep 'v_norm_3b_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("v_4b_mu=`cat simfit_m"+ str(m) +"_mu.txt | grep 'v_norm_4b_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root -t -1 --setParameters tt_norm_e=$tt_e,v_norm_3b_e=$v_3b_e,v_norm_4b_e=$v_4b_e,tt_norm_mu=$tt_mu,v_norm_3b_mu=$v_3b_mu,v_norm_4b_mu=$v_4b_mu > COMB.log;\n")  
+
+           else:
+              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root > COMB.log;\n") #first run assymptotic limit to get quickly the range of interest
+              SCRIPT.writelines("rm higgsCombineTest.Asymptotic*.root;\n")
+              SCRIPT.writelines("RMIN=`cat COMB.log | grep 'Expected  2.5%' | awk '{print $5;}'`;\n") #get the low edge 2sigma band from the assymptotic --> will be used to know where to put points
+              SCRIPT.writelines("RMAX=`cat COMB.log | grep 'Expected 97.5%' | awk '{print $5;}'`;\n") #get the high edge 2sigma band from the assymptotic --> will be used to know where to put points
+              SCRIPT.writelines('echo "expected limit from the assymptotic in the 2sigma range [$RMIN, $RMAX]";\n')
+              SCRIPT.writelines('RMIN=$(echo "$RMIN*0.5" | bc);\n'); #DIVIDE RMIN   BY 2 to make sure we are considering large space enough
+              SCRIPT.writelines('RMAX=$(echo "$RMAX*3.0" | bc);\n'); #MULTIPLY RMAX BY 3 to make sure we are considering large space enough
+              SCRIPT.writelines('echo "for the hybridNew, consider r to be in the range [$RMIN, $RMAX]";\n')
+              SCRIPT.writelines("makeGridUsingCrab.py card_combined.dat $RMIN $RMAX -n 40 -m "+str(m)+" -o grid ;\n")
+              SCRIPT.writelines("rm grid.root;\n")
+              SCRIPT.writelines("sh grid.sh 1 16 &> /dev/null;\n")
+              SCRIPT.writelines("rm higgsCombinegrid.HybridNew.*;\n")
+              SCRIPT.writelines("combine workspace.root -M HybridNew --grid=grid.root -m "+str(m)+";\n")
+              SCRIPT.writelines("combine workspace.root -M HybridNew --grid=grid.root -m "+str(m)+" --expectedFromGrid 0.025;\n")
+              SCRIPT.writelines("combine workspace.root -M HybridNew --grid=grid.root -m "+str(m)+" --expectedFromGrid 0.160;\n")
+              SCRIPT.writelines("combine workspace.root -M HybridNew --grid=grid.root -m "+str(m)+" --expectedFromGrid 0.500;\n")
+              SCRIPT.writelines("combine workspace.root -M HybridNew --grid=grid.root -m "+str(m)+" --expectedFromGrid 0.840;\n")
+              SCRIPT.writelines("combine workspace.root -M HybridNew --grid=grid.root -m "+str(m)+" --expectedFromGrid 0.975;\n")
+              SCRIPT.writelines("hadd -f higgsCombineTest.HybridNewMerged.mH"+str(m)+".root  higgsCombineTest.HybridNew.mH"+str(m)+"*.root;\n")
+              SCRIPT.writelines("rm higgsCombineTest.HybridNew.mH"+str(m)+"*.root;\n")
+
+           SCRIPT.writelines('mkdir -p ' + CWD+'/'+cardsdir+';\n')
+           SCRIPT.writelines('mv * ' + CWD+'/'+cardsdir+'/.;\n')
+           SCRIPT.writelines('cd ..;\n\n') 
+           SCRIPT.close()
+           #os.system('sh ' + OUT+'script_mass_'+str(m)+'.sh ')  #uncomment this line to launch interactively (this may take a lot of time)
+           LaunchOnCondor.SendCluster_Push(["BASH", 'sh ' + OUT+'script_mass_'+str(m)+'.sh'])
+      LaunchOnCondor.SendCluster_Submit()
 
    ######################################################################
 
-   elif(phase == 5 ):
+   elif(phase == 7 ):
       print '# FINAL PLOT for ' + DataCardsDir + '#\n'
       os.system("hadd -f "+DataCardsDir+"/PValueTree.root "+DataCardsDir+"/*/higgsCombineTest.ProfileLikelihood.*.root > /dev/null")
 
@@ -444,6 +570,6 @@ for signalSuffix in signalSuffixVec :
 
    ######################################################################
 
-if(phase>5):
+if(phase>7):
       help()
 
