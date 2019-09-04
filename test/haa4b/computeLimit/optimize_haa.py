@@ -62,8 +62,8 @@ def help() :
    print '\t 1 --> compute limit for all possible selection cuts  (in view of optimization)'
    print '\t 2 --> wrap-up and order the results either by best significance or best limit'
    print '\t 3 --> choose the best cuts for the selection and produce limits and control plots for this selection'
-   print '\t 4 --> produce final limit plot in WH channel (brazilian flag plot)'
-   print '\t 5 --> produce final limit plot in ZH channel (brazilian flag plot)'
+   print '\t 4.0 --> produce final limit plot in WH channel (brazilian flag plot)'
+   print '\t 4.1 --> produce final limit plot in ZH channel (brazilian flag plot)'
    print '\nNote: CMSSW_BASE must be set when launching optimize.py (current values is: ' + CMSSW_BASE + ')\n' 
    
 #parse the options
@@ -82,7 +82,7 @@ for o,a in opts:
       help()
       sys.exit(1)
    elif o in('-i'): inUrl = a
-   elif o in('-p'): phase = int(a)
+   elif o in('-p'): phase = float(a)
    elif o in('-o'): CWD=a
    elif o in('-j'): jsonUrl=a
       
@@ -126,7 +126,7 @@ for signalSuffix in signalSuffixVec :
    binSuffix = ""
    if(',' not in BIN[iConf]):binSuffix="_"+ BIN[iConf]   
 
-   if(phase == 5):
+   if(phase == 4.1 or phase == 6.1):
       OUTName[iConf].replace('Wh','Zh')
    DataCardsDir='cards_'+OUTName[iConf]+signalSuffix+binSuffix
 
@@ -305,7 +305,7 @@ for signalSuffix in signalSuffixVec :
       listcuts.close();
 
 
-   elif(phase == 4 ):
+   elif(phase == 4.0 ):
       LaunchOnCondor.Jobs_RunHere        = 0
       print '# FINAL COMBINED LIMITS  for ' + DataCardsDir + '#\n'
       LaunchOnCondor.SendCluster_Create(FarmDirectory, JobName + "_"+signalSuffix+binSuffix+OUTName[iConf])
@@ -428,7 +428,7 @@ for signalSuffix in signalSuffixVec :
            LaunchOnCondor.SendCluster_Push(["BASH", 'sh ' + OUT+'script_mass_'+str(m)+'.sh'])
       LaunchOnCondor.SendCluster_Submit()
 
-   elif(phase == 5 ):
+   elif(phase == 4.1 ):
       LaunchOnCondor.Jobs_RunHere        = 0
       print '# FINAL COMBINED LIMITS  for ' + DataCardsDir + '#\n'
       LaunchOnCondor.SendCluster_Create(FarmDirectory, JobName + "_"+signalSuffix+binSuffix+OUTName[iConf])
@@ -554,7 +554,7 @@ for signalSuffix in signalSuffixVec :
 
    ######################################################################
 
-   elif(phase == 7 ):
+   elif(phase == 6.0 or phase == 6.1 ):
       print '# FINAL PLOT for ' + DataCardsDir + '#\n'
       os.system("hadd -f "+DataCardsDir+"/PValueTree.root "+DataCardsDir+"/*/higgsCombineTest.ProfileLikelihood.*.root > /dev/null")
 
