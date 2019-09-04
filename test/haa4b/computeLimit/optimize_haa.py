@@ -30,7 +30,7 @@ phase=-1
 
 MODELS=["SM"] 
 based_key="haa_mcbased" #mcbased_" #to run limits on MC use: haa_mcbased_, to use data driven obj use: haa_datadriven_
-jsonPath='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples2016.json' 
+jsonPath='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples2016.json'
 inUrl='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2018_09_16_forLimits.root' 
 BESTDISCOVERYOPTIM=True #Set to True for best discovery optimization, Set to False for best limit optimization
 ASYMTOTICLIMIT=True #Set to True to compute asymptotic limits (faster) instead of toy based hybrid-new limits
@@ -388,15 +388,14 @@ for signalSuffix in signalSuffixVec :
 
            ### THIS IS FOR Asymptotic fit
            if(ASYMTOTICLIMIT==True):
-              SCRIPT.writelines("tt=`cat simfit_m"+ str(m) +".txt | grep 'tt_norm' | awk '{print $4;}'`;\n")
-#              SCRIPT.writelines("tt_mu=`cat simfit_m"+ str(m) +".txt | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
-              SCRIPT.writelines("v_3b=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_3b' | awk '{print $4;}'`;\n") 
-              SCRIPT.writelines("v_4b=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_4b' | awk '{print $4;}'`;\n")
-#              SCRIPT.writelines("v_3b_mu=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_3b_mu' | awk '{print $4;}'`;\n")
-#              SCRIPT.writelines("v_4b_mu=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_4b_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("tt_e=`cat simfit_m"+ str(m) +".txt | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("tt_mu=`cat simfit_m"+ str(m) +".txt | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("v_3b_e=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_3b_e' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("v_4b_e=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_4b_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("v_3b_mu=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_3b_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("v_4b_mu=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_4b_mu' | awk '{print $4;}'`;\n")
 #              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root --run blind -v 3 >  COMB.log;\n") 
-              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root -t -1 --setParameters tt_norm=$tt,v_norm_3b=$v_3b,v_norm_4b=$v_4b > COMB.log;\n") 
-#,tt_norm_mu=$tt_mu,v_norm_3b_mu=$v_3b_mu,v_norm_4b_mu=$v_4b_mu > COMB.log;\n")  
+              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root -t -1 --setParameters tt_norm_e=$tt_e,v_norm_3b_e=$v_3b_e,v_norm_4b_e=$v_4b_e,tt_norm_mu=$tt_mu,v_norm_3b_mu=$v_3b_mu,v_norm_4b_mu=$v_4b_mu > COMB.log;\n")  
 
            ### THIS is for toy (hybridNew) fit
            else:
