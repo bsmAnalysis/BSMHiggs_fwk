@@ -551,7 +551,7 @@
 		        "/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"
 		    ],
 		    "gtag": "102X_upgrade2018_realistic_v18",
-		    "dtag": "MC13TeV_DYJetsToLL_M50_2018_amcNLO",
+		    "dtag": "MC13TeV_DYJetsToLL_M50_amcNLO_2018",
 		    "xsec": 5765.4
 		},
 		{
@@ -560,7 +560,7 @@
 		        "/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v1/MINIAODSIM"
 		    ],
 		    "gtag": "102X_upgrade2018_realistic_v18",
-		    "dtag": "MC13TeV_DYJetsToLL_M50_2018_ext2_amcNLO",
+		    "dtag": "MC13TeV_DYJetsToLL_M50_amcNLO_ext2_2018",
 		    "xsec": 5765.4
 		},
             ],
