@@ -1041,6 +1041,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     binName.ReplaceAll("D_","B_");    
     TH1* hDD_B = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();  
     
+    
     binName.ReplaceAll("B_","");   
 
     //compute alpha
@@ -1049,7 +1050,6 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
 
     double errC,errD;
     double errMC_C, errMC_D;
-
  
     if(hCtrl_SB->Integral()>0){
       alpha     = hChan_SB->IntegralAndError(1,hChan_SB->GetXaxis()->GetNbins(),errC) / hCtrl_SB->IntegralAndError(1,hCtrl_SB->GetXaxis()->GetNbins(),errD);
@@ -1057,7 +1057,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     }
     
     // alpha in MC
-    if(hDD_D->Integral()>0){
+    if(hDD_D!=NULL && hDD_D->Integral()>0){
       alphaMC = hDD_C->IntegralAndError(1,hDD_C->GetXaxis()->GetNbins(),errMC_C) / hDD_D->IntegralAndError(1,hDD_D->GetXaxis()->GetNbins(),errMC_D);
       alphaMC_err =  ( fabs( hDD_C->Integral() * errMC_D ) + fabs(errMC_C * errMC_D )  ) / pow(hDD_D->Integral(), 2);  
     }
@@ -2544,13 +2544,15 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	if(C->first.find("e" )!=string::npos) {             
 	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");      
 	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");   
-	  if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b_e rateParam bin1 wlnu 1 \n");     
-	  if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_e rateParam bin1 wlnu 1 \n");         
+	  // if (C->first.find("3b")!=string::npos) 
+	  fprintf(pFile,"v_norm_e rateParam bin1 wlnu 1 \n");     
+	    // if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_e rateParam bin1 wlnu 1 \n");         
 	} else if (C->first.find("mu" )!=string::npos) {    
 	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");            
 	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n"); 
-	  if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b_mu rateParam bin1 wlnu 1 \n"); 
-	  if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_mu rateParam bin1 wlnu 1 \n"); 
+	  //	  if (C->first.find("3b")!=string::npos) 
+	  fprintf(pFile,"v_norm_mu rateParam bin1 wlnu 1 \n"); 
+	  //	  if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_mu rateParam bin1 wlnu 1 \n"); 
 	}                  
       }
       
