@@ -235,12 +235,20 @@ int main(int argc, char* argv[])
       //      if(runZH) fType=EE;
       fType=E;
     }
+
     bool isSingleMuPD(!isMC && dtag.Contains("SingleMuon"));
     bool isDoubleMuPD(!isMC && dtag.Contains("DoubleMuon"));
     bool isSingleElePD(!isMC && dtag.Contains("SingleElectron"));
     bool isDoubleElePD(!isMC && dtag.Contains("DoubleEle"));
     bool isMuonEGPD(!isMC && dtag.Contains("MuEG"));
 
+    if(is2018data && dtag.Contains("EGamma")) {
+      if(runZH){ 
+	fType=EE; isDoubleElePD=true;
+      } else {
+	fType=E; isSingleElePD=true;
+      }
+    }
     
     bool isMC_ZZ  = isMC && ( string(url.Data()).find("TeV_ZZ_")  != string::npos );
     
