@@ -379,7 +379,7 @@ int main(int argc, char* argv[])
     btagReaderMedium.load(btagCalib, BTagEntry::FLAV_UDSG, "incl");
 
     BTagCalibrationReader btagReaderLoose1, btagReaderLoose2, btagReaderLoose3, btagReaderMedium1, btagReaderMedium2, btagReaderMedium3;
-    if(is2017data || is2017MC || is2018data || is2018MC){// b-tag SFs with period dependency for 2017
+    if(is2017data || is2017MC){// b-tag SFs with period dependency for 2017
       btagCalib1 = BTagCalibration(b_tagging_name+"1", csv_file_path1);
       btagCalib2 = BTagCalibration(b_tagging_name+"2", csv_file_path2);
       btagCalib3 = BTagCalibration(b_tagging_name+"3", csv_file_path3);
@@ -2175,7 +2175,7 @@ int main(int argc, char* argv[])
 		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_btagup") {
-		    if(is2017MC || is2018MC){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
@@ -2193,7 +2193,7 @@ int main(int argc, char* argv[])
 		    btsfutil.applySF2WPs(hasCSVtagLUp, hasCSVtagMUp, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		    hasCSVtagL=hasCSVtagLUp; hasCSVtagM=hasCSVtagMUp;
 		  } else if ( varNames[ivar]=="_btagdown") {
-		    if(is2017MC || is2018MC){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
@@ -2211,7 +2211,7 @@ int main(int argc, char* argv[])
 		    btsfutil.applySF2WPs(hasCSVtagLDown, hasCSVtagMDown, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		    hasCSVtagL=hasCSVtagLDown; hasCSVtagM=hasCSVtagMDown;
 		  } else {
-		    if(is2017MC || is2018MC){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
@@ -2239,7 +2239,7 @@ int main(int argc, char* argv[])
 		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_ctagup") {
-		    if(is2017MC || is2018MC){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
@@ -2257,7 +2257,7 @@ int main(int argc, char* argv[])
 		    btsfutil.applySF2WPs(hasCSVtagLUp, hasCSVtagMUp, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		    hasCSVtagL=hasCSVtagLUp; hasCSVtagM=hasCSVtagMUp;
 		  } else if ( varNames[ivar]=="_ctagdown") {
-		    if(is2017MC || is2018MC){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
@@ -2275,7 +2275,7 @@ int main(int argc, char* argv[])
 		    btsfutil.applySF2WPs(hasCSVtagLDown, hasCSVtagMDown, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		    hasCSVtagL=hasCSVtagLDown; hasCSVtagM=hasCSVtagMDown;
 		  } else {
-		    if(is2017MC || is2018MC){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
@@ -2302,7 +2302,7 @@ int main(int argc, char* argv[])
 		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_ltagup") {
-		    if(is2017MC || is2018MC){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
@@ -2320,7 +2320,7 @@ int main(int argc, char* argv[])
 		    btsfutil.applySF2WPs(hasCSVtagLUp, hasCSVtagMUp, bSFLoose, bSFMedium, leffLoose, leffMedium);
 		    hasCSVtagL=hasCSVtagLUp; hasCSVtagM=hasCSVtagMUp;
 		  } else if ( varNames[ivar]=="_ltagdown") {
-		    if(is2017MC || is2018MC){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
@@ -2338,7 +2338,7 @@ int main(int argc, char* argv[])
 		    btsfutil.applySF2WPs(hasCSVtagLDown, hasCSVtagMDown, bSFLoose, bSFMedium, leffLoose, leffMedium);
 		    hasCSVtagL=hasCSVtagLDown; hasCSVtagM=hasCSVtagMDown;
 		  } else {
-		    if(is2017MC || is2018MC){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
