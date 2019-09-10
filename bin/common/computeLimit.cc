@@ -617,6 +617,7 @@ int main(int argc, char* argv[])
       }
     }
   }
+  
 
   //make sure that the index vector are well filled
   if(indexcutVL.size()==0) indexcutVL.push_back(indexcutV [0]);
@@ -953,7 +954,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
       chNRB->second.channel = chData->second.channel;
     }
 
-    // Subtract NonQCD MC from Data in regions A,C,D: 
+    // Subtract NonQCD MC from Data in regions B,C,D: 
     std::map<string, ShapeData_t>& shapesInfoDest = chData->second.shapes;
     std::map<string, ShapeData_t>& shapesInfoSrc = chNRB->second.shapes;
 
@@ -1032,6 +1033,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     TH1* hChan_SB = dataProcIt->second.channels[(binName+"_"+chData->second.bin.c_str()).Data()].shapes[mainHisto.Data()].histo(); // Region C
 
     TH1* hDD     =  chDD->second.shapes[mainHisto.Data()].histo(); // Region B
+    //    if(hDD==NULL){std::cout << "hDD does not exist:" << chDD->second.bin << "_" << chDD->second.channel << mainHisto.Data() << std::endl;}
     
     // load MC histograms in the QCD control regions
     //    binName.ReplaceAll("C_","B_");
@@ -1041,6 +1043,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     binName.ReplaceAll("D_","B_");    
     TH1* hDD_B = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();  
     
+    if(!(hCtrl_SB && hCtrl_SI && hChan_SB && hDD && hDD_C && hDD_D && hDD_B)) continue;
     
     binName.ReplaceAll("B_","");   
 
@@ -1063,7 +1066,8 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     }
     
     double valMC, valMC_err;
-    valMC = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins(),valMC_err); if(valMC<1E-6){valMC=0.0; valMC_err=0.0;}   
+    valMC=0.0; valMC_err=0.0;
+    if(hDD!=NULL) valMC = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins(),valMC_err); if(valMC<1E-6){valMC=0.0; valMC_err=0.0;}   
 
     TH1 *hDD_MC = (TH1*)hDD->Clone("mcobs");
     hDD_MC->Scale(alphaMC);
@@ -1437,7 +1441,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
     double total = map_yields["total"];
     for(std::map<string, double>::iterator Y=map_yields.begin();Y!=map_yields.end();Y++){
-      if(Y->first.find("ddqcd")<std::string::npos)continue;//never drop this background
+      //      if(Y->first.find("ddqcd")<std::string::npos)continue;//never drop this background
       //      if(Y->first.find("VV")<std::string::npos)continue;//never drop this background
       // if(Y->first.find("Vh")<std::string::npos)continue;//never drop this background 
       //      if(Y->first.find("t#bar{t}+#gammaZW")<std::string::npos)continue;//never drop this background    
@@ -1694,9 +1698,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	TH1* hs= map_signals[p->first][i];
         if (hs) hs->Draw("HIST same");
       }
-      /*
+      
       if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
-       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ) {
+       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ||
+	   ((p->first).find("mumu_A_SR_3b")!=std::string::npos) || ((p->first).find("mumu_A_SR_4b")!=std::string::npos) || 
+	   ((p->first).find("ee_A_SR_3b")!=std::string::npos) || ((p->first).find("ee_A_SR_4b")!=std::string::npos)) {
 
 	int bbin=axis->FindBin(0.1);
        	for (int i=bbin; i<map_dataE[p->first]->GetN()+1; i++){
@@ -1707,7 +1713,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
        	TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), axis->GetMinimum(),axis->GetXaxis()->GetXmax(), axis->GetMaximum(), 0, "NB" );  
        	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
       }
-      */
+      
 
       if(!blindData) map_dataE[p->first]->Draw("P0 same");
       
@@ -1924,7 +1930,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       //save canvas
       LabelText.ReplaceAll(" ","_"); 
-      // c[I]->SaveAs(SaveName+"_Shape.png");
+      c[I]->SaveAs(LabelText+"_Shape.png");
       c[I]->SaveAs(LabelText+"_Shape.pdf");
       c[I]->SaveAs(LabelText+"_Shape.C");
       delete c[I];

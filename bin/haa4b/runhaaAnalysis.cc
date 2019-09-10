@@ -185,10 +185,10 @@ int main(int argc, char* argv[])
     TString url = runProcess.getParameter<std::string>("input");
     TString outFileUrl( dtag ); //gSystem->BaseName(url));
 
-    if(!use_DeepCSV && (is2018data || is2018MC)){
-      std::cout << "2018 Data does not have CSV, use DeepCSV instead!" << std::endl;
-      exit(0);
-    }
+//    if(!use_DeepCSV && (is2018data || is2018MC)){
+//      std::cout << "2018 Data does not have CSV, use DeepCSV instead!" << std::endl;
+//      exit(0);
+//    }
 
     if(is2017data || is2017MC){
       // 2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
@@ -200,6 +200,8 @@ int main(int argc, char* argv[])
 
     if(is2018data || is2018MC){ // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
       DeepCSVLooseWP = 0.1241; DeepCSVMediumWP = 0.4184; DeepCSVTightWP = 0.7527;
+      //CSV WPs from 2017
+      CSVLooseWP = 0.5803; CSVMediumWP = 0.8838; CSVTightWP = 0.9693;
   //    ele_threshold_=35.; mu_threshold_=25.;
     }
 
@@ -314,7 +316,7 @@ int main(int argc, char* argv[])
        
       csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                       "/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_Moriond17_B_H.csv";
-      if(is2017data || is2017MC){
+      if(is2017data || is2017MC || is2018data || is2018MC){
           csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                           "/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_94XSF_V2_B_F.csv";     
           csv_file_path1 = std::string(std::getenv("CMSSW_BASE"))+
@@ -2164,7 +2166,7 @@ int main(int argc, char* argv[])
 		btsfutil.SetSeed(ev.event*10 + ijet*10000);// + ivar*10);
 		float bSFLoose, bSFMedium;	
 		if(abs(vJets[ijet].flavid)==5) {
-		  if(use_DeepCSV) {
+		  if(use_DeepCSV || is2018MC) {
 		    //        beff=btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE");
 		    //if(ivar==0)mon.fillHisto("btagEff_b","default",btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE"),1.0);
 		    beffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_b); 
@@ -2173,7 +2175,7 @@ int main(int argc, char* argv[])
 		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_btagup") {
-		    if(is2017MC || is2017data){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
@@ -2191,7 +2193,7 @@ int main(int argc, char* argv[])
 		    btsfutil.applySF2WPs(hasCSVtagLUp, hasCSVtagMUp, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		    hasCSVtagL=hasCSVtagLUp; hasCSVtagM=hasCSVtagMUp;
 		  } else if ( varNames[ivar]=="_btagdown") {
-		    if(is2017MC || is2017data){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
@@ -2209,7 +2211,7 @@ int main(int argc, char* argv[])
 		    btsfutil.applySF2WPs(hasCSVtagLDown, hasCSVtagMDown, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		    hasCSVtagL=hasCSVtagLDown; hasCSVtagM=hasCSVtagMDown;
 		  } else {
-		    if(is2017MC || is2017data){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
@@ -2228,7 +2230,7 @@ int main(int argc, char* argv[])
 		
 		  }
 		} else if(abs(vJets[ijet].flavid)==4) {
-		  if(use_DeepCSV){ 
+		  if(use_DeepCSV || is2018MC){ 
 		    //        beff=btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE");
 		    //if(ivar==0)mon.fillHisto("btagEff_c","default",btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE"),1.0);
 		    beffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_c); 
@@ -2237,7 +2239,7 @@ int main(int argc, char* argv[])
 		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_ctagup") {
-		    if(is2017MC || is2017data){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
@@ -2255,7 +2257,7 @@ int main(int argc, char* argv[])
 		    btsfutil.applySF2WPs(hasCSVtagLUp, hasCSVtagMUp, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		    hasCSVtagL=hasCSVtagLUp; hasCSVtagM=hasCSVtagMUp;
 		  } else if ( varNames[ivar]=="_ctagdown") {
-		    if(is2017MC || is2017data){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
@@ -2273,7 +2275,7 @@ int main(int argc, char* argv[])
 		    btsfutil.applySF2WPs(hasCSVtagLDown, hasCSVtagMDown, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		    hasCSVtagL=hasCSVtagLDown; hasCSVtagM=hasCSVtagMDown;
 		  } else {
-		    if(is2017MC || is2017data){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
@@ -2291,7 +2293,7 @@ int main(int argc, char* argv[])
 		    btsfutil.applySF2WPs(hasCSVtagL, hasCSVtagM, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		  }
 		} else {
-		  if(use_DeepCSV){
+		  if(use_DeepCSV || is2018MC){
 		    //        leff=btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE");
 		    //if(ivar==0)mon.fillHisto("btagEff_udsg","default",btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE"),1.0);
 		    leffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_udsg);
@@ -2300,7 +2302,7 @@ int main(int argc, char* argv[])
 		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_ltagup") {
-		    if(is2017MC || is2017data){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
@@ -2318,7 +2320,7 @@ int main(int argc, char* argv[])
 		    btsfutil.applySF2WPs(hasCSVtagLUp, hasCSVtagMUp, bSFLoose, bSFMedium, leffLoose, leffMedium);
 		    hasCSVtagL=hasCSVtagLUp; hasCSVtagM=hasCSVtagMUp;
 		  } else if ( varNames[ivar]=="_ltagdown") {
-		    if(is2017MC || is2017data){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
@@ -2336,7 +2338,7 @@ int main(int argc, char* argv[])
 		    btsfutil.applySF2WPs(hasCSVtagLDown, hasCSVtagMDown, bSFLoose, bSFMedium, leffLoose, leffMedium);
 		    hasCSVtagL=hasCSVtagLDown; hasCSVtagM=hasCSVtagMDown;
 		  } else {
-		    if(is2017MC || is2017data){
+		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
 				 btagReaderLoose3.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;

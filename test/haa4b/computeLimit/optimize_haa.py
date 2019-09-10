@@ -39,7 +39,7 @@ BINS = ["3b","4b","3b,4b"] # list individual analysis bins to consider as well a
 MASS = [12, 15, 20, 25, 30, 40, 50, 60]
 SUBMASS = [12, 15, 20, 25, 30, 40, 50, 60]
 
-LandSArgCommonOptions=" --dropBckgBelow 0.001 --statBinByBin 0.001 " #--BackExtrapol " #--statBinByBin 0.00001 "
+LandSArgCommonOptions=" --dropBckgBelow 0.001 " #--statBinByBin 0.001 " #--BackExtrapol " #--statBinByBin 0.00001 "
 #LandSArgCommonOptions="  --BackExtrapol --statBinByBin 0.00001 --dropBckgBelow 0.00001 --blind"
 
 for model in MODELS:
@@ -127,7 +127,7 @@ for signalSuffix in signalSuffixVec :
    if(',' not in BIN[iConf]):binSuffix="_"+ BIN[iConf]   
 
    if(phase == 4.1 or phase == 6.1):
-      OUTName[iConf].replace('Wh','Zh')
+      OUTName[iConf] = OUTName[iConf].replace('Wh','Zh')
    DataCardsDir='cards_'+OUTName[iConf]+signalSuffix+binSuffix
 
    #prepare the output
@@ -374,7 +374,7 @@ for signalSuffix in signalSuffixVec :
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
            SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
 #           SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --blind --index 1 --rebin 6 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
-           SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --rebin 6 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --subFake --modeDD " + " " + LandSArg + cutStr  +" ;\n")
+           SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --simfit --index 1 --rebin 6 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --subFake --shape --modeDD " + " " + LandSArg + cutStr  +" ;\n")
            SCRIPT.writelines("sh combineCards.sh;\n"); 
 #           SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root --PO verbose --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n") 
            SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n")  
@@ -390,12 +390,12 @@ for signalSuffix in signalSuffixVec :
            if(ASYMTOTICLIMIT==True):
               SCRIPT.writelines("tt_e=`cat simfit_m"+ str(m) +".txt | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("tt_mu=`cat simfit_m"+ str(m) +".txt | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
-              SCRIPT.writelines("v_3b_e=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_3b_e' | awk '{print $4;}'`;\n") 
-              SCRIPT.writelines("v_4b_e=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_4b_e' | awk '{print $4;}'`;\n")
-              SCRIPT.writelines("v_3b_mu=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_3b_mu' | awk '{print $4;}'`;\n")
-              SCRIPT.writelines("v_4b_mu=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_4b_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("v_e=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_e' | awk '{print $4;}'`;\n") 
+#              SCRIPT.writelines("v_4b_e=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_4b_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("v_mu=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_mu' | awk '{print $4;}'`;\n")
+#              SCRIPT.writelines("v_4b_mu=`cat simfit_m"+ str(m) +".txt | grep 'v_norm_4b_mu' | awk '{print $4;}'`;\n")
 #              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root --run blind -v 3 >  COMB.log;\n") 
-              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root -t -1 --setParameters tt_norm_e=$tt_e,v_norm_3b_e=$v_3b_e,v_norm_4b_e=$v_4b_e,tt_norm_mu=$tt_mu,v_norm_3b_mu=$v_3b_mu,v_norm_4b_mu=$v_4b_mu > COMB.log;\n")  
+              SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " workspace.root -t -1 --setParameters tt_norm_e=$tt_e,v_norm_e=$v_e,tt_norm_mu=$tt_mu,v_norm_mu=$v_mu > COMB.log;\n")  
 
            ### THIS is for toy (hybridNew) fit
            else:
