@@ -1086,7 +1086,7 @@
             "lcolor": 1,
             "lwidth": 3,
             "resonance": 20,
-            "spimpose": false,
+            "spimpose": true,
             "tag": "Wh (20)"
         },
         {   
@@ -1127,7 +1127,7 @@
             "lwidth": 3,
             "lstyle": 5, 
             "resonance": 25,
-            "spimpose": true,
+            "spimpose": false,
             "tag": "Wh (25)"
         },
         {
