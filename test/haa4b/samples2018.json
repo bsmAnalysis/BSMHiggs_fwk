@@ -988,7 +988,7 @@
 			"/SUSYZHToAA_AATo4B_M-12_TuneCP5_PSweight_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
-                    "dtag": "MC13TeV_Zh_amass12_2017",
+                    "dtag": "MC13TeV_Zh_amass12_2018",
                     "xsec": "0.8594*0.75"
                 }
             ],
@@ -1029,7 +1029,7 @@
 			"/SUSYZHToAA_AATo4B_M-15_TuneCP5_PSweight_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
-                    "dtag": "MC13TeV_Zh_amass15_2017",
+                    "dtag": "MC13TeV_Zh_amass15_2018",
                     "xsec": "0.8594*0.75"
                 }
             ],

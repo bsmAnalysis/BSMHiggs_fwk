@@ -1058,7 +1058,7 @@
                 },
                 {
                     "br": [
-			""
+			0.10099
                     ],
                     "dset": [
 			"/SUSYZHToAA_AATo4B_M-12_TuneCP5_PSweight_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"
