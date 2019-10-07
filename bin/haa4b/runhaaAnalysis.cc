@@ -1158,12 +1158,10 @@ int main(int argc, char* argv[])
           weight *= xsecWeight; 
         }
 
-//	printf("\n\n Event info %3d: \n",iev);
 	// Extract Z pt reweights from LO and NLO DY samples
 	float zpt = -1;
 	if(isMC_DY){
 	  PhysicsObjectCollection &genparticles = phys.genparticles;
-//	  int npartons = 0;
 	  for (auto & genparticle : genparticles) {
 //	    printf("Parton : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, status=%d\n",
 //		   genparticle.id,
@@ -1173,8 +1171,6 @@ int main(int argc, char* argv[])
 //		   genparticle.status
 //		   );
 	      
-//	    int id = abs(genparticle.id);
-//	    if( abs(genparticle.eta())<2.5 && genparticle.pt()>20 && genparticle.momid!=2212 && ( id==1 || id==2 || id==3 || id==4 || id==5 || id==21)) {npartons ++;mon.fillHisto("parton_momid","",genparticle.momid,1);}//std::cout<<"parton_momid: "<<genparticle.momid<<std::endl;}
 	    if(genparticle.id==23) {  
 	      if(zpt<0)
 	        zpt = genparticle.pt();
@@ -2581,7 +2577,7 @@ int main(int argc, char* argv[])
 
 	  // Z-mass window (only effective in ZH) 
 	  if(!passZmass) continue;     
-	  
+ 
 	  //-------------------------------------------------------------------
 	  // First set all b-tags (x-cleaned) in one vector<LorentzVector>
 	  vector<LorentzVector> GoodIdbJets;
