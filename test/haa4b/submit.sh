@@ -66,6 +66,7 @@ PLOTTER=$MAINDIR/plotter${SUFFIX}
 ####################### Settings for Ntuple Analysis ##################
 NTPL_INPUT=results$SUFFIX
 
+ZPtSF_OUT=$MAINDIR/ZPtSF$SUFFIX
 BTAG_NTPL_OUTDIR=$MAINDIR/btag_Ntpl$SUFFIX
 NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX
 #NTPL_OUTDIR=/eos/cms/store/user/georgia/results_Ntpl$SUFFIX #only for Data
@@ -120,6 +121,16 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        computeBTagRatio.py -j $NTPL_JSON -d $NTPL_INPUT -o $BTAG_NTPL_OUTDIR # -t MC13TeV_TTTo
    fi
    
+   if [[ $step == 1.02 ]]; then  # compute Z pt SFs from LO and NLO DY samples
+       echo "Merge and Calculate Z pt SFs:"
+       echo -e "Input: " $NTPL_INPUT "\n Output: " $ZPtSF_OUT
+       ## if the output directory does not exist, create it:
+       if [ ! -d "$ZPtSF_OUT" ]; then
+	   mkdir $ZPtSF_OUT
+       fi
+        computeDYZPtSF.py -j $NTPL_JSON -d $NTPL_OUTDIR -o $ZPtSF_OUT
+   fi
+   
    if [[ $step == 1.1 ]]; then  #submit jobs for h->aa->XXYY analysis
        echo "JOB SUBMISSION for BSM h->aa Analysis"
        echo -e "Input: " $NTPL_JSON "\n Output: " $NTPL_OUTDIR
@@ -129,7 +140,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        fi
 	# @btagSFMethod=1: Jet-by-jet updating of b-tagging status
 	# @btagSFMethod=2: Event reweighting using discriminator-dependent scale factors
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=False @runMVA=False @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False @runZH=True @btagSFMethod=1" -s $queue # -t MC13TeV_TTTo  -r True
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=False @runMVA=False @reweightDYZPt=False @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False @runZH=True @btagSFMethod=1" -s $queue # -t MC13TeV_TTTo  -r True
    fi
 fi
 
