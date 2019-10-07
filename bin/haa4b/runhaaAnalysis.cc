@@ -2440,11 +2440,11 @@ int main(int argc, char* argv[])
 	    
 	  } // jet loop
 
+
 	  //--------------------------------------------------------------------------
 	  // 	  // AK4 jets:
 	  //--------------------------------------------------------------------------
 	  sort(GoodIdJets.begin(), GoodIdJets.end(), ptsort());
-	  
 
 	  //--------------------------------------------------------------------------
 	  // Secondary vertices (soft-b collection)
@@ -2602,7 +2602,6 @@ int main(int argc, char* argv[])
 
 	  //At least 2 jets && 2 b-tags   
 	  bool passNJ2(GoodIdJets.size()>=3 && GoodIdbJets.size()>=2 && passMnBTag);
-	  
 
 	  // N-1 Plots
 	  if (ivar==0) {
@@ -2632,7 +2631,6 @@ int main(int argc, char* argv[])
 	  }
 	  
 	  if(!passNJ2) continue;
-	  
 	  //	  if (!passMnBTag) continue; //at least 1 MediumWP b-tag if nBjets>0
 	  
 	  //#########################################################
