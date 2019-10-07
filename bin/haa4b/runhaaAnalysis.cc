@@ -151,6 +151,7 @@ int main(int argc, char* argv[])
     TString suffix=runProcess.getParameter<std::string>("suffix");
 
     TString btagDir=runProcess.getParameter<std::string>("btagDir");
+    TString zptDir=runProcess.getParameter<std::string>("zptDir");
 
     bool is2016data = (!isMC && dtag.Contains("2016"));
     bool is2016MC = (isMC && dtag.Contains("2016"));
@@ -167,6 +168,9 @@ int main(int argc, char* argv[])
 
     // will reweight the top pt in TT+jets sample (optional)
     bool reweightTopPt = runProcess.getParameter<bool>("reweightTopPt");
+
+    // will reweight the Z pt in DY+jets sample (optional)
+    bool reweightDYZPt = runProcess.getParameter<bool>("reweightDYZPt");
 
     // will produce the input root trees to BDT training (optional)
     bool runMVA = runProcess.getParameter<bool>("runMVA");
@@ -594,6 +598,9 @@ int main(int argc, char* argv[])
       h->GetXaxis()->SetBinLabel(7,"==3b-tags");     
       h->GetXaxis()->SetBinLabel(8,"==4b-tags");  
     }
+
+    mon.addHistogram( new TH1F ("npartons", ";;Events", 10,0,10) ); 
+    mon.addHistogram( new TH1F ("parton_momid", ";;Events", 100,0,100) ); 
  
     mon.addHistogram( new TH1F ("btagEff_b", ";;Events", 200,0,2) );
     mon.addHistogram( new TH1F ("btagEff_c", ";;Events", 200,0,2) );
@@ -1047,7 +1054,27 @@ int main(int argc, char* argv[])
       btagfile->Close();
     }
     
-    
+    //####################################################################################################################
+    //###########################################           Z Pt SFs         ###########################################
+    //####################################################################################################################
+    TH1F *zptSF_3j = new TH1F(), *zptSF_4j = new TH1F(), *zptSF_5j = new TH1F();
+    if(!reweightDYZPt && isMC_DY && !dtag.Contains("amcNLO")){ // apply Z Pt weights on LO DY samples
+      TString zptfilename;
+      if(is2016MC) zptfilename = zptDir + "/" +"DYSF_2016.root";
+      else if(is2017MC) zptfilename = zptDir + "/" +"DYSF_2017.root";
+      else if(is2018MC) zptfilename = zptDir + "/" +"DYSF_2018.root";
+      TFile *zptfile = TFile::Open(zptfilename);
+      if(zptfile->IsZombie() || !zptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< zptfilename<<std::endl;return -1;}
+      zptSF_3j = (TH1F *)zptfile->Get("3jets_sf");
+      zptSF_3j->SetDirectory(0);
+      zptSF_4j = (TH1F *)zptfile->Get("4jets_sf");
+      zptSF_4j->SetDirectory(0);
+      zptSF_5j = (TH1F *)zptfile->Get("5+jets_sf");
+      zptSF_5j->SetDirectory(0);
+      zptfile->Close();
+    }
+
+
     //####################################################################################################################
     //###########################################           MVAHandler         ###########################################
     //####################################################################################################################
@@ -1131,6 +1158,32 @@ int main(int argc, char* argv[])
 	  }
           weight *= xsecWeight; 
         }
+
+//	printf("\n\n Event info %3d: \n",iev);
+	// Extract Z pt reweights from LO and NLO DY samples
+	float zpt = -1;
+	if(isMC_DY){
+	  PhysicsObjectCollection &genparticles = phys.genparticles;
+//	  int npartons = 0;
+	  for (auto & genparticle : genparticles) {
+//	    printf("Parton : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, status=%d\n",
+//		   genparticle.id,
+//		   genparticle.mass(),
+//		   genparticle.momid,
+//		   genparticle.pt(),
+//		   genparticle.status
+//		   );
+	      
+//	    int id = abs(genparticle.id);
+//	    if( abs(genparticle.eta())<2.5 && genparticle.pt()>20 && genparticle.momid!=2212 && ( id==1 || id==2 || id==3 || id==4 || id==5 || id==21)) {npartons ++;mon.fillHisto("parton_momid","",genparticle.momid,1);}//std::cout<<"parton_momid: "<<genparticle.momid<<std::endl;}
+	    if(genparticle.id==23) {  
+	      if(zpt<0)
+	        zpt = genparticle.pt();
+	      else
+		std::cout << "Found multiple Z particles in event: " << iev << std::endl;
+	    }
+	  }
+	}
 
 	// Apply Top pt-reweighting
 	double top_wgt(1.0);    
@@ -2388,11 +2441,11 @@ int main(int argc, char* argv[])
 	    
 	  } // jet loop
 
-
 	  //--------------------------------------------------------------------------
 	  // 	  // AK4 jets:
 	  //--------------------------------------------------------------------------
 	  sort(GoodIdJets.begin(), GoodIdJets.end(), ptsort());
+	  
 
 	  //--------------------------------------------------------------------------
 	  // Secondary vertices (soft-b collection)
@@ -2529,7 +2582,7 @@ int main(int argc, char* argv[])
 
 	  // Z-mass window (only effective in ZH) 
 	  if(!passZmass) continue;     
-
+	  
 	  //-------------------------------------------------------------------
 	  // First set all b-tags (x-cleaned) in one vector<LorentzVector>
 	  vector<LorentzVector> GoodIdbJets;
@@ -2550,6 +2603,7 @@ int main(int argc, char* argv[])
 
 	  //At least 2 jets && 2 b-tags   
 	  bool passNJ2(GoodIdJets.size()>=3 && GoodIdbJets.size()>=2 && passMnBTag);
+	  
 
 	  // N-1 Plots
 	  if (ivar==0) {
@@ -2579,6 +2633,7 @@ int main(int argc, char* argv[])
 	  }
 	  
 	  if(!passNJ2) continue;
+	  
 	  //	  if (!passMnBTag) continue; //at least 1 MediumWP b-tag if nBjets>0
 	  
 	  //#########################################################
@@ -2615,6 +2670,23 @@ int main(int argc, char* argv[])
 	    else {tag_qcd="_D_";} // region D
 	  } else { continue; }
 	 
+	  if(ivar==0 && reweightDYZPt && isMC_DY ){
+	    mon.fillHisto("npartons","alljets",GoodIdJets.size(),1);
+	    mon.fillHisto("ptw","alljets",zpt,weight);
+	    if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",zpt,weight);}
+	    else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",zpt,weight);}
+	    else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,weight);}
+
+	    TString event_cat = eventCategoryPlot.GetLabel(evtCatPlot);
+	    mon.fillHisto("ptw",event_cat+"_jets",zpt,weight);
+	  }
+
+	  if(isMC_DY && !dtag.Contains("amcNLO") && !reweightDYZPt){
+	    if(GoodIdJets.size()==3) {weight *= getSFfrom1DHist(zpt, zptSF_3j);}// std::cout << "3j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_3j) << std::endl;}
+	    else if(GoodIdJets.size()==4) {weight *= getSFfrom1DHist(zpt, zptSF_4j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
+	    else if(GoodIdJets.size()>=5) {weight *= getSFfrom1DHist(zpt, zptSF_5j);}// std::cout << "5j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_5j) << std::endl;}
+	  }
+
 	  
 	  //Define event category according to Nb multiplicity: Nb=0->W CR, Nb=1,2->top CR, Nb=3,4->SR
 	  //event category
