@@ -599,8 +599,7 @@ int main(int argc, char* argv[])
       h->GetXaxis()->SetBinLabel(8,"==4b-tags");  
     }
 
-    mon.addHistogram( new TH1F ("npartons", ";;Events", 10,0,10) ); 
-    mon.addHistogram( new TH1F ("parton_momid", ";;Events", 100,0,100) ); 
+    mon.addHistogram( new TH1F ("jetsMulti", ";;Events", 10,0,10) ); 
  
     mon.addHistogram( new TH1F ("btagEff_b", ";;Events", 200,0,2) );
     mon.addHistogram( new TH1F ("btagEff_c", ";;Events", 200,0,2) );
@@ -2671,7 +2670,7 @@ int main(int argc, char* argv[])
 	  } else { continue; }
 	 
 	  if(ivar==0 && reweightDYZPt && isMC_DY ){
-	    mon.fillHisto("npartons","alljets",GoodIdJets.size(),1);
+	    mon.fillHisto("jetsMulti","alljets",GoodIdJets.size(),1);
 	    mon.fillHisto("ptw","alljets",zpt,weight);
 	    if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",zpt,weight);}
 	    else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",zpt,weight);}

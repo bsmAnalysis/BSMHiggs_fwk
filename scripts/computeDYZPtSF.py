@@ -130,10 +130,9 @@ def produceZptSFs(inputLO, inputNLO, output_name):
     inFileNLO = r.TFile(inputNLO, 'READ')
     output = r.TFile(output_name, 'RECREATE')
     
-    #for hist in ['all','negative','positive']:
-    for hist in ['allj']:
-	histLO = inFileLO.Get(hist+"_npartons")
-	histNLO = inFileNLO.Get(hist+"_npartons")
+    for hist in ['alljets']:
+	histLO = inFileLO.Get(hist+"_jetsMulti")
+	histNLO = inFileNLO.Get(hist+"_jetsMulti")
 	if histLO:
 	    canvas = drawHist(histLO,hist+'Multiplicity_LO')
 	    canvas.Write()
