@@ -586,17 +586,17 @@ int main(int argc, char* argv[])
       h->GetXaxis()->SetBinLabel(3,"Trigger");  
       h->GetXaxis()->SetBinLabel(4,"E_{T}^{miss}>25");   
       h->GetXaxis()->SetBinLabel(5,"M_{T}^{W}>50");  
-      h->GetXaxis()->SetBinLabel(6,">=2-jets, >=2 b-tags"); 
-      h->GetXaxis()->SetBinLabel(7,"==3b-tags");     
-      h->GetXaxis()->SetBinLabel(8,"==4b-tags");    
+      h->GetXaxis()->SetBinLabel(6,">=3-jets, >=2 b-tags"); 
+      h->GetXaxis()->SetBinLabel(7,">=3b-tags");     
+      //      h->GetXaxis()->SetBinLabel(8,"==4b-tags");    
     } else {
       h->GetXaxis()->SetBinLabel(2,"2 leptons");
       h->GetXaxis()->SetBinLabel(3,"Trigger");
       h->GetXaxis()->SetBinLabel(4,"Z-mass window");
       h->GetXaxis()->SetBinLabel(5,"Z-mass window");  
-      h->GetXaxis()->SetBinLabel(6,">=2-jets, >=2 b-tags");   
-      h->GetXaxis()->SetBinLabel(7,"==3b-tags");     
-      h->GetXaxis()->SetBinLabel(8,"==4b-tags");  
+      h->GetXaxis()->SetBinLabel(6,">=3-jets, >=2 b-tags");   
+      h->GetXaxis()->SetBinLabel(7,">=3b-tags");     
+      //      h->GetXaxis()->SetBinLabel(8,"==4b-tags");  
     }
 
     mon.addHistogram( new TH1F ("jetsMulti", ";;Events", 10,0,10) ); 
@@ -2709,12 +2709,12 @@ int main(int argc, char* argv[])
 
 	  if (ivar==0) {
 	    if (passMet25 && passMt) {  
-	      if (tag_subcat=="SR_3b") {
+	      if (tag_subcat=="SR") {
 		mon.fillHisto("eventflow",tag_cat,6,weight);
 	      }
-	      if (tag_subcat=="SR_4b") {
-		mon.fillHisto("eventflow",tag_cat,7,weight);
-	      }
+	      //	      if (tag_subcat=="SR_4b") {
+	      //		mon.fillHisto("eventflow",tag_cat,7,weight);
+	      //	      }
 	    }
 	  }
 	  
@@ -2887,8 +2887,8 @@ int main(int argc, char* argv[])
 		  if(passMet25 && passMt) {
 		    myMVAHandler_.getEntry
 		      (
-		       //	       GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
-		       tag_subcat == "SR_3b", tag_subcat == "SR_4b" , 
+		       GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
+		       //tag_subcat == "SR", tag_subcat == "SR" , 
 		       wsum.pt(), //W only, w pt
 		       allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
 		       dphi_Wh, //W and H, dr 
