@@ -9,14 +9,14 @@ EventCategory::EventCategory(int mode_)
     if(mode==1 || mode==2) {
         NStates = 9;
         EvtCategoryLabel = new TString[NStates];
-        EvtCategoryLabel[0] = "CR_nonTT"; //_3b"; // Nb=0
-	EvtCategoryLabel[1] = "CR_nonTT";  // Nb=0
-        EvtCategoryLabel[2] = "CR"; //_3b"; // Nb=2 -> W CR
-	EvtCategoryLabel[3] = "CR"; //_4b"; // Nb=2 -> tt+light CR
-        EvtCategoryLabel[4] = "SR"; //_3b"; // Nb=3,4
-	EvtCategoryLabel[5] = "SR"; //_4b"; // Nb=3,4
-	EvtCategoryLabel[6] = "CR5j"; //_3b"; // Nb=3,4 -> tt+light CR
-	EvtCategoryLabel[7] = "CR5j"; //_4b"; // Nb=3,4 -> tt+HF CR
+        EvtCategoryLabel[0] = "CR_nonTT_3b"; // Nb=0
+	EvtCategoryLabel[1] = "CR_nonTT_4b"; // Nb=0
+        EvtCategoryLabel[2] = "CR_3b"; // Nb=2 -> W CR
+	EvtCategoryLabel[3] = "CR_4b"; // Nb=2 -> tt+light CR
+        EvtCategoryLabel[4] = "SR_3b"; // Nb=3,4
+	EvtCategoryLabel[5] = "SR_4b"; // Nb=3,4
+	EvtCategoryLabel[6] = "CR5j_3b"; // Nb=3,4 -> tt+light CR
+	EvtCategoryLabel[7] = "CR5j_4b"; // Nb=3,4 -> tt+HF CR
 	EvtCategoryLabel[8] = "CR_5b"; // Nb=3,4
     } else if(mode==3) {
         NStates = 12;
