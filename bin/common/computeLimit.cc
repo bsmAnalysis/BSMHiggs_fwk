@@ -105,6 +105,8 @@ bool doInterf = false;
 double minSignalYield = 0;
 float statBinByBin = -1;
 bool useLogy = true;
+bool blindSR = false;
+double lumi = -1;
 
 bool dirtyFix1 = false;
 bool dirtyFix2 = false;
@@ -126,6 +128,18 @@ int indexvbf = -1;
 int massL=-1, massR=-1;
 
 double dropBckgBelow=0.01; 
+
+/*
+ *Case Sensitive Implementation of startsWith()
+ *It checks if the string 'mainStr' starts with given string 'toMatch'
+ */
+bool startsWith(std::string mainStr, std::string toMatch){
+  // std::string::find returns 0 if toMatch is found at starting
+  if(mainStr.find(toMatch) == 0)
+    return true;
+  else
+    return false;
+}
 
 bool matchKeyword(JSONWrapper::Object& process, std::vector<string>& keywords){
   if(keywords.size()<=0)return true;
@@ -572,6 +586,8 @@ int main(int argc, char* argv[])
     else if(arg.find("--dropBckgBelow")   !=string::npos) { sscanf(argv[i+1],"%lf",&dropBckgBelow); i++; printf("dropBckgBelow = %f\n", dropBckgBelow);}
     else if(arg.find("--key"          )   !=string::npos && i+1<argc){ keywords.push_back(argv[i+1]); printf("Only samples matching this (regex) expression '%s' are processed\n", argv[i+1]); i++;  }
     else if(arg.find("--noLogy")    !=string::npos) { useLogy=false; printf("useLogy = False\n");}
+    else if(arg.find("--SRblind")    !=string::npos) { blindSR=true; printf("blindSR = True\n");}
+    else if(arg.find("--lumi") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%lf",&lumi); i++; printf("Lumi = %lf\n", lumi);}
     if(arg.find("--runZh") !=string::npos) { runZh=true; printf("runZh = True\n");}
     if(arg.find("--modeDD") !=string::npos) { modeDD=true; printf("modeDD = True\n");} 
     if(arg.find("--postfit")  !=string::npos) { postfit=true; printf("postfit = True\n");}   
@@ -934,8 +950,9 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
   for(std::map<string, ProcessInfo_t>::iterator it=procs.begin(); it!=procs.end();it++){
     if(it->second.isData)continue;
     TString procName = it->first.c_str();
-    if(!(procName.Contains("Single Top") || procName.Contains("t#bar{t}+#gammaZW") || procName.Contains("Z#rightarrow") || procName.Contains("VV") || procName.Contains("Vh") || procName.Contains("t#bar{t}") || procName.Contains("W#rightarrow")))continue;
-    //    printf("Subtracting nonQCD process from data: %s \n",procName.Data()); 
+    //if(!(procName.Contains("Single Top") || procName.Contains("t#bar{t}+#gammaZW") || procName.Contains("Z#rightarrow") || procName.Contains("VV") || procName.Contains("Vh") || procName.Contains("t#bar{t}") || procName.Contains("W#rightarrow")))continue;
+    if(!(procName.Contains("Other Bkgds") || procName.Contains("Z#rightarrow") || procName.Contains("t#bar{t}") || procName.Contains("W#rightarrow")))continue;
+        printf("Subtracting nonQCD process from data: %s \n",procName.Data()); 
     addProc(procInfo_NRB, it->second, false);
   }
 
@@ -1677,7 +1694,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       axis->GetYaxis()->SetTitleSize(0.04);
 
       if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
-       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ) {
+       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ||
+	   ((p->first).find("mumu_A_SR_3b")!=std::string::npos) || ((p->first).find("mumu_A_SR_4b")!=std::string::npos) ||
+	   ((p->first).find("ee_A_SR_3b")!=std::string::npos) || ((p->first).find("ee_A_SR_4b")!=std::string::npos)) {
 	
 	int bbin=axis->FindBin(0.1); //map_data[p->first]->FindBin(0.1);
        	for(unsigned int i=bbin;i<axis->GetNbinsX()+1; i++){   
@@ -1699,21 +1718,29 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if (hs) hs->Draw("HIST same");
       }
       
-      if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
-       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ||
-	   ((p->first).find("mumu_A_SR_3b")!=std::string::npos) || ((p->first).find("mumu_A_SR_4b")!=std::string::npos) || 
-	   ((p->first).find("ee_A_SR_3b")!=std::string::npos) || ((p->first).find("ee_A_SR_4b")!=std::string::npos)) {
+      if(blindSR){
+//	 if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
+//       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ||
+//	   ((p->first).find("mumu_A_SR_3b")!=std::string::npos) || ((p->first).find("mumu_A_SR_4b")!=std::string::npos) || 
+//	   ((p->first).find("ee_A_SR_3b")!=std::string::npos) || ((p->first).find("ee_A_SR_4b")!=std::string::npos)) {
+	 if ( startsWith(p->first,"mu_A_SR_3b") || startsWith(p->first,"mu_A_SR_4b") ||
+       	   startsWith(p->first,"e_A_SR_3b") || startsWith(p->first,"e_A_SR_4b") ||
+	   startsWith(p->first,"mumu_A_SR_3b") || startsWith(p->first,"mumu_A_SR_4b") || 
+	   startsWith(p->first,"ee_A_SR_3b") || startsWith(p->first,"ee_A_SR_4b") ) {
 
-	int bbin=axis->FindBin(0.1);
-       	for (int i=bbin; i<map_dataE[p->first]->GetN()+1; i++){
-       	   map_dataE[p->first]->RemovePoint(i);
-	}
+	 std::cout << "Channel name: " << p->first << std::endl;
+	 int bbin=axis->FindBin(0.1);
+	 int totNbins = map_dataE[p->first]->GetN();
+       	 for (int i=bbin-1; i<totNbins; i++){
+       	 //for (int i=0; i<map_dataE[p->first]->GetN()+1; i++){
+       	   map_dataE[p->first]->RemovePoint(bbin-1);
+	 }
 	
-       	//TH1 *hist=(TH1*)p->second->GetHistogram();
-       	TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), axis->GetMinimum(),axis->GetXaxis()->GetXmax(), axis->GetMaximum(), 0, "NB" );  
-       	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
+       	 //TH1 *hist=(TH1*)p->second->GetHistogram();
+       	 TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), axis->GetMinimum(),axis->GetXaxis()->GetXmax(), axis->GetMaximum(), 0, "NB" );  
+       	 blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
+        }
       }
-      
 
       if(!blindData) map_dataE[p->first]->Draw("P0 same");
       
@@ -1785,6 +1812,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       */
       double iLumi=35.9;
       double iEcm=13;
+      if(lumi > 0) iLumi = lumi;
       /*
       TPaveText* T1 = new TPaveText(1.0-R-0.50, 1.0-T-0.05, 1.02-R, 1.0-T-0.005, "NDC");
       T1->SetTextFont(43); T1->SetTextSize(22);   T1->SetTextAlign(31);
@@ -1830,16 +1858,21 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       TH1D* denSystUncH = (TH1D*)map_uncH[p->first];
       utils::root::checkSumw2(denSystUncH);
-      /*
-      if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
-       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ) {
+/*      
+      if(blindSR){
+	if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
+       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) || 
+	   ((p->first).find("mumu_A_SR_3b")!=std::string::npos) || ((p->first).find("mumu_A_SR_4b")!=std::string::npos) ||
+	   ((p->first).find("ee_A_SR_3b")!=std::string::npos) || ((p->first).find("ee_A_SR_4b")!=std::string::npos)) {
 	
-	int bbin=denSystUncH->FindBin(0.1); 
-       	for(unsigned int i=bbin;i<=denSystUncH->GetNbinsX()+1; i++){   
-       	  denSystUncH->SetBinContent(i, 0); denSystUncH->SetBinError(i, 0);
-	}
+	  int bbin=denSystUncH->FindBin(0.1); 
+       	  //for(unsigned int i=bbin;i<=denSystUncH->GetNbinsX()+1; i++){   
+       	  for(unsigned int i=0;i<=denSystUncH->GetNbinsX()+1; i++){   
+       	    denSystUncH->SetBinContent(i, 0); denSystUncH->SetBinError(i, 0);
+	  }
+	  }
       }
-      */
+*/
       int GPoint=0;
       TGraphErrors *denSystUnc=new TGraphErrors(denSystUncH->GetXaxis()->GetNbins()); 
       for(int xbin=1; xbin<=denSystUncH->GetXaxis()->GetNbins(); xbin++){
@@ -1847,7 +1880,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	denSystUnc->SetPointError(GPoint,  denSystUncH->GetBinWidth(xbin)/2, denSystUncH->GetBinContent(xbin)!=0?denSystUncH->GetBinError(xbin)/denSystUncH->GetBinContent(xbin):0);
 	GPoint++;
 	
-      	if(denSystUncH->GetBinContent(xbin)==0) continue;
+      	//if(denSystUncH->GetBinContent(xbin)==0) {std::cout << "!!!!!!! bin i: " << xbin << " is 0" << std::endl;continue;}
+      	if(denSystUncH->GetBinContent(xbin)==0) {continue;}
       	Double_t err=denSystUncH->GetBinError(xbin)/denSystUncH->GetBinContent(xbin);
       	denSystUncH->SetBinContent(xbin,1);
       	denSystUncH->SetBinError(xbin,err);
@@ -1899,16 +1933,35 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       dataToObs->SetMarkerColor(1);
       dataToObs->SetMarkerStyle(20);
       dataToObs->SetMarkerSize(0.7);
+      
+      if(blindSR){
+	 if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
+       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ||
+	   ((p->first).find("mumu_A_SR_3b")!=std::string::npos) || ((p->first).find("mumu_A_SR_4b")!=std::string::npos) || 
+	   ((p->first).find("ee_A_SR_3b")!=std::string::npos) || ((p->first).find("ee_A_SR_4b")!=std::string::npos)) {
+
+	 int bbin=axis->FindBin(0.1);
+	 int totNbins = dataToObs->GetN();
+       	 for (int i=bbin-1; i<totNbins; i++){
+       	   dataToObs->RemovePoint(bbin-1);
+	 }
+	
+        }
+      }
+      
       dataToObs->Draw("P 0 SAME");
 
-      /*
-      if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
-       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ) {
+      
+      if(blindSR){
+        if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
+       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ||
+	   ((p->first).find("mumu_A_SR_3b")!=std::string::npos) || ((p->first).find("mumu_A_SR_4b")!=std::string::npos) ||
+	   ((p->first).find("ee_A_SR_3b")!=std::string::npos) || ((p->first).find("ee_A_SR_4b")!=std::string::npos)) {
 	
-       	TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), 0.4,axis->GetXaxis()->GetXmax(), 1.6, 0, "NB" );  
-       	blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
+       	  TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), 0.4,axis->GetXaxis()->GetXmax(), 1.6, 0, "NB" );  
+       	  blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
+        }
       }
-      */
       
       TLegend *legR = new TLegend(0.56,0.78,0.93,0.96, "NDC");
       legR->SetHeader("");
@@ -1932,7 +1985,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       LabelText.ReplaceAll(" ","_"); 
       c[I]->SaveAs(LabelText+"_Shape.png");
       c[I]->SaveAs(LabelText+"_Shape.pdf");
-      c[I]->SaveAs(LabelText+"_Shape.C");
+      //c[I]->SaveAs(LabelText+"_Shape.C");
       delete c[I];
       
       I++;
@@ -2354,18 +2407,19 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	//	if(it->second.shortName.find("wlnu")!=string::npos){shapeInfo.uncScale["norm_wlnu"] = integral*0.10;}  
 	//      if(it->second.shortName.find("ttbarjet")!=string::npos){shapeInfo.uncScale["norm_tt"] = integral*0.10;}  
 
-	if(it->second.shortName.find("zvv")!=string::npos){shapeInfo.uncScale["norm_zvv"] = integral*0.50;}    
+	//if(it->second.shortName.find("zvv")!=string::npos){shapeInfo.uncScale["norm_zvv"] = integral*0.50;}    
+	//if(it->second.shortName.find("vhbb")!=string::npos){shapeInfo.uncScale["norm_vhbb"] = integral*0.10;}     
+	//if(it->second.shortName.find("singleto")!=string::npos){shapeInfo.uncScale["norm_singletop"] = integral*0.05;}
+	//if(it->second.shortName.find("ttbargam")!=string::npos){shapeInfo.uncScale["norm_topgzw"] = integral*0.15;} 
+	if(it->second.shortName.find("otherbkg")!=string::npos){shapeInfo.uncScale["norm_otherbkgds"] = integral*0.53;std::cout<<"setting otherbkg uncertainties to 0.53"<<std::endl;} 
 	if(runZh) {
 	  if(it->second.shortName.find("wlnu")!=string::npos){shapeInfo.uncScale["norm_wjet"] = integral*0.02;}     
 	} else {
 	  if(it->second.shortName.find("zll")!=string::npos){shapeInfo.uncScale["norm_zll"] = integral*0.02;}
 	}
-	if(it->second.shortName.find("vhbb")!=string::npos){shapeInfo.uncScale["norm_vhbb"] = integral*0.10;}     
 
 	if(it->second.shortName.find("ttbarlig")!=string::npos){shapeInfo.uncScale["norm_toplight"] = integral*0.06;} 
 	//	if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_topcc"] = integral*0.50;} 
-	if(it->second.shortName.find("ttbargam")!=string::npos){shapeInfo.uncScale["norm_topgzw"] = integral*0.15;} 
-	if(it->second.shortName.find("singleto")!=string::npos){shapeInfo.uncScale["norm_singletop"] = integral*0.05;}
 	if (!subFake){
 	  if(it->second.shortName.find("qcd")!=string::npos){shapeInfo.uncScale["norm_qcd"] = integral*0.50;} 
 	}
