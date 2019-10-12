@@ -1693,10 +1693,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       axis->GetYaxis()->SetTitleFont(42);
       axis->GetYaxis()->SetTitleSize(0.04);
 
-      if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
-       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ||
-	   ((p->first).find("mumu_A_SR_3b")!=std::string::npos) || ((p->first).find("mumu_A_SR_4b")!=std::string::npos) ||
-	   ((p->first).find("ee_A_SR_3b")!=std::string::npos) || ((p->first).find("ee_A_SR_4b")!=std::string::npos)) {
+      if ( startsWith(p->first,"mu_A_SR_3b") || startsWith(p->first,"mu_A_SR_4b") ||
+        startsWith(p->first,"e_A_SR_3b") || startsWith(p->first,"e_A_SR_4b") ||
+	startsWith(p->first,"mumu_A_SR_3b") || startsWith(p->first,"mumu_A_SR_4b") || 
+	startsWith(p->first,"ee_A_SR_3b") || startsWith(p->first,"ee_A_SR_4b") ) {
 	
 	int bbin=axis->FindBin(0.1); //map_data[p->first]->FindBin(0.1);
        	for(unsigned int i=bbin;i<axis->GetNbinsX()+1; i++){   
@@ -1719,10 +1719,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       }
       
       if(blindSR){
-//	 if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
-//       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ||
-//	   ((p->first).find("mumu_A_SR_3b")!=std::string::npos) || ((p->first).find("mumu_A_SR_4b")!=std::string::npos) || 
-//	   ((p->first).find("ee_A_SR_3b")!=std::string::npos) || ((p->first).find("ee_A_SR_4b")!=std::string::npos)) {
 	 if ( startsWith(p->first,"mu_A_SR_3b") || startsWith(p->first,"mu_A_SR_4b") ||
        	   startsWith(p->first,"e_A_SR_3b") || startsWith(p->first,"e_A_SR_4b") ||
 	   startsWith(p->first,"mumu_A_SR_3b") || startsWith(p->first,"mumu_A_SR_4b") || 
@@ -1858,21 +1854,20 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       TH1D* denSystUncH = (TH1D*)map_uncH[p->first];
       utils::root::checkSumw2(denSystUncH);
-/*      
+      
       if(blindSR){
-	if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
-       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) || 
-	   ((p->first).find("mumu_A_SR_3b")!=std::string::npos) || ((p->first).find("mumu_A_SR_4b")!=std::string::npos) ||
-	   ((p->first).find("ee_A_SR_3b")!=std::string::npos) || ((p->first).find("ee_A_SR_4b")!=std::string::npos)) {
+	 if ( startsWith(p->first,"mu_A_SR_3b") || startsWith(p->first,"mu_A_SR_4b") ||
+       	   startsWith(p->first,"e_A_SR_3b") || startsWith(p->first,"e_A_SR_4b") ||
+	   startsWith(p->first,"mumu_A_SR_3b") || startsWith(p->first,"mumu_A_SR_4b") || 
+	   startsWith(p->first,"ee_A_SR_3b") || startsWith(p->first,"ee_A_SR_4b") ) {
 	
 	  int bbin=denSystUncH->FindBin(0.1); 
-       	  //for(unsigned int i=bbin;i<=denSystUncH->GetNbinsX()+1; i++){   
-       	  for(unsigned int i=0;i<=denSystUncH->GetNbinsX()+1; i++){   
+       	  for(unsigned int i=bbin;i<=denSystUncH->GetNbinsX()+1; i++){   
        	    denSystUncH->SetBinContent(i, 0); denSystUncH->SetBinError(i, 0);
 	  }
-	  }
+	}
       }
-*/
+
       int GPoint=0;
       TGraphErrors *denSystUnc=new TGraphErrors(denSystUncH->GetXaxis()->GetNbins()); 
       for(int xbin=1; xbin<=denSystUncH->GetXaxis()->GetNbins(); xbin++){
@@ -1935,10 +1930,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       dataToObs->SetMarkerSize(0.7);
       
       if(blindSR){
-	 if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
-       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ||
-	   ((p->first).find("mumu_A_SR_3b")!=std::string::npos) || ((p->first).find("mumu_A_SR_4b")!=std::string::npos) || 
-	   ((p->first).find("ee_A_SR_3b")!=std::string::npos) || ((p->first).find("ee_A_SR_4b")!=std::string::npos)) {
+	if ( startsWith(p->first,"mu_A_SR_3b") || startsWith(p->first,"mu_A_SR_4b") ||
+       	startsWith(p->first,"e_A_SR_3b") || startsWith(p->first,"e_A_SR_4b") ||
+	startsWith(p->first,"mumu_A_SR_3b") || startsWith(p->first,"mumu_A_SR_4b") || 
+	startsWith(p->first,"ee_A_SR_3b") || startsWith(p->first,"ee_A_SR_4b") ) {
 
 	 int bbin=axis->FindBin(0.1);
 	 int totNbins = dataToObs->GetN();
@@ -1953,10 +1948,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       
       if(blindSR){
-        if ( ((p->first).find("mu_A_SR_3b")!=std::string::npos) ||((p->first).find("mu_A_SR_4b")!=std::string::npos) ||
-       	   ((p->first).find("e_A_SR_3b")!=std::string::npos) || ((p->first).find("e_A_SR_4b")!=std::string::npos) ||
-	   ((p->first).find("mumu_A_SR_3b")!=std::string::npos) || ((p->first).find("mumu_A_SR_4b")!=std::string::npos) ||
-	   ((p->first).find("ee_A_SR_3b")!=std::string::npos) || ((p->first).find("ee_A_SR_4b")!=std::string::npos)) {
+        if ( startsWith(p->first,"mu_A_SR_3b") || startsWith(p->first,"mu_A_SR_4b") ||
+       	startsWith(p->first,"e_A_SR_3b") || startsWith(p->first,"e_A_SR_4b") ||
+	startsWith(p->first,"mumu_A_SR_3b") || startsWith(p->first,"mumu_A_SR_4b") || 
+	startsWith(p->first,"ee_A_SR_3b") || startsWith(p->first,"ee_A_SR_4b") ) {
 	
        	  TPave* blinding_box = new TPave(axis->GetBinLowEdge(axis->FindBin(0.1)), 0.4,axis->GetXaxis()->GetXmax(), 1.6, 0, "NB" );  
        	  blinding_box->SetFillColor(15); blinding_box->SetFillStyle(3013); blinding_box->Draw("same F");
@@ -1985,7 +1980,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       LabelText.ReplaceAll(" ","_"); 
       c[I]->SaveAs(LabelText+"_Shape.png");
       c[I]->SaveAs(LabelText+"_Shape.pdf");
-      //c[I]->SaveAs(LabelText+"_Shape.C");
+      c[I]->SaveAs(LabelText+"_Shape.C");
       delete c[I];
       
       I++;
@@ -2411,7 +2406,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	//if(it->second.shortName.find("vhbb")!=string::npos){shapeInfo.uncScale["norm_vhbb"] = integral*0.10;}     
 	//if(it->second.shortName.find("singleto")!=string::npos){shapeInfo.uncScale["norm_singletop"] = integral*0.05;}
 	//if(it->second.shortName.find("ttbargam")!=string::npos){shapeInfo.uncScale["norm_topgzw"] = integral*0.15;} 
-	if(it->second.shortName.find("otherbkg")!=string::npos){shapeInfo.uncScale["norm_otherbkgds"] = integral*0.53;std::cout<<"setting otherbkg uncertainties to 0.53"<<std::endl;} 
+	if(it->second.shortName.find("otherbkg")!=string::npos){shapeInfo.uncScale["norm_otherbkgds"] = integral*0.53;} 
 	if(runZh) {
 	  if(it->second.shortName.find("wlnu")!=string::npos){shapeInfo.uncScale["norm_wjet"] = integral*0.02;}     
 	} else {
