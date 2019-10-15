@@ -1237,14 +1237,14 @@
             "data": [
                 {
                     "br": [
-                        0.2132
+                        0.3257
                     ],
                     "dset": [
 			"/SUSYWHToAA_AATo4B_M-30_TuneCP5_PSweights_13TeV-madgraph_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_Wh_amass30_2017",
-                    "xsec": 1.37
+                    "xsec": "1.37*0.65"
                 },
                 {
                     "br": [
@@ -1330,14 +1330,14 @@
                 },
                 {
                     "br": [
-                        0.067316
+                        0.10099
                     ],
                     "dset": [
 			"/SUSYZHToAA_AATo4B_M-50_TuneCP5_PSweight_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_Zh_amass50_2017",
-                    "xsec": 0.8594
+                    "xsec": "0.8594*0.75"
                 }
             ],
             "fill": 0,
