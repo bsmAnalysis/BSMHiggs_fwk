@@ -34,6 +34,31 @@ def drawHist(hist, name):
 
     return c
 
+def weightedAverage(ratio, hNLO, threshold, end=300):
+    start = ratio.GetXaxis().FindBin(threshold)
+    stop = ratio.GetXaxis().FindBin(end)
+    mean_num = 0
+    mean_den = 0
+    error = 0
+    for i in range(start, stop+1):
+        weight = hNLO.GetBinContent(i)
+	value = ratio.GetBinContent(i)
+	err = ratio.GetBinError(i)
+	mean_num += weight*value
+	mean_den += weight
+	error += weight**2*err**2
+    if mean_den == 0: # if sum of weights is 0, then set zero to the error and mean
+        mean_den = stop+1 - start
+	error = 0
+	mean_num = 0
+    error = math.sqrt(error)/mean_den
+    mean = mean_num/mean_den
+    for i in range(start,ratio.GetXaxis().GetNbins()+1):
+        ratio.SetBinContent(i,mean)
+	ratio.SetBinError(i,error)
+    return ratio
+
+
 def ratioPlot(hLO,hNLO,ratio_h,name):
     # Define the Canvas
     c = r.TCanvas(name,name,800,800)
@@ -168,14 +193,7 @@ def produceZptSFs(inputLO, inputNLO, output_name):
     		        ratios_out.SetBinError(i,0)
     	        else: ratios_out.SetBinContent(i,0)
     	    print("  "+hist+ztype+'_sf')
-# when pt>150 GeV, use the value of last bin before 150 GeV
-	    ibin = ratios_out.GetXaxis().FindBin(150)
-	    valueibin = ratios_out.GetBinContent(ibin)
-	    erroribin = ratios_out.GetBinError(ibin)
-	    for i in range(ibin+1,histLO.GetXaxis().GetNbins()+1):
-		ratios_out.SetBinContent(i,valueibin)
-		ratios_out.SetBinError(i,erroribin)
-# end of block
+	    ratio_out = weightedAverage(ratios_out,histNLO,150)
     	    if "lowPt" in inputLO: c = ratioPlot(histLO,histNLO, ratios_out, hist+ztype+" Low Mass DY")
     	    elif "highPt" in inputLO: c = ratioPlot(histLO,histNLO, ratios_out, hist+ztype+ " High Mass DY")
     	    c.Write()
