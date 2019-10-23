@@ -1104,7 +1104,6 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     if(hCtrl_SB->Integral()<=0 || hCtrl_SI->Integral()<0 || hChan_SB->Integral()<0) alpha = 0;
     hDD->Scale(alpha);
     hDD->SetTitle(DDProcName.Data());
-    std::cout << binName << "_" << chData->second.bin.c_str() << " passed !" << std::endl;
 
     //save values for printout
     double valDD, valDD_err;
