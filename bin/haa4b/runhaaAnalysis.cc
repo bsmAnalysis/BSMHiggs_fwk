@@ -161,6 +161,9 @@ int main(int argc, char* argv[])
     bool is2018data = (!isMC && dtag.Contains("2018"));
     bool is2018MC = (isMC && dtag.Contains("2018"));
     bool is2017BCdata = (is2017data && (dtag.Contains("2017B") || dtag.Contains("2017C")));
+    bool afterRun319077 = false;
+    bool jetinHEM = false;
+    bool eleinHEM = false;
 
     bool verbose = runProcess.getParameter<bool>("verbose");
    
@@ -1126,6 +1129,7 @@ int main(int argc, char* argv[])
             cout << "nDuplicates: " << nDuplicates << endl;
             continue;
         }
+	if(is2018data) afterRun319077 = (ev.run > 319077);
 
         // add PhysicsEvent_t class, get all tree to physics objects
         PhysicsEvent_t phys=getPhysicsEventFrom(ev); 
@@ -1318,6 +1322,7 @@ int main(int argc, char* argv[])
 	float lep_threshold(10.);
 	float eta_threshold=2.5;
 
+	eleinHEM = false;
 	for (auto &ilep : leps) {
 
 	  int lepid = ilep.id;
@@ -1342,6 +1347,9 @@ int main(int argc, char* argv[])
 	  if ( hasTightIdandIso && (ilep.pt()>lep_threshold) ) {
 
 	    if(abs(lepid)==11) { // ele scale corrections
+	      if( !eleinHEM && ilep.pt()>25 && 
+		  -1.57<ilep.phi() && ilep.phi()<-0.87 &&
+		  -3.0<ilep.eta() && ilep.eta()<-1.4) eleinHEM = true;
 	      double et = ilep.en_cor_en / cosh(fabs(ilep.en_EtaSC));
 	      //double et = ilep.en_en / cosh(fabs(ilep.en_EtaSC));
 
@@ -1619,7 +1627,7 @@ int main(int argc, char* argv[])
 	bool passOneLepton(selLeptons.size()==1);
 	bool passDiLepton(selLeptons.size()==2); // && ( abs(selLeptons[0].id)==abs(selLeptons[1].id) ) );
 	
-	bool passOneLepton_anti(selLeptons.size()==1);
+	bool passOneLepton_anti(selLeptons.size()>=1);
 	if (runQCD) {
 	  if (!passOneLepton_anti) continue;
 	  // if (goodLeptons.size()==1) continue;
@@ -1657,6 +1665,23 @@ int main(int argc, char* argv[])
 	  }
 	}
 
+	//------------------------------------------------------------------------------------
+	// HEM Veto for 2018
+	//------------------------------------------------------------------------------------
+	jetinHEM = false;
+	for(size_t ijet=0; ijet<corrJets.size(); ijet++) {
+	  if(corrJets[ijet].pt()>jet_threshold_ && 
+	     (corrJets[ijet].eta()>-3.2 && corrJets[ijet].eta()<-1.2) &&
+	     (corrJets[ijet].phi()>-1.77 && corrJets[ijet].phi()<-0.67)
+	    ) {
+	    jetinHEM = true;
+	    break;
+	  }
+	}
+	if(is2018data && afterRun319077 && (jetinHEM || eleinHEM) ) continue;
+	if(is2018MC && (jetinHEM || eleinHEM)) {
+	  weight *= 0.35;
+	}
 	//-------------------------------------------------------------------------------------
 	//-------------------------------------------------------------------------------------
 	if (isMC_ttbar) { //split inclusive TTJets POWHEG sample into tt+bb, tt+cc and tt+light
