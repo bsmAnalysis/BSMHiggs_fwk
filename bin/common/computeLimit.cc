@@ -1107,7 +1107,8 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
 
     //save values for printout
     double valDD, valDD_err;
-    valDD = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins()+1,valDD_err); if(valDD<1E-6){valDD=0.0; valDD_err=0.0;}
+    //valDD = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins()+1,valDD_err); if(valDD<1E-6){valDD=0.0; valDD_err=0.0;}
+    valDD = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins()+1,valDD_err); if(valDD<1E-3){valDD=0.0; valDD_err=0.0;}
 
     //remove all syst uncertainty
     chDD->second.shapes[mainHisto.Data()].clearSyst();
@@ -2320,6 +2321,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    
             if(!syst.Contains("stat") && (hshape->Integral()<h->Integral()*0.01 || isnan((float)hshape->Integral()))){hshape->Reset(); hshape->Add(h,1); }
 
+//	    std::cout << "*****************" << proc << postfix << syst << "******************" << std::endl;
+	    if(hshape->Integral()<=0){
+	      for(int ibin=1; ibin<=hshape->GetXaxis()->GetNbins(); ibin++) //hmirrorshape->SetBinContent(ibin, 1E-10);	    
+	        hshape->SetBinContent(ibin, 1E-10);
+	    }
             //write variation to file
 	    hshape->SetName(proc+syst);
 	    hshape->Write(proc+postfix+syst);
@@ -2333,7 +2339,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
               if(bin<0)bin=0;
               hmirrorshape->SetBinContent(ibin,bin);
             }
-            if(hmirrorshape->Integral()<=0)hmirrorshape->SetBinContent(1, 1E-10);
+            if(hmirrorshape->Integral()<=0) hmirrorshape->SetBinContent(1, 1E-10);
             hmirrorshape->Write(proc+postfix+syst+"Down");
           }
 
