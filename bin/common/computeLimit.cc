@@ -1101,7 +1101,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     hDD->Reset();
     hDD->Add(hCtrl_SI , 1.0);
 
-    if(hCtrl_SB->Integral()<=0 || hCtrl_SI->Integral()<0 || hChan_SB->Integral()<0) alpha = 0;
+//    if(hCtrl_SB->Integral()<=0 || hCtrl_SI->Integral()<0 || hChan_SB->Integral()<0) alpha = 0;
     hDD->Scale(alpha);
     hDD->SetTitle(DDProcName.Data());
 
