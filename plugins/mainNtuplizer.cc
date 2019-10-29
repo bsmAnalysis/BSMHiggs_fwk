@@ -1116,7 +1116,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut);
 	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut);
 	 }
-	 ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_el, rho, (is2017 << 0) | (is2018 << 1)) ;
+	 ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_el, (is2017 << 0) | (is2018 << 1), rho) ;
          ev.en_relIso[ev.en] = relIso_el;
 
 	 const EcalRecHitCollection* recHits = (el.isEB()) ? recHitCollectionEBHandle.product() : recHitCollectionEEHandle.product();

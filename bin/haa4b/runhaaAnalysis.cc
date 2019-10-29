@@ -161,6 +161,9 @@ int main(int argc, char* argv[])
     bool is2018data = (!isMC && dtag.Contains("2018"));
     bool is2018MC = (isMC && dtag.Contains("2018"));
     bool is2017BCdata = (is2017data && (dtag.Contains("2017B") || dtag.Contains("2017C")));
+    bool afterRun319077 = false;
+    bool jetinHEM = false;
+    bool eleinHEM = false;
 
     bool verbose = runProcess.getParameter<bool>("verbose");
    
@@ -189,10 +192,10 @@ int main(int argc, char* argv[])
     TString url = runProcess.getParameter<std::string>("input");
     TString outFileUrl( dtag ); //gSystem->BaseName(url));
 
-//    if(!use_DeepCSV && (is2018data || is2018MC)){
-//      std::cout << "2018 Data does not have CSV, use DeepCSV instead!" << std::endl;
-//      exit(0);
-//    }
+    if(!use_DeepCSV && (is2018data || is2018MC)){
+      std::cout << "2018 Data does not have CSV, use DeepCSV instead!" << std::endl;
+      exit(0);
+    }
 
     if(is2017data || is2017MC){
       // 2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
@@ -204,8 +207,6 @@ int main(int argc, char* argv[])
 
     if(is2018data || is2018MC){ // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
       DeepCSVLooseWP = 0.1241; DeepCSVMediumWP = 0.4184; DeepCSVTightWP = 0.7527;
-      //CSV WPs from 2017
-      CSVLooseWP = 0.5803; CSVMediumWP = 0.8838; CSVTightWP = 0.9693;
   //    ele_threshold_=35.; mu_threshold_=25.;
     }
 
@@ -320,7 +321,7 @@ int main(int argc, char* argv[])
        
       csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                       "/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_Moriond17_B_H.csv";
-      if(is2017data || is2017MC || is2018data || is2018MC){
+      if(is2017data || is2017MC){
           csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                           "/src/UserCode/bsmhiggs_fwk/data/weights/CSVv2_94XSF_V2_B_F.csv";     
           csv_file_path1 = std::string(std::getenv("CMSSW_BASE"))+
@@ -1128,6 +1129,7 @@ int main(int argc, char* argv[])
             cout << "nDuplicates: " << nDuplicates << endl;
             continue;
         }
+	if(is2018data) afterRun319077 = (ev.run > 319077);
 
         // add PhysicsEvent_t class, get all tree to physics objects
         PhysicsEvent_t phys=getPhysicsEventFrom(ev); 
@@ -1320,6 +1322,7 @@ int main(int argc, char* argv[])
 	float lep_threshold(10.);
 	float eta_threshold=2.5;
 
+	eleinHEM = false;
 	for (auto &ilep : leps) {
 
 	  int lepid = ilep.id;
@@ -1344,6 +1347,9 @@ int main(int argc, char* argv[])
 	  if ( hasTightIdandIso && (ilep.pt()>lep_threshold) ) {
 
 	    if(abs(lepid)==11) { // ele scale corrections
+	      if( !eleinHEM && ilep.pt()>25 && 
+		  -1.57<ilep.phi() && ilep.phi()<-0.87 &&
+		  -3.0<ilep.eta() && ilep.eta()<-1.4) eleinHEM = true;
 	      double et = ilep.en_cor_en / cosh(fabs(ilep.en_EtaSC));
 	      //double et = ilep.en_en / cosh(fabs(ilep.en_EtaSC));
 
@@ -1621,7 +1627,7 @@ int main(int argc, char* argv[])
 	bool passOneLepton(selLeptons.size()==1);
 	bool passDiLepton(selLeptons.size()==2); // && ( abs(selLeptons[0].id)==abs(selLeptons[1].id) ) );
 	
-	bool passOneLepton_anti(selLeptons.size()==1);
+	bool passOneLepton_anti(selLeptons.size()>=1);
 	if (runQCD) {
 	  if (!passOneLepton_anti) continue;
 	  // if (goodLeptons.size()==1) continue;
@@ -1659,6 +1665,23 @@ int main(int argc, char* argv[])
 	  }
 	}
 
+	//------------------------------------------------------------------------------------
+	// HEM Veto for 2018
+	//------------------------------------------------------------------------------------
+	jetinHEM = false;
+	for(size_t ijet=0; ijet<corrJets.size(); ijet++) {
+	  if(corrJets[ijet].pt()>jet_threshold_ && 
+	     (corrJets[ijet].eta()>-3.2 && corrJets[ijet].eta()<-1.2) &&
+	     (corrJets[ijet].phi()>-1.77 && corrJets[ijet].phi()<-0.67)
+	    ) {
+	    jetinHEM = true;
+	    break;
+	  }
+	}
+	if(is2018data && afterRun319077 && (jetinHEM || eleinHEM) ) continue;
+	if(is2018MC && (jetinHEM || eleinHEM)) {
+	  weight *= 0.35;
+	}
 	//-------------------------------------------------------------------------------------
 	//-------------------------------------------------------------------------------------
 	if (isMC_ttbar) { //split inclusive TTJets POWHEG sample into tt+bb, tt+cc and tt+light
@@ -2214,7 +2237,7 @@ int main(int argc, char* argv[])
 		btsfutil.SetSeed(ev.event*10 + ijet*10000);// + ivar*10);
 		float bSFLoose, bSFMedium;	
 		if(abs(vJets[ijet].flavid)==5) {
-		  if(use_DeepCSV || is2018MC) {
+		  if(use_DeepCSV) {
 		    //        beff=btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE");
 		    //if(ivar==0)mon.fillHisto("btagEff_b","default",btsfutil.getBTagEff(vJets[ijet].pt(),"bLOOSE"),1.0);
 		    beffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_b); 
@@ -2278,7 +2301,7 @@ int main(int argc, char* argv[])
 		
 		  }
 		} else if(abs(vJets[ijet].flavid)==4) {
-		  if(use_DeepCSV || is2018MC){ 
+		  if(use_DeepCSV){ 
 		    //        beff=btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE");
 		    //if(ivar==0)mon.fillHisto("btagEff_c","default",btsfutil.getBTagEff(vJets[ijet].pt(),"cLOOSE"),1.0);
 		    beffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_c); 
@@ -2341,7 +2364,7 @@ int main(int argc, char* argv[])
 		    btsfutil.applySF2WPs(hasCSVtagL, hasCSVtagM, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		  }
 		} else {
-		  if(use_DeepCSV || is2018MC){
+		  if(use_DeepCSV){
 		    //        leff=btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE");
 		    //if(ivar==0)mon.fillHisto("btagEff_udsg","default",btsfutil.getBTagEff(vJets[ijet].pt(),"lLOOSE"),1.0);
 		    leffLoose=getSFfrom2DHist(vJets[ijet].pt(), fabs(vJets[ijet].eta()), btagEffLoose_udsg);

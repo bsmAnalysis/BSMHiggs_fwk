@@ -1060,7 +1060,6 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     binName.ReplaceAll("D_","B_");    
     TH1* hDD_B = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();  
     
-    if(!(hCtrl_SB && hCtrl_SI && hChan_SB && hDD && hDD_C && hDD_D && hDD_B)) continue;
     
     binName.ReplaceAll("B_","");   
 
@@ -1070,42 +1069,48 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
 
     double errC,errD;
     double errMC_C, errMC_D;
+    double valMC=0, valMC_err=0;
+    double valDD_MC=0, valDD_MC_err=0;
+    double ratioMC=0, ratioMC_err=0;
  
     if(hCtrl_SB->Integral()>0){
       alpha     = hChan_SB->IntegralAndError(1,hChan_SB->GetXaxis()->GetNbins(),errC) / hCtrl_SB->IntegralAndError(1,hCtrl_SB->GetXaxis()->GetNbins(),errD);
       alpha_err = ( fabs( hChan_SB->Integral() * errD ) + fabs(errC * errD )  ) / pow(hCtrl_SB->Integral(), 2);        
     }
     
-    // alpha in MC
-    if(hDD_D!=NULL && hDD_D->Integral()>0){
-      alphaMC = hDD_C->IntegralAndError(1,hDD_C->GetXaxis()->GetNbins(),errMC_C) / hDD_D->IntegralAndError(1,hDD_D->GetXaxis()->GetNbins(),errMC_D);
-      alphaMC_err =  ( fabs( hDD_C->Integral() * errMC_D ) + fabs(errMC_C * errMC_D )  ) / pow(hDD_D->Integral(), 2);  
-    }
+    if(hDD && hDD_B && hDD_C && hDD_D){
+      // alpha in MC
+      if(hDD_D!=NULL && hDD_D->Integral()>0){
+        alphaMC = hDD_C->IntegralAndError(1,hDD_C->GetXaxis()->GetNbins(),errMC_C) / hDD_D->IntegralAndError(1,hDD_D->GetXaxis()->GetNbins(),errMC_D);
+        alphaMC_err =  ( fabs( hDD_C->Integral() * errMC_D ) + fabs(errMC_C * errMC_D )  ) / pow(hDD_D->Integral(), 2);  
+      }
     
-    double valMC, valMC_err;
-    valMC=0.0; valMC_err=0.0;
-    if(hDD!=NULL) valMC = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins(),valMC_err); if(valMC<1E-6){valMC=0.0; valMC_err=0.0;}   
+      if(hDD!=NULL) valMC = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins(),valMC_err); if(valMC<1E-6){valMC=0.0; valMC_err=0.0;}   
 
-    TH1 *hDD_MC = (TH1*)hDD->Clone("mcobs");
-    hDD_MC->Scale(alphaMC);
+      TH1 *hDD_MC = (TH1*)hDD->Clone("mcobs");
+      hDD_MC->Scale(alphaMC);
 
-    double valDD_MC, valDD_MC_err;
-    valDD_MC = hDD_MC->IntegralAndError(1,hDD_MC->GetXaxis()->GetNbins()+1,valDD_MC_err); if(valDD_MC<1E-6){valDD_MC=0.0; valDD_MC_err=0.0;}
+      valDD_MC = hDD_MC->IntegralAndError(1,hDD_MC->GetXaxis()->GetNbins()+1,valDD_MC_err); if(valDD_MC<1E-6){valDD_MC=0.0; valDD_MC_err=0.0;}
 
-    // Compute ratio of predicted (valDD_MC) vs observed (valDD) in MC
-    double ratioMC=0, ratioMC_err=0;
-    ratioMC=valDD_MC/valMC;
-    ratioMC_err=(fabs(valDD_MC * valMC_err) + fabs(valDD_MC_err * valMC_err)) / pow(valMC, 2);
+      // Compute ratio of predicted (valDD_MC) vs observed (valDD) in MC
+      ratioMC=valDD_MC/valMC;
+      ratioMC_err=(fabs(valDD_MC * valMC_err) + fabs(valDD_MC_err * valMC_err)) / pow(valMC, 2);
+    }
+    if(!hDD) hDD = (TH1*) hCtrl_SI->Clone();
 
+    std::cout << "hCtrl_SI hChan_SB hCtrl_SB" << std::endl;
+    std::cout << (hCtrl_SI!=NULL) << "        " << (hChan_SB!=NULL) << "        " << (hCtrl_SB!=NULL) << std::endl;
     hDD->Reset();
     hDD->Add(hCtrl_SI , 1.0);
 
+    if(hCtrl_SB->Integral()<=0 || hCtrl_SI->Integral()<0 || hChan_SB->Integral()<0) alpha = 0;
     hDD->Scale(alpha);
     hDD->SetTitle(DDProcName.Data());
 
     //save values for printout
     double valDD, valDD_err;
-    valDD = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins()+1,valDD_err); if(valDD<1E-6){valDD=0.0; valDD_err=0.0;}
+    //valDD = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins()+1,valDD_err); if(valDD<1E-6){valDD=0.0; valDD_err=0.0;}
+    valDD = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins()+1,valDD_err); if(valDD<1E-3){valDD=0.0; valDD_err=0.0;}
 
     //remove all syst uncertainty
     chDD->second.shapes[mainHisto.Data()].clearSyst();
@@ -2318,6 +2323,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    
             if(!syst.Contains("stat") && (hshape->Integral()<h->Integral()*0.01 || isnan((float)hshape->Integral()))){hshape->Reset(); hshape->Add(h,1); }
 
+//	    std::cout << "*****************" << proc << postfix << syst << "******************" << std::endl;
+	    if(hshape->Integral()<=0){
+	      for(int ibin=1; ibin<=hshape->GetXaxis()->GetNbins(); ibin++) //hmirrorshape->SetBinContent(ibin, 1E-10);	    
+	        hshape->SetBinContent(ibin, 1E-10);
+	    }
             //write variation to file
 	    hshape->SetName(proc+syst);
 	    hshape->Write(proc+postfix+syst);
@@ -2331,7 +2341,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
               if(bin<0)bin=0;
               hmirrorshape->SetBinContent(ibin,bin);
             }
-            if(hmirrorshape->Integral()<=0)hmirrorshape->SetBinContent(1, 1E-10);
+            if(hmirrorshape->Integral()<=0) hmirrorshape->SetBinContent(1, 1E-10);
             hmirrorshape->Write(proc+postfix+syst+"Down");
           }
 
