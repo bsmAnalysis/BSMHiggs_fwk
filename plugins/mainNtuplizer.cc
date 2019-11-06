@@ -992,10 +992,10 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        //       for (std::vector<pat::Muon >::const_iterator mu = muons.begin(); mu!=muons.end(); mu++) 
        for(pat::Muon &mu : muons) {
 	 if(mu.pt() < 10.) continue;
-//	 bool passId;
-//	 if(is2017 || is2018) passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::Fall17v2);
-//	 else passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::ICHEP16Cut);
-//	 if(!passId) continue;
+	 bool passId;
+	 if(is2017 || is2018) passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::Fall17v2);
+	 else passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::ICHEP16Cut);
+	 if(!passId) continue;
 
 	 ev.mn_px[ev.mn] = mu.px();
 	 ev.mn_py[ev.mn] = mu.py();
@@ -1033,16 +1033,18 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.mn_trkLayersWithMeasurement[ev.mn]   = mu.isTrackerMuon() ? mu.innerTrack()->hitPattern().trackerLayersWithMeasurement() : 0.;
 	 ev.mn_pixelLayersWithMeasurement[ev.mn] = mu.isTrackerMuon() ? mu.innerTrack()->hitPattern().pixelLayersWithMeasurement() : 0.;
 
+//	 bool passId(true);
+
          float relIso_mu = -1, trkrelIso = -1;
 	 if(is2017 || is2018){
 	   ev.mn_passId[ev.mn]  = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::Fall17v2);
-	   ev.mn_passIdLoose[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Loose, patUtils::CutVersion::Fall17v2);
+	   ev.mn_passIdLoose[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::Fall17v2);
 	   ev.mn_passSoftMuon[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Soft, patUtils::CutVersion::Fall17v2);
 	   ev.mn_passIso[ev.mn] = patUtils::passIso(mu, patUtils::llvvMuonIso::Tight, patUtils::CutVersion::Fall17v2, &relIso_mu, &trkrelIso);
 	 }
 	 else{//2016
 	   ev.mn_passId[ev.mn]  = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::ICHEP16Cut);
-	   ev.mn_passIdLoose[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Loose, patUtils::CutVersion::ICHEP16Cut);
+	   ev.mn_passIdLoose[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::ICHEP16Cut);
 	   ev.mn_passSoftMuon[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Soft, patUtils::CutVersion::ICHEP16Cut);
 	   ev.mn_passIso[ev.mn] = patUtils::passIso(mu, patUtils::llvvMuonIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_mu, &trkrelIso);
 	 }
@@ -1056,6 +1058,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	   | (mu.isCaloMuon() << 4)
 	   | (mu.isPFMuon() << 5)
 	   | (mu.isRPCMuon()<< 6);
+
 	 ev.mn++;
        } // mu
 
@@ -1077,11 +1080,11 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 float pt_ = el.pt();
 	 if (pt_ < 15.) continue;
 
-//	 bool passId;
-//	 if(is2018) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2);
-//	 else if(is2017) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v1);
-//	 else passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut);
-//	 if(!passId) continue;
+	 bool passId;
+	 if(is2018) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2, rho);
+	 else if(is2017) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v1, rho);
+	 else passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut, rho);
+	 if(!passId) continue;
 
 	 // Kinematics
 	 ev.en_px[ev.en] = el.px();
@@ -1107,14 +1110,14 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 */
          float relIso_el = -1;
 	 if(is2018){
-	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2);
-	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v2);
+	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2, rho);
+	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v2, rho);
 	 }else if(is2017){
-	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v1);
-	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v1);
+	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v1, rho);
+	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v1, rho);
 	 } else{ //2016
-	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut);
-	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut);
+	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut, rho);
+	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut, rho);
 	 }
 	 ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_el, (is2017 << 0) | (is2018 << 1), rho) ;
          ev.en_relIso[ev.en] = relIso_el;
