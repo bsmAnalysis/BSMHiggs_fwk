@@ -992,10 +992,10 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        //       for (std::vector<pat::Muon >::const_iterator mu = muons.begin(); mu!=muons.end(); mu++) 
        for(pat::Muon &mu : muons) {
 	 if(mu.pt() < 10.) continue;
-	 bool passId;
-	 if(is2017 || is2018) passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::Fall17v2);
-	 else passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::ICHEP16Cut);
-	 if(!passId) continue;
+//	 bool passId;
+//	 if(is2017 || is2018) passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::Fall17v2);
+//	 else passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::ICHEP16Cut);
+//	 if(!passId) continue;
 
 	 ev.mn_px[ev.mn] = mu.px();
 	 ev.mn_py[ev.mn] = mu.py();
@@ -1077,11 +1077,11 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 float pt_ = el.pt();
 	 if (pt_ < 15.) continue;
 
-	 bool passId;
-	 if(is2018) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2);
-	 else if(is2017) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v1);
-	 else passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut);
-	 if(!passId) continue;
+//	 bool passId;
+//	 if(is2018) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2);
+//	 else if(is2017) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v1);
+//	 else passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut);
+//	 if(!passId) continue;
 
 	 // Kinematics
 	 ev.en_px[ev.en] = el.px();
