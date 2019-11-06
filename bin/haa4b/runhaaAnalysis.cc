@@ -587,7 +587,7 @@ int main(int argc, char* argv[])
       h->GetXaxis()->SetBinLabel(3,"Trigger");  
       h->GetXaxis()->SetBinLabel(4,"E_{T}^{miss}>25");   
       h->GetXaxis()->SetBinLabel(5,"M_{T}^{W}>50");  
-      h->GetXaxis()->SetBinLabel(6,">=2-jets, >=2 b-tags"); 
+      h->GetXaxis()->SetBinLabel(6,">=3-jets, >=2 b-tags"); 
       h->GetXaxis()->SetBinLabel(7,"==3b-tags");     
       h->GetXaxis()->SetBinLabel(8,"==4b-tags");    
     } else {
@@ -595,7 +595,7 @@ int main(int argc, char* argv[])
       h->GetXaxis()->SetBinLabel(3,"Trigger");
       h->GetXaxis()->SetBinLabel(4,"Z-mass window");
       h->GetXaxis()->SetBinLabel(5,"Z-mass window");  
-      h->GetXaxis()->SetBinLabel(6,">=2-jets, >=2 b-tags");   
+      h->GetXaxis()->SetBinLabel(6,">=3-jets, >=2 b-tags");   
       h->GetXaxis()->SetBinLabel(7,"==3b-tags");     
       h->GetXaxis()->SetBinLabel(8,"==4b-tags");  
     }
@@ -626,7 +626,7 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "leadlep_pt_raw", ";Leading lepton #it{p}_{T}^{l} [GeV];Events", 50,0.,200.) );
     mon.addHistogram( new TH1F( "leadlep_eta_raw",";Leading lepton #eta^{l};Events", 52,-2.6,2.6) );
     
-    mon.addHistogram( new TH1F( "lep_reliso",";relative Isolation;Events",100,0.,5.) );
+    mon.addHistogram( new TH1F( "lep_reliso",";relative Isolation;Events",500,0.,5.) );
 
     mon.addHistogram( new TH1F( "jet_pt_raw", ";#it{p}_{T} [GeV];Events",50,0.,500.) );
     mon.addHistogram( new TH1F( "softjet_pt_raw", ";#it{p}_{T} [GeV];Events",20,0.,40.) );
@@ -1329,11 +1329,11 @@ int main(int argc, char* argv[])
 	  if (abs(lepid)==13) eta_threshold=2.4;
 	  if (fabs(ilep.eta())>eta_threshold) continue;
  
-	  bool hasTightIdandIso;
+	  bool hasTightIdandIso(true);
 	  if (abs(lepid)==11) {
 	    lep_threshold=ele_threshold_;
 	    if(!runQCD)hasTightIdandIso = (ilep.passIdEl && ilep.passIsoEl);   
-            else hasTightIdandIso = ilep.passIdEl;
+            //else hasTightIdandIso = ilep.passIdEl;
 	    if ( (ilep.passIdEl) && (ilep.pt()>lep_threshold) ) allLeptons.push_back(ilep);
 	  } else if (abs(lepid)==13) {
 	    lep_threshold=mu_threshold_;
@@ -1525,6 +1525,7 @@ int main(int argc, char* argv[])
 		  if(!runQCD){
 		    selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
 		  } else {
+		    //if(!(ilep.passIsoEl)) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
 		    if(!(ilep.passIsoEl)) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
 		  }
 		}
