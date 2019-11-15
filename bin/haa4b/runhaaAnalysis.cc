@@ -1350,8 +1350,7 @@ int main(int argc, char* argv[])
 	      else hasTightIdandIso = (ilep.passIdEl && en_passIso);
 	    }
             else hasTightIdandIso = ilep.passIdEl;
-	    if ( !is2017_2018 && (ilep.passIdEl) && (ilep.pt()>lep_threshold) ) allLeptons.push_back(ilep);
-	    if( is2017_2018 && (ilep.passIdEl && en_passIso) && (ilep.pt()>lep_threshold) ) allLeptons.push_back(ilep);
+	    if ( (ilep.passIdEl) && (ilep.pt()>lep_threshold) ) allLeptons.push_back(ilep);
 	  } else if (abs(lepid)==13) {
 	    lep_threshold=mu_threshold_;
             if(!runQCD)hasTightIdandIso = (ilep.passIdMu && ilep.passIsoMu);          
