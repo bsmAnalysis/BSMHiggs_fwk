@@ -1341,7 +1341,7 @@ int main(int argc, char* argv[])
 	    if( abs(ilep.eta()) > 1.479 ) { //endcap
 	      en_passIso = (ilep.en_relIso < 0.0445 + 0.963/ilep.pt());
 	    }
-	    std::cout << "relIso: " << ilep.en_relIso << ", en_passIso: " << en_passIso << std::endl;
+	    //std::cout << "relIso: " << ilep.en_relIso << ", en_passIso: " << en_passIso << std::endl;
 	  }
 	  if (abs(lepid)==11) {
 	    lep_threshold=ele_threshold_;
