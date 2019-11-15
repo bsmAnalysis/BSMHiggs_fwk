@@ -1775,8 +1775,10 @@ int main(int argc, char* argv[])
 	TString tag_cat;
         int evcat(0);
 	if (selLeptons.size()==1) evcat = getLeptonId(abs(selLeptons[0].id)); //abs(selLeptons[0].first));
-	//	if (runQCD && selLeptons.size()>1)  evcat = getLeptonId(abs(selLeptons[0].id));
-	if (selLeptons.size()>1) evcat =  getDileptonId(abs(selLeptons[0].id),abs(selLeptons[1].id)); 
+	if (selLeptons.size()>1) {
+	  if (runQCD) evcat = getLeptonId(abs(selLeptons[0].id));
+	  else evcat =  getDileptonId(abs(selLeptons[0].id),abs(selLeptons[1].id)); 
+	}
         switch(evcat) {
         case MUMU :
 	  tag_cat="mumu";
