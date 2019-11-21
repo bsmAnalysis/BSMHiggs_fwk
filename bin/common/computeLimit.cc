@@ -107,6 +107,7 @@ float statBinByBin = -1;
 bool useLogy = true;
 bool blindSR = false;
 double lumi = -1;
+int signalScale = 1;
 
 bool dirtyFix1 = false;
 bool dirtyFix2 = false;
@@ -507,6 +508,7 @@ void printHelp()
   printf("--minSignalYield   --> use this to specify the minimum Signal yield you want in each channel)\n");
   printf("--signalSufix --> use this flag to specify a suffix string that should be added to the signal 'histo' histogram\n");
   printf("--signalTag   --> use this flag to specify a tag that should be present in signal sample name\n");
+  printf("--signalScale   --> use this flag to specify a Scale applied on signal\n");
   printf("--rebin         --> rebin the histogram\n");
   printf("--statBinByBin --> make bin by bin statistical uncertainty\n");
   printf("--inclusive  --> merge bins to make the analysis inclusive\n");
@@ -580,6 +582,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--dirtyFix1")    !=string::npos) { dirtyFix1=true; printf("dirtyFix1 = True\n");}
     else if(arg.find("--signalSufix") !=string::npos) { signalSufix = argv[i+1]; i++; printf("signalSufix '%s' will be used\n", signalSufix.Data()); }
     else if(arg.find("--signalTag") !=string::npos) { signalTag = argv[i+1]; i++; printf("signalTag '%s' will be used\n", signalTag.c_str()); }
+    else if(arg.find("--signalScale") !=string::npos) { sscanf(argv[i+1],"%d",&signalScale); i++; printf("signalScale = %d\n", signalScale);}
     else if(arg.find("--rebin")    !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&rebinVal); i++; printf("rebin = %i\n", rebinVal);}
     else if(arg.find("--BackExtrapol")    !=string::npos) { BackExtrapol=true; printf("BackExtrapol = True\n");}
     else if(arg.find("--statBinByBin")    !=string::npos) { sscanf(argv[i+1],"%f",&statBinByBin); i++; printf("statBinByBin = %f\n", statBinByBin);}
@@ -1059,9 +1062,13 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     TH1* hDD_D = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();
     binName.ReplaceAll("D_","B_");    
     TH1* hDD_B = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();  
+    binName.ReplaceAll("B_","A_");
+    TH1* _hDD_A = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();  
+    TH1* hDD_A = new TH1F("","",30,-0.3,0.3); 
+    if(_hDD_A) hDD_A = (TH1*) _hDD_A->Clone();
     
     
-    binName.ReplaceAll("B_","");   
+    binName.ReplaceAll("A_","");   
 
     //compute alpha
     double alpha=0 ,alpha_err=0;
@@ -1109,6 +1116,12 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
 
     //save values for printout
     double valDD, valDD_err;
+    if(binName.Contains("e_")){ // Electron channels, take MC QCD
+      hDD->Reset();
+      if(hDD_A) {hDD->Add(hDD_A, 1.0);}
+      datadriven_qcd_Syst = 1.0;
+      std::cout << "valDD: " << hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins()+1,valDD_err) << std::endl;
+    }
     //valDD = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins()+1,valDD_err); if(valDD<1E-6){valDD=0.0; valDD_err=0.0;}
     valDD = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins()+1,valDD_err); if(valDD<1E-3){valDD=0.0; valDD_err=0.0;}
 
@@ -1720,7 +1733,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       map_unc [p->first]->Draw("2 same");
       for(unsigned int i=0;i<map_signals[p->first].size();i++){
 	TH1* hs= map_signals[p->first][i];
-        if (hs) hs->Draw("HIST same");
+        if (hs) {
+	  if ( startsWith(p->first,"mu_A_SR_3b") || startsWith(p->first,"mu_A_SR_4b") ||
+		  startsWith(p->first,"e_A_SR_3b") || startsWith(p->first,"e_A_SR_4b") ||
+		  startsWith(p->first,"mumu_A_SR_3b") || startsWith(p->first,"mumu_A_SR_4b") ||
+		  startsWith(p->first,"ee_A_SR_3b") || startsWith(p->first,"ee_A_SR_4b") ) 
+	    hs->Scale(signalScale);
+	  hs->Draw("HIST same");
+	}
       }
       
       if(blindSR){
