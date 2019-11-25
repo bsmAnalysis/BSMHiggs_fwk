@@ -72,6 +72,8 @@ bool runZh = false;
 bool modeDD = false;
 bool simfit = false;
 
+TString vh_tag;
+
 std::vector<TString> Channels;
 std::vector<string> AnalysisBins;
 
@@ -636,7 +638,8 @@ int main(int argc, char* argv[])
       }
     }
   }
-  
+
+  vh_tag = runZh ? "_zh" : "_wh";
 
   //make sure that the index vector are well filled
   if(indexcutVL.size()==0) indexcutVL.push_back(indexcutV [0]);
@@ -795,12 +798,12 @@ int main(int argc, char* argv[])
   //  if(blindData)allInfo.blind();
 
   //print event yields from the histo shapes
-  pFile = fopen("Yields.tex","w");  FILE* pFileInc = fopen("YieldsInc.tex","w");
+  pFile = fopen(runZh?"Yields_zh.tex":"Yields_wh.tex","w");  FILE* pFileInc = fopen(runZh?"YieldsInc_zh.tex":"YieldsInc_wh.tex","w");
   allInfo.getYieldsFromShape(pFile, selCh, histo.Data(), pFileInc);
   fclose(pFile); fclose(pFileInc);
 
   //print signal efficiency
-  pFile = fopen("Efficiency.tex","w");
+  pFile = fopen(runZh?"Efficiency_zh.tex":"Efficiency_wh.tex","w");
   allInfo.getEffFromShape(pFile, selCh, histo.Data());
   fclose(pFile);
 
@@ -814,7 +817,7 @@ int main(int argc, char* argv[])
   if(runSystematics) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst
 
   //prepare the output
-  string limitFile=("haa4b_"+massStr+systpostfix+".root").Data();
+  string limitFile=("haa4b_"+massStr+systpostfix+vh_tag+".root").Data();
   TFile *fout=TFile::Open(limitFile.c_str(),"recreate");
 
   allInfo.saveHistoForLimit(histo.Data(), fout);
@@ -1062,13 +1065,9 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     TH1* hDD_D = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();
     binName.ReplaceAll("D_","B_");    
     TH1* hDD_B = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();  
-    binName.ReplaceAll("B_","A_");
-    TH1* _hDD_A = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()).Data())->second.shapes[mainHisto.Data()].histo();  
-    TH1* hDD_A = new TH1F("","",30,-0.3,0.3); 
-    if(_hDD_A) hDD_A = (TH1*) _hDD_A->Clone();
     
     
-    binName.ReplaceAll("A_","");   
+    binName.ReplaceAll("B_","");   
 
     //compute alpha
     double alpha=0 ,alpha_err=0;
@@ -1105,10 +1104,16 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     }
     if(!hDD) hDD = (TH1*) hCtrl_SI->Clone();
 
-    std::cout << "hCtrl_SI hChan_SB hCtrl_SB" << std::endl;
-    std::cout << (hCtrl_SI!=NULL) << "        " << (hChan_SB!=NULL) << "        " << (hCtrl_SB!=NULL) << std::endl;
+    std::cout << "hDD_B hDD_C hDD_D hCtrl_SI hChan_SB hCtrl_SB" << std::endl;
+    std::cout << (hDD_B!=NULL) << "     " << (hDD_C!=NULL) << "     " << (hDD_D!=NULL) << "     " << (hCtrl_SI!=NULL) << "        " << (hChan_SB!=NULL) << "        " << (hCtrl_SB!=NULL) << std::endl;
     hDD->Reset();
     hDD->Add(hCtrl_SI , 1.0);
+    for(int ibin=1; ibin<=hDD->GetXaxis()->GetNbins(); ibin++){
+      if(hDD->GetBinContent(ibin)<0) {
+	hDD->SetBinContent(ibin, 1E-10);
+	hDD->SetBinError(ibin, 0);
+      }
+    }
 
     if(hCtrl_SB->Integral()<=0 || hCtrl_SI->Integral()<0 || hChan_SB->Integral()<0) alpha = 0;
     hDD->Scale(alpha);
@@ -1116,15 +1121,9 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
 
     //save values for printout
     double valDD, valDD_err;
-    if(binName.Contains("e_")){ // Electron channels, take MC QCD
-      hDD->Reset();
-      if(hDD_A) {hDD->Add(hDD_A, 1.0);}
-      datadriven_qcd_Syst = 1.0;
-      std::cout << "valDD: " << hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins()+1,valDD_err) << std::endl;
-    }
     //valDD = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins()+1,valDD_err); if(valDD<1E-6){valDD=0.0; valDD_err=0.0;}
     valDD = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins()+1,valDD_err); if(valDD<1E-3){valDD=0.0; valDD_err=0.0;}
-
+    
     //remove all syst uncertainty
     chDD->second.shapes[mainHisto.Data()].clearSyst();
     //add syst uncertainty
@@ -2215,9 +2214,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       }T->Draw();
 
       //save canvas
-      c1->SaveAs(SaveName+"_Uncertainty_"+it->second.shortName+".png");
-      c1->SaveAs(SaveName+"_Uncertainty_"+it->second.shortName+".pdf");
-      c1->SaveAs(SaveName+"_Uncertainty_"+it->second.shortName+".C");
+      c1->SaveAs(SaveName+vh_tag+"_Uncertainty_"+it->second.shortName+".png");
+      c1->SaveAs(SaveName+vh_tag+"_Uncertainty_"+it->second.shortName+".pdf");
+      c1->SaveAs(SaveName+vh_tag+"_Uncertainty_"+it->second.shortName+".C");
       delete c1;             
 
       for(unsigned int i=0;i<toDelete.size();i++){delete toDelete[i];} //clear the objects
@@ -2244,7 +2243,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       }sprintf(txtBuffer, "\\hline \n"); UncertaintyOnYield += txtBuffer;
     }
 
-    FILE* pFile = fopen(SaveName+"_Uncertainty.txt", "w");
+    FILE* pFile = fopen(SaveName+vh_tag+"_Uncertainty.txt", "w");
     if(pFile){ fprintf(pFile, "%s\n", UncertaintyOnYield.c_str()); fclose(pFile);}
   }
 
@@ -2612,13 +2611,13 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	if(C->first.find("ee" )!=string::npos) {         
 	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n"); 
 	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");    
-	  if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b_e rateParam bin1 zll 1 \n");    
-	  if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_e rateParam bin1 zll 1 \n");
+	  if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_e rateParam bin1 zll 1 \n");    
+	  if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_e rateParam bin1 zll 1 \n");
 	} else if (C->first.find("mumu" )!=string::npos) {  
 	    fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n"); 
 	    fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");    
-	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"v_norm_3b_mu rateParam bin1 zll 1 \n");  
-	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_mu rateParam bin1 zll 1 \n");   
+	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_mu rateParam bin1 zll 1 \n");  
+	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_mu rateParam bin1 zll 1 \n");   
 	} else if  (C->first.find("emu" )!=string::npos) {     
 	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");   
 	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");  
@@ -2630,13 +2629,13 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");      
 	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");   
 	  // if (C->first.find("3b")!=string::npos) 
-	  fprintf(pFile,"v_norm_e rateParam bin1 wlnu 1 \n");     
+	  fprintf(pFile,"w_norm_e rateParam bin1 wlnu 1 \n");     
 	    // if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_e rateParam bin1 wlnu 1 \n");         
 	} else if (C->first.find("mu" )!=string::npos) {    
 	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");            
 	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n"); 
 	  //	  if (C->first.find("3b")!=string::npos) 
-	  fprintf(pFile,"v_norm_mu rateParam bin1 wlnu 1 \n"); 
+	  fprintf(pFile,"w_norm_mu rateParam bin1 wlnu 1 \n"); 
 	  //	  if (C->first.find("4b")!=string::npos) fprintf(pFile,"v_norm_4b_mu rateParam bin1 wlnu 1 \n"); 
 	}                  
       }
@@ -2648,13 +2647,13 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
     }
 
-    FILE* pFile = fopen("combineCards.sh","w");   
-    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + combinedcard + " > " + "card_combined.dat").Data());
-    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + eecard       + " > " + "card_e.dat").Data());
-    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mumucard     + " > " + "card_mu.dat").Data());
+    FILE* pFile = fopen("combineCards"+vh_tag+".sh","w");   
+    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + combinedcard + " > " + "card_combined"+vh_tag+".dat").Data());
+    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + eecard       + " > " + "card_e"+vh_tag+".dat").Data());
+    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mumucard     + " > " + "card_mu"+vh_tag+".dat").Data());
     
-    fprintf(pFile,"%s;\n",(TString("sed -i '/tt_norm_mu/d' card_e.dat")).Data());                   
-    fprintf(pFile,"%s;\n",(TString("sed -i '/tt_norm_e/d' card_mu.dat")).Data());         
+    fprintf(pFile,"%s;\n",(TString("sed -i '/tt_norm_mu/d' card_e"+vh_tag+".dat")).Data());   
+    fprintf(pFile,"%s;\n",(TString("sed -i '/tt_norm_e/d' card_mu"+vh_tag+".dat")).Data());         
 
     fclose(pFile);         
 
