@@ -1333,23 +1333,21 @@ int main(int argc, char* argv[])
 	  bool hasTightIdandIso(true);
 	  // for 2017 and 2018 analysis, use the correct Iso Cut value from the twiki:
 	  // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2
-	  bool en_passIso(false);
-	  if(abs(lepid)==11 && is2017_2018){
-	    if( abs(ilep.eta()) <= 1.479 ) { //barrel
-	      en_passIso = (ilep.en_relIso < 0.0287 + 0.506/ilep.pt());
-	    }
-	    if( abs(ilep.eta()) > 1.479 ) { //endcap
-	      en_passIso = (ilep.en_relIso < 0.0445 + 0.963/ilep.pt());
-	    }
+//	  bool en_passIso(false);
+//	  if(abs(lepid)==11 && is2017_2018){
+//	    if( abs(ilep.eta()) <= 1.479 ) { //barrel
+//	      en_passIso = (ilep.en_relIso < 0.0287 + 0.506/ilep.pt());
+//	    }
+//	    if( abs(ilep.eta()) > 1.479 ) { //endcap
+//	      en_passIso = (ilep.en_relIso < 0.0445 + 0.963/ilep.pt());
+//	    }
 	    //std::cout << "relIso: " << ilep.en_relIso << ", en_passIso: " << en_passIso << std::endl;
-	  }
+//	  }
 	  if (abs(lepid)==11) {
 	    lep_threshold=ele_threshold_;
-	    if(!runQCD) {
-	      if(!is2017_2018) hasTightIdandIso = (ilep.passIdEl && ilep.passIsoEl);
-	      else hasTightIdandIso = (ilep.passIdEl && en_passIso);
-	    }
-            else hasTightIdandIso = ilep.passIdEl;
+	    if(!runQCD) hasTightIdandIso = (ilep.passIdEl && ilep.passIsoEl);
+            else hasTightIdandIso = !ilep.passIdEl;
+//            else hasTightIdandIso = ilep.passIdEl;
 	    if ( (ilep.passIdEl) && (ilep.pt()>lep_threshold) ) allLeptons.push_back(ilep);
 	  } else if (abs(lepid)==13) {
 	    lep_threshold=mu_threshold_;
@@ -1541,8 +1539,7 @@ int main(int argc, char* argv[])
 		  if(!runQCD){
 		    selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
 		  } else {
-		    if( !is2017_2018 && !(ilep.passIsoEl) ) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
-		    if( is2017_2018 && !en_passIso ) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
+		    if( !(ilep.passIsoEl) ) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
 		  }
 		}
 		
@@ -1569,8 +1566,7 @@ int main(int argc, char* argv[])
 	  } else { // extra loose leptons
 
 	    if (abs(lepid)==11) {
-	      if(!is2017_2018) hasExtraLepton = (ilep.passIdLooseEl && ilep.passIsoEl && ilep.pt()>10.);
-	      else hasExtraLepton = (ilep.passIdLooseEl && en_passIso && ilep.pt()>10.);
+	      hasExtraLepton = (ilep.passIdLooseEl && ilep.passIsoEl && ilep.pt()>10.);
 	    } else if (abs(lepid)==13) {
 	      hasExtraLepton = ( (ilep.passIdLooseMu && (ilep.passIsoMu) && ilep.pt()>10.) || (ilep.passSoftMuon) );
 	    }
