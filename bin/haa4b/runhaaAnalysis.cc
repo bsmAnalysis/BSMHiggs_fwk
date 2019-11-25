@@ -1333,26 +1333,16 @@ int main(int argc, char* argv[])
 	  bool hasTightIdandIso(true);
 	  // for 2017 and 2018 analysis, use the correct Iso Cut value from the twiki:
 	  // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2
-//	  bool en_passIso(false);
-//	  if(abs(lepid)==11 && is2017_2018){
-//	    if( abs(ilep.eta()) <= 1.479 ) { //barrel
-//	      en_passIso = (ilep.en_relIso < 0.0287 + 0.506/ilep.pt());
-//	    }
-//	    if( abs(ilep.eta()) > 1.479 ) { //endcap
-//	      en_passIso = (ilep.en_relIso < 0.0445 + 0.963/ilep.pt());
-//	    }
-	    //std::cout << "relIso: " << ilep.en_relIso << ", en_passIso: " << en_passIso << std::endl;
-//	  }
+
 	  if (abs(lepid)==11) {
 	    lep_threshold=ele_threshold_;
 	    if(!runQCD) hasTightIdandIso = (ilep.passIdEl && ilep.passIsoEl);
-            else hasTightIdandIso = !ilep.passIdEl;
 //            else hasTightIdandIso = ilep.passIdEl;
 	    if ( (ilep.passIdEl) && (ilep.pt()>lep_threshold) ) allLeptons.push_back(ilep);
 	  } else if (abs(lepid)==13) {
 	    lep_threshold=mu_threshold_;
             if(!runQCD)hasTightIdandIso = (ilep.passIdMu && ilep.passIsoMu);          
-	    else hasTightIdandIso = ilep.passIdMu;
+	    //	    else hasTightIdandIso = ilep.passIdMu;
 	    if ( (ilep.passIdMu) && (ilep.pt()>lep_threshold) ) allLeptons.push_back(ilep);  
 	  } else continue;
 
