@@ -908,7 +908,38 @@ namespace patUtils
                 }
              break;
 
-          default:
+          case CutVersion::Fall17v1 :
+          case CutVersion::Fall17v2 :
+      	  // ICHEP16 or Moriond17 selection, conditions: PU20 bx25
+               switch(IsoLevel){
+                     case llvvElecIso::Veto :
+                        if( barrel && relIso < 0.198+0.506/el.pt()    ) return true;
+                        if( endcap && relIso < 0.203+0.963/el.pt()    ) return true;
+                        break;
+
+                     case llvvElecIso::Loose :
+                        if( barrel && relIso < 0.112+0.506/el.pt()   ) return true;
+                        if( endcap && relIso < 0.108+0.963/el.pt()    ) return true;
+                        break;
+
+                     case llvvElecIso::Medium :
+                        if( barrel && relIso < 0.0478+0.506/el.pt()   ) return true;
+                        if( endcap && relIso < 0.0658+0.963/el.pt()   ) return true;
+                        break;
+
+                     case llvvElecIso::Tight :
+                        if( barrel && relIso < 0.0287+0.506/el.pt()   ) return true;
+                        if( endcap && relIso < 0.0445+0.963/el.pt()   ) return true;
+                        break;
+
+                     default:
+                        printf("FIXME ElectronIso llvvElectronIso::%i is unkown\n", IsoLevel);
+                        return false;
+                        break;
+                }
+             break;
+          
+	  default:
              printf("FIXME ElectronIsolation  CutVersion::%i is unkown\n", cutVersion);
              return false;
              break;

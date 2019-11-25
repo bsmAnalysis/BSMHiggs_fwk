@@ -991,7 +991,9 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        ev.mn=0;
        //       for (std::vector<pat::Muon >::const_iterator mu = muons.begin(); mu!=muons.end(); mu++) 
        for(pat::Muon &mu : muons) {
-	 if(mu.pt() < 10.) continue;
+	 if(mu.pt() < 10. || fabs(mu.eta()) > 2.5) continue;
+
+
 	 bool passId;
 	 if(is2017 || is2018) passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::Fall17v2);
 	 else passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::ICHEP16Cut);
@@ -1078,12 +1080,14 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        for (pat::Electron &el : electrons) {
        //       for( View<pat::ElectronCollection>::const_iterator el = electrons.begin(); el != electrons.end(); el++ ) 
 	 float pt_ = el.pt();
-	 if (pt_ < 15.) continue;
+	 float eta_ = fabs(el.eta());
+
+	 if (pt_ < 15. || eta_ > 2.5) continue;
 
 	 bool passId;
-	 if(is2018) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2, rho);
-	 else if(is2017) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v1, rho);
-	 else passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut, rho);
+	 if(is2018) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v2, rho);
+	 else if(is2017) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v1, rho);
+	 else passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut, rho);
 	 if(!passId) continue;
 
 	 // Kinematics
@@ -1112,14 +1116,16 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 if(is2018){
 	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2, rho);
 	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v2, rho);
+	   ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::Fall17v2, &relIso_el, (is2017 << 0) | (is2018 << 1), rho) ;
 	 }else if(is2017){
 	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v1, rho);
 	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v1, rho);
+	   ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::Fall17v1, &relIso_el, (is2017 << 0) | (is2018 << 1), rho) ;
 	 } else{ //2016
 	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut, rho);
 	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut, rho);
+	   ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_el, (is2017 << 0) | (is2018 << 1), rho) ;
 	 }
-	 ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_el, (is2017 << 0) | (is2018 << 1), rho) ;
          ev.en_relIso[ev.en] = relIso_el;
 
 	 const EcalRecHitCollection* recHits = (el.isEB()) ? recHitCollectionEBHandle.product() : recHitCollectionEEHandle.product();
