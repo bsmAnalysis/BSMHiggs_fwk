@@ -1337,7 +1337,7 @@ int main(int argc, char* argv[])
 	  if (abs(lepid)==11) {
 	    lep_threshold=ele_threshold_;
 	    if(!runQCD) hasTightIdandIso = (ilep.passIdEl && ilep.passIsoEl);
-//            else hasTightIdandIso = ilep.passIdEl;
+	    //            else hasTightIdandIso = ilep.passIdEl;
 	    if ( (ilep.passIdEl) && (ilep.pt()>lep_threshold) ) allLeptons.push_back(ilep);
 	  } else if (abs(lepid)==13) {
 	    lep_threshold=mu_threshold_;
@@ -1529,7 +1529,8 @@ int main(int argc, char* argv[])
 		  if(!runQCD){
 		    selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
 		  } else {
-		    if( !(ilep.passIsoEl) ) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
+		    if( !(ilep.passIdEl) ) selLeptonsVar[eleVarNames[ivar]].push_back(ilep); 
+		    //		    if( !(ilep.passIsoEl) ) selLeptonsVar[eleVarNames[ivar]].push_back(ilep);    
 		  }
 		}
 		
