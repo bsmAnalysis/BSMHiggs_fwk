@@ -30,16 +30,11 @@ phase=-1
 
 MODELS=["SM"] 
 based_key="haa_mcbased" #mcbased_" #to run limits on MC use: haa_mcbased_, to use data driven obj use: haa_datadriven_
-#jsonPath='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples2016.json'
-jsonPath='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples2017_mergeSmallBckg.json'
-#inUrl='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2018_09_16_forLimits.root' 
-#inUrl='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2017_Zh_forLimits.root'
-inUrl='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2017_Wh_forLimits.root'
-#inUrl='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2018_Wh_forLimits.root'
+jsonPath='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples2016.json'
+inUrl='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2018_09_16_forLimits.root' 
 BESTDISCOVERYOPTIM=True #Set to True for best discovery optimization, Set to False for best limit optimization
 ASYMTOTICLIMIT=True #Set to True to compute asymptotic limits (faster) instead of toy based hybrid-new limits
-#BINS = ["3b","4b","3b,4b"] # list individual analysis bins to consider as well as combined bins (separated with a coma but without space)
-BINS = ["3b,4b"] # list individual analysis bins to consider as well as combined bins (separated with a coma but without space)
+BINS = ["3b","4b","3b,4b"] # list individual analysis bins to consider as well as combined bins (separated with a coma but without space)
 
 MASS = [12, 15, 20, 25, 30, 40, 50, 60]
 SUBMASS = [12, 15, 20, 25, 30, 40, 50, 60]
@@ -380,7 +375,6 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
 #           SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --blind --index 1 --rebin 6 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
            SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --simfit --index 1 --rebin 6 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --subFake --shape --modeDD " + " " + LandSArg + cutStr  +" ;\n")
-#           SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " " + "--syst --simfit --index 1 --rebin 6 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --shape  " + " " + LandSArg + cutStr  +" ;\n")
            SCRIPT.writelines("sh combineCards.sh;\n"); 
 #           SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root --PO verbose --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n") 
            SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n")  
@@ -571,14 +565,8 @@ for signalSuffix in signalSuffixVec :
       else:
          os.system("hadd -f "+DataCardsDir+"/LimitTree.root "+DataCardsDir+"/*/higgsCombineTest.HybridNewMerged.*.root > /dev/null")
 
-#      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 35914.143 )'")
-#      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 35914.143 , \"Wh channels\" ,false)'")
+      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 35914.143 )'")
 
-      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 41529.152 )'")
-      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 41529.152 , \"Wh channels\" ,false)'")
-      
-#      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 59740.565 )'")
-#      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 59740.565 , \"Wh channels\" ,false)'")
    ######################################################################
 
 if(phase>6):
