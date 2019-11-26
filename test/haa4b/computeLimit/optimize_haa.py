@@ -17,7 +17,7 @@ LandSArgOptions = []
 BIN             = []
 MODEL           = []
 
-#LaunchOnCondor.Jobs_Queue='cmscaf1nd'
+LaunchOnCondor.Jobs_Queue='cmscaf1nd'
 FarmDirectory  = "FARM"
 JobName        = "computeLimits"
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
@@ -45,8 +45,6 @@ BINS = ["3b","4b","3b,4b"] # list individual analysis bins to consider as well a
 
 MASS = [12, 15, 20, 25, 30, 40, 50, 60]
 SUBMASS = [12, 15, 20, 25, 30, 40, 50, 60]
-#MASS = [60]
-#SUBMASS = [60]
 
 LandSArgCommonOptions=" --dropBckgBelow 0.01 --statBinByBin 0.001 " #--BackExtrapol " #--statBinByBin 0.00001 "
 #LandSArgCommonOptions=" --dropBckgBelow 0.01 " # --statBinByBin 0.001 " #--BackExtrapol " #--statBinByBin 0.00001 "
@@ -441,7 +439,7 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines('RMIN=$(echo "$RMIN*0.5" | bc);\n'); #DIVIDE RMIN   BY 2 to make sure we are considering large space enough
               SCRIPT.writelines('RMAX=$(echo "$RMAX*3.0" | bc);\n'); #MULTIPLY RMAX BY 3 to make sure we are considering large space enough
               SCRIPT.writelines('echo "for the hybridNew, consider r to be in the range [$RMIN, $RMAX]";\n')
-              SCRIPT.writelines("makeGridUsingCrab.py card_combined_wh.dat $RMIN $RMAX -n 40 -m "+str(m)+" -o grid ;\n")
+              SCRIPT.writelines("makeGridUsingCrab.py card_combined.dat $RMIN $RMAX -n 40 -m "+str(m)+" -o grid ;\n")
               SCRIPT.writelines("rm grid.root;\n")
               SCRIPT.writelines("sh grid.sh 1 16 &> /dev/null;\n")
               SCRIPT.writelines("rm higgsCombinegrid.HybridNew.*;\n")

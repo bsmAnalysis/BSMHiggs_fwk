@@ -150,7 +150,8 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   //make TH Cross-sections
    string suffix = outputDir;
 
-   Double_t mA[8]={12.,15.,20.,25.,30.,40.,50.,60.};
+   //Double_t mA[8]={12.,15.,20.,25.,30.,40.,50.,60.};
+   Double_t mA[8]={20.,25.,30.,40.,50.,60.};
 
    TGraph* THXSec = new TGraph(999); int N=8;
    for (int i=0; i<N; i++) {
@@ -207,22 +208,24 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   if(strengthLimit){
     framework->GetYaxis()->SetTitle("#mu = #sigma_{95%} / #sigma_{th}");
     if(logY){
-      framework->GetYaxis()->SetRangeUser(1E-1,1E3);
+      framework->GetYaxis()->SetRangeUser(1E-2,1E2);
       c->SetLogy(true);
       outputDir += "log/";
     }else{
-      framework->GetYaxis()->SetRangeUser(1E-2,5);
+      framework->GetYaxis()->SetRangeUser(0,4);
+      //framework->GetYaxis()->SetRangeUser(0,2.5);
       c->SetLogy(false);
       outputDir += "linear/";
     }
   }else{
     framework->GetYaxis()->SetTitle((string("#sigma_{95%} (") + prod +") x BR (pb)").c_str());
     if(logY){
-      framework->GetYaxis()->SetRangeUser(1E-1,1E3);
+      framework->GetYaxis()->SetRangeUser(1E-2,1E2);
       c->SetLogy(true);
       outputDir += "log/";
     }else{
-      framework->GetYaxis()->SetRangeUser(1E-2,5);
+      framework->GetYaxis()->SetRangeUser(0,4);
+      //framework->GetYaxis()->SetRangeUser(0,2.5);
       c->SetLogy(false);
       outputDir += "linear/";
     }
