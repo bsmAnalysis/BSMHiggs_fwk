@@ -277,7 +277,8 @@ class ShapeData_t
 		  // statU->SetBinContent(ibin,std::min(2*h->GetBinContent(ibin), std::max(0.0, h->GetBinContent(ibin) + h->GetBinError(ibin))));   statU->SetBinError(ibin, 0);
 		  // statD->SetBinContent(ibin,std::min(2*h->GetBinContent(ibin), std::max(0.0, h->GetBinContent(ibin) - h->GetBinError(ibin))));   statD->SetBinError(ibin, 0);
 		}else{
-		  statU->SetBinContent(ibin,              statU->GetBinContent(ibin) + statU->GetBinError(ibin));
+		  statU->SetBinContent(ibin,std::max(0.0, statU->GetBinContent(ibin) + statU->GetBinError(ibin)));
+		  //statU->SetBinContent(ibin,              statU->GetBinContent(ibin) + statU->GetBinError(ibin));
 		  statD->SetBinContent(ibin,std::max(0.0, statD->GetBinContent(ibin) - statD->GetBinError(ibin)));
 		}
 		uncShape[prefix+"stat"+suffix+ibintxt+suffix2+"Up"  ] = statU;
@@ -297,7 +298,8 @@ class ShapeData_t
 		statU->SetBinContent(ibin,std::min(2*h->GetBinContent(ibin), std::max(0.01*h->GetBinContent(ibin), statU->GetBinContent(ibin) + statU->GetBinError(ibin))));
 		statD->SetBinContent(ibin,std::min(2*h->GetBinContent(ibin), std::max(0.01*h->GetBinContent(ibin), statD->GetBinContent(ibin) - statD->GetBinError(ibin))));
 	      }else{
-		statU->SetBinContent(ibin,              statU->GetBinContent(ibin) + statU->GetBinError(ibin));
+		//statU->SetBinContent(ibin,              statU->GetBinContent(ibin) + statU->GetBinError(ibin));
+		statU->SetBinContent(ibin,std::min(0.0, statU->GetBinContent(ibin) + statU->GetBinError(ibin)));
 		statD->SetBinContent(ibin,std::min(0.0, statD->GetBinContent(ibin) - statD->GetBinError(ibin)));
 	      }
 	    }
@@ -1358,14 +1360,16 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 
     //All Channels
-  fprintf(pFile,"\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{rotating}\n\\begin{document}\n\\begin{sidewaystable}[htp]\n\\begin{center}\n\\caption{Event yields expected for background and signal processes and observed in data.}\n\\label{tab:table}\n");
+  fprintf(pFile,"\\documentclass{article}\n\\usepackage{graphicx}\n\\usepackage{geometry}\n\\geometry{\n\tleft=10mm,\n\tright=10mm,\n\ttop=10mm,\n\tbottom=10mm\n}\n\\usepackage[utf8]{inputenc}\n\\usepackage{rotating}\n\\begin{document}\n\\begin{sidewaystable}[htp]\n\\begin{center}\n\\caption{Event yields expected for background and signal processes and observed in data.}\n\\label{tab:table}\n\\resizebox{\\textwidth}{!}{\n ");
   fprintf(pFile, "\\begin{tabular}{|c|"); for(auto ch = MapChannel.begin(); ch!=MapChannel.end();ch++){ fprintf(pFile, "c|"); } fprintf(pFile, "}\\\\\n");
   fprintf(pFile, "channel");   for(auto ch = MapChannel.begin(); ch!=MapChannel.end();ch++){ fprintf(pFile, " & %s", ch->first.c_str()); } fprintf(pFile, "\\\\\\hline\n");
   for(auto proc = VectorProc.begin();proc!=VectorProc.end(); proc++){
     if(*proc=="total")fprintf(pFile, "\\hline\n");
     auto ChannelYields = MapProcChYields.find(*proc);
     if(ChannelYields == MapProcChYields.end())continue;
-    fprintf(pFile, "%s ", proc->c_str()); 
+    TString procName = (*proc).c_str(); procName.ReplaceAll("#","\\"); procName = "$" + procName + "$";
+    fprintf(pFile, "%s ", procName.Data()); 
+//    fprintf(pFile, "%s ", proc->c_str()); 
     for(auto ch = MapChannel.begin(); ch!=MapChannel.end();ch++){ 
       fprintf(pFile, " & ");
       if(ChannelYields->second.find(ch->first)!=ChannelYields->second.end()){
@@ -1376,7 +1380,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     if(*proc=="data")fprintf(pFile, "\\hline\n");             
   }
   fprintf(pFile,"\\hline\n");
-  fprintf(pFile,"\\end{tabular}\n\\end{center}\n\\end{sidewaystable}\n\\end{document}\n");
+  fprintf(pFile,"\\end{tabular}\n}\n\\end{center}\n\\end{sidewaystable}\n\\end{document}\n");
   
     //All Bins
   fprintf(pFileInc,"\\documentclass{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage{rotating}\n\\begin{document}\n\\begin{sidewaystable}[htp]\n\\begin{center}\n\\caption{Event yields expected for background and signal processes and observed in data.}\n\\label{tab:table}\n");
@@ -1386,7 +1390,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     if(*proc=="total")fprintf(pFileInc, "\\hline\n");
     auto ChannelYields = MapProcChYieldsBin.find(*proc);
     if(ChannelYields == MapProcChYieldsBin.end())continue;
-    fprintf(pFileInc, "%s ", proc->c_str()); 
+    TString procName = (*proc).c_str(); procName.ReplaceAll("#","\\"); procName = "$" + procName + "$";
+    fprintf(pFile, "%s ", procName.Data()); 
+//    fprintf(pFileInc, "%s ", proc->c_str()); 
     for(auto ch = MapChannelBin.begin(); ch!=MapChannelBin.end();ch++){ 
       fprintf(pFileInc, " & ");
       if(ChannelYields->second.find(ch->first)!=ChannelYields->second.end()){
@@ -2344,7 +2350,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             //write variation to file
 	    hshape->SetName(proc+syst);
 	    hshape->Write(proc+postfix+syst);
-          }else if(runSystematics){
+          }else if(runSystematics && proc!="data"){
             //for one sided systematics the down variation mirrors the difference bin by bin
             hshape->SetName(proc+syst);
             hshape->Write(proc+postfix+syst+"Up");
