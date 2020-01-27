@@ -17,14 +17,14 @@ LandSArgOptions = []
 BIN             = []
 MODEL           = []
 
-#LaunchOnCondor.Jobs_Queue='cmscaf1nd'
+LaunchOnCondor.Jobs_Queue='cmscaf1nd'
 FarmDirectory  = "FARM"
 JobName        = "computeLimits"
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
 CWD=os.getcwd()
 phase=-1
 
-autoMCstats = False
+autoMCstats = True
 thredMCstat = 0.001
 ###################################################
 ##   VALUES TO BE EDITED BY THE USE ARE BELLOW   ##
