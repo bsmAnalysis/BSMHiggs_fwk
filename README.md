@@ -32,6 +32,12 @@ cd test/haa4b
 sh ./converter.sh # input 1 when you are prompted to select
 cd $CMSSW_BASE/src
 
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+cd HiggsAnalysis/CombinedLimit
+git fetch origin
+git checkout v8.0.1
+scramv1 b clean; scramv1 b # always make a clean build
+
 #And compile
 scram b -j 4
 ```
@@ -223,11 +229,9 @@ runLocalAnalysisOverSamples.py -e my_exe -j data/my_samples.json -d my_input_dir
  UserCode/bsmhiggs_fwk/test/haa4b/bin directory (also add it to the
  Buildfile there)
 
-# NTuple locations (29 Aug 2019 Updated)
-- 2016 DATA  and  MC Samples: ```/eos/cms/store/user/georgia/results_2019_07_10```
+# NTuple locations (27 Jan 2020 Updated)
+- 2016 DATA  and  MC Samples: ```/eos/cms/store/user/georgia/results_2019_12_09```
 
-  2016 MC New Signal Samples: ```/eos/cms/store/user/yuanc/results_2019_08_09```
-
-  2016 MC AMC NLO DY Samples: ```/eos/cms/store/user/yuanc/results_2019_08_23```
-- 2017 DATA  and  MC Samples: ```/eos/cms/store/user/zhangyi/results_2019_08_12```
-- 2018 DATA  and  MC Samples: ```/eos/cms/store/user/yuanc/results_2019_08_08```
+  2016   MC   Signal Samples: ```/eos/cms/store/user/georgia/results_2019_12_10```
+- 2017 DATA  and  MC Samples: ```/eos/cms/store/user/zhangyi/results_2019_11_22```
+- 2018 DATA  and  MC Samples: ```/eos/cms/store/user/yuanc/results_2019_11_22```
