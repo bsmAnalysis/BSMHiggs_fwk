@@ -83,12 +83,12 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("mc_momidx",     evSummary_.mc_momidx,       "mc_momidx[nmcparticles]/I");
 
     //gen ground state B hadrons
-    t_->Branch("mcbh",          &evSummary_.mcbh,           "mcbh/I");
-    t_->Branch("mcbh_px",       evSummary_.mcbh_px,         "mcbh_px[mcbh]/F");
-    t_->Branch("mcbh_py",       evSummary_.mcbh_py,         "mcbh_py[mcbh]/F");
-    t_->Branch("mcbh_pz",       evSummary_.mcbh_pz,         "mcbh_pz[mcbh]/F");
-    t_->Branch("mcbh_en",       evSummary_.mcbh_en,         "mcbh_en[mcbh]/F");
-    t_->Branch("mcbh_id",       evSummary_.mcbh_id,         "mcbh_en[mcbh]/I");
+//    t_->Branch("mcbh",          &evSummary_.mcbh,           "mcbh/I");
+//    t_->Branch("mcbh_px",       evSummary_.mcbh_px,         "mcbh_px[mcbh]/F");
+//    t_->Branch("mcbh_py",       evSummary_.mcbh_py,         "mcbh_py[mcbh]/F");
+//    t_->Branch("mcbh_pz",       evSummary_.mcbh_pz,         "mcbh_pz[mcbh]/F");
+//    t_->Branch("mcbh_en",       evSummary_.mcbh_en,         "mcbh_en[mcbh]/F");
+//    t_->Branch("mcbh_id",       evSummary_.mcbh_id,         "mcbh_en[mcbh]/I");
 
     /* tmp
     // gen jets
@@ -287,7 +287,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("sv_ndof"         , evSummary_.sv_ndof          , "sv_ndof[sv]/F" ) ;
     t_->Branch("sv_mc_nbh_moms"  , evSummary_.sv_mc_nbh_moms   , "sv_mc_nbh_moms[sv]/I" ) ;
     t_->Branch("sv_mc_nbh_daus"  , evSummary_.sv_mc_nbh_daus   , "sv_mc_nbh_daus[sv]/I" ) ;
-    t_->Branch("sv_mc_mcbh_ind"  , evSummary_.sv_mc_mcbh_ind   , "sv_mc_mcbh_ind[sv]/I" ) ;
+//    t_->Branch("sv_mc_mcbh_ind"  , evSummary_.sv_mc_mcbh_ind   , "sv_mc_mcbh_ind[sv]/I" ) ;
 
 
     //fjet (ak8PFJetsCHS)
@@ -424,12 +424,12 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
 
 
     //gen ground state B hadrons
-    t_->SetBranchAddress("mcbh",          &evSummary_.mcbh   );
-    t_->SetBranchAddress("mcbh_px",       evSummary_.mcbh_px );
-    t_->SetBranchAddress("mcbh_py",       evSummary_.mcbh_py );
-    t_->SetBranchAddress("mcbh_pz",       evSummary_.mcbh_pz );
-    t_->SetBranchAddress("mcbh_en",       evSummary_.mcbh_en );
-    t_->SetBranchAddress("mcbh_id",       evSummary_.mcbh_id );
+//    t_->SetBranchAddress("mcbh",          &evSummary_.mcbh   );
+//    t_->SetBranchAddress("mcbh_px",       evSummary_.mcbh_px );
+//    t_->SetBranchAddress("mcbh_py",       evSummary_.mcbh_py );
+//    t_->SetBranchAddress("mcbh_pz",       evSummary_.mcbh_pz );
+//    t_->SetBranchAddress("mcbh_en",       evSummary_.mcbh_en );
+//    t_->SetBranchAddress("mcbh_id",       evSummary_.mcbh_id );
 
 
 
@@ -630,7 +630,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("sv_ndof"         , evSummary_.sv_ndof           ) ;
     t_->SetBranchAddress("sv_mc_nbh_moms"  , evSummary_.sv_mc_nbh_moms    ) ;
     t_->SetBranchAddress("sv_mc_nbh_daus"  , evSummary_.sv_mc_nbh_daus    ) ;
-    t_->SetBranchAddress("sv_mc_mcbh_ind"  , evSummary_.sv_mc_mcbh_ind    ) ;
+//    t_->SetBranchAddress("sv_mc_mcbh_ind"  , evSummary_.sv_mc_mcbh_ind    ) ;
 
 
     /*
