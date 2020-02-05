@@ -83,12 +83,12 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("mc_momidx",     evSummary_.mc_momidx,       "mc_momidx[nmcparticles]/I");
 
     //gen ground state B hadrons
-    t_->Branch("mcbh",          &evSummary_.mcbh,           "mcbh/I");
-    t_->Branch("mcbh_px",       evSummary_.mcbh_px,         "mcbh_px[mcbh]/F");
-    t_->Branch("mcbh_py",       evSummary_.mcbh_py,         "mcbh_py[mcbh]/F");
-    t_->Branch("mcbh_pz",       evSummary_.mcbh_pz,         "mcbh_pz[mcbh]/F");
-    t_->Branch("mcbh_en",       evSummary_.mcbh_en,         "mcbh_en[mcbh]/F");
-    t_->Branch("mcbh_id",       evSummary_.mcbh_id,         "mcbh_en[mcbh]/I");
+//    t_->Branch("mcbh",          &evSummary_.mcbh,           "mcbh/I");
+//    t_->Branch("mcbh_px",       evSummary_.mcbh_px,         "mcbh_px[mcbh]/F");
+//    t_->Branch("mcbh_py",       evSummary_.mcbh_py,         "mcbh_py[mcbh]/F");
+//    t_->Branch("mcbh_pz",       evSummary_.mcbh_pz,         "mcbh_pz[mcbh]/F");
+//    t_->Branch("mcbh_en",       evSummary_.mcbh_en,         "mcbh_en[mcbh]/F");
+//    t_->Branch("mcbh_id",       evSummary_.mcbh_id,         "mcbh_en[mcbh]/I");
 
     /* tmp
     // gen jets

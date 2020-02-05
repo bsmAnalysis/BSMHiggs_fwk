@@ -558,6 +558,7 @@ namespace patUtils
     //for muon Id look here: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#LooseMuon
 
     // Spring15 selection
+    bool goodGlob = mu.isGlobalMuon() && mu.globalTrack()->normalizedChi2() < 3 && mu.combinedQuality().chi2LocalPosition < 12 && mu.combinedQuality().trkKink < 20;
     switch(cutVersion){
     case CutVersion::Spring15Cut25ns :
 
@@ -610,6 +611,10 @@ namespace patUtils
               if(muon::isGoodMuon(mu, muon::TMOneStationTight) && mu.innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5 && mu.innerTrack()->hitPattern().pixelLayersWithMeasurement() > 0 &&
                  fabs(mu.innerTrack()->dxy(vtx.position())) < 0.3 && fabs(mu.innerTrack()->dz(vtx.position())) < 20.) return true;
               break;
+	
+	    case llvvMuonId::Medium :
+	      if (muon::isLooseMuon(mu) && mu.innerTrack()->validFraction() > 0.8 &&  muon::segmentCompatibility(mu) > (goodGlob ? 0.303 : 0.451)) return true;
+	      break;
 
             case llvvMuonId::Tight :
               if( mu.isPFMuon() && mu.isGlobalMuon() && mu.globalTrack()->normalizedChi2() < 10. && mu.globalTrack()->hitPattern().numberOfValidMuonHits() > 0. && mu.numberOfMatchedStations() > 1 &&

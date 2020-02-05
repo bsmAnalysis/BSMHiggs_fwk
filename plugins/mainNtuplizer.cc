@@ -995,8 +995,10 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 
 
 	 bool passId;
-	 if(is2017 || is2018) passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::Fall17v2);
-	 else passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::ICHEP16Cut);
+	 //if(is2017 || is2018) passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::Fall17v2);
+	 //else passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::ICHEP16Cut);
+	 if(is2017 || is2018) passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::Fall17v2);
+	 else passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::ICHEP16Cut);
 	 if(!passId) continue;
 
 	 ev.mn_px[ev.mn] = mu.px();
@@ -1046,7 +1048,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 }
 	 else{//2016
 	   ev.mn_passId[ev.mn]  = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::ICHEP16Cut);
-	   ev.mn_passIdLoose[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::ICHEP16Cut);
+	   ev.mn_passIdLoose[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Loose, patUtils::CutVersion::ICHEP16Cut);
 	   ev.mn_passSoftMuon[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Soft, patUtils::CutVersion::ICHEP16Cut);
 	   ev.mn_passIso[ev.mn] = patUtils::passIso(mu, patUtils::llvvMuonIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_mu, &trkrelIso);
 	 }
@@ -1279,7 +1281,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.jet++;
          ijet++ ;
        }
-       if((ijet2<3)) return;
+       if((ijet2<2)) return;
        //       if(nCSVLtags<2) return;
        //
        // jet selection (AK8Jets)
