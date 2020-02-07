@@ -759,7 +759,7 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "zmass_raw", ";#it{m}_{ll} [GeV];Events", 80,0,200) );   
 
     //MVA BDT
-    mon.addHistogram( new TH1F( "bdt", ";BDT;Events", 30, -0.3, 0.3) );
+    mon.addHistogram( new TH1F( "bdt", ";BDT;Events", 50, -0.5, 0.5) );
     
     // Debugging SFs
     TH2F* musf_id =(TH2F*)mon.addHistogram(new TProfile2D("musfid", ";muon p_{T} (GeV); muon |#eta|",20,0.,400.,10,0,2.5) );    
@@ -776,8 +776,8 @@ int main(int argc, char* argv[])
     }
 
     std::vector<double> optim_Cuts1_bdt;
-    optim_Cuts1_bdt.push_back(-0.4); //add a bin in the shapes with a BDT cut of -0.4
-    for(double bdt=-0.30;bdt<0.30;bdt+=0.02) { optim_Cuts1_bdt.push_back(bdt); }
+    optim_Cuts1_bdt.push_back(-0.6); //add a bin in the shapes with a BDT cut of -0.4
+    for(double bdt=-0.50;bdt<0.50;bdt+=0.02) { optim_Cuts1_bdt.push_back(bdt); }
 
     TH2F* Hoptim_cuts =(TH2F*)mon.addHistogram(new TProfile2D("optim_cut", ";cut index;variable", optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 1, 0, 1)) ;
     Hoptim_cuts->GetYaxis()->SetBinLabel(1, "BDT>");
@@ -1088,17 +1088,21 @@ int main(int argc, char* argv[])
     //###########################################           TMVAReader         ###########################################
     //####################################################################################################################
     
-    std::string chpath = "";
-    if (runZH) chpath = "ZHaa4bMVA/";
+    std::string chpath = "WHaa4bMVA/";
+    if (runZH) chpath =  "ZHaa4bMVA/";
+
+    std::string mva_year = "mva2016/";
+    if(is2017MC || is2017data) mva_year = "mva2017/";
+    else if(is2018MC || is2018data) mva_year = "mva2018/";
 
     TMVAReader myTribTMVAReader;
     myTribTMVAReader.InitTMVAReader();
-    std::string TribMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"Haa4bSBClassificationTribMVA_BDT.weights.xml"; // ---> use a signle BDT
+    std::string TribMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+mva_year+chpath+"Haa4bSBClassificationTribMVA_BDT.weights.xml"; // ---> use a signle BDT
     myTribTMVAReader.SetupMVAReader( "Haa4bSBClassificationTribMVA", TribMVA_xml_path );
 
     TMVAReader myQuabTMVAReader;
     myQuabTMVAReader.InitTMVAReader();
-    std::string QuabMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"Haa4bSBClassificationQuabMVA_BDT.weights.xml"; 
+    std::string QuabMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+mva_year+chpath+"Haa4bSBClassificationQuabMVA_BDT.weights.xml"; 
     myQuabTMVAReader.SetupMVAReader( "Haa4bSBClassificationQuabMVA", QuabMVA_xml_path );
     
     //####################################################################################################################
