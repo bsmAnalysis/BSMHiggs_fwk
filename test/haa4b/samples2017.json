@@ -858,7 +858,7 @@
                         1.0
                     ],
                     "dset": [
-                        "/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v4/MINIAODSIM"
+			"/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v5/MINIAODSIM"
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_W2Jets_2017",
