@@ -1178,50 +1178,6 @@
                     "dtag": "MC13TeV_QCD_Pt300ToInf_EMEnr_2016",
                     "xsec": 1350
                 },
-	          {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/QCD_Pt-15to20_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
-                    ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_QCD_Pt15to20_MuEnrPt5_2016",
-                    "xsec": 3819570
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/QCD_Pt-20to30_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
-                    ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_QCD_Pt20to30_MuEnrPt5_2016",
-                    "xsec": 2960198.4
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/QCD_Pt-30to50_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
-                    ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_QCD_Pt30to50_MuEnrPt5_2016",
-                    "xsec": 1652471.46
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/QCD_Pt-50to80_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
-                    ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_QCD_Pt50to80_MuEnrPt5_2016",
-                    "xsec": 437504.1
-                },
                 {
                     "br": [
                         0.584
@@ -1420,39 +1376,6 @@
                     "dtag": "MC13TeV_QCD_Pt1000toInf_MuEnrPt5_ext1_2016",
                     "xsec": 1.62131692
 		},     
-                {
-                    "br": [
-                        0.0002
-                    ],
-                    "dset": [
-                        "/QCD_Pt_15to20_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
-                    ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_QCD_Pt_15to20_bcToE_2016",
-                    "xsec": 1272980000
-                },
-                {
-                    "br": [
-                        0.00059
-                    ],
-                    "dset": [
-                        "/QCD_Pt_20to30_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
-                    ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_QCD_20to30_bcToE_2016",
-                    "xsec": 557627000
-                },
-                {
-                    "br": [
-                        0.00255
-                    ],
-                    "dset": [
-                        "/QCD_Pt_30to80_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
-                    ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_QCD_30to80_bcToE_2016",
-                    "xsec": 159068000
-                },
                 {
                     "br": [
                         0.01183

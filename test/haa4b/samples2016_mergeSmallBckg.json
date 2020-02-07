@@ -1491,6 +1491,7 @@
             "isinvisible": true,
             "issignal": true,
             "keys": [
+		"haa_prod", 
                 "haa_signal",
                 "haa_mcbased"
             ],
@@ -1531,6 +1532,7 @@
             "isinvisible": true,
             "issignal": true,
             "keys": [
+		"haa_prod", 
                 "haa_signal",
                 "haa_mcbased"
             ],
@@ -1571,6 +1573,7 @@
             "isinvisible": false,
             "issignal": true,
             "keys": [
+		"haa_prod", 
                 "haa_signal",
                 "haa_mcbased"
             ],
@@ -1611,6 +1614,7 @@
             "isinvisible": true,
             "issignal": true,
             "keys": [
+		"haa_prod", 
                 "haa_signal",
                 "haa_mcbased"
             ],
@@ -1651,6 +1655,7 @@
             "isinvisible": true,
             "issignal": true,
             "keys": [
+		"haa_prod", 
                 "haa_signal",
                 "haa_mcbased"
             ],
@@ -1691,6 +1696,7 @@
             "isinvisible": true,
             "issignal": true,
             "keys": [
+		"haa_prod", 
                 "haa_signal",
                 "haa_mcbased"
             ],
@@ -1731,6 +1737,7 @@
             "isinvisible": true,
             "issignal": true,
             "keys": [
+		"haa_prod", 
                 "haa_signal",
                 "haa_mcbased"
             ],
@@ -1771,6 +1778,7 @@
             "isinvisible": false,
             "issignal": true,
             "keys": [
+		"haa_prod", 
                 "haa_signal",
                 "haa_mcbased"
             ],
