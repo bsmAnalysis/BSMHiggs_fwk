@@ -776,7 +776,7 @@ int main(int argc, char* argv[])
     }
 
     std::vector<double> optim_Cuts1_bdt;
-    optim_Cuts1_bdt.push_back(-0.6); //add a bin in the shapes with a BDT cut of -0.4
+    optim_Cuts1_bdt.push_back(-0.4); //add a bin in the shapes with a BDT cut of -0.4
     for(double bdt=-0.30;bdt<0.30;bdt+=0.02) { optim_Cuts1_bdt.push_back(bdt); }
 
     TH2F* Hoptim_cuts =(TH2F*)mon.addHistogram(new TProfile2D("optim_cut", ";cut index;variable", optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 1, 0, 1)) ;
