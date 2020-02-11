@@ -1091,18 +1091,14 @@ int main(int argc, char* argv[])
     std::string chpath = "WHaa4bMVA/";
     if (runZH) chpath =  "ZHaa4bMVA/";
 
-    std::string mva_year = "mva2016/";
-    if(is2017MC || is2017data) mva_year = "mva2017/";
-    else if(is2018MC || is2018data) mva_year = "mva2018/";
-
     TMVAReader myTribTMVAReader;
     myTribTMVAReader.InitTMVAReader();
-    std::string TribMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+mva_year+chpath+"Haa4bSBClassificationTribMVA_BDT.weights.xml"; // ---> use a signle BDT
+    std::string TribMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/mva_all/"+chpath+"Haa4bSBClassificationTribMVA_BDT.weights.xml"; // ---> use a signle BDT
     myTribTMVAReader.SetupMVAReader( "Haa4bSBClassificationTribMVA", TribMVA_xml_path );
 
     TMVAReader myQuabTMVAReader;
     myQuabTMVAReader.InitTMVAReader();
-    std::string QuabMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+mva_year+chpath+"Haa4bSBClassificationQuabMVA_BDT.weights.xml"; 
+    std::string QuabMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/mva_all/"+chpath+"Haa4bSBClassificationQuabMVA_BDT.weights.xml"; 
     myQuabTMVAReader.SetupMVAReader( "Haa4bSBClassificationQuabMVA", QuabMVA_xml_path );
     
     //####################################################################################################################
