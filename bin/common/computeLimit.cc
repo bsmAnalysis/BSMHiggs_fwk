@@ -66,7 +66,7 @@ int mass;
 bool shape = true;
 TString postfix="";
 TString systpostfix="";
-bool runSystematics = true; 
+bool runSystematics = false; 
 
 bool runZh = false;
 bool modeDD = false;
@@ -110,6 +110,8 @@ bool useLogy = true;
 bool blindSR = false;
 double lumi = -1;
 int signalScale = 1;
+double sstyCut = -1;
+bool docut = false;
 
 bool dirtyFix1 = false;
 bool dirtyFix2 = false;
@@ -329,12 +331,20 @@ class ShapeData_t
 
        	TH1* hvar = (TH1*)(var->second->Clone((name+var->first).c_str()));
 
-	double varYield = hvar->Integral();
+	double varYield = 0.;
+	int start_bin = 1;
+	if(hvar) {
+	  if(docut) start_bin = hvar->FindBin(sstyCut);
+	  varYield = hvar->Integral(start_bin, hvar->GetXaxis()->GetNbins());
+	}
 	TH1* h = NULL;
 	if (this->histo()!=NULL) h = (TH1*)(this->histo()->Clone((name+"Nominal").c_str()));
 	double yield = 0.; 
-	if (h!=NULL) yield = h->Integral();
-       	Total+=pow(varYield-yield,2); //the total shape unc is the sqrt of the quadratical sum of the difference between the nominal and the variated yields.
+	if (h!=NULL) {
+	  if(docut) start_bin = h->FindBin(sstyCut);
+	  yield = h->Integral(start_bin, h->GetXaxis()->GetNbins());
+	}
+	Total+=pow(varYield-yield,2); //the total shape unc is the sqrt of the quadratical sum of the difference between the nominal and the variated yields.
      	}     
      	return Total>0?sqrt(Total):-1;
   	}
@@ -514,6 +524,7 @@ void printHelp()
   printf("--signalTag   --> use this flag to specify a tag that should be present in signal sample name\n");
   printf("--signalScale   --> use this flag to specify a Scale applied on signal\n");
   printf("--rebin         --> rebin the histogram\n");
+  printf("--sstyCut         --> show event yields with bdt above sstyCut\n");
   printf("--statBinByBin --> make bin by bin statistical uncertainty\n");
   printf("--inclusive  --> merge bins to make the analysis inclusive\n");
   printf("--dropBckgBelow --> drop all background processes that contributes for less than a threshold to the total background yields\n");
@@ -588,6 +599,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--signalTag") !=string::npos) { signalTag = argv[i+1]; i++; printf("signalTag '%s' will be used\n", signalTag.c_str()); }
     else if(arg.find("--signalScale") !=string::npos) { sscanf(argv[i+1],"%d",&signalScale); i++; printf("signalScale = %d\n", signalScale);}
     else if(arg.find("--rebin")    !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&rebinVal); i++; printf("rebin = %i\n", rebinVal);}
+    else if(arg.find("--sstyCut")    !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%lf",&sstyCut); i++; docut=true; printf("sstyCut = %f\n", sstyCut);}
     else if(arg.find("--BackExtrapol")    !=string::npos) { BackExtrapol=true; printf("BackExtrapol = True\n");}
     else if(arg.find("--statBinByBin")    !=string::npos) { sscanf(argv[i+1],"%f",&statBinByBin); i++; printf("statBinByBin = %f\n", statBinByBin);}
     else if(arg.find("--dropBckgBelow")   !=string::npos) { sscanf(argv[i+1],"%lf",&dropBckgBelow); i++; printf("dropBckgBelow = %f\n", dropBckgBelow);}
@@ -1230,6 +1242,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
   std::map<string, std::map<string, string> > MapProcChYields;         
   std::map<string, bool> MapChannelBin;
   std::map<string, std::map<string, string> > MapProcChYieldsBin;         
+  std::map<string, std::map<string, std::vector<double> > > MapProcChBinYields;         
+  std::map<string, std::map<string, std::vector<double> > > MapProcChBinErrors;         
+  std::map<string, std::vector<int> > MapProcChBin;         
+  std::vector<double> MapSignChBinYields;
+  std::vector<double> MapBckgChBinYields;
 
   std::map<string, string> rows;
   std::map<string, string> rowsBin;
@@ -1264,7 +1281,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       TH1* h = ch->second.shapes[histoName].histo();
       double valerr = 0.;
       double val  = 0.;
-      if (h!=NULL) val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+      if (h!=NULL) {
+	int start_bin = (docut ? h->FindBin(sstyCut) : 1);
+	val = h->IntegralAndError(start_bin,h->GetXaxis()->GetNbins(),valerr);
+      }
 
       double syst_scale = std::max(0.0, ch->second.shapes[histoName].getScaleUncertainty());
       double syst_shapeUp = std::max(0.0, ch->second.shapes[histoName].getIntegratedShapeUncertainty((it->first+ch->first).c_str(), "Up"));
@@ -1289,8 +1309,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       if(rows.find(ch->first)==rows.end())rows[ch->first] = string("$ ")+ch->first+" $";
       rows[ch->first] += string("&") + YieldText;
 
-      TString LabelText = TString("$") + ch->second.channel+ " " +ch->second.bin + TString("$");
-      LabelText.ReplaceAll("eq"," ="); LabelText.ReplaceAll("g =","\\geq"); LabelText.ReplaceAll("l =","\\leq"); 
+      TString LabelText = TString("$") + ch->second.channel+ "\\ " +ch->second.bin + TString("$");
+      LabelText.ReplaceAll("eq"," ="); LabelText.ReplaceAll("g =","\\geq"); LabelText.ReplaceAll("l =","\\leq"); LabelText.ReplaceAll("mu","\\mu"); LabelText.ReplaceAll("_","\\_");
       //      LabelText.ReplaceAll("_OS","OS "); LabelText.ReplaceAll("el","e"); LabelText.ReplaceAll("mu","\\mu");  LabelText.ReplaceAll("ha","\\tau_{had}");
 
       TString BinText = TString("$") + ch->second.bin + TString("$");
@@ -1367,7 +1387,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     if(*proc=="total")fprintf(pFile, "\\hline\n");
     auto ChannelYields = MapProcChYields.find(*proc);
     if(ChannelYields == MapProcChYields.end())continue;
-    TString procName = (*proc).c_str(); procName.ReplaceAll("#","\\"); procName = "$" + procName + "$";
+    TString procName = (*proc).c_str(); if(procName.Contains("#")){procName = "$" + procName + "$";} procName.ReplaceAll("#","\\");
     fprintf(pFile, "%s ", procName.Data()); 
 //    fprintf(pFile, "%s ", proc->c_str()); 
     for(auto ch = MapChannel.begin(); ch!=MapChannel.end();ch++){ 
