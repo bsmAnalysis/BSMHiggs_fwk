@@ -394,19 +394,7 @@
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_WWW_4F_2017",
                     "xsec": 0.2086
-                }
-
-            ],
-            "isdata": false,
-            "keys": [
-		"haa_prod", 
-                "haa_mcbased"
-            ],
-            "tag": "VV"
-        },
-        {
-            "color": 424,
-            "data": [
+                },
                 {
                     "br": [
                         1.0
@@ -461,14 +449,110 @@
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_SingleT_tW_top_2017",
                     "xsec": 35.6
-                }
+                },
+                {
+                    "br": [ 0.29 ],
+                    "dset": [
+                        "/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/MINIAODSIM"
+                    ],                                                                                                                                                                                      
+                    "gtag": "94X_mc2017_realistic_v14",
+                    "dtag": "MC13TeV_TTGJets_ext1_v2_2017",
+                    "xsec": 3.697
+                },
+                {
+                    "br": [ 0.24 ],
+                    "dset": [
+                        "/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"
+                    ],                                                                                                                                                                                      
+                    "gtag": "94X_mc2017_realistic_v14",
+                    "dtag": "MC13TeV_TTGJets_v1_2017",
+                    "xsec": 3.697
+                },
+                {
+                    "br": [ 0.31 ],
+                    "dset": [
+		        "/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM"
+                    ],                                                                                                                                                                                      
+                    "gtag": "94X_mc2017_realistic_v14",
+                    "dtag": "MC13TeV_TTGJets_ext1_v1_2017",
+                    "xsec": 3.697
+                },
+                {
+                    "br": [ 0.16 ],
+                    "dset": [
+		        "/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"
+                    ],                                                                                                                                                                                      
+                    "gtag": "94X_mc2017_realistic_v14",
+                    "dtag": "MC13TeV_TTGJets_v2_2017",
+                    "xsec": 3.697
+                },
+                {
+                    "br": [ 1.0 ],
+                    "dset": [
+                        "/TGJets_TuneCP5_13TeV_amcatnlo_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"
+                    ],                                                                                                                                                                                      
+                    "gtag": "94X_mc2017_realistic_v14",
+                    "dtag": "MC13TeV_TGJets_2017",
+                    "xsec": 2.967
+                },
+                {
+                    "br": [ 1.0 ],
+                    "dset": [
+		        "/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"
+                    ],                                                                                                                                                                                      
+                    "gtag": "94X_mc2017_realistic_v14",
+                    "dtag": "MC13TeV_TTWJetslnu_2017",
+                    "xsec": 0.2043
+                },
+                {
+                    "br": [ 1.0 ],
+                    "dset": [
+		        "/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"
+                    ],                                                                                                                                                                                      
+                    "gtag": "94X_mc2017_realistic_v14",
+                    "dtag": "MC13TeV_TTZJets2l2nu_2017",
+                    "xsec": 0.2529
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"
+                    ],
+                    "gtag": "94X_mc2017_realistic_v14",
+                    "dtag": "MC13TeV_WplusH_HToBB_WToLNu_2017",
+                    "xsec": 0.053
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"
+                    ],
+                    "gtag": "94X_mc2017_realistic_v14",
+                    "dtag": "MC13TeV_WminusH_HToBB_WToLNu_2017",
+                    "xsec": 0.03369
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"
+                    ],
+                    "gtag": "94X_mc2017_realistic_v14",
+                    "dtag": "MC13TeV_ZH_HToBB_ZToLL_2017",
+                    "xsec": 0.04865
+                } 
             ],
             "isdata": false,
             "keys": [
 		"haa_prod", 
                 "haa_mcbased"
             ],
-            "tag": "Single Top"
+            "tag": "Other Bkgds"
         },
         {
             "color": 833,
@@ -603,80 +687,6 @@
             "mctruthmode": 1,
             "tag": "t#bar{t} + light"
         }, 	    
-        {
-            "color": 17,
-            "data": [
-                {
-                    "br": [ 0.29 ],
-                    "dset": [
-                        "/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/MINIAODSIM"
-                    ],                                                                                                                                                                                      
-                    "gtag": "94X_mc2017_realistic_v14",
-                    "dtag": "MC13TeV_TTGJets_ext1_v2_2017",
-                    "xsec": 3.697
-                },
-                {
-                    "br": [ 0.24 ],
-                    "dset": [
-                        "/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"
-                    ],                                                                                                                                                                                      
-                    "gtag": "94X_mc2017_realistic_v14",
-                    "dtag": "MC13TeV_TTGJets_v1_2017",
-                    "xsec": 3.697
-                },
-                {
-                    "br": [ 0.31 ],
-                    "dset": [
-		        "/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM"
-                    ],                                                                                                                                                                                      
-                    "gtag": "94X_mc2017_realistic_v14",
-                    "dtag": "MC13TeV_TTGJets_ext1_v1_2017",
-                    "xsec": 3.697
-                },
-                {
-                    "br": [ 0.16 ],
-                    "dset": [
-		        "/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"
-                    ],                                                                                                                                                                                      
-                    "gtag": "94X_mc2017_realistic_v14",
-                    "dtag": "MC13TeV_TTGJets_v2_2017",
-                    "xsec": 3.697
-                },
-                {
-                    "br": [ 1.0 ],
-                    "dset": [
-                        "/TGJets_TuneCP5_13TeV_amcatnlo_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"
-                    ],                                                                                                                                                                                      
-                    "gtag": "94X_mc2017_realistic_v14",
-                    "dtag": "MC13TeV_TGJets_2017",
-                    "xsec": 2.967
-                },
-                {
-                    "br": [ 1.0 ],
-                    "dset": [
-		        "/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"
-                    ],                                                                                                                                                                                      
-                    "gtag": "94X_mc2017_realistic_v14",
-                    "dtag": "MC13TeV_TTWJetslnu_2017",
-                    "xsec": 0.2043
-                },
-                {
-                    "br": [ 1.0 ],
-                    "dset": [
-		        "/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"
-                    ],                                                                                                                                                                                      
-                    "gtag": "94X_mc2017_realistic_v14",
-                    "dtag": "MC13TeV_TTZJets2l2nu_2017",
-                    "xsec": 0.2529
-                }
-            ],
-            "isdata": false,
-            "keys": [
-		"haa_prod", 
-                "haa_mcbased"
-            ],
-            "tag": "t#bar{t}+#gammaZW"
-        },
         {
             "color": 624,
             "data": [
@@ -1025,50 +1035,6 @@
                 "haa_mcbased"
             ],
             "tag": "QCD"
-        },
-        {
-            "color": 5,
-            "data": [
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"
-                    ],
-                    "gtag": "94X_mc2017_realistic_v14",
-                    "dtag": "MC13TeV_WplusH_HToBB_WToLNu_2017",
-                    "xsec": 0.053
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"
-                    ],
-                    "gtag": "94X_mc2017_realistic_v14",
-                    "dtag": "MC13TeV_WminusH_HToBB_WToLNu_2017",
-                    "xsec": 0.03369
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"
-                    ],
-                    "gtag": "94X_mc2017_realistic_v14",
-                    "dtag": "MC13TeV_ZH_HToBB_ZToLL_2017",
-                    "xsec": 0.04865
-                } 
-            ],
-            "isdata": false,
-            "keys": [
-                "haa_prod",
-                "haa_mcbased"
-            ],
-            "tag": "Vh(bb)"
         },
         {
             "data": [
