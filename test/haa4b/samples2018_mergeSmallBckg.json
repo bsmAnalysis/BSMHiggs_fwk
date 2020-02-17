@@ -633,7 +633,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DY1JetsToLL_M50_2018",
-                    "xsec": 725
+                    "xsec": 1016
                 },
                 {
                     "br": [ 1.0 ],
@@ -642,7 +642,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DY2JetsToLL_M50_2018",
-                    "xsec": 394.5
+                    "xsec": 331.4
                 },
                 {
                     "br": [ 1.0 ],
@@ -651,7 +651,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DY3JetsToLL_M50_2018",
-                    "xsec": 96.47
+                    "xsec": 96.36
                 },
                 {
                     "br": [ 1.0 ],
@@ -660,7 +660,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DY4JetsToLL_M50_2018",
-                    "xsec": 40.44
+                    "xsec": 51.4
                 },
                 {
                     "br": [ 1.0 ],
@@ -669,7 +669,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_2018",
-                    "xsec": 6100.8
+                    "xsec": 4895
                 }
             ],
             "isdata": false,
