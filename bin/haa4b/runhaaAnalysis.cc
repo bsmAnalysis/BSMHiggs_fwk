@@ -408,48 +408,45 @@ int main(int argc, char* argv[])
 
     string year = "2016";
     if(is2018MC || is2018data){
-//        if     (dtag.Contains("2018A")) jecDir+="102X/Autumn18_V8_RunA/Autumn18_RunA_V8_";
-//        else if(dtag.Contains("2018B")) jecDir+="102X/Autumn18_V8_RunB/Autumn18_RunB_V8_";
-//        else if(dtag.Contains("2018C")) jecDir+="102X/Autumn18_V8_RunC/Autumn18_RunC_V8_";
-//        else if(dtag.Contains("2018D")) jecDir+="102X/Autumn18_V8_RunD/Autumn18_RunD_V8_";
-//        if(isMC) {jecDir+="102X/Autumn18_V8_MC/Autumn18_V8_";}
-        jecDir += "102X/Regrouped_Autumn18_V19_MC_UncertaintySources_AK4PFchs.txt";
+        if     (dtag.Contains("2018A")) jecDir+="102X/Autumn18_V8_RunA/Autumn18_RunA_V8_";
+        else if(dtag.Contains("2018B")) jecDir+="102X/Autumn18_V8_RunB/Autumn18_RunB_V8_";
+        else if(dtag.Contains("2018C")) jecDir+="102X/Autumn18_V8_RunC/Autumn18_RunC_V8_";
+        else if(dtag.Contains("2018D")) jecDir+="102X/Autumn18_V8_RunD/Autumn18_RunD_V8_";
+        if(isMC) {jecDir+="102X/Autumn18_V8_MC/Autumn18_V8_";}
+//        jecDir += "102X/Regrouped_Autumn18_V19_MC_UncertaintySources_AK4PFchs.txt";
 	year = "2018";
     }
     else if(is2017MC || is2017data){
-//        if     (dtag.Contains("2017B")) jecDir+="94X/Fall17_17Nov2017B_V32_DATA/Fall17_17Nov2017B_V32_";
-//        else if(dtag.Contains("2017C")) jecDir+="94X/Fall17_17Nov2017C_V32_DATA/Fall17_17Nov2017C_V32_";
-//        else if(dtag.Contains("2017D") || dtag.Contains("2017E")) jecDir+="94X/Fall17_17Nov2017DE_V32_DATA/Fall17_17Nov2017DE_V32_";
-//        else if(dtag.Contains("2017F")) jecDir+="94X/Fall17_17Nov2017F_V32_DATA/Fall17_17Nov2017F_V32_";
-//        if(isMC) {jecDir+="94X/Fall17_17Nov2017_V32_MC/Fall17_17Nov2017_V32_";}
-	jecDir += "94X/Regrouped_Fall17_17Nov2017_V32_MC_UncertaintySources_AK4PFchs.txt";
+        if     (dtag.Contains("2017B")) jecDir+="94X/Fall17_17Nov2017B_V32_DATA/Fall17_17Nov2017B_V32_";
+        else if(dtag.Contains("2017C")) jecDir+="94X/Fall17_17Nov2017C_V32_DATA/Fall17_17Nov2017C_V32_";
+        else if(dtag.Contains("2017D") || dtag.Contains("2017E")) jecDir+="94X/Fall17_17Nov2017DE_V32_DATA/Fall17_17Nov2017DE_V32_";
+        else if(dtag.Contains("2017F")) jecDir+="94X/Fall17_17Nov2017F_V32_DATA/Fall17_17Nov2017F_V32_";
+        if(isMC) {jecDir+="94X/Fall17_17Nov2017_V32_MC/Fall17_17Nov2017_V32_";}
+//	jecDir += "94X/Regrouped_Fall17_17Nov2017_V32_MC_UncertaintySources_AK4PFchs.txt";
 	year = "2017";
     }
     else{//2016 jec files
-//        if     (dtag.Contains("2016B") || dtag.Contains("2016C") ||dtag.Contains("2016D")) jecDir+="Summer16_80X/Summer16_23Sep2016BCDV4_DATA/";
-//        else if(dtag.Contains("2016E") || dtag.Contains("2016F")) jecDir+="Summer16_80X/Summer16_23Sep2016EFV4_DATA/";
-//        else if(dtag.Contains("2016G")) jecDir+="Summer16_80X/Summer16_23Sep2016GV4_DATA/";
-//        else if(dtag.Contains("2016H")) jecDir+="Summer16_80X/Summer16_23Sep2016HV4_DATA/";
-//	if(is2016Signal) {jecDir+="Summer16_94X/Summer16_07Aug2017_V11_MC/Summer16_07Aug2017_V11_";}
-//        else if(isMC) {jecDir+="Summer16_80X/Summer16_23Sep2016V4_MC/";}
-	jecDir += "Summer16_80X/Regrouped_Summer16_07Aug2017_V11_MC_UncertaintySources_AK4PFchs.txt";
+        if     (dtag.Contains("2016B") || dtag.Contains("2016C") ||dtag.Contains("2016D")) jecDir+="Summer16_94X/Summer16_07Aug2017BCD_V11_DATA/Summer16_07Aug2017BCD_V11_";
+        else if(dtag.Contains("2016E") || dtag.Contains("2016F")) jecDir+="Summer16_94X/Summer16_07Aug2017EF_V11_DATA/Summer16_07Aug2017EF_V11_";
+        else if(dtag.Contains("2016G") || dtag.Contains("2016H")) jecDir+="Summer16_94X/Summer16_07Aug2017GH_V11_DATA/Summer16_07Aug2017GH_V11_";
+	if(isMC) {jecDir+="Summer16_94X/Summer16_07Aug2017_V11_MC/Summer16_07Aug2017_V11_";}
     }
 
-    const int nsrc = 11; //6; //27;
-    std::vector<string> srcnames = {"Absolute", string("Absolute_")+year, "BBEC1", string("BBEC1_")+year, "EC2", string("EC2_")+year, "FlavorQCD", "HF", string("HF_")+year, "RelativeBal", string("RelativeSample_")+year};
+    const int nsrc = 27;//11; //6; //27;
+//    std::vector<string> srcnames = {"Absolute", string("Absolute_")+year, "BBEC1", string("BBEC1_")+year, "EC2", string("EC2_")+year, "FlavorQCD", "HF", string("HF_")+year, "RelativeBal", string("RelativeSample_")+year};
 //    const char* srcnames[nsrc] = 
 //	{"Absolute", (string("Absolute_")+year).c_str(), "BBEC1", (string("BBEC1_")+year).c_str(), "EC2", (string("EC2_")+year).c_str(), "FlavorQCD", "HF", (string("HF_")+year).c_str(), "RelativeBal", (string("RelativeSample_")+year).c_str()};
-//      {"SubTotalPileUp", "SubTotalRelative", "SubTotalPt", "SubTotalScale", "SubTotalAbsolute","SubTotalMC"};
-    /*
-      {"AbsoluteStat", "AbsoluteScale", "AbsoluteFlavMap", "AbsoluteMPFBias", "Fragmentation",
+//      std::vector<string> srcnames = {"SubTotalPileUp", "SubTotalRelative", "SubTotalPt", "SubTotalScale", "SubTotalAbsolute","SubTotalMC"};
+      std::vector<string> srcnames =
+      {"AbsoluteStat", "AbsoluteScale", "AbsoluteMPFBias", "Fragmentation",
        "SinglePionECAL", "SinglePionHCAL",
        "FlavorQCD", "TimePtEta",
        "RelativeJEREC1", "RelativeJEREC2", "RelativeJERHF",
-       "RelativePtBB","RelativePtEC1", "RelativePtEC2", "RelativePtHF","RelativeBal", "RelativeFSR",
+       "RelativePtBB","RelativePtEC1", "RelativePtEC2", "RelativePtHF","RelativeBal", "RelativeSample", "RelativeFSR",
        "RelativeStatFSR", "RelativeStatEC", "RelativeStatHF",
        "PileUpDataMC", "PileUpPtRef", "PileUpPtBB", "PileUpPtEC1", "PileUpPtEC2", "PileUpPtHF"
       };
-    */
+    
     gSystem->ExpandPathName(jecDir);
     //    FactorizedJetCorrector *jesCor = NULL;
     //    jesCor = utils::cmssw::getJetCorrector(jecDir,isMC);
@@ -461,8 +458,8 @@ int main(int argc, char* argv[])
     
     for (int isrc = 0; isrc < nsrc; isrc++) {
       const char *name = srcnames[isrc].c_str();
-      //JetCorrectorParameters *p = new JetCorrectorParameters((jecDir+pf+"_UncertaintySources_AK4PFchs.txt").Data(), name);
-      JetCorrectorParameters *p = new JetCorrectorParameters((jecDir).Data(), name);
+      JetCorrectorParameters *p = new JetCorrectorParameters((jecDir+pf+"_UncertaintySources_AK4PFchs.txt").Data(), name);
+      //JetCorrectorParameters *p = new JetCorrectorParameters((jecDir).Data(), name);
       JetCorrectionUncertainty *unc = new JetCorrectionUncertainty(*p);
       //      totalJESUnc->push_back(unc);
       totalJESUnc[isrc] = unc;

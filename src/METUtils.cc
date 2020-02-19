@@ -268,7 +268,7 @@ PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, 
 
     // Now add JES as recommended from here: https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources
     // Instantiate JES uncertainty sources
-    const int nsrc = 11;
+    const int nsrc = 27;//11;
     
     for (int isrc = 0; isrc < nsrc; isrc++) {
 
