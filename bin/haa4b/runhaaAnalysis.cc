@@ -1,4 +1,4 @@
-//#define YEAR_2017
+#define YEAR_2017
 
 #include <iostream>
 #include <map>
@@ -407,6 +407,7 @@ int main(int argc, char* argv[])
     cout << "Loading jet energy scale uncertainties from: " << jecDir << endl;
 
     string year = "2016";
+    string jer_sf_file = std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/bsmhiggs_fwk/data/jec/25ns/jer/";
     if(is2018MC || is2018data){
         if     (dtag.Contains("2018A")) jecDir+="102X/Autumn18_V8_RunA/Autumn18_RunA_V8_";
         else if(dtag.Contains("2018B")) jecDir+="102X/Autumn18_V8_RunB/Autumn18_RunB_V8_";
@@ -415,6 +416,7 @@ int main(int argc, char* argv[])
         if(isMC) {jecDir+="102X/Autumn18_V8_MC/Autumn18_V8_";}
 //        jecDir += "102X/Regrouped_Autumn18_V19_MC_UncertaintySources_AK4PFchs.txt";
 	year = "2018";
+	jer_sf_file += "Autumn18_V7b_MC_SF_AK4PFchs.txt";
     }
     else if(is2017MC || is2017data){
         if     (dtag.Contains("2017B")) jecDir+="94X/Fall17_17Nov2017B_V32_DATA/Fall17_17Nov2017B_V32_";
@@ -424,14 +426,17 @@ int main(int argc, char* argv[])
         if(isMC) {jecDir+="94X/Fall17_17Nov2017_V32_MC/Fall17_17Nov2017_V32_";}
 //	jecDir += "94X/Regrouped_Fall17_17Nov2017_V32_MC_UncertaintySources_AK4PFchs.txt";
 	year = "2017";
+	jer_sf_file += "Fall17_V3_MC_SF_AK4PFchs.txt";    
     }
     else{//2016 jec files
         if     (dtag.Contains("2016B") || dtag.Contains("2016C") ||dtag.Contains("2016D")) jecDir+="Summer16_94X/Summer16_07Aug2017BCD_V11_DATA/Summer16_07Aug2017BCD_V11_";
         else if(dtag.Contains("2016E") || dtag.Contains("2016F")) jecDir+="Summer16_94X/Summer16_07Aug2017EF_V11_DATA/Summer16_07Aug2017EF_V11_";
         else if(dtag.Contains("2016G") || dtag.Contains("2016H")) jecDir+="Summer16_94X/Summer16_07Aug2017GH_V11_DATA/Summer16_07Aug2017GH_V11_";
 	if(isMC) {jecDir+="Summer16_94X/Summer16_07Aug2017_V11_MC/Summer16_07Aug2017_V11_";}
+	jer_sf_file += "Summer16_25nsV1_MC_SF_AK4PFchs.txt";
     }
 
+    JME::JetResolutionScaleFactor jer_sf = JME::JetResolutionScaleFactor(jer_sf_file);
     const int nsrc = 27;//11; //6; //27;
 //    std::vector<string> srcnames = {"Absolute", string("Absolute_")+year, "BBEC1", string("BBEC1_")+year, "EC2", string("EC2_")+year, "FlavorQCD", "HF", string("HF_")+year, "RelativeBal", string("RelativeSample_")+year};
 //    const char* srcnames[nsrc] = 
@@ -1917,7 +1922,8 @@ int main(int argc, char* argv[])
 	//	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1));
 	// decorrelate JES uncertainties
 	//	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1)); // totalJESUnc -> vector of 27
-	METUtils::computeJetVariation(phys.jets, selLeptons,variedJets,totalJESUnc,( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1)); // totalJESUnc -> vector of 6
+	//METUtils::computeJetVariation(phys.jets, selLeptons,variedJets,totalJESUnc,( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1)); // totalJESUnc -> vector of 6
+	METUtils::computeJetVariation(jer_sf, phys.jets, selLeptons,variedJets,totalJESUnc,( (is2017data||is2017MC) << 0 ) | ( (is2018data||is2018MC) << 1)); // totalJESUnc -> vector of 6
 
  	//	METUtils::computeVariation(phys.jets, selLeptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1));
 	//	for (int isrc = 0; isrc < nsrc; isrc++) {

@@ -239,8 +239,61 @@ PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, 
     return toReturn;
 }
 
+//Jet energy resoltuion, 13TeV scale factors, updated on 30/08/2018
+PhysicsObject_Jet smearedJet(JME::JetResolutionScaleFactor& jer_sf, const PhysicsObject_Jet &origJet, double genJetPt, Int_t yearBits, int mode)
+{
+  if (mode==0) return origJet;
+
+    if(genJetPt<=0) return origJet;
+
+    bool is2017 = yearBits & 0x01;
+    bool is2018 = (yearBits >> 1 ) & 0x01;
+    bool is2016 = !(is2017 || is2018);
+
+    //smearing factors are described in https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
+
+    //https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution#JER_Scaling_factors_and_Uncertai
+    // Spring16_25nsV10 (80X, 2016, BCD+GH PromtReco) DATA/MC SFs 
+    double ptSF(1.0), ptSF_up(1.0), ptSF_down(1.0);
+    if(is2016){
+	std::cout << "in 2016" << std::endl;
+	ptSF = jer_sf.getScaleFactor({{JME::Binning::JetEta, origJet.eta()}});
+	ptSF_up = jer_sf.getScaleFactor({{JME::Binning::JetEta, origJet.eta()}}, Variation::UP);
+	ptSF_down = jer_sf.getScaleFactor({{JME::Binning::JetEta, origJet.eta()}}, Variation::DOWN);
+    }// end 2016
+    else if(is2017){
+	std::cout << "in 2017" << std::endl;
+	ptSF = jer_sf.getScaleFactor({{JME::Binning::JetEta, origJet.eta()}});
+	ptSF_up = jer_sf.getScaleFactor({{JME::Binning::JetEta, origJet.eta()}}, Variation::UP);
+	ptSF_down = jer_sf.getScaleFactor({{JME::Binning::JetEta, origJet.eta()}}, Variation::DOWN);
+    }//end 2017
+    else if(is2018){
+	std::cout << "in 2018" << std::endl;
+	ptSF = jer_sf.getScaleFactor({{JME::Binning::JetPt, origJet.pt()}, {JME::Binning::JetEta, origJet.eta()}});
+	ptSF_up = jer_sf.getScaleFactor({{JME::Binning::JetPt, origJet.pt()}, {JME::Binning::JetEta, origJet.eta()}}, Variation::UP);
+	ptSF_down = jer_sf.getScaleFactor({{JME::Binning::JetPt, origJet.pt()}, {JME::Binning::JetEta, origJet.eta()}}, Variation::DOWN);
+    }
+
+    if(mode==1) ptSF = ptSF_up;
+    if(mode==2) ptSF = ptSF_down;
+
+
+    ptSF=max(0.,(genJetPt+ptSF*(origJet.pt()-genJetPt)))/origJet.pt();                      //deterministic version
+    //ptSF=max(0.,(genJetPt+gRandom->Gaus(ptSF,ptSF_err)*(origJet.pt()-genJetPt)))/origJet.pt();  //deterministic version
+    if( ptSF<=0 /*|| isnan(ptSF)*/ ) return origJet;
+
+    double px(origJet.px()*ptSF), py(origJet.py()*ptSF), pz(origJet.pz()*ptSF), mass(origJet.mass()*ptSF);
+    double en = sqrt(mass*mass+px*px+py*py+pz*pz);
+
+    PhysicsObject_Jet toReturn = origJet;
+    toReturn.SetCoordinates(px, py, pz, en);
+    //cout << "eta: " << eta << "\t" << toReturn.eta() << endl;
+    return toReturn;
+}
   // JET variations
-  void computeJetVariation(PhysicsObjectJetCollection& jets,
+  void computeJetVariation(
+		      JME::JetResolutionScaleFactor& jer_sf,
+		      PhysicsObjectJetCollection& jets,
                       PhysicsObjectLeptonCollection& leptons,
                        std::vector<PhysicsObjectJetCollection>& jetsVar,
  		      std::vector<JetCorrectionUncertainty*> &jecUnc,
@@ -255,7 +308,8 @@ PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, 
         LorentzVector jetDiff(0,0,0,0);
         for(size_t ijet=0; ijet<jets.size(); ijet++) {
 
-	  PhysicsObject_Jet iSmearJet=METUtils::smearedJet(jets[ijet],jets[ijet].genPt,yearBits,ivar);
+//	  PhysicsObject_Jet iSmearJet=METUtils::smearedJet(jets[ijet],jets[ijet].genPt,yearBits,ivar);
+	  PhysicsObject_Jet iSmearJet=METUtils::smearedJet(jer_sf,jets[ijet],jets[ijet].genPt,yearBits,ivar);
 	  jetDiff += (iSmearJet-jets[ijet]);
 	  newJets.push_back( iSmearJet );
 
@@ -309,6 +363,76 @@ PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, 
     
 }
 
+  // JET variations
+  void computeJetVariation(
+			PhysicsObjectJetCollection& jets,
+                        PhysicsObjectLeptonCollection& leptons,
+                        std::vector<PhysicsObjectJetCollection>& jetsVar,
+ 		        std::vector<JetCorrectionUncertainty*> &jecUnc,
+		        Int_t yearBits)
+		      //                      JetCorrectionUncertainty *jecUnc)
+{
+    jetsVar.clear();
+
+    int vars[]= {JER, JER_UP,JER_DOWN}; //, UMET_UP,UMET_DOWN, LES_UP,LES_DOWN};
+    for(size_t ivar=0; ivar<sizeof(vars)/sizeof(int); ivar++) {
+        PhysicsObjectJetCollection newJets;
+        LorentzVector jetDiff(0,0,0,0);
+        for(size_t ijet=0; ijet<jets.size(); ijet++) {
+
+	  PhysicsObject_Jet iSmearJet=METUtils::smearedJet(jets[ijet],jets[ijet].genPt,yearBits,ivar);
+	  jetDiff += (iSmearJet-jets[ijet]);
+	  newJets.push_back( iSmearJet );
+
+        } // end loop on ijet
+	
+	//add new jets (if some change has occured)
+	jetsVar.push_back(newJets);
+
+    } // end ivariation
+
+    // Now add JES as recommended from here: https://twiki.cern.ch/twiki/bin/view/CMS/JECUncertaintySources
+    // Instantiate JES uncertainty sources
+    const int nsrc = 11;
+    
+    for (int isrc = 0; isrc < nsrc; isrc++) {
+
+      for(size_t ivar=0; ivar<2; ivar++) { //ivar<sizeof(jesvars)/sizeof(int); ivar++) {
+	PhysicsObjectJetCollection newJets;
+	LorentzVector jetDiff(0,0,0,0);
+	
+	for(size_t ijet=0; ijet<jets.size(); ijet++) {
+	  
+	  // sub-loop to decorrelate JES
+	  JetCorrectionUncertainty *unc = jecUnc.at(isrc);
+	  
+	  //	  bool varSign=(ivar==0 ? true : false );    
+	  double varSign=(ivar==0 ? 1.0 : -1.0 );
+	  double jetScale(1.0);
+	  try {
+	    unc->setJetEta(jets[ijet].eta());
+	    unc->setJetPt(jets[ijet].pt());
+	    //jetScale = 1.0 + fabs(unc->getUncertainty(varSign)); 
+	    jetScale = 1.0 + varSign*fabs(unc->getUncertainty(true));
+	  } catch(std::exception &e) {
+	    cout << "[METUtils::computeVariation]" << e.what() << ijet << " " << jets[ijet].pt() << endl;
+	  }
+	  
+	  PhysicsObject_Jet iScaleJet(jets[ijet]);
+	  iScaleJet *= jetScale;
+	  jetDiff += (iScaleJet-jets[ijet]);
+	  newJets.push_back(iScaleJet);
+	  
+	  // up OR down end
+	} // ijet loop 
+
+	//add new jets (if some change has occured)
+	jetsVar.push_back(newJets);
+      
+      } // loop on up and down
+    } //JES nsrc sources end
+    
+}
 
 
 //
