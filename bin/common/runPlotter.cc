@@ -188,14 +188,14 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
                  //FileName += ".root";
 		 FileName = directory->d_name;
 		 string toMatch = dtag +  suffix + filtExt;
-		 if(FileName.find(toMatch) == string::npos || FileName.find(".root") == string::npos) continue;
-                 if(split<0){ //autosplitting --> check if there is a cfg file before checking if there is a .root file
-                    string cfg_path = FileName.substr(0, FileName.length()-5);
-		    cfg_path =  path + cfg_path + "_cfg.py";
-		    FILE* pFile = fopen(cfg_path.c_str(), "r");
-                    if(!pFile){continue;}else{fclose(pFile);}
-                 }
-		 FileName = path + FileName;
+		 if(FileName.find(toMatch) == string::npos || FileName.find("_cfg.py") == string::npos) continue;
+                 //if(split<0){ //autosplitting --> check if there is a cfg file before checking if there is a .root file
+                 //   string cfg_path = FileName.substr(0, FileName.length()-5);
+		 //   cfg_path =  path + cfg_path + "_cfg.py";
+		 //   FILE* pFile = fopen(cfg_path.c_str(), "r");
+                 //   if(!pFile){continue;}else{fclose(pFile);}
+                 //}
+		 FileName = path + FileName.substr(0, FileName.length()-7) + ".root";
 
                  FILE* pFile = fopen(FileName.c_str(), "r");  //check if the file exist
                  if(!pFile){MissingFiles[dtag].push_back(FileName); continue;}else{fclose(pFile);}
@@ -588,8 +588,9 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, TFile* OutputF
    int IndexFiles = 0;
    int NFilesStep = 0;  
    for(std::unordered_map<string, std::vector<string> >::iterator it = DSetFiles.begin(); it!=DSetFiles.end(); it++){NFilesStep+=it->second.size();} 
-   NFilesStep=std::max(1, NFilesStep/50); 
-   printf("Processing input root files  :"); 
+   printf("Total number of files to be processed  : %d\n", NFilesStep); 
+//   NFilesStep=std::max(1, NFilesStep/50); 
+//   printf("Processing input root files  :"); 
    for(unsigned int i=0;i<Process.size();i++){
       
       if(Process[i].isTag("interpollation") || Process[i].isTag("mixing") || Process[i].isTag("nosample"))continue; //treated in a specific function after the loop on Process
@@ -633,7 +634,8 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, TFile* OutputF
 	 } else {Weight=1.0;}  
 	 //	 {Weight= iLumi/fileList.size();}else{Weight=1.0;}
          for(int f=0;f<fileList.size();f++){
-           if(IndexFiles%NFilesStep==0){printf(".");fflush(stdout);} IndexFiles++;
+//           if(IndexFiles%NFilesStep==0){printf(".");fflush(stdout);} IndexFiles++;
+	   IndexFiles++;printf("\r %d%%(%d/%d)",100*IndexFiles/NFilesStep,IndexFiles,NFilesStep);fflush(stdout);
            TFile* File = new TFile(fileList[f].c_str());
 
            for(std::list<NameAndType>::iterator it= histlist.begin(); it!= histlist.end(); it++){
