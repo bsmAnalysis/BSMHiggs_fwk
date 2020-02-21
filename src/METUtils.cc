@@ -256,19 +256,16 @@ PhysicsObject_Jet smearedJet(JME::JetResolutionScaleFactor& jer_sf, const Physic
     // Spring16_25nsV10 (80X, 2016, BCD+GH PromtReco) DATA/MC SFs 
     double ptSF(1.0), ptSF_up(1.0), ptSF_down(1.0);
     if(is2016){
-	std::cout << "in 2016" << std::endl;
 	ptSF = jer_sf.getScaleFactor({{JME::Binning::JetEta, origJet.eta()}});
 	ptSF_up = jer_sf.getScaleFactor({{JME::Binning::JetEta, origJet.eta()}}, Variation::UP);
 	ptSF_down = jer_sf.getScaleFactor({{JME::Binning::JetEta, origJet.eta()}}, Variation::DOWN);
     }// end 2016
     else if(is2017){
-	std::cout << "in 2017" << std::endl;
 	ptSF = jer_sf.getScaleFactor({{JME::Binning::JetEta, origJet.eta()}});
 	ptSF_up = jer_sf.getScaleFactor({{JME::Binning::JetEta, origJet.eta()}}, Variation::UP);
 	ptSF_down = jer_sf.getScaleFactor({{JME::Binning::JetEta, origJet.eta()}}, Variation::DOWN);
     }//end 2017
     else if(is2018){
-	std::cout << "in 2018" << std::endl;
 	ptSF = jer_sf.getScaleFactor({{JME::Binning::JetPt, origJet.pt()}, {JME::Binning::JetEta, origJet.eta()}});
 	ptSF_up = jer_sf.getScaleFactor({{JME::Binning::JetPt, origJet.pt()}, {JME::Binning::JetEta, origJet.eta()}}, Variation::UP);
 	ptSF_down = jer_sf.getScaleFactor({{JME::Binning::JetPt, origJet.pt()}, {JME::Binning::JetEta, origJet.eta()}}, Variation::DOWN);
