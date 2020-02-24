@@ -1918,12 +1918,44 @@ int main(int argc, char* argv[])
 	metP4 -= (muDiff - elDiff);
 	if ( verbose ) { printf("\nMissing  pt (after lepton energy scale cor.) =%6.1f\n", metP4.pt()); }
 
+
+	PhysicsObjectJetCollection GoodIdJets;
+
+	int nJetsGood30(0);
+	float mindphijmet(999.);
+	for(size_t ijet=0; ijet<corrJets.size(); ijet++) {
+	      
+	  if(corrJets[ijet].pt()<jet_threshold_) continue;
+	  if(fabs(corrJets[ijet].eta())>2.5) continue;
+	      
+	  //jet ID
+	  if(!corrJets[ijet].isPFLoose) continue;
+	  //if(corrJets[ijet].pumva<0.5) continue;
+	      
+	  // //check overlaps with selected leptons
+	  bool hasOverlap(false);
+	  //    for(size_t ilep=0; ilep<selLeptons.size(); ilep++) {
+	  double dR = deltaR( corrJets[ijet], selLeptons[0] ); hasOverlap = (dR<0.4); 
+	  //	  if (ivar==0) mon.fillHisto("dRlj_raw",tag_cat,dR,weight); 
+
+	  if(hasOverlap) continue;
+	      
+	  GoodIdJets.push_back(corrJets[ijet]);
+	  if(corrJets[ijet].pt()>30) nJetsGood30++;
+
+
+	  // Dphi (j,met)
+	  float dphijmet=fabs(deltaPhi(corrJets[ijet].phi(),metP4.phi()));
+	  if (dphijmet<mindphijmet) mindphijmet=dphijmet;
+
+	}
+
 	//note this also propagates to all MET uncertainties
 	//	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1));
 	// decorrelate JES uncertainties
 	//	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1)); // totalJESUnc -> vector of 27
 	//METUtils::computeJetVariation(phys.jets, selLeptons,variedJets,totalJESUnc,( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1)); // totalJESUnc -> vector of 6
-	METUtils::computeJetVariation(jer_sf, phys.jets, selLeptons,variedJets,totalJESUnc,( (is2017data||is2017MC) << 0 ) | ( (is2018data||is2018MC) << 1)); // totalJESUnc -> vector of 6
+	METUtils::computeJetVariation(jer_sf, GoodIdJets, selLeptons,variedJets,totalJESUnc,( (is2017data||is2017MC) << 0 ) | ( (is2018data||is2018MC) << 1)); // totalJESUnc -> vector of 6
 
  	//	METUtils::computeVariation(phys.jets, selLeptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1));
 	//	for (int isrc = 0; isrc < nsrc; isrc++) {
@@ -2171,7 +2203,7 @@ int main(int argc, char* argv[])
         // AK4 jets + CSVloose b-tagged configuration
         //###########################################################
 
-	  PhysicsObjectJetCollection GoodIdJets;
+	  //	  PhysicsObjectJetCollection GoodIdJets;
 	  PhysicsObjectJetCollection CSVLoosebJets; // used to define the SRs
 
 	  int nJetsGood30(0);
@@ -2183,7 +2215,7 @@ int main(int argc, char* argv[])
 	    
 	    if(vJets[ijet].pt()<jet_threshold_) continue;
 	    if(fabs(vJets[ijet].eta())>2.5) continue;
-	    
+	    /*
 	    //jet ID
 	    if(!vJets[ijet].isPFLoose) continue;
 	    //if(vJets[ijet].pumva<0.5) continue;
@@ -2202,7 +2234,7 @@ int main(int argc, char* argv[])
 	    // Dphi (j,met)
 	    float dphijmet=fabs(deltaPhi(vJets[ijet].phi(),imet.phi()));
 	    if (dphijmet<mindphijmet) mindphijmet=dphijmet;
-
+	    */
 	    
 	    if(vJets[ijet].pt()>20. && fabs(vJets[ijet].eta())<2.4) {
 	      // B-tagging
