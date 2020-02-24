@@ -10,11 +10,6 @@ from array import array
 import math
 from ROOT import SetOwnership
 
-iLumi=35866.932
-#iLumi=41529.152
-#iLumi=59740.565
-
-hists = ['alljets','3jets','4jets','5+jets','2b_3j_jets','2b_4j_jets','2b_geq5j_jets','3b_3j_jets','3b_4j_jets','3b_geq5j_jets','4b_4j_jets','4b_geq5j_jets','5b_geq5j_jets']
 
 """
 Gets the value of a given item
@@ -63,14 +58,6 @@ def weightedAverage(ratio, hNLO, threshold, end=300):
 	ratio.SetBinError(i,error)
     return ratio
 
-def scaleinFile(in_f, weight):
-    f = r.TFile(in_f, "UPDATE")
-    for hist in hists:
-	h = f.Get(hist+"_ptw")
-	if h:
-	    h.Scale(1./weight)
-	    h.Write()
-    f.Close()
 
 def ratioPlot(hLO,hNLO,ratio_h,name):
     # Define the Canvas
@@ -130,8 +117,7 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     # Define the ratio plot
     ratio = ratio_h.DrawCopy("ehist")
     ratio.GetXaxis().SetRangeUser(0,300)
-    ratio.GetYaxis().SetRangeUser(0,2.4)
-#    ratio.GetYaxis().SetRangeUser(ratio.GetMinimum()*0.8,1.2*ratio.GetMaximum())
+    ratio.GetYaxis().SetRangeUser(0,2)
 #    ratio = hNLO.Clone(name+"_clone")
     ratio.SetLineColor(r.kBlack)
     ratio.SetLineWidth(2)
@@ -181,8 +167,7 @@ def produceZptSFs(inputLO, inputNLO, output_name):
 	    canvas.Write()
 	    canvas.SaveAs(os.path.split(output_name)[0]+'/'+hist+'Multiplicity_NLO.pdf')
     
-#    for hist in ['alljets','3jets','4jets','5+jets','2b_3j_jets','2b_4j_jets','2b_geq5j_jets','3b_3j_jets','3b_4j_jets','3b_geq5j_jets','4b_4j_jets','4b_geq5j_jets','5b_geq5j_jets']:
-    for hist in hists:
+    for hist in ['alljets','3jets','4jets','5+jets','2b_3j_jets','2b_4j_jets','2b_geq5j_jets','3b_3j_jets','3b_4j_jets','3b_geq5j_jets','4b_4j_jets','4b_geq5j_jets','5b_geq5j_jets']:
 	for ztype in ['']:
     	    histLO = inFileLO.Get(hist+ztype+"_ptw")
     	    histNLO = inFileNLO.Get(hist+ztype+"_ptw")
@@ -191,8 +176,8 @@ def produceZptSFs(inputLO, inputNLO, output_name):
     	
     	    histLO.SetDirectory(0)
     	    histNLO.SetDirectory(0)
-#    	    histLO.Scale(1./abs(histLO.Integral()))
-#    	    histNLO.Scale(1./abs(histNLO.Integral()))
+    	    histLO.Scale(1./abs(histLO.Integral()))
+    	    histNLO.Scale(1./abs(histNLO.Integral()))
     	    ratios_out = r.TH1F(hist+ztype+'_sf',hist+ztype+'_sf',histLO.GetXaxis().GetNbins(), histLO.GetXaxis().GetXmin(), histLO.GetXaxis().GetXmax())
     	    for i in range(1,histLO.GetXaxis().GetNbins()+1):
     	        denominator = histLO.GetBinContent(i)
@@ -281,16 +266,10 @@ for proc in procList :
             for file in glob.glob(inputdir+'/'+dtag+'_*.root'):
                 out_temp = outdir +'/'+ dtag + '_' + str(segment) + '_zpt.root'
                 commands.getstatusoutput('rootcp --recreate '+file+':*jets* '+out_temp)
+#                commands.getstatusoutput('rootcp '+file+':*npartons* '+out_temp)
                 segment += 1
             commands.getstatusoutput('hadd -f '+outfile+' '+outdir +'/'+ dtag + '_*' + '_zpt.root')
             commands.getstatusoutput('rm -rf '+outdir +'/'+ dtag + '_*' + '_zpt.root')
-	    if "amcNLO" in dtag: 
-		status, output = commands.getstatusoutput('find {} -name "{}*.root" | wc -l'.format(inputdir, dtag))
-#		print(dtag+": "+str(iLumi/int(output)))
-		scaleinFile(outfile, iLumi/int(output))
-	    else: 
-#		print(dtag+": "+str(iLumi))
-		scaleinFile(outfile, iLumi)
 	    DYs.append(dtag)
             
 LO_lowpt = ''
