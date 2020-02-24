@@ -1919,7 +1919,7 @@ int main(int argc, char* argv[])
 	if ( verbose ) { printf("\nMissing  pt (after lepton energy scale cor.) =%6.1f\n", metP4.pt()); }
 
 
-	PhysicsObjectJetCollection GoodIdJets;
+	PhysicsObjectJetCollection GoodIdJets_orig;
 
 	int nJetsGood30(0);
 	float mindphijmet(999.);
@@ -1940,7 +1940,7 @@ int main(int argc, char* argv[])
 
 	  if(hasOverlap) continue;
 	      
-	  GoodIdJets.push_back(corrJets[ijet]);
+	  GoodIdJets_orig.push_back(corrJets[ijet]);
 	  if(corrJets[ijet].pt()>30) nJetsGood30++;
 
 
@@ -1955,7 +1955,7 @@ int main(int argc, char* argv[])
 	// decorrelate JES uncertainties
 	//	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1)); // totalJESUnc -> vector of 27
 	//METUtils::computeJetVariation(phys.jets, selLeptons,variedJets,totalJESUnc,( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1)); // totalJESUnc -> vector of 6
-	METUtils::computeJetVariation(jer_sf, GoodIdJets, selLeptons,variedJets,totalJESUnc,( (is2017data||is2017MC) << 0 ) | ( (is2018data||is2018MC) << 1)); // totalJESUnc -> vector of 6
+	METUtils::computeJetVariation(jer_sf, GoodIdJets_orig, selLeptons,variedJets,totalJESUnc,( (is2017data||is2017MC) << 0 ) | ( (is2018data||is2018MC) << 1)); // totalJESUnc -> vector of 6
 
  	//	METUtils::computeVariation(phys.jets, selLeptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1));
 	//	for (int isrc = 0; isrc < nsrc; isrc++) {
@@ -2203,7 +2203,7 @@ int main(int argc, char* argv[])
         // AK4 jets + CSVloose b-tagged configuration
         //###########################################################
 
-	  //	  PhysicsObjectJetCollection GoodIdJets;
+	  PhysicsObjectJetCollection GoodIdJets;
 	  PhysicsObjectJetCollection CSVLoosebJets; // used to define the SRs
 
 	  int nJetsGood30(0);
@@ -2235,7 +2235,9 @@ int main(int argc, char* argv[])
 	    float dphijmet=fabs(deltaPhi(vJets[ijet].phi(),imet.phi()));
 	    if (dphijmet<mindphijmet) mindphijmet=dphijmet;
 	    */
-	    
+	  
+	    GoodIdJets.push_back(vJets[ijet]);    
+  
 	    if(vJets[ijet].pt()>20. && fabs(vJets[ijet].eta())<2.4) {
 	      // B-tagging
 	      bool hasCSVtagL,hasCSVtagM;
