@@ -39,7 +39,6 @@
     <Option name="Cbb" modified="No">1.000000e+00</Option>
     <Option name="NodePurityLimit" modified="No">5.000000e-01</Option>
     <Option name="SeparationType" modified="Yes">giniindex</Option>
-    <Option name="RegressionLossFunctionBDTG" modified="No">huber</Option>
     <Option name="DoBoostMonitor" modified="No">False</Option>
     <Option name="UseFisherCuts" modified="No">False</Option>
     <Option name="MinLinCorrForFisher" modified="No">8.000000e-01</Option>
