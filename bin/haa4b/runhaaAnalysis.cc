@@ -175,6 +175,8 @@ int main(int argc, char* argv[])
 
     // will reweight the Z pt in DY+jets sample (optional)
     bool reweightDYZPt = runProcess.getParameter<bool>("reweightDYZPt");
+    
+    bool reweightWPt = runProcess.getParameter<bool>("reweightWPt");
 
     // will produce the input root trees to BDT training (optional)
     bool runMVA = runProcess.getParameter<bool>("runMVA");
@@ -197,21 +199,18 @@ int main(int argc, char* argv[])
       std::cout << "2018 Data does not have CSV, use DeepCSV instead!" << std::endl;
       exit(0);
     }
-    
-    btagDir = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/bTag/btag_2016";
+
     if(is2017data || is2017MC){
       // 2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
         CSVLooseWP = 0.5803; CSVMediumWP = 0.8838; CSVTightWP = 0.9693;
         DeepCSVLooseWP = 0.1522; DeepCSVMediumWP = 0.4941; DeepCSVTightWP = 0.8001;
 	//        mu_threshold_=30.;
 	//        ele_threshold_=35.;
-        btagDir = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/bTag/btag_2017";
     }
 
     if(is2018data || is2018MC){ // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
       DeepCSVLooseWP = 0.1241; DeepCSVMediumWP = 0.4184; DeepCSVTightWP = 0.7527;
   //    ele_threshold_=35.; mu_threshold_=25.;
-      btagDir = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/weights/bTag/btag_2018";
     }
 
     if(is2016Signal){//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
@@ -1069,20 +1068,41 @@ int main(int argc, char* argv[])
     //###########################################           Z Pt SFs         ###########################################
     //####################################################################################################################
     TH1F *zptSF_3j = new TH1F(), *zptSF_4j = new TH1F(), *zptSF_5j = new TH1F();
+    TF1  *zfit_3j  = new TF1(),  *zfit_4j  = new TF1(),  *zfit_5j  = new TF1();
+    TH1F *wptSF_3j = new TH1F(), *wptSF_4j = new TH1F(), *wptSF_5j = new TH1F();
+    TF1  *wfit_3j  = new TF1(),  *wfit_4j  = new TF1(),  *wfit_5j  = new TF1();
+    double thred_3j, thred_4j, thred_5j;
     if(!reweightDYZPt && isMC_DY && !dtag.Contains("amcNLO")){ // apply Z Pt weights on LO DY samples
       TString zptfilename;
+      double parmin;
       if(is2016MC) zptfilename = zptDir + "/" +"DYSF_2016.root";
       else if(is2017MC) zptfilename = zptDir + "/" +"DYSF_2017.root";
       else if(is2018MC) zptfilename = zptDir + "/" +"DYSF_2018.root";
       TFile *zptfile = TFile::Open(zptfilename);
       if(zptfile->IsZombie() || !zptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< zptfilename<<std::endl;return -1;}
-      zptSF_3j = (TH1F *)zptfile->Get("3jets_sf");
-      zptSF_3j->SetDirectory(0);
-      zptSF_4j = (TH1F *)zptfile->Get("4jets_sf");
-      zptSF_4j->SetDirectory(0);
-      zptSF_5j = (TH1F *)zptfile->Get("5+jets_sf");
-      zptSF_5j->SetDirectory(0);
+      zptSF_3j = (TH1F *)zptfile->Get("3jets_sf");zptSF_3j->SetDirectory(0);
+      zptSF_4j = (TH1F *)zptfile->Get("4jets_sf");zptSF_4j->SetDirectory(0);
+      zptSF_5j = (TH1F *)zptfile->Get("5+jets_sf");zptSF_5j->SetDirectory(0);
+      zfit_3j  = (TF1 *)zptfile->Get("3jets_f"); zfit_3j->GetRange(parmin, thred_3j);
+      zfit_4j  = (TF1 *)zptfile->Get("4jets_f"); zfit_4j->GetRange(parmin, thred_4j);
+      zfit_5j  = (TF1 *)zptfile->Get("5+jets_f"); zfit_5j->GetRange(parmin, thred_5j);
       zptfile->Close();
+    }
+    if(!reweightWPt && isMC_WJets && !dtag.Contains("amcNLO")){ // apply Z Pt weights on LO DY samples
+      TString wptfilename;
+      double parmin;
+      if(is2016MC) wptfilename = zptDir + "/" +"WSF_2016.root";
+      else if(is2017MC) wptfilename = zptDir + "/" +"WSF_2017.root";
+      else if(is2018MC) wptfilename = zptDir + "/" +"WSF_2018.root";
+      TFile *wptfile = TFile::Open(wptfilename);
+      if(wptfile->IsZombie() || !wptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< wptfilename<<std::endl;return -1;}
+      wptSF_3j = (TH1F *)wptfile->Get("3jets_w_sf");wptSF_3j->SetDirectory(0);
+      wptSF_4j = (TH1F *)wptfile->Get("4jets_w_sf");wptSF_4j->SetDirectory(0);
+      wptSF_5j = (TH1F *)wptfile->Get("5+jets_w_sf");wptSF_5j->SetDirectory(0);
+      wfit_3j  = (TF1 *)wptfile->Get("3jets_w_f"); wfit_3j->GetRange(parmin, thred_3j);
+      wfit_4j  = (TF1 *)wptfile->Get("4jets_w_f"); wfit_4j->GetRange(parmin, thred_4j);
+      wfit_5j  = (TF1 *)wptfile->Get("5+jets_w_f");wfit_5j->GetRange(parmin, thred_5j); 
+      wptfile->Close();
     }
 
 
@@ -1158,7 +1178,7 @@ int main(int argc, char* argv[])
         {
           weight *= genWeight;
           //Here is the tricky part.,... rewrite xsecWeight for WJets/WXJets and DYJets/DYXJets
-          if( isMC_WJets )
+          if( isMC_WJets && !dtag.Contains("amcNLO") )
 	    { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(0, ev.lheNJets, is2016MC<<0|is2017MC<<1|is2018MC<<2); }
 	  else if( isMC_DY && !dtag.Contains("amcNLO") ) {
 	    if (string(url.Data()).find("10to50")  != string::npos)
@@ -1172,8 +1192,8 @@ int main(int argc, char* argv[])
         }
 
 	// Extract Z pt reweights from LO and NLO DY samples
-	float zpt = -1;
-	if(isMC_DY){
+	float zpt = -1, wpt = -1;
+	if(isMC_DY || isMC_WJets){
 	  PhysicsObjectCollection &genparticles = phys.genparticles;
 	  for (auto & genparticle : genparticles) {
 //	    printf("Parton : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, status=%d\n",
@@ -1189,6 +1209,12 @@ int main(int argc, char* argv[])
 	        zpt = genparticle.pt();
 	      else
 		std::cout << "Found multiple Z particles in event: " << iev << std::endl;
+	    }
+	    if(fabs(genparticle.id)==24) {  
+	      if(wpt<0)
+	        wpt = genparticle.pt();
+	      else
+		std::cout << "Found multiple W particles in event: " << iev << std::endl;
 	    }
 	  }
 	}
@@ -2750,9 +2776,29 @@ int main(int argc, char* argv[])
 	  }
 
 	  if(isMC_DY && !dtag.Contains("amcNLO") && !reweightDYZPt){
-	    if(GoodIdJets.size()==3) {weight *= getSFfrom1DHist(zpt, zptSF_3j);}// std::cout << "3j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_3j) << std::endl;}
-	    else if(GoodIdJets.size()==4) {weight *= getSFfrom1DHist(zpt, zptSF_4j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
-	    else if(GoodIdJets.size()>=5) {weight *= getSFfrom1DHist(zpt, zptSF_5j);}// std::cout << "5j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_5j) << std::endl;}
+	    double ptsf=1.0;
+	    if(GoodIdJets.size()==3) {ptsf = (zpt<thred_3j) ? zfit_3j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_3j);}// std::cout << "3j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_3j) << std::endl;}
+	    else if(GoodIdJets.size()==4) {ptsf = (zpt<thred_4j) ? zfit_4j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_4j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
+	    else if(GoodIdJets.size()>=5) {ptsf = (zpt<thred_5j) ? zfit_5j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_5j);}// std::cout << "5j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_5j) << std::endl;}
+	    weight *= ptsf;
+	  }
+	  if(ivar==0 && reweightWPt && isMC_WJets ){
+	    mon.fillHisto("jetsMulti","alljets_w",GoodIdJets.size(),1);
+	    mon.fillHisto("ptw","alljets_w",wpt,weight);
+	    if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets_w",wpt,weight);}
+	    else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets_w",wpt,weight);}
+	    else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets_w",wpt,weight);}
+
+	    TString event_cat = eventCategoryPlot.GetLabel(evtCatPlot);
+	    mon.fillHisto("ptw",event_cat+"_jets_w",wpt,weight);
+	  }
+
+	  if(isMC_WJets && !dtag.Contains("amcNLO") && !reweightWPt){
+	    double ptsf=1.0;
+	    if(GoodIdJets.size()==3) {ptsf = (wpt<thred_3j) ? wfit_3j->Eval(wpt) : getSFfrom1DHist(wpt, wptSF_3j); }
+	    else if(GoodIdJets.size()==4) {ptsf = (wpt<thred_4j) ? wfit_4j->Eval(wpt) : getSFfrom1DHist(wpt, wptSF_4j); }
+	    else if(GoodIdJets.size()>=5) {ptsf = (wpt<thred_5j) ? wfit_5j->Eval(wpt) : getSFfrom1DHist(wpt, wptSF_5j); }
+	    weight *= ptsf;
 	  }
 
 	  
