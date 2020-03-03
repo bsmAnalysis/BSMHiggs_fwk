@@ -842,7 +842,7 @@
             ],
             "isdata": false,
             "keys": [
-	        "haa_mcbased"	
+		"haa_mcbased"
             ],
 	     "mctruthmode": 5,
             "tag": "t#bar{t} + b#bar{b}"
@@ -864,7 +864,7 @@
             ],
             "isdata": false,
             "keys": [
-	        "haa_mcbased"	
+	        "haa_mcbased"
             ],
 	     "mctruthmode": 4,
             "tag": "t#bar{t} + c#bar{c}"
@@ -887,7 +887,7 @@
             "isdata": false,
             "keys": [
 		"haa_prod", 
-	        "haa_mcbased"	
+	        "haa_mcbased"
             ],
 	     "mctruthmode": 1,
             "tag": "t#bar{t} + light"
@@ -1037,6 +1037,27 @@
             "data": [
                 {
                     "br": [
+                       1.0
+                    ],
+                    "dset": [
+                        "/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v5/MINIAODSIM" 
+                    ],
+                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "dtag": "MC13TeV_WJets_amcNLO_2016",
+                    "xsec": 60430
+                }
+            ],
+            "isdata": false,
+            "keys": [
+		"haa_prod"
+            ],
+            "tag": "W#rightarrow l#nu"
+        },
+        {
+            "color": 622,
+            "data": [
+                {
+                    "br": [
                        0.3425
                     ],
                     "dset": [
@@ -1148,8 +1169,8 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_prod",
-		"haa_mcbased"
+		"haa_mcbased",
+		"haa_prod"
             ],
             "tag": "W#rightarrow l#nu"
         },

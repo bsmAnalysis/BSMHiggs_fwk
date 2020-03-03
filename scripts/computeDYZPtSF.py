@@ -10,6 +10,14 @@ from array import array
 import math
 from ROOT import SetOwnership
 
+iLumi=35866.932
+#iLumi=41529.152
+#iLumi=59740.565
+
+#hists = ['alljets','3jets','4jets','5+jets','2b_3j_jets','2b_4j_jets','2b_geq5j_jets','3b_3j_jets','3b_4j_jets','3b_geq5j_jets','4b_4j_jets','4b_geq5j_jets','5b_geq5j_jets']
+hists_dy = ['alljets','3jets','4jets','5+jets']
+hists_wj = ['alljets_w','3jets_w','4jets_w','5+jets_w']
+#hists = ['0b', '1b', '2b', '3b', '4+b']
 
 """
 Gets the value of a given item
@@ -58,8 +66,22 @@ def weightedAverage(ratio, hNLO, threshold, end=300):
 	ratio.SetBinError(i,error)
     return ratio
 
+def scaleinFile(in_f, weight, hists):
+    f = r.TFile(in_f, "UPDATE")
+    for hist in hists:
+	h = f.Get(hist+"_ptw")
+	if h:
+	    h.Scale(weight)
+	    h.Write()
+    f.Close()
 
 def ratioPlot(hLO,hNLO,ratio_h,name):
+
+    thred = 500
+    if '3jets' in name: thred = 200
+    elif '4jets' in name: thred = 250
+    elif '5+jets' in name: thred = 300
+    ratio_h = weightedAverage(ratio_h,hNLO,thred)
     # Define the Canvas
     c = r.TCanvas(name,name,800,800)
     
@@ -74,7 +96,7 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     if ymin<0: ymin = 1.1*ymin
     else: ymin = 0.9*ymin
     hLO.GetYaxis().SetRangeUser(ymin,ymax)
-    hLO.GetXaxis().SetRangeUser(0,300)
+#    hLO.GetXaxis().SetRangeUser(0,300)
     hLO.GetYaxis().SetTitleOffset(1.55)
     hLO.GetYaxis().SetTitleSize(25)
     hLO.GetYaxis().SetTitleFont(43)
@@ -116,8 +138,9 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
 
     # Define the ratio plot
     ratio = ratio_h.DrawCopy("ehist")
-    ratio.GetXaxis().SetRangeUser(0,300)
-    ratio.GetYaxis().SetRangeUser(0,2)
+#    ratio.GetXaxis().SetRangeUser(0,300)
+    ratio.GetYaxis().SetRangeUser(0,2.4)
+#    ratio.GetYaxis().SetRangeUser(ratio.GetMinimum()*0.8,1.2*ratio.GetMaximum())
 #    ratio = hNLO.Clone(name+"_clone")
     ratio.SetLineColor(r.kBlack)
     ratio.SetLineWidth(2)
@@ -140,13 +163,17 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     ratio.GetXaxis().SetTitleOffset(4.)
     ratio.GetXaxis().SetLabelFont(43)
     ratio.GetXaxis().SetLabelSize(35)
-    ratio.Draw("ehist");       # Draw the ratio plot
+    fitf = r.TF1(name+"_f", "pol3", 0, thred)
+    ratio.Fit(name+"_f", "R")
+    ratio.Draw("E0")
+#    ratio.Draw("ehist");       # Draw the ratio plot
     r.gPad.Update()
     line = r.TLine(r.gPad.GetUxmin(), 1, r.gPad.GetUxmax(), 1)
     line.Draw("same")
     SetOwnership( line, 0 )
+    func = ratio.GetFunction(name+"_f")
     
-    return c
+    return c,func
 
 
 def produceZptSFs(inputLO, inputNLO, output_name):
@@ -154,8 +181,9 @@ def produceZptSFs(inputLO, inputNLO, output_name):
     inFileLO = r.TFile(inputLO, 'READ')
     inFileNLO = r.TFile(inputNLO, 'READ')
     output = r.TFile(output_name, 'RECREATE')
-    
-    for hist in ['alljets']:
+    isDY = (inputLO.find("DY") >= 0)
+
+    for hist in ['alljets', 'alljets_w']:
 	histLO = inFileLO.Get(hist+"_jetsMulti")
 	histNLO = inFileNLO.Get(hist+"_jetsMulti")
 	if histLO:
@@ -167,7 +195,10 @@ def produceZptSFs(inputLO, inputNLO, output_name):
 	    canvas.Write()
 	    canvas.SaveAs(os.path.split(output_name)[0]+'/'+hist+'Multiplicity_NLO.pdf')
     
-    for hist in ['alljets','3jets','4jets','5+jets','2b_3j_jets','2b_4j_jets','2b_geq5j_jets','3b_3j_jets','3b_4j_jets','3b_geq5j_jets','4b_4j_jets','4b_geq5j_jets','5b_geq5j_jets']:
+#    for hist in ['alljets','3jets','4jets','5+jets','2b_3j_jets','2b_4j_jets','2b_geq5j_jets','3b_3j_jets','3b_4j_jets','3b_geq5j_jets','4b_4j_jets','4b_geq5j_jets','5b_geq5j_jets']:
+    if isDY: hists = hists_dy
+    else: hists = hists_wj
+    for hist in hists:
 	for ztype in ['']:
     	    histLO = inFileLO.Get(hist+ztype+"_ptw")
     	    histNLO = inFileNLO.Get(hist+ztype+"_ptw")
@@ -193,11 +224,15 @@ def produceZptSFs(inputLO, inputNLO, output_name):
     		        ratios_out.SetBinError(i,0)
     	        else: ratios_out.SetBinContent(i,0)
     	    print("  "+hist+ztype+'_sf')
-	    ratio_out = weightedAverage(ratios_out,histNLO,150)
-    	    if "lowPt" in inputLO: c = ratioPlot(histLO,histNLO, ratios_out, hist+ztype+" Low Mass DY")
-    	    elif "highPt" in inputLO: c = ratioPlot(histLO,histNLO, ratios_out, hist+ztype+ " High Mass DY")
+#	    ratio_out = weightedAverage(ratios_out,histNLO,150)
+#    	    if "lowPt" in inputLO: c,f = ratioPlot(histLO,histNLO, ratios_out, hist+ztype+" Low Mass")
+#    	    elif "highPt" in inputLO: c,f = ratioPlot(histLO,histNLO, ratios_out, hist+ztype+ " High Mass")
+	    c,f = ratioPlot(histLO,histNLO, ratios_out, hist+ztype)
     	    c.Write()
-    	    c.SaveAs(os.path.split(output_name)[0]+'/'+hist+ztype+ "_HighMassDY.pdf")
+	    f.Write()
+	    if "lowPt" in inputLO:  c.SaveAs(os.path.split(output_name)[0]+'/'+hist+ztype+ "_LowMass.pdf")
+	    elif "highPt" in inputLO: c.SaveAs(os.path.split(output_name)[0]+'/'+hist+ztype+ "_HighMass.pdf")
+	    else: c.SaveAs(os.path.split(output_name)[0]+'/'+hist+ztype+ ".pdf")
     	    ratios_out.Write()
     inFileLO.Close()
     inFileNLO.Close()
@@ -221,6 +256,7 @@ if(len(CMSSW_BASE)==0):
 samplesDB=''
 inputdir=''
 outdir=''
+onlytag='all'
 
 DtagsList = []
 who = commands.getstatusoutput('whoami')[1]
@@ -229,6 +265,7 @@ for o,a in opts:
     if o in('-j'): samplesDB = a
     elif o in('-d'): inputdir = a
     elif o in('-o'): outdir = a
+    elif o in('-t'): onlytag = a
 
 jsonFile = open(samplesDB,'r')
 procList=json.load(jsonFile,encoding='utf-8').items()
@@ -236,6 +273,8 @@ procList=json.load(jsonFile,encoding='utf-8').items()
 inputdir += '/MC'
 
 DYs = []
+WJs = []
+print "Only files with dtags matching " + onlytag + " are processed."
 #run over sample to merge LO and NLO DY files
 for proc in procList :
     #run over processes
@@ -244,19 +283,25 @@ for proc in procList :
         mctruthmode=getByLabel(desc,'mctruthmode',0)
         tag = getByLabel(desc,'tag','')
 	# extract Z pt reweights only from LO and NLO DY samples
-	if not tag == "Z#rightarrow ll": continue 
+	if not (tag == "Z#rightarrow ll" or tag == "W#rightarrow l#nu"): continue 
 	
-	order = "LO_DY"
         data = desc['data']
         for d in data :
             origdtag = getByLabel(d,'dtag','')
 	    if "10to50" in origdtag: continue
             dtag = origdtag
+	    if(onlytag!='all') :
+		if(dtag.find(onlytag)<0) : continue
             if(mctruthmode!=0) : dtag+='_filt'+str(mctruthmode)
 
             outfile = outdir +'/'+ dtag + '_' + 'ZPt.root'
-	    if os.path.isfile(outfile): 
+	    if tag == "Z#rightarrow ll": 
 	        DYs.append(dtag)
+		hists = hists_dy
+	    elif tag == "W#rightarrow l#nu": 
+	        WJs.append(dtag)
+		hists = hists_wj
+	    if os.path.isfile(outfile): 
 		continue
             status, output = commands.getstatusoutput('ls '+inputdir+'/'+dtag+'_*.root')
             if status > 0 :
@@ -266,29 +311,44 @@ for proc in procList :
             for file in glob.glob(inputdir+'/'+dtag+'_*.root'):
                 out_temp = outdir +'/'+ dtag + '_' + str(segment) + '_zpt.root'
                 commands.getstatusoutput('rootcp --recreate '+file+':*jets* '+out_temp)
-#                commands.getstatusoutput('rootcp '+file+':*npartons* '+out_temp)
                 segment += 1
             commands.getstatusoutput('hadd -f '+outfile+' '+outdir +'/'+ dtag + '_*' + '_zpt.root')
+            #commands.getstatusoutput('hadd -f '+outfile+' '+inputdir+'/'+dtag+'_*.root')
             commands.getstatusoutput('rm -rf '+outdir +'/'+ dtag + '_*' + '_zpt.root')
-	    DYs.append(dtag)
-            
-LO_lowpt = ''
-LO_highpt = ''
-NLO_lowpt = ''
-NLO_highpt = ''
+	    if "amcNLO" in dtag: 
+		status, output = commands.getstatusoutput('find {} -name "{}*.root" | wc -l'.format(inputdir, dtag))
+		print(dtag+": "+str(iLumi/int(output)))
+		scaleinFile(outfile, iLumi/int(output), hists)
+	    else: 
+		print(dtag+": "+str(iLumi))
+		scaleinFile(outfile, iLumi, hists)
+
+DY_LO_lowpt = ''
+DY_LO_highpt = ''
+DY_NLO_lowpt = ''
+DY_NLO_highpt = ''
+WJ_LO = ''
+WJ_NLO = ''
 for dtag in DYs:
     root_file = outdir +'/'+ dtag + '_' + 'ZPt.root'
     if 'amcNLO' in dtag:
-        if '10to50' in dtag: NLO_lowpt += (' ' + root_file)
-        else: NLO_highpt += (' ' + root_file)
+        if '10to50' in dtag: DY_NLO_lowpt += (' ' + root_file)
+        else: DY_NLO_highpt += (' ' + root_file)
     else:
-        if '10to50' in dtag: LO_lowpt += (' ' + root_file)
-        else: LO_highpt += (' ' + root_file)
-if len(LO_lowpt) > 0: commands.getstatusoutput('hadd -f '+outdir +'/LODY_lowPt.root'+' '+LO_lowpt)
-if len(LO_highpt) > 0: commands.getstatusoutput('hadd -f '+outdir +'/LODY_highPt.root'+' '+LO_highpt)
-if len(NLO_lowpt) > 0: commands.getstatusoutput('hadd -f '+outdir +'/NLODY_lowPt.root'+' '+NLO_lowpt)
-if len(NLO_highpt) > 0: commands.getstatusoutput('hadd -f '+outdir +'/NLODY_highPt.root'+' '+NLO_highpt)
+        if '10to50' in dtag: DY_LO_lowpt += (' ' + root_file)
+        else: DY_LO_highpt += (' ' + root_file)
+for dtag in WJs:
+    root_file = outdir +'/'+ dtag + '_' + 'ZPt.root'
+    if 'amcNLO' in dtag: WJ_NLO += (' ' + root_file)
+    else: WJ_LO += (' ' + root_file)
+if len(DY_LO_lowpt) > 0: commands.getstatusoutput('hadd -f '+outdir +'/LODY_lowPt.root'+' '+DY_LO_lowpt)
+if len(DY_LO_highpt) > 0: commands.getstatusoutput('hadd -f '+outdir +'/LODY_highPt.root'+' '+DY_LO_highpt)
+if len(DY_NLO_lowpt) > 0: commands.getstatusoutput('hadd -f '+outdir +'/NLODY_lowPt.root'+' '+DY_NLO_lowpt)
+if len(DY_NLO_highpt) > 0: commands.getstatusoutput('hadd -f '+outdir +'/NLODY_highPt.root'+' '+DY_NLO_highpt)
+if len(WJ_LO) > 0: commands.getstatusoutput('hadd -f '+outdir +'/LOWJ.root'+' '+WJ_LO)
+if len(WJ_NLO) > 0: commands.getstatusoutput('hadd -f '+outdir +'/NLOWJ.root'+' '+WJ_NLO)
 
 if os.path.isfile(outdir +'/LODY_lowPt.root') and os.path.isfile(outdir +'/NLODY_lowPt.root'): produceZptSFs(outdir+'/LODY_lowPt.root',outdir+'/NLODY_lowPt.root',outdir+'/DYSF_lowPt.root')
 if os.path.isfile(outdir +'/LODY_highPt.root') and os.path.isfile(outdir +'/NLODY_highPt.root'): produceZptSFs(outdir+'/LODY_highPt.root',outdir+'/NLODY_highPt.root',outdir+'/DYSF_highPt.root')
+if os.path.isfile(outdir +'/LOWJ.root') and os.path.isfile(outdir +'/NLOWJ.root'): produceZptSFs(outdir+'/LOWJ.root',outdir+'/NLOWJ.root',outdir+'/WJSF.root')
 raw_input("Press [ENTER] to exit...")
