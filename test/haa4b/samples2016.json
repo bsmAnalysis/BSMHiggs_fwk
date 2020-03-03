@@ -821,8 +821,7 @@
             "isdata": false,
             "keys": [
 	        "haa_prod",
-                "haa_mcbased",
-		"haa_mcOnly1"
+                "haa_mcbased"
             ],
             "tag": "Other Bkgds"
         },
@@ -843,8 +842,7 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_mcbased",
-		"haa_mcOnly2"	
+		"haa_mcbased"
             ],
 	     "mctruthmode": 5,
             "tag": "t#bar{t} + b#bar{b}"
@@ -866,8 +864,7 @@
             ],
             "isdata": false,
             "keys": [
-	        "haa_mcbased",
-		"haa_mcOnly2"	
+	        "haa_mcbased"
             ],
 	     "mctruthmode": 4,
             "tag": "t#bar{t} + c#bar{c}"
@@ -890,8 +887,7 @@
             "isdata": false,
             "keys": [
 		"haa_prod", 
-	        "haa_mcbased",
-		"haa_mcOnly2"	
+	        "haa_mcbased"
             ],
 	     "mctruthmode": 1,
             "tag": "t#bar{t} + light"
@@ -1032,8 +1028,7 @@
             "keys": [
 		"haa_prod", 
                 "haa_ztoll",
-		"haa_mcbased",
-		"haa_mcOnly3"
+		"haa_mcbased"
             ],
             "tag": "Z#rightarrow ll"
         },
@@ -1175,8 +1170,7 @@
             "isdata": false,
             "keys": [
 		"haa_mcbased",
-		"haa_prod",
-		"haa_mcOnly4"
+		"haa_prod"
             ],
             "tag": "W#rightarrow l#nu"
         },
@@ -1484,8 +1478,7 @@
             "isdata": false,
             "keys": [
 		"haa_prod", 
-                "haa_mcbased",
-		"haa_mcOnly5"
+                "haa_mcbased"
             ],
             "tag": "QCD"
 	},
