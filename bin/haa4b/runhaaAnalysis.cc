@@ -1747,9 +1747,10 @@ int main(int argc, char* argv[])
 	    
 	     // //check overlaps with selected leptons
 	    bool hasOverlap(false);
-	    //	    for(size_t ilep=0; ilep<selLeptons.size(); ilep++) {
-	    double dR = deltaR( corrJets[ijet], selLeptons[0] ); hasOverlap = (dR<0.4);
-
+	    for(size_t ilep=0; ilep<selLeptons.size(); ilep++) {
+	      double dR = deltaR( corrJets[ijet], selLeptons[ilep] );
+	      if (dR<0.4) hasOverlap=true;
+	    }
 	    if(hasOverlap) continue;
 
 	    bool isMatched(false);
@@ -1783,6 +1784,39 @@ int main(int argc, char* argv[])
 	  
 	}
 
+	//	split inclusive DY sample into DYToLL + Nb
+	if (isMC_DY || isMC_WJets) {
+	  int nbjet(0);
+	  for(size_t ijet=0; ijet<corrJets.size(); ijet++) {
+	    if(corrJets[ijet].pt()<jet_threshold_) continue;
+	    if(fabs(corrJets[ijet].eta())>2.5) continue;
+
+	    //jet ID
+	    if(!corrJets[ijet].isPFLoose) continue;
+	    
+	     // //check overlaps with selected leptons
+	    bool hasOverlap(false);
+	    for(size_t ilep=0; ilep<selLeptons.size(); ilep++) {
+	      double dR = deltaR( corrJets[ijet], selLeptons[ilep] );
+	      if (dR<0.4) hasOverlap=true;
+	    }
+	    if(hasOverlap) continue;
+
+	    if(abs(corrJets[ijet].flavid)==5) { nbjet++; }
+	  } // end RECO jet loop
+	  if (isMC_DY) {
+	    if (mctruthmode==31) { if (nbjet>1) continue; }
+	    if (mctruthmode==32) { if (nbjet!=2) continue; }
+	    if (mctruthmode==33) { if (nbjet!=3) continue; }
+	    if (mctruthmode==34) { if (nbjet<4) continue; }
+	  } else {
+	    if (mctruthmode==41) { if (nbjet>1) continue; }
+	    if (mctruthmode==42) { if (nbjet!=2) continue; }
+	    if (mctruthmode==43) { if (nbjet!=3) continue; }
+	    if (mctruthmode==44) { if (nbjet<4) continue; }
+	  }
+	  
+	}
 	/*
         //split inclusive DY sample into DYToLL and DYToTauTau
         if(isMC && mctruthmode==1113) {
