@@ -1489,7 +1489,7 @@
 		"haa_mcbased"
             ],
 	    "mctruthmode":41,
-            "tag": "W#rightarrow l#nu"
+            "tag": "W#rightarrow l#nu (+b)"
         },
 	     {
             "color": 624,
@@ -1611,7 +1611,7 @@
 		"haa_mcbased"
             ],
 		 "mctruthmode":42,
-            "tag": "W#rightarrow l#nu"
+            "tag": "W#rightarrow l#nu (+2b)"
              },
 	     {
             "color": 625,
@@ -1733,7 +1733,7 @@
 		"haa_mcbased"
             ],
 		 "mctruthmode":43,
-            "tag": "W#rightarrow l#nu"
+            "tag": "W#rightarrow l#nu (+3b)"
              },
 	     {
             "color": 626,
@@ -1855,7 +1855,7 @@
 		"haa_mcbased"
             ],
 		 "mctruthmode":44,
-            "tag": "W#rightarrow l#nu"
+            "tag": "W#rightarrow l#nu (+#geq4b)"
         },
         {
             "color": 634,
