@@ -15,7 +15,7 @@ iLumi=35866.932
 #iLumi=59740.565
 
 #hists = ['alljets','3jets','4jets','5+jets','2b_3j_jets','2b_4j_jets','2b_geq5j_jets','3b_3j_jets','3b_4j_jets','3b_geq5j_jets','4b_4j_jets','4b_geq5j_jets','5b_geq5j_jets']
-hists_dy = ['alljets','3jets','4jets','5+jets']
+hists_dy = ['alljets','2jets','3jets','4jets','5+jets']
 hists_wj = ['alljets_w','3jets_w','4jets_w','5+jets_w']
 #hists = ['0b', '1b', '2b', '3b', '4+b']
 
@@ -42,7 +42,7 @@ def drawHist(hist, name):
 
     return c
 
-def weightedAverage(ratio, hNLO, threshold, end=300):
+def weightedAverage(ratio, hNLO, threshold, end=500):
     start = ratio.GetXaxis().FindBin(threshold)
     stop = ratio.GetXaxis().FindBin(end)
     mean_num = 0
@@ -78,10 +78,12 @@ def scaleinFile(in_f, weight, hists):
 def ratioPlot(hLO,hNLO,ratio_h,name):
 
     thred = 500
-    if '3jets' in name: thred = 200
+    if '2jets' in name: thred = 150
+    elif '3jets' in name: thred = 200
     elif '4jets' in name: thred = 250
     elif '5+jets' in name: thred = 300
     ratio_h = weightedAverage(ratio_h,hNLO,thred)
+    
     # Define the Canvas
     c = r.TCanvas(name,name,800,800)
     
@@ -163,7 +165,7 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     ratio.GetXaxis().SetTitleOffset(4.)
     ratio.GetXaxis().SetLabelFont(43)
     ratio.GetXaxis().SetLabelSize(35)
-    fitf = r.TF1(name+"_f", "pol3", 0, thred)
+    fitf = r.TF1(name+"_f", "pol4", 0, thred)
     ratio.Fit(name+"_f", "R")
     ratio.Draw("E0")
 #    ratio.Draw("ehist");       # Draw the ratio plot
@@ -174,6 +176,7 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     func = ratio.GetFunction(name+"_f")
     
     return c,func
+#    return c
 
 
 def produceZptSFs(inputLO, inputNLO, output_name):
@@ -207,6 +210,8 @@ def produceZptSFs(inputLO, inputNLO, output_name):
     	
     	    histLO.SetDirectory(0)
     	    histNLO.SetDirectory(0)
+	    histLO.Rebin(2)
+	    histNLO.Rebin(2)
     	    histLO.Scale(1./abs(histLO.Integral()))
     	    histNLO.Scale(1./abs(histNLO.Integral()))
     	    ratios_out = r.TH1F(hist+ztype+'_sf',hist+ztype+'_sf',histLO.GetXaxis().GetNbins(), histLO.GetXaxis().GetXmin(), histLO.GetXaxis().GetXmax())
@@ -228,6 +233,7 @@ def produceZptSFs(inputLO, inputNLO, output_name):
 #    	    if "lowPt" in inputLO: c,f = ratioPlot(histLO,histNLO, ratios_out, hist+ztype+" Low Mass")
 #    	    elif "highPt" in inputLO: c,f = ratioPlot(histLO,histNLO, ratios_out, hist+ztype+ " High Mass")
 	    c,f = ratioPlot(histLO,histNLO, ratios_out, hist+ztype)
+#	    c = ratioPlot(histLO,histNLO, ratios_out, hist+ztype)
     	    c.Write()
 	    f.Write()
 	    if "lowPt" in inputLO:  c.SaveAs(os.path.split(output_name)[0]+'/'+hist+ztype+ "_LowMass.pdf")
@@ -295,6 +301,10 @@ for proc in procList :
             if(mctruthmode!=0) : dtag+='_filt'+str(mctruthmode)
 
             outfile = outdir +'/'+ dtag + '_' + 'ZPt.root'
+            status, output = commands.getstatusoutput('ls '+inputdir+'/'+dtag+'_*.root')
+            if status and not os.path.isfile(outfile) > 0 :
+                print "!!!!! Warning: No root files for the dtag: " + origdtag
+                continue
 	    if tag == "Z#rightarrow ll": 
 	        DYs.append(dtag)
 		hists = hists_dy
@@ -303,10 +313,6 @@ for proc in procList :
 		hists = hists_wj
 	    if os.path.isfile(outfile): 
 		continue
-            status, output = commands.getstatusoutput('ls '+inputdir+'/'+dtag+'_*.root')
-            if status > 0 :
-                print "!!!!! Warning: No root files for the dtag: " + origdtag
-                continue
             segment = 0
             for file in glob.glob(inputdir+'/'+dtag+'_*.root'):
                 out_temp = outdir +'/'+ dtag + '_' + str(segment) + '_zpt.root'
@@ -315,6 +321,10 @@ for proc in procList :
             commands.getstatusoutput('hadd -f '+outfile+' '+outdir +'/'+ dtag + '_*' + '_zpt.root')
             #commands.getstatusoutput('hadd -f '+outfile+' '+inputdir+'/'+dtag+'_*.root')
             commands.getstatusoutput('rm -rf '+outdir +'/'+ dtag + '_*' + '_zpt.root')
+	    
+#	    status, output = commands.getstatusoutput('find {} -name "{}*.root" | wc -l'.format(inputdir, dtag))
+#	    print(dtag+": "+str(iLumi/int(output)))
+#	    scaleinFile(outfile, iLumi/int(output), hists)
 	    if "amcNLO" in dtag: 
 		status, output = commands.getstatusoutput('find {} -name "{}*.root" | wc -l'.format(inputdir, dtag))
 		print(dtag+": "+str(iLumi/int(output)))
