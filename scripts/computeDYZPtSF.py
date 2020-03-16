@@ -42,7 +42,7 @@ def drawHist(hist, name):
 
     return c
 
-def weightedAverage(ratio, hNLO, threshold, end=500):
+def weightedAverage(ratio, hNLO, threshold, end=300):
     start = ratio.GetXaxis().FindBin(threshold)
     stop = ratio.GetXaxis().FindBin(end)
     mean_num = 0
@@ -98,7 +98,7 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     if ymin<0: ymin = 1.1*ymin
     else: ymin = 0.9*ymin
     hLO.GetYaxis().SetRangeUser(ymin,ymax)
-#    hLO.GetXaxis().SetRangeUser(0,300)
+    hLO.GetXaxis().SetRangeUser(0,300)
     hLO.GetYaxis().SetTitleOffset(1.55)
     hLO.GetYaxis().SetTitleSize(25)
     hLO.GetYaxis().SetTitleFont(43)
@@ -140,8 +140,8 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
 
     # Define the ratio plot
     ratio = ratio_h.DrawCopy("ehist")
-#    ratio.GetXaxis().SetRangeUser(0,300)
-    ratio.GetYaxis().SetRangeUser(0,2.4)
+    ratio.GetXaxis().SetRangeUser(0,300)
+    ratio.GetYaxis().SetRangeUser(0.4,1.6)
 #    ratio.GetYaxis().SetRangeUser(ratio.GetMinimum()*0.8,1.2*ratio.GetMaximum())
 #    ratio = hNLO.Clone(name+"_clone")
     ratio.SetLineColor(r.kBlack)
@@ -210,8 +210,8 @@ def produceZptSFs(inputLO, inputNLO, output_name):
     	
     	    histLO.SetDirectory(0)
     	    histNLO.SetDirectory(0)
-	    histLO.Rebin(2)
-	    histNLO.Rebin(2)
+#	    histLO.Rebin(2)
+#	    histNLO.Rebin(2)
     	    histLO.Scale(1./abs(histLO.Integral()))
     	    histNLO.Scale(1./abs(histNLO.Integral()))
     	    ratios_out = r.TH1F(hist+ztype+'_sf',hist+ztype+'_sf',histLO.GetXaxis().GetNbins(), histLO.GetXaxis().GetXmin(), histLO.GetXaxis().GetXmax())
