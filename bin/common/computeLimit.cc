@@ -2663,33 +2663,33 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       if(runZh) {
 	if(C->first.find("ee" )!=string::npos) {         
-	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n"); 
-	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");    
-	  fprintf(pFile,"zb_norm_e rateParam bin1 zllb 1 \n"); fprintf(pFile,"z2b_norm_e rateParam bin1 zll2b 1 \n");
-	  fprintf(pFile,"z3b_norm_e rateParam bin1 zll3b 1 \n"); fprintf(pFile,"z4b_norm_e rateParam bin1 zllgeq4b 1 \n"); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n"); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");    
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){  
+	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_e rateParam bin1 zll 1 \n");
+	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_e rateParam bin1 zll 1 \n");
+	  }
 	} else if (C->first.find("mumu" )!=string::npos) {  
-	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n"); 
-	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");    
-	  fprintf(pFile,"zb_norm_mu rateParam bin1 zllb 1 \n"); fprintf(pFile,"z2b_norm_mu rateParam bin1 zll2b 1 \n"); 
-	  fprintf(pFile,"z3b_norm_mu rateParam bin1 zll3b 1 \n"); fprintf(pFile,"z4b_norm_mu rateParam bin1 zllgeq4b 1 \n");  
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n"); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");    
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){
+	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_mu rateParam bin1 zll 1 \n");
+	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_mu rateParam bin1 zll 1 \n");
+	  }
 	} else if  (C->first.find("emu" )!=string::npos) {     
-	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");   
-	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");  
-	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");   
-	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");  
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  {fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");}
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  {fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");} 
 	} 
       } else {
 	if(C->first.find("e" )!=string::npos) {             
-	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");      
-	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");   
-	  fprintf(pFile,"wb_norm_e rateParam bin1 wlnub 1 \n"); fprintf(pFile,"w2b_norm_e rateParam bin1 wlnu2b 1 \n"); 
-	  fprintf(pFile,"w3b_norm_e rateParam bin1 wlnu3b 1 \n"); fprintf(pFile,"w4b_norm_e rateParam bin1 wlnugeq4b 1 \n");    
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");      
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");   
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_e rateParam bin1 wlnu 1 \n");
 	  //	  fprintf(pFile,"w_norm_e rateParam bin1 wlnu 1 \n");     
 	} else if (C->first.find("mu" )!=string::npos) {    
-	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");            
-	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n"); 
-	  fprintf(pFile,"wb_norm_mu rateParam bin1 wlnub 1 \n"); fprintf(pFile,"w2b_norm_mu rateParam bin1 wlnu2b 1 \n"); 
-	  fprintf(pFile,"w3b_norm_mu rateParam bin1 wlnu3b 1 \n"); fprintf(pFile,"w4b_norm_mu rateParam bin1 wlnugeq4b 1 \n");  
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");            
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n"); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_mu rateParam bin1 wlnu 1 \n"); 
 	  //	  fprintf(pFile,"w_norm_mu rateParam bin1 wlnu 1 \n"); 
 	}                  
       }
