@@ -1983,6 +1983,42 @@ int main(int argc, char* argv[])
 
 	}
 
+
+	if(isMC_DY && !dtag.Contains("amcNLO") && !reweightDYZPt){
+	  double ptsf=1.0;
+	  if(GoodIdJets_orig.size()==2) {ptsf = (zpt<thred_2j) ? zfit_2j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_2j);}// std::cout << "3j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_3j) << std::endl;}
+	  else if(GoodIdJets_orig.size()==3) {ptsf = (zpt<thred_3j) ? zfit_3j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_3j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
+	  else if(GoodIdJets_orig.size()==4) {ptsf = (zpt<thred_4j) ? zfit_4j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_4j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
+	  else if(GoodIdJets_orig.size()>=5) {ptsf = (zpt<thred_5j) ? zfit_5j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_5j);}// std::cout << "5j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_5j) << std::endl;}
+	  if(zpt < 0) ptsf=1.0; // set it to 1 if cannot find a GEN Z particle
+	  weight *= ptsf;
+	}
+	if(isMC_DY ){
+	  mon.fillHisto("jetsMulti","alljets",GoodIdJets_orig.size(),1);
+	  mon.fillHisto("ptw","alljets",zpt,weight);    if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","2jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_2jets",zpt,weight);}
+	  if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","2jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_2jets",zpt,weight);}
+	  else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","3jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,weight);}
+	  else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","4jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,weight);}
+	  else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,weight);}
+	}
+//	  if(ivar==0 && reweightWPt && isMC_WJets ){
+//	    mon.fillHisto("jetsMulti","alljets_w",GoodIdJets.size(),1);
+//	    mon.fillHisto("ptw","alljets_w",wpt,weight);
+//	    if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets_w",wpt,weight);}
+//	    else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets_w",wpt,weight);}
+//	    else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets_w",wpt,weight);}
+
+	    //TString event_cat = eventCategoryPlot.GetLabel(evtCatPlot);
+	    //mon.fillHisto("ptw",event_cat+"_jets_w",wpt,weight);
+//	  }
+
+//	  if(isMC_WJets && !dtag.Contains("amcNLO") && !reweightWPt){
+//	    double ptsf=1.0;
+//	    if(GoodIdJets.size()==3) {ptsf = (wpt<thred_3j) ? wfit_3j->Eval(wpt) : getSFfrom1DHist(wpt, wptSF_3j); }
+//	    else if(GoodIdJets.size()==4) {ptsf = (wpt<thred_4j) ? wfit_4j->Eval(wpt) : getSFfrom1DHist(wpt, wptSF_4j); }
+//	    else if(GoodIdJets.size()>=5) {ptsf = (wpt<thred_5j) ? wfit_5j->Eval(wpt) : getSFfrom1DHist(wpt, wptSF_5j); }
+//	    weight *= ptsf;
+//	  }
 	//note this also propagates to all MET uncertainties
 	//	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1));
 	// decorrelate JES uncertainties
@@ -2640,45 +2676,6 @@ int main(int argc, char* argv[])
 	    mon.fillHisto("dphijmet",tag_cat+"_"+"raw",mindphijmet,weight);
 	  } //ivar=0
 	  
-	  if(ivar==0 && reweightDYZPt && isMC_DY ){
-	    mon.fillHisto("jetsMulti","alljets",GoodIdJets.size(),1);
-	    mon.fillHisto("ptw","alljets",zpt,weight);
-	    if(GoodIdJets.size()==2) {mon.fillHisto("ptw","2jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_2jets",zpt,weight);}
-	    else if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,weight);}
-	    else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,weight);}
-	    else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,weight);}
-
-	    //TString event_cat = eventCategoryPlot.GetLabel(evtCatPlot);
-	    //mon.fillHisto("ptw",event_cat+"_jets",zpt,weight);
-	  }
-
-	  if(isMC_DY && !dtag.Contains("amcNLO") && !reweightDYZPt){
-	    double ptsf=1.0;
-	    if(GoodIdJets.size()==2) {ptsf = (zpt<thred_2j) ? zfit_2j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_2j);}// std::cout << "3j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_3j) << std::endl;}
-	    else if(GoodIdJets.size()==3) {ptsf = (zpt<thred_3j) ? zfit_3j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_3j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
-	    else if(GoodIdJets.size()==4) {ptsf = (zpt<thred_4j) ? zfit_4j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_4j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
-	    else if(GoodIdJets.size()>=5) {ptsf = (zpt<thred_5j) ? zfit_5j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_5j);}// std::cout << "5j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_5j) << std::endl;}
-	    if(zpt < 0) ptsf=1.0; // set it to 1 if cannot find a GEN Z particle
-	    weight *= ptsf;
-	  }
-//	  if(ivar==0 && reweightWPt && isMC_WJets ){
-//	    mon.fillHisto("jetsMulti","alljets_w",GoodIdJets.size(),1);
-//	    mon.fillHisto("ptw","alljets_w",wpt,weight);
-//	    if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets_w",wpt,weight);}
-//	    else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets_w",wpt,weight);}
-//	    else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets_w",wpt,weight);}
-
-	    //TString event_cat = eventCategoryPlot.GetLabel(evtCatPlot);
-	    //mon.fillHisto("ptw",event_cat+"_jets_w",wpt,weight);
-//	  }
-
-//	  if(isMC_WJets && !dtag.Contains("amcNLO") && !reweightWPt){
-//	    double ptsf=1.0;
-//	    if(GoodIdJets.size()==3) {ptsf = (wpt<thred_3j) ? wfit_3j->Eval(wpt) : getSFfrom1DHist(wpt, wptSF_3j); }
-//	    else if(GoodIdJets.size()==4) {ptsf = (wpt<thred_4j) ? wfit_4j->Eval(wpt) : getSFfrom1DHist(wpt, wptSF_4j); }
-//	    else if(GoodIdJets.size()>=5) {ptsf = (wpt<thred_5j) ? wfit_5j->Eval(wpt) : getSFfrom1DHist(wpt, wptSF_5j); }
-//	    weight *= ptsf;
-//	  }
 	  
 	  
 	  //#########################################################
