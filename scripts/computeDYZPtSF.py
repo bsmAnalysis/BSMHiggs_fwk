@@ -15,9 +15,12 @@ iLumi=35866.932
 #iLumi=59740.565
 
 #hists = ['alljets','3jets','4jets','5+jets','2b_3j_jets','2b_4j_jets','2b_geq5j_jets','3b_3j_jets','3b_4j_jets','3b_geq5j_jets','4b_4j_jets','4b_geq5j_jets','5b_geq5j_jets']
-hists_dy = ['alljets','2jets','3jets','4jets','5+jets']
+#hists_dy = ['alljets','2jets','3jets','4jets','5+jets']
+hists_dy = ['alljets_zcut','2jets_zcut','3jets_zcut','4jets_zcut','5+jets_zcut']
 hists_wj = ['alljets_w','3jets_w','4jets_w','5+jets_w']
 #hists = ['0b', '1b', '2b', '3b', '4+b']
+
+startbin = 3 
 
 """
 Gets the value of a given item
@@ -141,7 +144,7 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     # Define the ratio plot
     ratio = ratio_h.DrawCopy("ehist")
     ratio.GetXaxis().SetRangeUser(0,300)
-    ratio.GetYaxis().SetRangeUser(0.4,1.6)
+    ratio.GetYaxis().SetRangeUser(0.7,1.3)
 #    ratio.GetYaxis().SetRangeUser(ratio.GetMinimum()*0.8,1.2*ratio.GetMaximum())
 #    ratio = hNLO.Clone(name+"_clone")
     ratio.SetLineColor(r.kBlack)
@@ -165,7 +168,7 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     ratio.GetXaxis().SetTitleOffset(4.)
     ratio.GetXaxis().SetLabelFont(43)
     ratio.GetXaxis().SetLabelSize(35)
-    fitf = r.TF1(name+"_f", "pol4", 0, thred)
+#    fitf = r.TF1(name+"_f", "pol4", 0, thred)
     ratio.Fit(name+"_f", "R")
     ratio.Draw("E0")
 #    ratio.Draw("ehist");       # Draw the ratio plot
@@ -173,10 +176,10 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     line = r.TLine(r.gPad.GetUxmin(), 1, r.gPad.GetUxmax(), 1)
     line.Draw("same")
     SetOwnership( line, 0 )
-    func = ratio.GetFunction(name+"_f")
+#    func = ratio.GetFunction(name+"_f")
     
-    return c,func
-#    return c
+#    return c,func
+    return c
 
 
 def produceZptSFs(inputLO, inputNLO, output_name):
@@ -210,12 +213,13 @@ def produceZptSFs(inputLO, inputNLO, output_name):
     	
     	    histLO.SetDirectory(0)
     	    histNLO.SetDirectory(0)
-#	    histLO.Rebin(2)
-#	    histNLO.Rebin(2)
-    	    histLO.Scale(1./abs(histLO.Integral()))
-    	    histNLO.Scale(1./abs(histNLO.Integral()))
+#    	    histLO.Scale(1./abs(histLO.Integral()))
+#    	    histNLO.Scale(1./abs(histNLO.Integral()))
+    	    histLO.Scale(1./abs(histLO.Integral(startbin, histLO.GetNbinsX())))
+    	    histNLO.Scale(1./abs(histNLO.Integral(startbin, histLO.GetNbinsX())))
     	    ratios_out = r.TH1F(hist+ztype+'_sf',hist+ztype+'_sf',histLO.GetXaxis().GetNbins(), histLO.GetXaxis().GetXmin(), histLO.GetXaxis().GetXmax())
-    	    for i in range(1,histLO.GetXaxis().GetNbins()+1):
+#    	    for i in range(1,histLO.GetXaxis().GetNbins()+1):
+    	    for i in range(startbin,histLO.GetXaxis().GetNbins()+1):
     	        denominator = histLO.GetBinContent(i)
     	        numerator = histNLO.GetBinContent(i)
     #	        if(abs(denominator)>0.):print("numerator: {}, denominator: {},numerator/denominator:{}".format(numerator,denominator,numerator/denominator))
@@ -232,10 +236,10 @@ def produceZptSFs(inputLO, inputNLO, output_name):
 #	    ratio_out = weightedAverage(ratios_out,histNLO,150)
 #    	    if "lowPt" in inputLO: c,f = ratioPlot(histLO,histNLO, ratios_out, hist+ztype+" Low Mass")
 #    	    elif "highPt" in inputLO: c,f = ratioPlot(histLO,histNLO, ratios_out, hist+ztype+ " High Mass")
-	    c,f = ratioPlot(histLO,histNLO, ratios_out, hist+ztype)
-#	    c = ratioPlot(histLO,histNLO, ratios_out, hist+ztype)
+#	    c,f = ratioPlot(histLO,histNLO, ratios_out, hist+ztype)
+	    c = ratioPlot(histLO,histNLO, ratios_out, hist+ztype)
     	    c.Write()
-	    f.Write()
+#	    f.Write()
 	    if "lowPt" in inputLO:  c.SaveAs(os.path.split(output_name)[0]+'/'+hist+ztype+ "_LowMass.pdf")
 	    elif "highPt" in inputLO: c.SaveAs(os.path.split(output_name)[0]+'/'+hist+ztype+ "_HighMass.pdf")
 	    else: c.SaveAs(os.path.split(output_name)[0]+'/'+hist+ztype+ ".pdf")
@@ -344,9 +348,11 @@ for dtag in DYs:
     if 'amcNLO' in dtag:
         if '10to50' in dtag: DY_NLO_lowpt += (' ' + root_file)
         else: DY_NLO_highpt += (' ' + root_file)
+#        DY_NLO_highpt += (' ' + root_file)
     else:
         if '10to50' in dtag: DY_LO_lowpt += (' ' + root_file)
         else: DY_LO_highpt += (' ' + root_file)
+#        DY_LO_highpt += (' ' + root_file)
 for dtag in WJs:
     root_file = outdir +'/'+ dtag + '_' + 'ZPt.root'
     if 'amcNLO' in dtag: WJ_NLO += (' ' + root_file)
