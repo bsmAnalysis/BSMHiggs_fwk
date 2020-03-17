@@ -767,6 +767,7 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "dphilepmet", ";|#Delta#it{#phi}(lep,E_{T}^{miss})|;Events", 20,0,TMath::Pi()) );
     mon.addHistogram( new TH1F( "zmass_raw", ";#it{m}_{ll} [GeV];Events", 80,0,200) );   
 
+    mon.addHistogram( new TH1F( "ptw_full",       ";#it{p}_{T}^{V} [GeV];Events",310,-10,300.) );
     //MVA BDT
     mon.addHistogram( new TH1F( "bdt", ";BDT;Events", 30, -0.3,0.3) );
     
@@ -1197,19 +1198,22 @@ int main(int argc, char* argv[])
 	float zpt = -1, wpt = -1;
 	if(isMC_DY || isMC_WJets){
 	  PhysicsObjectCollection &genparticles = phys.genparticles;
+	  PhysicsObjectCollection zleps;
 	  for (auto & genparticle : genparticles) {
-//	    printf("Parton : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, status=%d\n",
+//	    printf("Parton : ID=%6d, m=%5.1f, momID=%6d ,pt=%6.1f, status=%d\n",
 //		   genparticle.id,
 //		   genparticle.mass(),
 //		   genparticle.momid,
 //		   genparticle.pt(),
 //		   genparticle.status
 //		   );
-	      
-	    if(genparticle.id==23)   
+	    if(fabs(genparticle.id)>=11 && fabs(genparticle.id)<=18) zleps.push_back(genparticle);
+	    if(genparticle.id==23){   
+	      if(zpt<0)
 	        zpt = genparticle.pt();
 	      else
 		std::cout << "Found multiple Z particles in event: " << iev << std::endl;
+	    }
 	    if(fabs(genparticle.id)==24) {  
 	      if(wpt<0)
 	        wpt = genparticle.pt();
@@ -1217,6 +1221,13 @@ int main(int argc, char* argv[])
 		std::cout << "Found multiple W particles in event: " << iev << std::endl;
 	    }
 	  }
+
+          if(zleps.size()==2 && zpt<=0){
+	    LorentzVector zll(zleps[0]+zleps[1]);
+	    zpt = zll.pt();
+//	  printf("reconstructed from two leptons: m=%5.1f, pt=%5.1f, px=%6.1f, py=%6.1f\n", zll.mass(), zll.pt(),zll.px(),zll.py());
+	  }
+//	  else {std::cout<<"size of zleps: "<<zleps.size()<<std::endl;}
 	}
 
 	// Apply Top pt-reweighting
@@ -1988,17 +1999,24 @@ int main(int argc, char* argv[])
 	  else if(GoodIdJets_orig.size()==3) {ptsf = (zpt<thred_3j) ? zfit_3j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_3j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
 	  else if(GoodIdJets_orig.size()==4) {ptsf = (zpt<thred_4j) ? zfit_4j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_4j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
 	  else if(GoodIdJets_orig.size()>=5) {ptsf = (zpt<thred_5j) ? zfit_5j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_5j);}// std::cout << "5j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_5j) << std::endl;}
-	  if(zpt <= 0) ptsf=1.0; // set it to 1 if cannot find a GEN Z particle
+//	  if(zpt <= 0) ptsf=1.0; // set it to 1 if cannot find a GEN Z particle
 	  weight *= ptsf;
 	}
 	if(isMC_DY ){
 	  mon.fillHisto("jetsMulti","alljets",GoodIdJets_orig.size(),1);
-	  if(zpt>0){
-	    mon.fillHisto("ptw","alljets",zpt,xsecWeight); 
-	    if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","2jets",zpt,xsecWeight);mon.fillHisto("ptw",tag_cat+"_2jets",zpt,xsecWeight);}
-	    else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","3jets",zpt,xsecWeight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,xsecWeight);}
-	    else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","4jets",zpt,xsecWeight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,xsecWeight);}
-	    else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,xsecWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,xsecWeight);}
+	  mon.fillHisto("ptw","alljets",zpt,xsecWeight*genWeight); 
+	  mon.fillHisto("ptw_full","debug",zpt,1); 
+	  if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","2jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_2jets",zpt,xsecWeight*genWeight);}
+	  else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,xsecWeight*genWeight);}
+	  else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,xsecWeight*genWeight);}
+	  else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,xsecWeight*genWeight);}
+
+	  LorentzVector zll(selLeptons[0]+selLeptons[1]);
+	  if(zll.mass()<100 && zll.mass()>85){
+	    if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","2jets_zcut",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_2jets_zcut",zpt,xsecWeight*genWeight);}
+	    else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","3jets_zcut",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets_zcut",zpt,xsecWeight*genWeight);}
+	    else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","4jets_zcut",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets_zcut",zpt,xsecWeight*genWeight);}
+	    else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","5+jets_zcut",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets_zcut",zpt,xsecWeight*genWeight);}
 	  }
 	}
 //	  if(ivar==0 && reweightWPt && isMC_WJets ){
