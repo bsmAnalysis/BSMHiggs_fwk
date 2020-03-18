@@ -11,11 +11,11 @@ where :
 1. configure the input variable jsonPath, inUrl_wh and inUrl_zh in the oprimize_haa.py
 2. submit jobs to the batch mode:
 > python optimize_haa.py -p 4.0 -t
-, where '4.0' is to run Wh channel, use 4.1 to run Zh channel or 5.0 to run Wh+Zh combined
+  , where '4.0' is to run Wh channel, use 4.1 to run Zh channel and 5.0 to run Wh+Zh combined
   '-t' should be included to turn on the option: autoMCstats
 3. when jobs finished, produce limit plots:
 > python optimize_haa.py -p 6.0
-, where '6.0' is to produce plots for Wh channel, use 6.1 for Zh channel or 6.2 for Wh+Zh combined 
+  , where '6.0' is to produce plots for Wh channel, use 6.1 for Zh channel and 6.2 for Wh+Zh combined 
 
 ## Run the BDT cuts optimization scan
 > python optimize_haa.py -p 1
