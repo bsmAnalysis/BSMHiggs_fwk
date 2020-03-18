@@ -767,7 +767,7 @@ int main(int argc, char* argv[])
 
     mon.addHistogram( new TH1F( "ptw_full",       ";#it{p}_{T}^{V} [GeV];Events",310,-10,300.) );
     //MVA BDT
-    mon.addHistogram( new TH1F( "bdt", ";BDT;Events", 30, -0.3,0.3) );
+    mon.addHistogram( new TH1F( "bdt", ";BDT;Events", 35, -0.35,0.35) );
     
     // Debugging SFs
     TH2F* musf_id =(TH2F*)mon.addHistogram(new TProfile2D("musfid", ";muon p_{T} (GeV); muon |#eta|",20,0.,400.,10,0,2.5) );    
@@ -785,13 +785,13 @@ int main(int argc, char* argv[])
 
     std::vector<double> optim_Cuts1_bdt;
     optim_Cuts1_bdt.push_back(-0.4); //add a bin in the shapes with a BDT cut of -0.4
-    for(double bdt=-0.3;bdt<0.3;bdt+=0.02) { optim_Cuts1_bdt.push_back(bdt); }
+    for(double bdt=-0.35;bdt<0.35;bdt+=0.02) { optim_Cuts1_bdt.push_back(bdt); }
 
     TH2F* Hoptim_cuts =(TH2F*)mon.addHistogram(new TProfile2D("optim_cut", ";cut index;variable", optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 1, 0, 1)) ;
     Hoptim_cuts->GetYaxis()->SetBinLabel(1, "BDT>");
     for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){ Hoptim_cuts->Fill(index, 0.0, optim_Cuts1_bdt[index]); }
     for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
-      mon.addHistogram( new TH2F (TString("bdt_shapes")+varNames[ivar],";cut index;BDT;Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 30,-0.3,0.3) );
+      mon.addHistogram( new TH2F (TString("bdt_shapes")+varNames[ivar],";cut index;BDT;Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 35,-0.35,0.35) );
       if (ivar==0) {         
 	mon.addHistogram( new TH2F (TString("higgsMass_shapes")+varNames[ivar],";cut index;m_{h} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 40,0.,800.) );
 	mon.addHistogram( new TH2F (TString("higgsPt_shapes")+varNames[ivar],";cut index;p_{T}^{h} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 30,0.,500.));
@@ -803,7 +803,7 @@ int main(int argc, char* argv[])
 	mon.addHistogram( new TH2F (TString("dRave_shapes")+varNames[ivar],";cut index;#Delta R(b,b)_{ave};Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),50,0.,5.));
 	mon.addHistogram( new TH2F (TString("dmmin_shapes")+varNames[ivar],";cut index;#Delta m_{b,b}^{min};Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),25,0.,250.));
 	mon.addHistogram( new TH2F (TString("dphijmet_shapes")+varNames[ivar],";cut index;#Delta#it{#phi}(jet,E_{T}^{miss})_{min}|;Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),20,0,TMath::Pi()) );
-	mon.addHistogram( new TH2F (TString("lep_pt_raw_shapes")+varNames[ivar],";cut index;lepton p_{T} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),80,0,200.));
+	mon.addHistogram( new TH2F (TString("lep_pt_raw_shapes")+varNames[ivar],";cut index;lepton p_{T} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),50,0,200.));
       }
     }
 
