@@ -403,7 +403,7 @@ class ProcessInfo_t
   	std::map<string, ChannelInfo_t> channels;
   	JSONWrapper::Object jsonObj;
 
-  	ProcessInfo_t(){xsec=0;}
+  	ProcessInfo_t(){xsec=0;isSign=false;}
   	~ProcessInfo_t(){}
 };
 
@@ -955,7 +955,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
 
   // create 3 new processes for A,C,D regions in data
   TString NRBProcName = "NonQCD";
-  for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==NRBProcName.Data()){sorted_procs.erase(p);break;}} 
+  for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==NRBProcName.Data()){sorted_procs.erase(p);}} 
   sorted_procs.push_back(NRBProcName.Data());
   procs[NRBProcName.Data()] = ProcessInfo_t(); //reset
   ProcessInfo_t& procInfo_NRB = procs[NRBProcName.Data()];
@@ -1476,35 +1476,58 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
   //
   void AllInfo_t::dropSmallBckgProc(std::vector<TString>& selCh, string histoName, double threshold)
   {
-    std::map<string, double> map_yields;          
+   
+    auto total = procs.find("total");
+    if(total==procs.end()) {printf("dropSmallBckgProc: Error, cannot find process: total\n");return;}
+    std::map<string, double> total_yields;
+    std::map<string, std::map<string, double> > map_yields;
+    for(std::map<string, ChannelInfo_t>::iterator ch = total->second.channels.begin(); ch!=total->second.channels.end(); ch++){
+      if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
+      TH1 *h=ch->second.shapes[histoName].histo();
+      total_yields[ch->first] = 0.;
+      if(h!=NULL) {total_yields[ch->first] = h->Integral();printf("dropsmallBckgProc, total in channel %s %f\n",ch->first.c_str(), total_yields[ch->first]);}
+    }
+
     for(unsigned int p=0;p<sorted_procs.size();p++){
       string procName = sorted_procs[p];
+      if(procName.compare("total") == 0) continue;
       std::map<string, ProcessInfo_t>::iterator it=procs.find(procName);
       if(it==procs.end())continue;
       if(!it->second.isBckg)continue;
-      map_yields[it->first] = 0;
-      for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
+//      printf("dropSmallBckgProc, Process: %s\n",  procName.c_str());
+      for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end();ch++){
         if(std::find(selCh.begin(), selCh.end(), ch->second.channel)==selCh.end())continue;
         if(ch->second.shapes.find(histoName)==(ch->second.shapes).end())continue;
-	//	map_yields[it->first] += ch->second.shapes[histoName].histo()->Integral();
+	
+	map_yields[it->first][ch->first] = 0.;	
 	TH1 *h=ch->second.shapes[histoName].histo();
-        if (h!=NULL) { map_yields[it->first] += h->Integral();}
-	//	else {map_yields[it->first] += 0.;}
+        if (h!=NULL) map_yields[it->first][ch->first] = h->Integral(); 
       }
     }
 
-    double total = map_yields["total"];
-    for(std::map<string, double>::iterator Y=map_yields.begin();Y!=map_yields.end();Y++){
+    for(std::map<string, std::map<string, double> >::iterator p = map_yields.begin();p!=map_yields.end();p++){
+      for(std::map<string, double>::iterator ch = p->second.begin();ch!=p->second.end();ch++){
+	double tot = total_yields[ch->first];
+	double yield = map_yields[p->first][ch->first];
+	if(tot>0 && yield/tot<threshold){
+	  printf("Drop %s from the list of backgrounds in the channel %s because of negligible rate (%f of total bckq)\n", p->first.c_str(), ch->first.c_str(), yield/tot);
+	  procs.find(p->first)->second.channels.erase(procs.find(p->first)->second.channels.find(ch->first));
+	}
+      }
+    }
+
+//    double total = map_yields["total"];
+//    for(std::map<string, double>::iterator Y=map_yields.begin();Y!=map_yields.end();Y++){
       //      if(Y->first.find("ddqcd")<std::string::npos)continue;//never drop this background
       //      if(Y->first.find("VV")<std::string::npos)continue;//never drop this background
       // if(Y->first.find("Vh")<std::string::npos)continue;//never drop this background 
       //      if(Y->first.find("t#bar{t}+#gammaZW")<std::string::npos)continue;//never drop this background    
-      if(Y->second/total<threshold){
-        printf("Drop %s from the list of backgrounds because of negligible rate (%f%% of total bckq)\n", Y->first.c_str(), Y->second/total);
-        for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==Y->first ){sorted_procs.erase(p);break;}}
-        procs.erase(procs.find(Y->first ));
-      }
-    }
+//      if(Y->second/total<threshold){
+//        printf("Drop %s from the list of backgrounds because of negligible rate (%f%% of total bckq)\n", Y->first.c_str(), Y->second/total);
+//        for(std::vector<string>::iterator p=sorted_procs.begin(); p!=sorted_procs.end();p++){if((*p)==Y->first ){sorted_procs.erase(p);break;}}
+//        procs.erase(procs.find(Y->first ));
+//      }
+//    }
   }
 
   //
@@ -1551,6 +1574,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	if(std::find(selCh.begin(), selCh.end(), ch->second.channel)==selCh.end())continue;
 
         if(ch->second.shapes.find(histoName.Data())==(ch->second.shapes).end())continue;
+	if(ch->first.find("_A_")==std::string::npos) continue; //  only consider region A
 
         TH1* h = ch->second.shapes[histoName.Data()].histo();
 	if (!h) continue;
@@ -2039,6 +2063,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
   void AllInfo_t::showUncertainty(std::vector<TString>& selCh , TString histoName, TString SaveName)
   {
     string UncertaintyOnYield="";  char txtBuffer[4096];
+    TFile *unc_f = TFile::Open("unc.root", "recreate");
 
     //loop on sorted proc
     for(unsigned int p=0;p<sorted_procs.size();p++){
@@ -2046,19 +2071,21 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       std::map<string, int               > map_legend;
       std::vector<TH1*>                    toDelete;             
       TLegend* legA  = new TLegend(0.03,0.89,0.97,0.95, "");
+      legA->SetTextSize(0.015);
 
       string procName = sorted_procs[p];
       std::map<string, ProcessInfo_t>::iterator it=procs.find(procName);
       if(it==procs.end())continue;
-      if(it->first=="total" || it->first=="data")continue;  //only do samples which have systematics
-      //      if(it->first=="data")continue;  //only do samples which have systematics  
+      //if(it->first=="total" || it->first=="data")continue;  //only do samples which have systematics
+      if(it->first=="data")continue;  //only do samples which have systematics  
 
       std::map<string, bool> mapUncType;
       std::map<string, std::map< string, double> > mapYieldPerBin;
       std::map<string, std::pair< double, double> > mapYieldInc;
 
 
-      int NBins = it->second.channels.size()/selCh.size();
+      int NBins = it->second.channels.size()/selCh.size() > 1 ? it->second.channels.size()/selCh.size() : 2;
+//      if((it->second.channels.size()-NBins*selCh.size())>0) NBins++;
       TCanvas* c1 = new TCanvas("c1","c1",300*NBins,300*selCh.size());
       c1->SetTopMargin(0.00); c1->SetRightMargin(0.00); c1->SetBottomMargin(0.00);  c1->SetLeftMargin(0.00);
       TPad* t2 = new TPad("t2","t2", 0.03, 0.90, 1.00, 1.00, -1, 1);  t2->Draw();  c1->cd();
@@ -2182,8 +2209,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           systName.ReplaceAll("sys","");
           systName.ReplaceAll("13tev","");
           systName.ReplaceAll("_","");
-          systName.ReplaceAll("up","");
-          systName.ReplaceAll("down","");
+          //systName.ReplaceAll("up","");
+          //systName.ReplaceAll("down","");
+	  if(systName.Index("jes")<0 && systName.Index("umet")<0 && systName.Index("resj")<0) continue;
 
           int color = ColorIndex;
           if(systName.Contains("stat")){systName = "stat"; color=2;}
@@ -2214,6 +2242,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           hvar->SetLineColor(color);
           hvar->SetLineWidth(2);
           hvar->Draw("HIST same");                   
+	  hvar->Write(vh_tag + "_" + systName+"_Uncertainty_"+ch->second.channel+"_"+ch->second.bin+"_"+it->second.shortName);
         }
         //remove the stat uncertainty
 	ch->second.shapes[histoName.Data()].removeStatUnc(); 
@@ -2265,6 +2294,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
     FILE* pFile = fopen(SaveName+vh_tag+"_Uncertainty.txt", "w");
     if(pFile){ fprintf(pFile, "%s\n", UncertaintyOnYield.c_str()); fclose(pFile);}
+    unc_f->Close();
   }
 
 
@@ -2455,7 +2485,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	//if(it->second.shortName.find("vhbb")!=string::npos){shapeInfo.uncScale["norm_vhbb"] = integral*0.10;}     
 	//if(it->second.shortName.find("singleto")!=string::npos){shapeInfo.uncScale["norm_singletop"] = integral*0.05;}
 	//if(it->second.shortName.find("ttbargam")!=string::npos){shapeInfo.uncScale["norm_topgzw"] = integral*0.15;} 
-	if(it->second.shortName.find("otherbkg")!=string::npos){shapeInfo.uncScale["norm_otherbkgds"] = integral*0.53;} 
+	if(it->second.shortName.find("otherbkg")!=string::npos){shapeInfo.uncScale["norm_otherbkgds"] = integral*0.27;} 
 	if(runZh) {
 	  if(it->second.shortName.find("wlnu")!=string::npos){shapeInfo.uncScale["norm_wjet"] = integral*0.02;}     
 	} else {
@@ -2501,6 +2531,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       if(it==procs.end() || it->first=="total")continue;
       if(it->second.isSign) {
 	sign_procs.push_back(procName);
+	printf("pushing into sign_procs: %s\n", it->first.c_str());
       }
       if(it->second.isBckg) {clean_procs.push_back(procName); }
 
@@ -2556,6 +2587,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	if(C->first.find("mu_A_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" "; 
       }
 
+      std::vector<string> valid_procs;
+      for(unsigned int j=0; j<clean_procs.size(); j++){
+	if(clean_procs[j].find("Wh")!=string::npos) valid_procs.push_back(clean_procs[j]); //always include signal process in
+	else if (procs[clean_procs[j]].channels[C->first].shapes[histoName].histo()!=NULL) valid_procs.push_back(clean_procs[j]);
+      }
+
       bool TTcontrolregion(false);  
       bool nonTTcontrolregion(false); 
 
@@ -2585,20 +2622,20 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       fprintf(pFile, "-------------------------------\n");
 
       //yields
-      fprintf(pFile,"%55s  ", "bin");     for(unsigned int j=0; j<clean_procs.size(); j++){ 
+      fprintf(pFile,"%55s  ", "bin");     for(unsigned int j=0; j<valid_procs.size(); j++){ 
 	fprintf(pFile,"%8s ", "bin1")                     ;}  fprintf(pFile,"\n");
-      fprintf(pFile,"%55s  ", "process"); for(unsigned int j=0; j<clean_procs.size(); j++){ 
-	fprintf(pFile,"%8s ", procs[clean_procs[j]].shortName.c_str());
+      fprintf(pFile,"%55s  ", "process"); for(unsigned int j=0; j<valid_procs.size(); j++){ 
+	fprintf(pFile,"%8s ", procs[valid_procs[j]].shortName.c_str());
       }  
       fprintf(pFile,"\n");
-      fprintf(pFile,"%55s  ", "process"); for(unsigned int j=0; j<clean_procs.size(); j++){ 
+      fprintf(pFile,"%55s  ", "process"); for(unsigned int j=0; j<valid_procs.size(); j++){ 
 	fprintf(pFile,"%8i ", ((int)j)-(nsign-1)    );}  fprintf(pFile,"\n");
-      fprintf(pFile,"%55s  ", "rate");    for(unsigned int j=0; j<clean_procs.size(); j++){ 
+      fprintf(pFile,"%55s  ", "rate");    for(unsigned int j=0; j<valid_procs.size(); j++){ 
 	double fval=0;      
-	if (procs[clean_procs[j]].channels[C->first].shapes[histoName].histo()!=NULL) { 
-	  fval=procs[clean_procs[j]].channels[C->first].shapes[histoName].histo()->Integral();}    
+	if (procs[valid_procs[j]].channels[C->first].shapes[histoName].histo()!=NULL) { 
+	  fval=procs[valid_procs[j]].channels[C->first].shapes[histoName].histo()->Integral();}    
 	fprintf(pFile,"%8f ", fval);     
-	//	fprintf(pFile,"%8f ", procs[clean_procs[j]].channels[C->first].shapes[histoName].histo()->Integral() );
+	//	fprintf(pFile,"%8f ", procs[valid_procs[j]].channels[C->first].shapes[histoName].histo()->Integral() );
       }
       fprintf(pFile,"\n");
       fprintf(pFile, "-------------------------------\n");
@@ -2607,8 +2644,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         char line[2048];
         sprintf(line,"%-45s %-10s ", U->first.c_str(), U->second?"shapeN2":"lnN");
         bool isNonNull = false;
-        for(unsigned int j=0; j<clean_procs.size(); j++){
-          ShapeData_t& shapeInfo = procs[clean_procs[j]].channels[C->first].shapes[histoName];
+        for(unsigned int j=0; j<valid_procs.size(); j++){
+          ShapeData_t& shapeInfo = procs[valid_procs[j]].channels[C->first].shapes[histoName];
           double integral = 0.;
 	  if (shapeInfo.histo()!=NULL) integral=shapeInfo.histo()->Integral();
           if(shapeInfo.uncScale.find(U->first)!=shapeInfo.uncScale.end()){   isNonNull = true;   
@@ -2626,33 +2663,33 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       if(runZh) {
 	if(C->first.find("ee" )!=string::npos) {         
-	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n"); 
-	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");    
-	  fprintf(pFile,"zb_norm_e rateParam bin1 zllb 1 \n"); fprintf(pFile,"z2b_norm_e rateParam bin1 zll2b 1 \n");
-	  fprintf(pFile,"z3b_norm_e rateParam bin1 zll3b 1 \n"); fprintf(pFile,"z4b_norm_e rateParam bin1 zllgeq4b 1 \n"); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n"); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");    
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){  
+	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_e rateParam bin1 zll 1 \n");
+	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_e rateParam bin1 zll 1 \n");
+	  }
 	} else if (C->first.find("mumu" )!=string::npos) {  
-	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n"); 
-	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");    
-	  fprintf(pFile,"zb_norm_mu rateParam bin1 zllb 1 \n"); fprintf(pFile,"z2b_norm_mu rateParam bin1 zll2b 1 \n"); 
-	  fprintf(pFile,"z3b_norm_mu rateParam bin1 zll3b 1 \n"); fprintf(pFile,"z4b_norm_mu rateParam bin1 zllgeq4b 1 \n");  
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n"); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");    
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){
+	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_mu rateParam bin1 zll 1 \n");
+	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_mu rateParam bin1 zll 1 \n");
+	  }
 	} else if  (C->first.find("emu" )!=string::npos) {     
-	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");   
-	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");  
-	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");   
-	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");  
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  {fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");}
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  {fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");} 
 	} 
       } else {
 	if(C->first.find("e" )!=string::npos) {             
-	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");      
-	  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");   
-	  fprintf(pFile,"wb_norm_e rateParam bin1 wlnub 1 \n"); fprintf(pFile,"w2b_norm_e rateParam bin1 wlnu2b 1 \n"); 
-	  fprintf(pFile,"w3b_norm_e rateParam bin1 wlnu3b 1 \n"); fprintf(pFile,"w4b_norm_e rateParam bin1 wlnugeq4b 1 \n");    
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");      
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");   
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_e rateParam bin1 wlnu 1 \n");
 	  //	  fprintf(pFile,"w_norm_e rateParam bin1 wlnu 1 \n");     
 	} else if (C->first.find("mu" )!=string::npos) {    
-	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");            
-	  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n"); 
-	  fprintf(pFile,"wb_norm_mu rateParam bin1 wlnub 1 \n"); fprintf(pFile,"w2b_norm_mu rateParam bin1 wlnu2b 1 \n"); 
-	  fprintf(pFile,"w3b_norm_mu rateParam bin1 wlnu3b 1 \n"); fprintf(pFile,"w4b_norm_mu rateParam bin1 wlnugeq4b 1 \n");  
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");            
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n"); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_mu rateParam bin1 wlnu 1 \n"); 
 	  //	  fprintf(pFile,"w_norm_mu rateParam bin1 wlnu 1 \n"); 
 	}                  
       }
@@ -2948,12 +2985,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 	    if(jetBin.Contains("3b")){
 	      //	      double xbins[] = {-0.30, -0.18, -0.06, 0.06, 0.18, 0.30};  
-	      double xbins[] = {-0.30, -0.18, 0.0, 0.16, 0.2, 0.30};     
+	      double xbins[] = {-0.30, -0.1, 0.1, 0.20, 0.24, 0.30};     
+	      if(runZh)  {xbins[3]=0.16; xbins[4]=0.20;} // xbins = {-0.30, -0.1, 0.1, 0.20, 0.22, 0.30};     
 	      int nbins=sizeof(xbins)/sizeof(double);    
 	      unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);  
 	      utils::root::fixExtremities(unc->second, false, true); 
 	    }else if(jetBin.Contains("4b")){ 
-	      double xbins[] = {-0.30, -0.18, 0.0, 0.10, 0.14, 0.30}; 
+	      double xbins[] = {-0.30, -0.1, 0.1, 0.14, 0.22, 0.30}; 
+	      if(runZh) {xbins[3]=0.16; xbins[4]=0.22;} // xbins = {-0.30, -0.1, 0.1, 0.22, 0.24, 0.30};
 	      int nbins=sizeof(xbins)/sizeof(double);
 	      unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
 	      utils::root::fixExtremities(unc->second, false, true); 

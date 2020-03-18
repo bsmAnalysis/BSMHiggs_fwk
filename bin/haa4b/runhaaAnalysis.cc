@@ -176,8 +176,6 @@ int main(int argc, char* argv[])
     // will reweight the Z pt in DY+jets sample (optional)
     bool reweightDYZPt = runProcess.getParameter<bool>("reweightDYZPt");
     
-    bool reweightWPt = runProcess.getParameter<bool>("reweightWPt");
-
     // will produce the input root trees to BDT training (optional)
     bool runMVA = runProcess.getParameter<bool>("runMVA");
 
@@ -767,8 +765,9 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "dphilepmet", ";|#Delta#it{#phi}(lep,E_{T}^{miss})|;Events", 20,0,TMath::Pi()) );
     mon.addHistogram( new TH1F( "zmass_raw", ";#it{m}_{ll} [GeV];Events", 80,0,200) );   
 
+    mon.addHistogram( new TH1F( "ptw_full",       ";#it{p}_{T}^{V} [GeV];Events",310,-10,300.) );
     //MVA BDT
-    mon.addHistogram( new TH1F( "bdt", ";BDT;Events", 30, -0.3, 0.3) );
+    mon.addHistogram( new TH1F( "bdt", ";BDT;Events", 35, -0.35,0.35) );
     
     // Debugging SFs
     TH2F* musf_id =(TH2F*)mon.addHistogram(new TProfile2D("musfid", ";muon p_{T} (GeV); muon |#eta|",20,0.,400.,10,0,2.5) );    
@@ -786,13 +785,13 @@ int main(int argc, char* argv[])
 
     std::vector<double> optim_Cuts1_bdt;
     optim_Cuts1_bdt.push_back(-0.4); //add a bin in the shapes with a BDT cut of -0.4
-    for(double bdt=-0.30;bdt<0.30;bdt+=0.02) { optim_Cuts1_bdt.push_back(bdt); }
+    for(double bdt=-0.35;bdt<0.35;bdt+=0.02) { optim_Cuts1_bdt.push_back(bdt); }
 
     TH2F* Hoptim_cuts =(TH2F*)mon.addHistogram(new TProfile2D("optim_cut", ";cut index;variable", optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 1, 0, 1)) ;
     Hoptim_cuts->GetYaxis()->SetBinLabel(1, "BDT>");
     for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){ Hoptim_cuts->Fill(index, 0.0, optim_Cuts1_bdt[index]); }
     for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
-      mon.addHistogram( new TH2F (TString("bdt_shapes")+varNames[ivar],";cut index;BDT;Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 30,-0.3,0.3) );
+      mon.addHistogram( new TH2F (TString("bdt_shapes")+varNames[ivar],";cut index;BDT;Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 35,-0.35,0.35) );
       if (ivar==0) {         
 	mon.addHistogram( new TH2F (TString("higgsMass_shapes")+varNames[ivar],";cut index;m_{h} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 40,0.,800.) );
 	mon.addHistogram( new TH2F (TString("higgsPt_shapes")+varNames[ivar],";cut index;p_{T}^{h} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 30,0.,500.));
@@ -804,7 +803,7 @@ int main(int argc, char* argv[])
 	mon.addHistogram( new TH2F (TString("dRave_shapes")+varNames[ivar],";cut index;#Delta R(b,b)_{ave};Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),50,0.,5.));
 	mon.addHistogram( new TH2F (TString("dmmin_shapes")+varNames[ivar],";cut index;#Delta m_{b,b}^{min};Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),25,0.,250.));
 	mon.addHistogram( new TH2F (TString("dphijmet_shapes")+varNames[ivar],";cut index;#Delta#it{#phi}(jet,E_{T}^{miss})_{min}|;Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),20,0,TMath::Pi()) );
-	mon.addHistogram( new TH2F (TString("lep_pt_raw_shapes")+varNames[ivar],";cut index;lepton p_{T} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),80,0,200.));
+	mon.addHistogram( new TH2F (TString("lep_pt_raw_shapes")+varNames[ivar],";cut index;lepton p_{T} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(),50,0,200.));
       }
     }
 
@@ -1067,42 +1066,26 @@ int main(int argc, char* argv[])
     //####################################################################################################################
     //###########################################           Z Pt SFs         ###########################################
     //####################################################################################################################
-    TH1F *zptSF_3j = new TH1F(), *zptSF_4j = new TH1F(), *zptSF_5j = new TH1F();
-    TF1  *zfit_3j  = new TF1(),  *zfit_4j  = new TF1(),  *zfit_5j  = new TF1();
-    TH1F *wptSF_3j = new TH1F(), *wptSF_4j = new TH1F(), *wptSF_5j = new TH1F();
-    TF1  *wfit_3j  = new TF1(),  *wfit_4j  = new TF1(),  *wfit_5j  = new TF1();
-    double thred_3j, thred_4j, thred_5j;
+    TH1F *zptSF_2j = new TH1F(), *zptSF_3j = new TH1F(), *zptSF_4j = new TH1F(), *zptSF_5j = new TH1F();
+    TF1  *zfit_2j  = new TF1(), *zfit_3j  = new TF1(),  *zfit_4j  = new TF1(),  *zfit_5j  = new TF1();
+    double thred_2j, thred_3j, thred_4j, thred_5j;
+    double parmin;
     if(!reweightDYZPt && isMC_DY && !dtag.Contains("amcNLO")){ // apply Z Pt weights on LO DY samples
       TString zptfilename;
-      double parmin;
       if(is2016MC) zptfilename = zptDir + "/" +"DYSF_2016.root";
       else if(is2017MC) zptfilename = zptDir + "/" +"DYSF_2017.root";
       else if(is2018MC) zptfilename = zptDir + "/" +"DYSF_2018.root";
       TFile *zptfile = TFile::Open(zptfilename);
       if(zptfile->IsZombie() || !zptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< zptfilename<<std::endl;return -1;}
+      zptSF_2j = (TH1F *)zptfile->Get("2jets_sf");zptSF_2j->SetDirectory(0);
       zptSF_3j = (TH1F *)zptfile->Get("3jets_sf");zptSF_3j->SetDirectory(0);
       zptSF_4j = (TH1F *)zptfile->Get("4jets_sf");zptSF_4j->SetDirectory(0);
       zptSF_5j = (TH1F *)zptfile->Get("5+jets_sf");zptSF_5j->SetDirectory(0);
-      zfit_3j  = (TF1 *)zptfile->Get("3jets_f"); zfit_3j->GetRange(parmin, thred_3j);
-      zfit_4j  = (TF1 *)zptfile->Get("4jets_f"); zfit_4j->GetRange(parmin, thred_4j);
-      zfit_5j  = (TF1 *)zptfile->Get("5+jets_f"); zfit_5j->GetRange(parmin, thred_5j);
+      //zfit_2j  = (TF1 *)zptfile->Get("2jets_f"); zfit_2j->GetRange(parmin, thred_2j);
+      //zfit_3j  = (TF1 *)zptfile->Get("3jets_f"); zfit_3j->GetRange(parmin, thred_3j);
+      //zfit_4j  = (TF1 *)zptfile->Get("4jets_f"); zfit_4j->GetRange(parmin, thred_4j);
+      //zfit_5j  = (TF1 *)zptfile->Get("5+jets_f"); zfit_5j->GetRange(parmin, thred_5j);
       zptfile->Close();
-    }
-    if(!reweightWPt && isMC_WJets && !dtag.Contains("amcNLO")){ // apply Z Pt weights on LO DY samples
-      TString wptfilename;
-      double parmin;
-      if(is2016MC) wptfilename = zptDir + "/" +"WSF_2016.root";
-      else if(is2017MC) wptfilename = zptDir + "/" +"WSF_2017.root";
-      else if(is2018MC) wptfilename = zptDir + "/" +"WSF_2018.root";
-      TFile *wptfile = TFile::Open(wptfilename);
-      if(wptfile->IsZombie() || !wptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< wptfilename<<std::endl;return -1;}
-      wptSF_3j = (TH1F *)wptfile->Get("3jets_w_sf");wptSF_3j->SetDirectory(0);
-      wptSF_4j = (TH1F *)wptfile->Get("4jets_w_sf");wptSF_4j->SetDirectory(0);
-      wptSF_5j = (TH1F *)wptfile->Get("5+jets_w_sf");wptSF_5j->SetDirectory(0);
-      wfit_3j  = (TF1 *)wptfile->Get("3jets_w_f"); wfit_3j->GetRange(parmin, thred_3j);
-      wfit_4j  = (TF1 *)wptfile->Get("4jets_w_f"); wfit_4j->GetRange(parmin, thred_4j);
-      wfit_5j  = (TF1 *)wptfile->Get("5+jets_w_f");wfit_5j->GetRange(parmin, thred_5j); 
-      wptfile->Close();
     }
 
 
@@ -1193,29 +1176,29 @@ int main(int argc, char* argv[])
 
 	// Extract Z pt reweights from LO and NLO DY samples
 	float zpt = -1, wpt = -1;
-	if(isMC_DY || isMC_WJets){
+	if(isMC_DY){
 	  PhysicsObjectCollection &genparticles = phys.genparticles;
+	  PhysicsObjectCollection zleps;
 	  for (auto & genparticle : genparticles) {
-//	    printf("Parton : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, status=%d\n",
+//	    printf("Parton : ID=%6d, m=%5.1f, momID=%6d ,pt=%6.1f, status=%d\n",
 //		   genparticle.id,
 //		   genparticle.mass(),
 //		   genparticle.momid,
 //		   genparticle.pt(),
 //		   genparticle.status
 //		   );
-	      
-	    if(genparticle.id==23) {  
+	    if(fabs(genparticle.id)>=11 && fabs(genparticle.id)<=18) zleps.push_back(genparticle);
+	    if(genparticle.id==23){   
 	      if(zpt<0)
 	        zpt = genparticle.pt();
 	      else
 		std::cout << "Found multiple Z particles in event: " << iev << std::endl;
 	    }
-	    if(fabs(genparticle.id)==24) {  
-	      if(wpt<0)
-	        wpt = genparticle.pt();
-	      else
-		std::cout << "Found multiple W particles in event: " << iev << std::endl;
-	    }
+	  }
+
+          if(zleps.size()==2 && zpt<=0){
+	    LorentzVector zll(zleps[0]+zleps[1]);
+	    zpt = zll.pt();
 	  }
 	}
 
@@ -1229,6 +1212,7 @@ int main(int argc, char* argv[])
 
 	  int itop(0);
 	  for (auto & top : partons) {
+	    if(verbose){
 
 	    printf("Parton : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, status=%d\n",
 		   top.id,
@@ -1237,7 +1221,7 @@ int main(int argc, char* argv[])
 		   top.pt(),
 		   top.status
 		   );
-
+	    }
 	    if (top.id==6 && top.status==62) {
 	      SFtop=exp(0.0615-0.0005*top.pt());
 	      itop++;
@@ -1784,39 +1768,6 @@ int main(int argc, char* argv[])
 	  
 	}
 
-	//	split inclusive DY sample into DYToLL + Nb
-	if (isMC_DY || isMC_WJets) {
-	  int nbjet(0);
-	  for(size_t ijet=0; ijet<corrJets.size(); ijet++) {
-	    if(corrJets[ijet].pt()<jet_threshold_) continue;
-	    if(fabs(corrJets[ijet].eta())>2.5) continue;
-
-	    //jet ID
-	    if(!corrJets[ijet].isPFLoose) continue;
-	    
-	     // //check overlaps with selected leptons
-	    bool hasOverlap(false);
-	    for(size_t ilep=0; ilep<selLeptons.size(); ilep++) {
-	      double dR = deltaR( corrJets[ijet], selLeptons[ilep] );
-	      if (dR<0.4) hasOverlap=true;
-	    }
-	    if(hasOverlap) continue;
-
-	    if(abs(corrJets[ijet].flavid)==5) { nbjet++; }
-	  } // end RECO jet loop
-	  if (isMC_DY) {
-	    if (mctruthmode==31) { if (nbjet>1) continue; }
-	    if (mctruthmode==32) { if (nbjet!=2) continue; }
-	    if (mctruthmode==33) { if (nbjet!=3) continue; }
-	    if (mctruthmode==34) { if (nbjet<4) continue; }
-	  } else {
-	    if (mctruthmode==41) { if (nbjet>1) continue; }
-	    if (mctruthmode==42) { if (nbjet!=2) continue; }
-	    if (mctruthmode==43) { if (nbjet!=3) continue; }
-	    if (mctruthmode==44) { if (nbjet<4) continue; }
-	  }
-	  
-	}
 	/*
         //split inclusive DY sample into DYToLL and DYToTauTau
         if(isMC && mctruthmode==1113) {
@@ -1983,6 +1934,7 @@ int main(int argc, char* argv[])
 
 
 	PhysicsObjectJetCollection GoodIdJets_orig;
+	PhysicsObjectJetCollection GoodIdbJets_orig;
 
 	int nJetsGood30(0);
 	float mindphijmet(999.);
@@ -2004,6 +1956,9 @@ int main(int argc, char* argv[])
 	  if(hasOverlap) continue;
 	      
 	  GoodIdJets_orig.push_back(corrJets[ijet]);
+	  double btag_dsc = -1;
+	  if ( use_DeepCSV ) {btag_dsc = corrJets[ijet].btag1;} else {btag_dsc = corrJets[ijet].btag0;}
+	  if(btag_dsc>MediumWP) GoodIdbJets_orig.push_back(corrJets[ijet]);
 	  if(corrJets[ijet].pt()>30) nJetsGood30++;
 
 
@@ -2013,6 +1968,30 @@ int main(int argc, char* argv[])
 
 	}
 
+
+	if(isMC_DY && !dtag.Contains("amcNLO") && !reweightDYZPt){
+	  double ptsf=1.0;
+	  if(GoodIdJets_orig.size()==2) {ptsf = getSFfrom1DHist(zpt, zptSF_2j);}//{ptsf = (zpt<thred_2j) ? zfit_2j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_2j);}// std::cout << "3j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_3j) << std::endl;}
+	  else if(GoodIdJets_orig.size()==3) {ptsf = getSFfrom1DHist(zpt, zptSF_3j);}//{ptsf = (zpt<thred_3j) ? zfit_3j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_3j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
+	  else if(GoodIdJets_orig.size()==4) {ptsf = getSFfrom1DHist(zpt, zptSF_4j);}//{ptsf = (zpt<thred_4j) ? zfit_4j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_4j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
+	  else if(GoodIdJets_orig.size()>=5) {ptsf = getSFfrom1DHist(zpt, zptSF_5j);}//{ptsf = (zpt<thred_5j) ? zfit_5j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_5j);}// std::cout << "5j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_5j) << std::endl;}
+	  weight *= ptsf;
+	}
+	if(isMC_DY ){
+	  mon.fillHisto("jetsMulti","alljets",GoodIdJets_orig.size(),1);
+	  mon.fillHisto("ptw","alljets",zpt,xsecWeight*genWeight); 
+	  mon.fillHisto("ptw_full","debug",zpt,1); 
+	  if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","2jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_2jets",zpt,xsecWeight*genWeight);}
+	  else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,xsecWeight*genWeight);}
+	  else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,xsecWeight*genWeight);}
+	  else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,xsecWeight*genWeight);}
+	  if(GoodIdbJets_orig.size()>=2){
+	    if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","2jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_2jets_2bj",zpt,xsecWeight*genWeight);}
+	    else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","3jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets_2bj",zpt,xsecWeight*genWeight);}
+	    else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","4jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets_2bj",zpt,xsecWeight*genWeight);}
+	    else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","5+jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets_2bj",zpt,xsecWeight*genWeight);}
+	  }
+	}
 	//note this also propagates to all MET uncertainties
 	//	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1));
 	// decorrelate JES uncertainties
@@ -2798,42 +2777,6 @@ int main(int argc, char* argv[])
 	    else {tag_qcd="_D_";} // region D
 	  } else { continue; }
 	 
-	  if(ivar==0 && reweightDYZPt && isMC_DY ){
-	    mon.fillHisto("jetsMulti","alljets",GoodIdJets.size(),1);
-	    mon.fillHisto("ptw","alljets",zpt,weight);
-	    if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",zpt,weight);}
-	    else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",zpt,weight);}
-	    else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,weight);}
-
-	    TString event_cat = eventCategoryPlot.GetLabel(evtCatPlot);
-	    mon.fillHisto("ptw",event_cat+"_jets",zpt,weight);
-	  }
-
-	  if(isMC_DY && !dtag.Contains("amcNLO") && !reweightDYZPt){
-	    double ptsf=1.0;
-	    if(GoodIdJets.size()==3) {ptsf = (zpt<thred_3j) ? zfit_3j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_3j);}// std::cout << "3j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_3j) << std::endl;}
-	    else if(GoodIdJets.size()==4) {ptsf = (zpt<thred_4j) ? zfit_4j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_4j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
-	    else if(GoodIdJets.size()>=5) {ptsf = (zpt<thred_5j) ? zfit_5j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_5j);}// std::cout << "5j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_5j) << std::endl;}
-	    weight *= ptsf;
-	  }
-	  if(ivar==0 && reweightWPt && isMC_WJets ){
-	    mon.fillHisto("jetsMulti","alljets_w",GoodIdJets.size(),1);
-	    mon.fillHisto("ptw","alljets_w",wpt,weight);
-	    if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets_w",wpt,weight);}
-	    else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets_w",wpt,weight);}
-	    else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets_w",wpt,weight);}
-
-	    TString event_cat = eventCategoryPlot.GetLabel(evtCatPlot);
-	    mon.fillHisto("ptw",event_cat+"_jets_w",wpt,weight);
-	  }
-
-	  if(isMC_WJets && !dtag.Contains("amcNLO") && !reweightWPt){
-	    double ptsf=1.0;
-	    if(GoodIdJets.size()==3) {ptsf = (wpt<thred_3j) ? wfit_3j->Eval(wpt) : getSFfrom1DHist(wpt, wptSF_3j); }
-	    else if(GoodIdJets.size()==4) {ptsf = (wpt<thred_4j) ? wfit_4j->Eval(wpt) : getSFfrom1DHist(wpt, wptSF_4j); }
-	    else if(GoodIdJets.size()>=5) {ptsf = (wpt<thred_5j) ? wfit_5j->Eval(wpt) : getSFfrom1DHist(wpt, wptSF_5j); }
-	    weight *= ptsf;
-	  }
 
 	  
 	  //Define event category according to Nb multiplicity: Nb=0->W CR, Nb=1,2->top CR, Nb=3,4->SR

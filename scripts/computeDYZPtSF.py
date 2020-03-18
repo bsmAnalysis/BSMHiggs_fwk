@@ -15,9 +15,12 @@ iLumi=35866.932
 #iLumi=59740.565
 
 #hists = ['alljets','3jets','4jets','5+jets','2b_3j_jets','2b_4j_jets','2b_geq5j_jets','3b_3j_jets','3b_4j_jets','3b_geq5j_jets','4b_4j_jets','4b_geq5j_jets','5b_geq5j_jets']
-hists_dy = ['alljets','3jets','4jets','5+jets']
+#hists_dy = ['alljets','2jets','3jets','4jets','5+jets']
+hists_dy = ['alljets','2jets','3jets','4jets','5+jets']
 hists_wj = ['alljets_w','3jets_w','4jets_w','5+jets_w']
 #hists = ['0b', '1b', '2b', '3b', '4+b']
+
+startbin = 3 
 
 """
 Gets the value of a given item
@@ -78,10 +81,12 @@ def scaleinFile(in_f, weight, hists):
 def ratioPlot(hLO,hNLO,ratio_h,name):
 
     thred = 500
-    if '3jets' in name: thred = 200
-    elif '4jets' in name: thred = 250
-    elif '5+jets' in name: thred = 300
+    if '2jets' in name: thred = 150
+    elif '3jets' in name: thred = 200
+    elif '4jets' in name: thred = 200
+    elif '5+jets' in name: thred = 250
     ratio_h = weightedAverage(ratio_h,hNLO,thred)
+    
     # Define the Canvas
     c = r.TCanvas(name,name,800,800)
     
@@ -96,7 +101,7 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     if ymin<0: ymin = 1.1*ymin
     else: ymin = 0.9*ymin
     hLO.GetYaxis().SetRangeUser(ymin,ymax)
-#    hLO.GetXaxis().SetRangeUser(0,300)
+    hLO.GetXaxis().SetRangeUser(0,300)
     hLO.GetYaxis().SetTitleOffset(1.55)
     hLO.GetYaxis().SetTitleSize(25)
     hLO.GetYaxis().SetTitleFont(43)
@@ -138,8 +143,8 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
 
     # Define the ratio plot
     ratio = ratio_h.DrawCopy("ehist")
-#    ratio.GetXaxis().SetRangeUser(0,300)
-    ratio.GetYaxis().SetRangeUser(0,2.4)
+    ratio.GetXaxis().SetRangeUser(0,300)
+    ratio.GetYaxis().SetRangeUser(0.8,1.15)
 #    ratio.GetYaxis().SetRangeUser(ratio.GetMinimum()*0.8,1.2*ratio.GetMaximum())
 #    ratio = hNLO.Clone(name+"_clone")
     ratio.SetLineColor(r.kBlack)
@@ -163,7 +168,7 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     ratio.GetXaxis().SetTitleOffset(4.)
     ratio.GetXaxis().SetLabelFont(43)
     ratio.GetXaxis().SetLabelSize(35)
-    fitf = r.TF1(name+"_f", "pol3", 0, thred)
+#    fitf = r.TF1(name+"_f", "pol4", 0, thred)
     ratio.Fit(name+"_f", "R")
     ratio.Draw("E0")
 #    ratio.Draw("ehist");       # Draw the ratio plot
@@ -171,9 +176,10 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     line = r.TLine(r.gPad.GetUxmin(), 1, r.gPad.GetUxmax(), 1)
     line.Draw("same")
     SetOwnership( line, 0 )
-    func = ratio.GetFunction(name+"_f")
+#    func = ratio.GetFunction(name+"_f")
     
-    return c,func
+#    return c,func
+    return c
 
 
 def produceZptSFs(inputLO, inputNLO, output_name):
@@ -203,33 +209,22 @@ def produceZptSFs(inputLO, inputNLO, output_name):
     	    histLO = inFileLO.Get(hist+ztype+"_ptw")
     	    histNLO = inFileNLO.Get(hist+ztype+"_ptw")
     	    if not (histLO and histNLO): continue
-    	    if not (abs(histLO.Integral())>0 and abs(histNLO.Integral())>0): continue
     	
     	    histLO.SetDirectory(0)
     	    histNLO.SetDirectory(0)
-    	    histLO.Scale(1./abs(histLO.Integral()))
-    	    histNLO.Scale(1./abs(histNLO.Integral()))
-    	    ratios_out = r.TH1F(hist+ztype+'_sf',hist+ztype+'_sf',histLO.GetXaxis().GetNbins(), histLO.GetXaxis().GetXmin(), histLO.GetXaxis().GetXmax())
-    	    for i in range(1,histLO.GetXaxis().GetNbins()+1):
-    	        denominator = histLO.GetBinContent(i)
-    	        numerator = histNLO.GetBinContent(i)
-    #	        if(abs(denominator)>0.):print("numerator: {}, denominator: {},numerator/denominator:{}".format(numerator,denominator,numerator/denominator))
-    	        if(abs(denominator)>0.): 
-    		    ratios_out.SetBinContent(i,numerator/denominator)
-    		    denominator_error = histLO.GetBinError(i)
-    		    numerator_error = histNLO.GetBinError(i)
-    		    if(abs(numerator)>0.):
-    		        ratios_out.SetBinError(i, math.sqrt((denominator_error/denominator)**2+(numerator_error/numerator)**2)*(numerator/denominator) )
-    		    else:
-    		        ratios_out.SetBinError(i,0)
-    	        else: ratios_out.SetBinContent(i,0)
+    	    histLO.Scale(1./abs(histLO.Integral(startbin, histLO.GetNbinsX())))
+    	    histNLO.Scale(1./abs(histNLO.Integral(startbin, histLO.GetNbinsX())))
+    	    ratios_out = histNLO.Clone(hist+ztype+'_sf')
+	    ratios_out.Sumw2()
+	    ratios_out.Divide(histLO)
     	    print("  "+hist+ztype+'_sf')
-#	    ratio_out = weightedAverage(ratios_out,histNLO,150)
-#    	    if "lowPt" in inputLO: c,f = ratioPlot(histLO,histNLO, ratios_out, hist+ztype+" Low Mass")
-#    	    elif "highPt" in inputLO: c,f = ratioPlot(histLO,histNLO, ratios_out, hist+ztype+ " High Mass")
-	    c,f = ratioPlot(histLO,histNLO, ratios_out, hist+ztype)
+            for i in range(1,startbin):
+              ratios_out.SetBinContent(i,1)
+              ratios_out.SetBinError(i,0)
+#	    c,f = ratioPlot(histLO,histNLO, ratios_out, hist+ztype)
+	    c = ratioPlot(histLO,histNLO, ratios_out, hist+ztype)
     	    c.Write()
-	    f.Write()
+#	    f.Write()
 	    if "lowPt" in inputLO:  c.SaveAs(os.path.split(output_name)[0]+'/'+hist+ztype+ "_LowMass.pdf")
 	    elif "highPt" in inputLO: c.SaveAs(os.path.split(output_name)[0]+'/'+hist+ztype+ "_HighMass.pdf")
 	    else: c.SaveAs(os.path.split(output_name)[0]+'/'+hist+ztype+ ".pdf")
@@ -288,13 +283,17 @@ for proc in procList :
         data = desc['data']
         for d in data :
             origdtag = getByLabel(d,'dtag','')
-	    if "10to50" in origdtag: continue
+#	    if "10to50" in origdtag: continue
             dtag = origdtag
 	    if(onlytag!='all') :
 		if(dtag.find(onlytag)<0) : continue
             if(mctruthmode!=0) : dtag+='_filt'+str(mctruthmode)
 
             outfile = outdir +'/'+ dtag + '_' + 'ZPt.root'
+            status, output = commands.getstatusoutput('ls '+inputdir+'/'+dtag+'_*.root')
+            if status and not os.path.isfile(outfile) > 0 :
+                print "!!!!! Warning: No root files for the dtag: " + origdtag
+                continue
 	    if tag == "Z#rightarrow ll": 
 	        DYs.append(dtag)
 		hists = hists_dy
@@ -303,10 +302,6 @@ for proc in procList :
 		hists = hists_wj
 	    if os.path.isfile(outfile): 
 		continue
-            status, output = commands.getstatusoutput('ls '+inputdir+'/'+dtag+'_*.root')
-            if status > 0 :
-                print "!!!!! Warning: No root files for the dtag: " + origdtag
-                continue
             segment = 0
             for file in glob.glob(inputdir+'/'+dtag+'_*.root'):
                 out_temp = outdir +'/'+ dtag + '_' + str(segment) + '_zpt.root'
@@ -315,13 +310,17 @@ for proc in procList :
             commands.getstatusoutput('hadd -f '+outfile+' '+outdir +'/'+ dtag + '_*' + '_zpt.root')
             #commands.getstatusoutput('hadd -f '+outfile+' '+inputdir+'/'+dtag+'_*.root')
             commands.getstatusoutput('rm -rf '+outdir +'/'+ dtag + '_*' + '_zpt.root')
-	    if "amcNLO" in dtag: 
-		status, output = commands.getstatusoutput('find {} -name "{}*.root" | wc -l'.format(inputdir, dtag))
-		print(dtag+": "+str(iLumi/int(output)))
-		scaleinFile(outfile, iLumi/int(output), hists)
-	    else: 
-		print(dtag+": "+str(iLumi))
-		scaleinFile(outfile, iLumi, hists)
+	    
+#	    status, output = commands.getstatusoutput('find {} -name "{}*.root" | wc -l'.format(inputdir, dtag))
+#	    print(dtag+": "+str(iLumi/int(output)))
+#	    scaleinFile(outfile, iLumi/int(output), hists)
+#	    if "amcNLO" in dtag: 
+#		status, output = commands.getstatusoutput('find {} -name "{}*.root" | wc -l'.format(inputdir, dtag))
+#		print(dtag+": "+str(iLumi/int(output)))
+#		scaleinFile(outfile, iLumi/int(output), hists)
+#	    else: 
+#		print(dtag+": "+str(iLumi))
+#		scaleinFile(outfile, iLumi, hists)
 
 DY_LO_lowpt = ''
 DY_LO_highpt = ''
@@ -345,10 +344,7 @@ if len(DY_LO_lowpt) > 0: commands.getstatusoutput('hadd -f '+outdir +'/LODY_lowP
 if len(DY_LO_highpt) > 0: commands.getstatusoutput('hadd -f '+outdir +'/LODY_highPt.root'+' '+DY_LO_highpt)
 if len(DY_NLO_lowpt) > 0: commands.getstatusoutput('hadd -f '+outdir +'/NLODY_lowPt.root'+' '+DY_NLO_lowpt)
 if len(DY_NLO_highpt) > 0: commands.getstatusoutput('hadd -f '+outdir +'/NLODY_highPt.root'+' '+DY_NLO_highpt)
-if len(WJ_LO) > 0: commands.getstatusoutput('hadd -f '+outdir +'/LOWJ.root'+' '+WJ_LO)
-if len(WJ_NLO) > 0: commands.getstatusoutput('hadd -f '+outdir +'/NLOWJ.root'+' '+WJ_NLO)
 
 if os.path.isfile(outdir +'/LODY_lowPt.root') and os.path.isfile(outdir +'/NLODY_lowPt.root'): produceZptSFs(outdir+'/LODY_lowPt.root',outdir+'/NLODY_lowPt.root',outdir+'/DYSF_lowPt.root')
 if os.path.isfile(outdir +'/LODY_highPt.root') and os.path.isfile(outdir +'/NLODY_highPt.root'): produceZptSFs(outdir+'/LODY_highPt.root',outdir+'/NLODY_highPt.root',outdir+'/DYSF_highPt.root')
-if os.path.isfile(outdir +'/LOWJ.root') and os.path.isfile(outdir +'/NLOWJ.root'): produceZptSFs(outdir+'/LOWJ.root',outdir+'/NLOWJ.root',outdir+'/WJSF.root')
 raw_input("Press [ENTER] to exit...")
