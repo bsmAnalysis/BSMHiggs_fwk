@@ -176,8 +176,6 @@ int main(int argc, char* argv[])
     // will reweight the Z pt in DY+jets sample (optional)
     bool reweightDYZPt = runProcess.getParameter<bool>("reweightDYZPt");
     
-    bool reweightWPt = runProcess.getParameter<bool>("reweightWPt");
-
     // will produce the input root trees to BDT training (optional)
     bool runMVA = runProcess.getParameter<bool>("runMVA");
 
@@ -1070,12 +1068,10 @@ int main(int argc, char* argv[])
     //####################################################################################################################
     TH1F *zptSF_2j = new TH1F(), *zptSF_3j = new TH1F(), *zptSF_4j = new TH1F(), *zptSF_5j = new TH1F();
     TF1  *zfit_2j  = new TF1(), *zfit_3j  = new TF1(),  *zfit_4j  = new TF1(),  *zfit_5j  = new TF1();
-    TH1F *wptSF_3j = new TH1F(), *wptSF_4j = new TH1F(), *wptSF_5j = new TH1F();
-    TF1  *wfit_3j  = new TF1(),  *wfit_4j  = new TF1(),  *wfit_5j  = new TF1();
     double thred_2j, thred_3j, thred_4j, thred_5j;
+    double parmin;
     if(!reweightDYZPt && isMC_DY && !dtag.Contains("amcNLO")){ // apply Z Pt weights on LO DY samples
       TString zptfilename;
-      double parmin;
       if(is2016MC) zptfilename = zptDir + "/" +"DYSF_2016.root";
       else if(is2017MC) zptfilename = zptDir + "/" +"DYSF_2017.root";
       else if(is2018MC) zptfilename = zptDir + "/" +"DYSF_2018.root";
@@ -1085,28 +1081,12 @@ int main(int argc, char* argv[])
       zptSF_3j = (TH1F *)zptfile->Get("3jets_sf");zptSF_3j->SetDirectory(0);
       zptSF_4j = (TH1F *)zptfile->Get("4jets_sf");zptSF_4j->SetDirectory(0);
       zptSF_5j = (TH1F *)zptfile->Get("5+jets_sf");zptSF_5j->SetDirectory(0);
-      zfit_2j  = (TF1 *)zptfile->Get("2jets_f"); zfit_2j->GetRange(parmin, thred_2j);
-      zfit_3j  = (TF1 *)zptfile->Get("3jets_f"); zfit_3j->GetRange(parmin, thred_3j);
-      zfit_4j  = (TF1 *)zptfile->Get("4jets_f"); zfit_4j->GetRange(parmin, thred_4j);
-      zfit_5j  = (TF1 *)zptfile->Get("5+jets_f"); zfit_5j->GetRange(parmin, thred_5j);
+      //zfit_2j  = (TF1 *)zptfile->Get("2jets_f"); zfit_2j->GetRange(parmin, thred_2j);
+      //zfit_3j  = (TF1 *)zptfile->Get("3jets_f"); zfit_3j->GetRange(parmin, thred_3j);
+      //zfit_4j  = (TF1 *)zptfile->Get("4jets_f"); zfit_4j->GetRange(parmin, thred_4j);
+      //zfit_5j  = (TF1 *)zptfile->Get("5+jets_f"); zfit_5j->GetRange(parmin, thred_5j);
       zptfile->Close();
     }
-//    if(!reweightWPt && isMC_WJets && !dtag.Contains("amcNLO")){ // apply Z Pt weights on LO DY samples
-//      TString wptfilename;
-//      double parmin;
-//      if(is2016MC) wptfilename = zptDir + "/" +"WSF_2016.root";
-//      else if(is2017MC) wptfilename = zptDir + "/" +"WSF_2017.root";
-//      else if(is2018MC) wptfilename = zptDir + "/" +"WSF_2018.root";
-//      TFile *wptfile = TFile::Open(wptfilename);
-//      if(wptfile->IsZombie() || !wptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< wptfilename<<std::endl;return -1;}
-//      wptSF_3j = (TH1F *)wptfile->Get("3jets_w_sf");wptSF_3j->SetDirectory(0);
-//      wptSF_4j = (TH1F *)wptfile->Get("4jets_w_sf");wptSF_4j->SetDirectory(0);
-//      wptSF_5j = (TH1F *)wptfile->Get("5+jets_w_sf");wptSF_5j->SetDirectory(0);
-//      wfit_3j  = (TF1 *)wptfile->Get("3jets_w_f"); wfit_3j->GetRange(parmin, thred_3j);
-//      wfit_4j  = (TF1 *)wptfile->Get("4jets_w_f"); wfit_4j->GetRange(parmin, thred_4j);
- //     wfit_5j  = (TF1 *)wptfile->Get("5+jets_w_f");wfit_5j->GetRange(parmin, thred_5j); 
-//      wptfile->Close();
-//    }
 
 
     //####################################################################################################################
@@ -1196,7 +1176,7 @@ int main(int argc, char* argv[])
 
 	// Extract Z pt reweights from LO and NLO DY samples
 	float zpt = -1, wpt = -1;
-	if(isMC_DY || isMC_WJets){
+	if(isMC_DY){
 	  PhysicsObjectCollection &genparticles = phys.genparticles;
 	  PhysicsObjectCollection zleps;
 	  for (auto & genparticle : genparticles) {
@@ -1214,20 +1194,12 @@ int main(int argc, char* argv[])
 	      else
 		std::cout << "Found multiple Z particles in event: " << iev << std::endl;
 	    }
-	    if(fabs(genparticle.id)==24) {  
-	      if(wpt<0)
-	        wpt = genparticle.pt();
-	      else
-		std::cout << "Found multiple W particles in event: " << iev << std::endl;
-	    }
 	  }
 
           if(zleps.size()==2 && zpt<=0){
 	    LorentzVector zll(zleps[0]+zleps[1]);
 	    zpt = zll.pt();
-//	  printf("reconstructed from two leptons: m=%5.1f, pt=%5.1f, px=%6.1f, py=%6.1f\n", zll.mass(), zll.pt(),zll.px(),zll.py());
 	  }
-//	  else {std::cout<<"size of zleps: "<<zleps.size()<<std::endl;}
 	}
 
 	// Apply Top pt-reweighting
@@ -1962,6 +1934,7 @@ int main(int argc, char* argv[])
 
 
 	PhysicsObjectJetCollection GoodIdJets_orig;
+	PhysicsObjectJetCollection GoodIdbJets_orig;
 
 	int nJetsGood30(0);
 	float mindphijmet(999.);
@@ -1983,6 +1956,9 @@ int main(int argc, char* argv[])
 	  if(hasOverlap) continue;
 	      
 	  GoodIdJets_orig.push_back(corrJets[ijet]);
+	  double btag_dsc = -1;
+	  if ( use_DeepCSV ) {btag_dsc = corrJets[ijet].btag1;} else {btag_dsc = corrJets[ijet].btag0;}
+	  if(btag_dsc>MediumWP) GoodIdbJets_orig.push_back(corrJets[ijet]);
 	  if(corrJets[ijet].pt()>30) nJetsGood30++;
 
 
@@ -1995,11 +1971,10 @@ int main(int argc, char* argv[])
 
 	if(isMC_DY && !dtag.Contains("amcNLO") && !reweightDYZPt){
 	  double ptsf=1.0;
-	  if(GoodIdJets_orig.size()==2) {ptsf = (zpt<thred_2j) ? zfit_2j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_2j);}// std::cout << "3j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_3j) << std::endl;}
-	  else if(GoodIdJets_orig.size()==3) {ptsf = (zpt<thred_3j) ? zfit_3j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_3j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
-	  else if(GoodIdJets_orig.size()==4) {ptsf = (zpt<thred_4j) ? zfit_4j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_4j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
-	  else if(GoodIdJets_orig.size()>=5) {ptsf = (zpt<thred_5j) ? zfit_5j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_5j);}// std::cout << "5j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_5j) << std::endl;}
-//	  if(zpt <= 0) ptsf=1.0; // set it to 1 if cannot find a GEN Z particle
+	  if(GoodIdJets_orig.size()==2) {ptsf = getSFfrom1DHist(zpt, zptSF_2j);}//{ptsf = (zpt<thred_2j) ? zfit_2j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_2j);}// std::cout << "3j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_3j) << std::endl;}
+	  else if(GoodIdJets_orig.size()==3) {ptsf = getSFfrom1DHist(zpt, zptSF_3j);}//{ptsf = (zpt<thred_3j) ? zfit_3j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_3j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
+	  else if(GoodIdJets_orig.size()==4) {ptsf = getSFfrom1DHist(zpt, zptSF_4j);}//{ptsf = (zpt<thred_4j) ? zfit_4j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_4j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
+	  else if(GoodIdJets_orig.size()>=5) {ptsf = getSFfrom1DHist(zpt, zptSF_5j);}//{ptsf = (zpt<thred_5j) ? zfit_5j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_5j);}// std::cout << "5j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_5j) << std::endl;}
 	  weight *= ptsf;
 	}
 	if(isMC_DY ){
@@ -2010,33 +1985,13 @@ int main(int argc, char* argv[])
 	  else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,xsecWeight*genWeight);}
 	  else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,xsecWeight*genWeight);}
 	  else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,xsecWeight*genWeight);}
-
-	  LorentzVector zll(selLeptons[0]+selLeptons[1]);
-	  if(zll.mass()<100 && zll.mass()>85){
-	    if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","2jets_zcut",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_2jets_zcut",zpt,xsecWeight*genWeight);}
-	    else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","3jets_zcut",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets_zcut",zpt,xsecWeight*genWeight);}
-	    else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","4jets_zcut",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets_zcut",zpt,xsecWeight*genWeight);}
-	    else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","5+jets_zcut",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets_zcut",zpt,xsecWeight*genWeight);}
+	  if(GoodIdbJets_orig.size()>=2){
+	    if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","2jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_2jets_2bj",zpt,xsecWeight*genWeight);}
+	    else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","3jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets_2bj",zpt,xsecWeight*genWeight);}
+	    else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","4jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets_2bj",zpt,xsecWeight*genWeight);}
+	    else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","5+jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets_2bj",zpt,xsecWeight*genWeight);}
 	  }
 	}
-//	  if(ivar==0 && reweightWPt && isMC_WJets ){
-//	    mon.fillHisto("jetsMulti","alljets_w",GoodIdJets.size(),1);
-//	    mon.fillHisto("ptw","alljets_w",wpt,weight);
-//	    if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets_w",wpt,weight);}
-//	    else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets_w",wpt,weight);}
-//	    else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets_w",wpt,weight);}
-
-	    //TString event_cat = eventCategoryPlot.GetLabel(evtCatPlot);
-	    //mon.fillHisto("ptw",event_cat+"_jets_w",wpt,weight);
-//	  }
-
-//	  if(isMC_WJets && !dtag.Contains("amcNLO") && !reweightWPt){
-//	    double ptsf=1.0;
-//	    if(GoodIdJets.size()==3) {ptsf = (wpt<thred_3j) ? wfit_3j->Eval(wpt) : getSFfrom1DHist(wpt, wptSF_3j); }
-//	    else if(GoodIdJets.size()==4) {ptsf = (wpt<thred_4j) ? wfit_4j->Eval(wpt) : getSFfrom1DHist(wpt, wptSF_4j); }
-//	    else if(GoodIdJets.size()>=5) {ptsf = (wpt<thred_5j) ? wfit_5j->Eval(wpt) : getSFfrom1DHist(wpt, wptSF_5j); }
-//	    weight *= ptsf;
-//	  }
 	//note this also propagates to all MET uncertainties
 	//	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1));
 	// decorrelate JES uncertainties
