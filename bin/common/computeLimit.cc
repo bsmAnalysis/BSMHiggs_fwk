@@ -2567,7 +2567,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       dcName.ReplaceAll(".root","_"+TString(C->first.c_str())+".dat");
       //      dcName.ReplaceAll("_qcdB","_qcdB");  
 
-      combinedcard += (C->first+"=").c_str()+dcName+" ";
+      if(C->first.find("emu")==string::npos) combinedcard += (C->first+"=").c_str()+dcName+" ";
       if(runZh) {
 	if(C->first.find("ee"  )!=string::npos)eecard   += (C->first+"=").c_str()+dcName+" ";
 	if(C->first.find("mumu")!=string::npos)mumucard += (C->first+"=").c_str()+dcName+" ";
@@ -2984,15 +2984,16 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    //	    printf("Now going to rebinMainHisto of: %s\n",jetBin.Data());
 
 	    if(jetBin.Contains("3b")){
-	      //	      double xbins[] = {-0.30, -0.18, -0.06, 0.06, 0.18, 0.30};  
-	      double xbins[] = {-0.30, -0.1, 0.1, 0.20, 0.24, 0.30};     
-	      if(runZh)  {xbins[3]=0.16; xbins[4]=0.20;} // xbins = {-0.30, -0.1, 0.1, 0.20, 0.22, 0.30};     
+	      //double xbins[] = {-0.35, -0.13, 0.09, 0.17, 0.23, 0.35};     
+	      double xbins[] = {-0.31, -0.09, 0.09, 0.19, 0.21, 0.35};     
+	      if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.09;xbins[3]=0.17; xbins[4]=0.19;xbins[5]=0.35;} // xbins = {-0.30, -0.1, 0.1, 0.20, 0.22, 0.30};     
 	      int nbins=sizeof(xbins)/sizeof(double);    
 	      unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);  
 	      utils::root::fixExtremities(unc->second, false, true); 
 	    }else if(jetBin.Contains("4b")){ 
-	      double xbins[] = {-0.30, -0.1, 0.1, 0.14, 0.22, 0.30}; 
-	      if(runZh) {xbins[3]=0.16; xbins[4]=0.22;} // xbins = {-0.30, -0.1, 0.1, 0.22, 0.24, 0.30};
+	      //double xbins[] = {-0.35, -0.13, 0.09, 0.17, 0.21, 0.35}; 
+	      double xbins[] = {-0.31, -0.09, 0.07, 0.11, 0.15, 0.35}; 
+	      if(runZh) {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.09;xbins[3]=0.15; xbins[4]=0.21;xbins[5]=0.35;} // xbins = {-0.30, -0.1, 0.1, 0.22, 0.24, 0.30};
 	      int nbins=sizeof(xbins)/sizeof(double);
 	      unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
 	      utils::root::fixExtremities(unc->second, false, true); 
