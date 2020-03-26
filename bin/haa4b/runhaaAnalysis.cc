@@ -1068,8 +1068,8 @@ int main(int argc, char* argv[])
     //####################################################################################################################
     TH1F *zptSF_2j = new TH1F(), *zptSF_3j = new TH1F(), *zptSF_4j = new TH1F(), *zptSF_5j = new TH1F();
     TF1  *zfit_2j  = new TF1(), *zfit_3j  = new TF1(),  *zfit_4j  = new TF1(),  *zfit_5j  = new TF1();
-    double thred_2j, thred_3j, thred_4j, thred_5j;
-    double parmin;
+    //double thred_2j, thred_3j, thred_4j, thred_5j;
+    //double parmin;
     if(!reweightDYZPt && isMC_DY && !dtag.Contains("amcNLO")){ // apply Z Pt weights on LO DY samples
       TString zptfilename;
       if(is2016MC) zptfilename = zptDir + "/" +"DYSF_2016.root";
@@ -1205,49 +1205,49 @@ int main(int argc, char* argv[])
 	// Apply Top pt-reweighting
 	double top_wgt(1.0);    
 
-	if(reweightTopPt && isMC_ttbar){
-	  PhysicsObjectCollection &partons = phys.genpartons;
-	  double SFtop(0.);
-	  double SFantitop(0.);
-
-	  int itop(0);
-	  for (auto & top : partons) {
-	    if(verbose){
-
-	    printf("Parton : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, status=%d\n",
-		   top.id,
-		   top.mass(),
-		   top.momid,
-		   top.pt(),
-		   top.status
-		   );
-	    }
-	    if (top.id==6 && top.status==62) {
-	      SFtop=exp(0.0615-0.0005*top.pt());
-	      itop++;
-
-	      mon.fillHisto("toppt","top",top.pt(),weight);
-	    }
-	    if (top.id==-6 && top.status==62) {
-	      SFantitop=exp(0.0615-0.0005*top.pt());
-	      itop++;
-
-	      mon.fillHisto("toppt","antitop",top.pt(),weight);
-	    }
-	  }
-  
-	  if (itop<2) { 
-	    printf("Did not found tt pair!!\n"); 
-	  } else if (itop==2) {
-	    top_wgt=sqrt(SFtop*SFantitop);
-	  } else {
-	    printf("More than 2 top particles found. Please check\n");
-	  }
-    
-	  //printf("weight= %3f and top weight= %3f\n",weight,top_wgt);
-	  weight *= top_wgt;
-	  //printf("Final weight is : %3f\n\n",weight);
-	}
+//	if(reweightTopPt && isMC_ttbar){
+//	  PhysicsObjectCollection &partons = phys.genpartons;
+//	  double SFtop(0.);
+//	  double SFantitop(0.);
+//
+//	  int itop(0);
+//	  for (auto & top : partons) {
+//	    if(verbose){
+//
+//	    printf("Parton : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, status=%d\n",
+//		   top.id,
+//		   top.mass(),
+//		   top.momid,
+//		   top.pt(),
+//		   top.status
+//		   );
+//	    }
+//	    if (top.id==6 && top.status==62) {
+//	      SFtop=exp(0.0615-0.0005*top.pt());
+//	      itop++;
+//
+//	      mon.fillHisto("toppt","top",top.pt(),weight);
+//	    }
+//	    if (top.id==-6 && top.status==62) {
+//	      SFantitop=exp(0.0615-0.0005*top.pt());
+//	      itop++;
+//
+//	      mon.fillHisto("toppt","antitop",top.pt(),weight);
+//	    }
+//	  }
+//  
+//	  if (itop<2) { 
+//	    printf("Did not found tt pair!!\n"); 
+//	  } else if (itop==2) {
+//	    top_wgt=sqrt(SFtop*SFantitop);
+//	  } else {
+//	    printf("More than 2 top particles found. Please check\n");
+//	  }
+//    
+//	  //printf("weight= %3f and top weight= %3f\n",weight,top_wgt);
+//	  weight *= top_wgt;
+//	  //printf("Final weight is : %3f\n\n",weight);
+//	}
 	
 	
 	// All: "Raw" (+Trigger)
@@ -2912,6 +2912,16 @@ int main(int argc, char* argv[])
 
 	  //##############################################################################
 	  //##############################################################################
+
+	  if(reweightTopPt && isMC_ttbar){
+	    double topptsf=1.0;
+	    if(ht>=160 && is2016MC){ // formula for 2016 
+	      if(tag_subcat.Contains("3b")) topptsf = (ht<400) ? exp(0.12401-0.00082*ht) : 0.84363; 
+	      else if(tag_subcat.Contains("4b")) topptsf = (ht<400) ? exp(0.14416-0.00085*ht) : 0.83917; 
+	    }
+//	    std::cout << tag_subcat << ", ht " << ht << ", sf: " << topptsf << std::endl;
+	    weight *= topptsf;
+	  }
 
 	  if (ivar==0) {
 

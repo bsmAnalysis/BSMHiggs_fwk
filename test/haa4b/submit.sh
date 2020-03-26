@@ -71,7 +71,8 @@ BTAG_NTPL_OUTDIR=$MAINDIR/btag_Ntpl$SUFFIX
 NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX
 #NTPL_OUTDIR=/eos/cms/store/user/georgia/results_Ntpl$SUFFIX #only for Data
 RUNLOG=$NTPL_OUTDIR/LOGFILES/runSelection.log
-
+TopSF_INPUT=$MAINDIR/computeLimit/PrefitPlots_2016WH_nottbarSF/TEST_ht
+TopSF_OUT=$MAINDIR/TopPtSF
 queue='workday'   
 
 #IF CRAB3 is provided in argument, use crab submission instead of condor/lsf 
@@ -129,6 +130,16 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
 	   mkdir $ZPtSF_OUT
        fi
         computeDYZPtSF.py -j $NTPL_JSON -d $NTPL_OUTDIR -o $ZPtSF_OUT
+   fi
+   
+   if [[ $step == 1.03 ]]; then  # compute top Pt reweighting
+       echo "Merge and Calculate Top pt SFs:"
+       echo -e "Input: " $TopSF_INPUT "\n Output: " $TopSF_OUT
+       ## if the output directory does not exist, create it:
+       if [ ! -d "$TopSF_OUT" ]; then
+	   mkdir $TopSF_OUT
+       fi
+        computeTopSF.py -d $TopSF_INPUT -o $TopSF_OUT
    fi
    
    if [[ $step == 1.1 ]]; then  #submit jobs for h->aa->XXYY analysis
