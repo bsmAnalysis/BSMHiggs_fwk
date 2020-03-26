@@ -1,4 +1,4 @@
-//#define YEAR_2017
+#define YEAR_2017
 
 #include <iostream>
 #include <map>
