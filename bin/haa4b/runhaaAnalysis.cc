@@ -152,7 +152,6 @@ int main(int argc, char* argv[])
 
     TString btagDir=runProcess.getParameter<std::string>("btagDir");
     TString zptDir=runProcess.getParameter<std::string>("zptDir");
-    TString topptDir=runProcess.getParameter<std::string>("topptDir");
 
     bool is2016data = (!isMC && dtag.Contains("2016"));
     bool is2016MC = (isMC && dtag.Contains("2016"));
@@ -1088,26 +1087,6 @@ int main(int argc, char* argv[])
       //zfit_5j  = (TF1 *)zptfile->Get("5+jets_f"); zfit_5j->GetRange(parmin, thred_5j);
       zptfile->Close();
     }
-
-    //####################################################################################################################
-    //###########################################           Top Pt SFs         ###########################################
-    //####################################################################################################################
-    TF1  *topfit3b_exp  = new TF1(), *topfit3b_line  = new TF1(),  *topfit4b_exp  = new TF1(),  *topfit4b_line  = new TF1();
-    double toppt_thredlow, toppt_thredhigh;
-    if(reweightTopPt && isMC_ttbar){
-      TString topptfilename;
-      if(is2016MC) topptfilename = topptDir + "/" +"topSF_2016.root";
-      else if(is2017MC) topptfilename = topptDir + "/" +"topSF_2017.root";
-      else if(is2018MC) topptfilename = topptDir + "/" +"topSF_2018.root";
-      TFile *topptfile = TFile::Open(topptfilename);
-      if(topptfile->IsZombie() || !topptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< topptfilename<<std::endl;return -1;}
-      topfit3b_exp = (TF1*)topptfile->Get("topPtSF_3b_f");topfit3b_exp->GetRange(toppt_thredlow, toppt_thredhigh);//topfit3b_exp->SetDirectory(0);
-      topfit3b_line = (TF1*)topptfile->Get("topPtSF_3b_hf");//topfit3b_line->SetDirectory(0);
-      topfit4b_exp = (TF1*)topptfile->Get("topPtSF_4b_f");//topfit4b_exp->SetDirectory(0);
-      topfit4b_line = (TF1*)topptfile->Get("topPtSF_4b_hf");//topfit4b_line->SetDirectory(0);
-      topptfile->Close();
-    }
-
 
 
     //####################################################################################################################
@@ -2936,9 +2915,9 @@ int main(int argc, char* argv[])
 
 	  if(reweightTopPt && isMC_ttbar){
 	    double topptsf=1.0;
-	    if(ht>=toppt_thredlow){ // sf = 1 when ht<toppt_thredlow ==> 160
-	      if(tag_subcat.Contains("3b")) topptsf = (ht<toppt_thredhigh) ? topfit3b_exp->Eval(ht) : topfit3b_line->Eval(ht); 
-	      else if(tag_subcat.Contains("4b")) topptsf = (ht<toppt_thredhigh) ? topfit4b_exp->Eval(ht) : topfit4b_line->Eval(ht); 
+	    if(ht>=160 && is2016MC){ // formula for 2016 
+	      if(tag_subcat.Contains("3b")) topptsf = (ht<400) ? exp(0.12401-0.00082*ht) : 0.84363; 
+	      else if(tag_subcat.Contains("4b")) topptsf = (ht<400) ? exp(0.14416-0.00085*ht) : 0.83917; 
 	    }
 //	    std::cout << tag_subcat << ", ht " << ht << ", sf: " << topptsf << std::endl;
 	    weight *= topptsf;
