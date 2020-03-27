@@ -28,6 +28,23 @@ def drawHist(hist, name):
 
     return c
 
+def applyWeights(hist, name):
+    for i in range(1, hist.GetNbinsX()+1):
+        sf=1.0
+	ht = hist.GetBinCenter(i)
+	if ht>=160:
+	    if '3b' in name:
+		sf = math.exp(0.07445-0.0006*ht)
+#	        if ht<380: sf = math.exp(0.11879-0.00080*ht)
+#		else: sf = -1.831+1.537*pow(10,-2)*ht-2.836*pow(10,-5)*ht**2+1.673*pow(10,-8)*ht**3
+	    elif '4b' in name:
+		sf = math.exp(0.08045-0.00058*ht)
+#	        if ht<380: sf = math.exp(0.14235-0.00084*ht)
+#		else: sf = 1.412-3.047*pow(10,-3)*ht+5.589*pow(10,-6)*ht**2-3.545*pow(10,-9)*ht**3
+	hist.SetBinContent(i, hist.GetBinContent(i)*sf)
+
+        
+
 def weightedAverage(ratio, hNLO, threshold, end=800):
     start = ratio.GetXaxis().FindBin(threshold)
     stop = ratio.GetXaxis().FindBin(end)
@@ -144,23 +161,32 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     ratio.GetXaxis().SetTitleOffset(2.5)
     ratio.GetXaxis().SetLabelFont(43)
     ratio.GetXaxis().SetLabelSize(20)
-    fitf = r.TF1(name+"_f", "exp([0]+[1]*x)", 160, thred)
-    fitf_h = r.TF1(name+"_hf", "[0]", thred, 800)
+
+    fitf = r.TF1(name+"_f", "exp([0]+[1]*x)", 160, 700)
     ratio.Fit(name+"_f", "R")
-    ratio.Fit(name+"_hf", "+R")
-    ratio.Draw("E0")
     func = ratio.GetFunction(name+"_f")
-    func_h = ratio.GetFunction(name+"_hf")
+    print("Chi square of expo is: {}".format(func.GetChisquare()))
+#    if '3b' in name:
+#	fitf.SetParameter(0, 0.07445)
+#	fitf.SetParName(0, "a")
+#	fitf.SetParameter(1, -0.0006)
+#	fitf.SetParName(1, "b")
+#    elif '4b' in name:
+#	fitf.SetParameter(0, 0.08045)
+#	fitf.SetParName(0, "a")
+#	fitf.SetParameter(1, -0.00058)
+#	fitf.SetParName(1, "b")
+    ratio.Draw("E0")
+#    fitf.Draw("same")
     
     r.gPad.Update()
     line = r.TLine(r.gPad.GetUxmin(), 1, r.gPad.GetUxmax(), 1)
     line.Draw("same")
     SetOwnership( line, 0 )
-    print("Chi square of expo is: {}".format(func.GetChisquare()))
-    print("Chi square of straight line is: {}".format(func_h.GetChisquare()))
+#    SetOwnership( fitf, 0 )
     
-    return c,func,func_h
-#    return c
+#    return c,func,func_h
+    return c
 
 def computeTopPtSF(channels, inf, outdir, outf):
     bkgd_e = inf.Get(channels[0]+"/total")
@@ -172,17 +198,18 @@ def computeTopPtSF(channels, inf, outdir, outf):
         exit(-1)
     bkgd = bkgd_e.Clone("bkdg_tota"+channels[0][-2:])
     bkgd.Add(bkgd_mu)
+#    applyWeights(bkgd, channels[0][-2:])
     data = data_e.Clone("data_total"+channels[0][-2:])
     data.Add(data_mu)
     weights = data.Clone("weights"+channels[0][-2:])
     weights.Divide(bkgd)
-    c,f,f1 = ratioPlot(data, bkgd, weights, "topPtSF_"+channels[0][-2:])
-#    c = ratioPlot(data, bkgd, weights, "topPtSF_"+channels[0][-2:])
+#    c,f,f1 = ratioPlot(data, bkgd, weights, "topPtSF_"+channels[0][-2:])
+    c = ratioPlot(data, bkgd, weights, "topPtSF_"+channels[0][-2:])
     c.SaveAs(os.path.join(outdir,"topPtSF_"+channels[0][-2:]+".pdf"))
     outf.cd()
     c.Write()
-    f.Write()
-    f1.Write()
+#    f.Write()
+#    f1.Write()
     weights.Write()
 
 

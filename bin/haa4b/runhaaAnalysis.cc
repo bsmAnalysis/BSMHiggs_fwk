@@ -2916,8 +2916,8 @@ int main(int argc, char* argv[])
 	  if(reweightTopPt && isMC_ttbar){
 	    double topptsf=1.0;
 	    if(ht>=160 && is2016MC){ // formula for 2016 
-	      if(tag_subcat.Contains("3b")) topptsf = (ht<400) ? exp(0.12401-0.00082*ht) : 0.84363; 
-	      else if(tag_subcat.Contains("4b")) topptsf = (ht<400) ? exp(0.14416-0.00085*ht) : 0.83917; 
+		if(tag_subcat.Contains("3b")) topptsf = exp(0.07445-0.00060*ht); 
+		else if(tag_subcat.Contains("4b")) topptsf = exp(0.08045-0.00058*ht);
 	    }
 //	    std::cout << tag_subcat << ", ht " << ht << ", sf: " << topptsf << std::endl;
 	    weight *= topptsf;
