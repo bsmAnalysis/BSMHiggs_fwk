@@ -34,13 +34,13 @@ def applyWeights(hist, name):
 	ht = hist.GetBinCenter(i)
 	if ht>=160:
 	    if '3b' in name:
-	        if ht<380: sf = math.exp(0.11879-0.00080*ht)
-		else: sf = -1.831+1.537*pow(10,-2)*ht-2.836*pow(10,-5)*ht**2+1.673*pow(10,-8)*ht**3
+		sf = math.exp(0.07445-0.0006*ht)
+#	        if ht<380: sf = math.exp(0.11879-0.00080*ht)
+#		else: sf = -1.831+1.537*pow(10,-2)*ht-2.836*pow(10,-5)*ht**2+1.673*pow(10,-8)*ht**3
 	    elif '4b' in name:
-	        if ht<380: sf = math.exp(0.14235-0.00084*ht)
-		#else: sf = -0.0824+4.805*pow(10,-3)*ht-7.863*pow(10,-6)*ht**2+3.979*pow(10,-9)*ht**3
-		#else: sf = 1.237-2.101*pow(10,-3)*ht+3.931*pow(10,-6)*ht**2-2.599*pow(10,-9)*ht**3
-		else: sf = 1.412-3.047*pow(10,-3)*ht+5.589*pow(10,-6)*ht**2-3.545*pow(10,-9)*ht**3
+		sf = math.exp(0.08045-0.00058*ht)
+#	        if ht<380: sf = math.exp(0.14235-0.00084*ht)
+#		else: sf = 1.412-3.047*pow(10,-3)*ht+5.589*pow(10,-6)*ht**2-3.545*pow(10,-9)*ht**3
 	hist.SetBinContent(i, hist.GetBinContent(i)*sf)
 
         
@@ -162,30 +162,28 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     ratio.GetXaxis().SetLabelFont(43)
     ratio.GetXaxis().SetLabelSize(20)
 
-#    fitf_h = r.TF1(name+"_hf", "[0]", thred, 800)
-#    ratio.Fit(name+"_hf", "+R")
-#    func_h = ratio.GetFunction(name+"_hf")
-#    print("Chi square of straight line is: {}".format(func_h.GetChisquare()))
-    fitf = r.TF1(name+"_f", "exp([0]+[1]*x)", 160, thred)
+    fitf = r.TF1(name+"_f", "exp([0]+[1]*x)", 160, 700)
     ratio.Fit(name+"_f", "R")
     func = ratio.GetFunction(name+"_f")
     print("Chi square of expo is: {}".format(func.GetChisquare()))
-    if '3b' in name:
-	fitf_l1 = r.TF1(name+"_f1", "pol3", 380, 800)
-	ratio.Fit(name+"_f1", "+R")
-	func1 = ratio.GetFunction(name+"_f1")
-	print("Chi square of straight line is: {}".format(func1.GetChisquare()))
-    elif '4b' in name:
-	fitf_l1 = r.TF1(name+"_f1", "pol3", 380, 800)
-	ratio.Fit(name+"_f1", "+R")
-	func1 = ratio.GetFunction(name+"_f1")
-	print("Chi square of straight line is: {}".format(func1.GetChisquare()))
+#    if '3b' in name:
+#	fitf.SetParameter(0, 0.07445)
+#	fitf.SetParName(0, "a")
+#	fitf.SetParameter(1, -0.0006)
+#	fitf.SetParName(1, "b")
+#    elif '4b' in name:
+#	fitf.SetParameter(0, 0.08045)
+#	fitf.SetParName(0, "a")
+#	fitf.SetParameter(1, -0.00058)
+#	fitf.SetParName(1, "b")
     ratio.Draw("E0")
+#    fitf.Draw("same")
     
     r.gPad.Update()
     line = r.TLine(r.gPad.GetUxmin(), 1, r.gPad.GetUxmax(), 1)
     line.Draw("same")
     SetOwnership( line, 0 )
+#    SetOwnership( fitf, 0 )
     
 #    return c,func,func_h
     return c

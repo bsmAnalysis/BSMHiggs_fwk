@@ -1,4 +1,4 @@
-//#define YEAR_2017
+#define YEAR_2017
 
 #include <iostream>
 #include <map>
@@ -2916,8 +2916,8 @@ int main(int argc, char* argv[])
 	  if(reweightTopPt && isMC_ttbar){
 	    double topptsf=1.0;
 	    if(ht>=160 && is2016MC){ // formula for 2016 
-		if(tag_subcat.Contains("3b")) topptsf = (ht<380) ? exp(0.11879-0.00080*ht) : -1.831+1.537*1E-2*pow(ht,1)-2.836*1E-5*pow(ht,2)+1.673*1E-8*pow(ht,3);
-		else if(tag_subcat.Contains("4b")) topptsf = (ht<380) ? exp(0.14235-0.00084*ht) : 1.412-3.0347*1E-3*pow(ht,1)+5.589*1E-6*pow(ht,2)-3.545*1E-9*pow(ht,3);
+		if(tag_subcat.Contains("3b")) topptsf = exp(0.07445-0.00060*ht); 
+		else if(tag_subcat.Contains("4b")) topptsf = exp(0.08045-0.00058*ht);
 	    }
 //	    std::cout << tag_subcat << ", ht " << ht << ", sf: " << topptsf << std::endl;
 	    weight *= topptsf;
