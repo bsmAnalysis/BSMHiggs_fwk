@@ -1073,8 +1073,9 @@ int main(int argc, char* argv[])
     if(!reweightDYZPt && isMC_DY && !dtag.Contains("amcNLO")){ // apply Z Pt weights on LO DY samples
       TString zptfilename;
       if(is2016MC) zptfilename = zptDir + "/" +"DYSF_2016.root";
-      else if(is2017MC) zptfilename = zptDir + "/" +"DYSF_2017.root";
-      else if(is2018MC) zptfilename = zptDir + "/" +"DYSF_2018.root";
+      else if(is2017MC || is2018MC) zptfilename = zptDir + "/" +"DYSF_1718.root";
+//      else if(is2017MC) zptfilename = zptDir + "/" +"DYSF_2017.root";
+//      else if(is2018MC) zptfilename = zptDir + "/" +"DYSF_2018.root";
       TFile *zptfile = TFile::Open(zptfilename);
       if(zptfile->IsZombie() || !zptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< zptfilename<<std::endl;return -1;}
       zptSF_2j = (TH1F *)zptfile->Get("2jets_sf");zptSF_2j->SetDirectory(0);
