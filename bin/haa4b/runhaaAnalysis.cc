@@ -1,4 +1,4 @@
-//#define YEAR_2017
+#define YEAR_2017
 
 #include <iostream>
 #include <map>
@@ -1178,7 +1178,7 @@ int main(int argc, char* argv[])
         }
 
 	// Extract Z pt reweights from LO and NLO DY samples
-	float zpt = -1, wpt = -1, zmass_gen=-1;
+	float zpt = -1, zpt_debug = -1, wpt = -1, zmass_gen=-1;
 	if(isMC_DY){
 	  PhysicsObjectCollection &genparticles = phys.genparticles;
 	  PhysicsObjectCollection zleps;
@@ -1197,6 +1197,7 @@ int main(int argc, char* argv[])
 	    if(genparticle.id==23){   
 	      if(zpt<0){
 	        zpt = genparticle.pt();
+		zpt_debug = genparticle.pt();
 	        zmass_gen = genparticle.mass();
 		mon.fillHisto("zmass_raw", "debug_gen_z",zmass_gen, 1);
 	      }
@@ -1208,6 +1209,7 @@ int main(int argc, char* argv[])
 
           if(zleps.size()>=2 && zpt<=0){
 	    LorentzVector zll(zleps[0]+zleps[1]);
+	    if(zpt<0) zpt_debug = zll.pt();
 	    zpt = zll.pt();
 	    zmass_gen = zll.mass();
 	    mon.fillHisto("momid", "debug_use_lep",zleps[0].momid, 1);
@@ -2006,6 +2008,19 @@ int main(int argc, char* argv[])
 	      else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","3jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets_2bj",zpt,xsecWeight*genWeight);}
 	      else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","4jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets_2bj",zpt,xsecWeight*genWeight);}
 	      else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","5+jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets_2bj",zpt,xsecWeight*genWeight);}
+	    }
+	  }
+	  if(zmass_gen<100 && zmass_gen>85 && zpt_debug > 0){
+	    mon.fillHisto("ptw","debug_zmasscut_debugz",zpt,1); 
+	    if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","debug_2jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw","debug_"+tag_cat+"_2jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw_full","debugz_2j",zpt,1);}
+	    else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","debug_3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw","debug_"+tag_cat+"_3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw_full","debugz_3j",zpt,1);}
+	    else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","debug_4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw","debug_"+tag_cat+"_4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw_full","debugz_4j",zpt,1);}
+	    else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","debug_5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw","debug_"+tag_cat+"_5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw_full","debugz_5j",zpt,1);}
+	    if(GoodIdbJets_orig.size()>=2){
+	      if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","debug_2jets_2bj",zpt_debug,xsecWeight*genWeight);}
+	      else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","debug_3jets_2bj",zpt_debug,xsecWeight*genWeight);}
+	      else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","debug_4jets_2bj",zpt_debug,xsecWeight*genWeight);}
+	      else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","debug_5+jets_2bj",zpt_debug,xsecWeight*genWeight);}
 	    }
 	  }
 	}
