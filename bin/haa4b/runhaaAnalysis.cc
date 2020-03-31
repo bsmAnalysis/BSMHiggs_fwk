@@ -764,6 +764,8 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "dphijmet12", ";|#Delta#it{#phi}(j12,E_{T}^{miss})|;#jet", 20,0,TMath::Pi()) );           
     mon.addHistogram( new TH1F( "dphilepmet", ";|#Delta#it{#phi}(lep,E_{T}^{miss})|;Events", 20,0,TMath::Pi()) );
     mon.addHistogram( new TH1F( "zmass_raw", ";#it{m}_{ll} [GeV];Events", 80,0,200) );   
+    mon.addHistogram( new TH1F( "numlep", ";number of leps;Events", 10,0,10) );   
+    mon.addHistogram( new TH1F( "momid", ";momid;Events", 100,0,100) );   
 
     mon.addHistogram( new TH1F( "ptw_full",       ";#it{p}_{T}^{V} [GeV];Events",310,-10,300.) );
     //MVA BDT
@@ -1176,7 +1178,7 @@ int main(int argc, char* argv[])
         }
 
 	// Extract Z pt reweights from LO and NLO DY samples
-	float zpt = -1, wpt = -1;
+	float zpt = -1, wpt = -1, zmass_gen=-1;
 	if(isMC_DY){
 	  PhysicsObjectCollection &genparticles = phys.genparticles;
 	  PhysicsObjectCollection zleps;
@@ -1188,18 +1190,29 @@ int main(int argc, char* argv[])
 //		   genparticle.pt(),
 //		   genparticle.status
 //		   );
-	    if(fabs(genparticle.id)>=11 && fabs(genparticle.id)<=18) zleps.push_back(genparticle);
+	    if(fabs(genparticle.id)>=11 && fabs(genparticle.id)<=18){ 
+		mon.fillHisto("momid", "debug_lep",genparticle.momid, 1);
+		if(genparticle.momid == 23) zleps.push_back(genparticle);
+	    }
 	    if(genparticle.id==23){   
-	      if(zpt<0)
+	      if(zpt<0){
 	        zpt = genparticle.pt();
+	        zmass_gen = genparticle.mass();
+		mon.fillHisto("zmass_raw", "debug_gen_z",zmass_gen, 1);
+	      }
 	      else
 		std::cout << "Found multiple Z particles in event: " << iev << std::endl;
 	    }
 	  }
+	  mon.fillHisto("numlep", "debug_gen", zleps.size(), 1);
 
-          if(zleps.size()==2 && zpt<=0){
+          if(zleps.size()>=2 && zpt<=0){
 	    LorentzVector zll(zleps[0]+zleps[1]);
 	    zpt = zll.pt();
+	    zmass_gen = zll.mass();
+	    mon.fillHisto("momid", "debug_use_lep",zleps[0].momid, 1);
+	    mon.fillHisto("momid", "debug_use_lep",zleps[1].momid, 1);
+	    mon.fillHisto("zmass_raw", "debug_virtual_z",zmass_gen, 1);
 	  }
 	}
 
@@ -1982,15 +1995,18 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("jetsMulti","alljets",GoodIdJets_orig.size(),1);
 	  mon.fillHisto("ptw","alljets",zpt,xsecWeight*genWeight); 
 	  mon.fillHisto("ptw_full","debug",zpt,1); 
-	  if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","2jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_2jets",zpt,xsecWeight*genWeight);}
-	  else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,xsecWeight*genWeight);}
-	  else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,xsecWeight*genWeight);}
-	  else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,xsecWeight*genWeight);}
-	  if(GoodIdbJets_orig.size()>=2){
-	    if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","2jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_2jets_2bj",zpt,xsecWeight*genWeight);}
-	    else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","3jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets_2bj",zpt,xsecWeight*genWeight);}
-	    else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","4jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets_2bj",zpt,xsecWeight*genWeight);}
-	    else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","5+jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets_2bj",zpt,xsecWeight*genWeight);}
+	  if(zmass_gen<100 && zmass_gen>85 && zpt > 0){
+	    mon.fillHisto("ptw","debug_zmasscut",zpt,1); 
+	    if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","2jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_2jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw_full","debug_2j",zpt,1);}
+	    else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw_full","debug_3j",zpt,1);}
+	    else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw_full","debug_4j",zpt,1);}
+	    else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw_full","debug_5j",zpt,1);}
+	    if(GoodIdbJets_orig.size()>=2){
+	      if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","2jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_2jets_2bj",zpt,xsecWeight*genWeight);}
+	      else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","3jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets_2bj",zpt,xsecWeight*genWeight);}
+	      else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","4jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets_2bj",zpt,xsecWeight*genWeight);}
+	      else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","5+jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets_2bj",zpt,xsecWeight*genWeight);}
+	    }
 	  }
 	}
 	//note this also propagates to all MET uncertainties
