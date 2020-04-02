@@ -3024,14 +3024,14 @@ int main(int argc, char* argv[])
 		else if(tag_subcat.Contains("4b")) topptsf = exp(-0.11564-0.00035*ht);
 	      }
 	      else if(runZH && ht>=100 && ht<=500){ // Zh
-		if(tag_subcat.Contains("3b")) topptsf = exp(-0.36720-0.00076*ht);
+		if(tag_subcat.Contains("3b")) topptsf = exp(-0.36720+0.00076*ht);
 		else if(tag_subcat.Contains("4b")) topptsf = exp(-0.18413-0.00008*ht);
 	      }
 	    }
 	    else if(is2018MC){
 	      if(!runZH && ht>=160){ // Wh
 		if(tag_subcat.Contains("3b")) topptsf = exp(0.06552-0.00021*ht);
-		else if(tag_subcat.Contains("4b")) topptsf = exp(-0.00334-0.00030*ht);
+		else if(tag_subcat.Contains("4b") && ht>=200) topptsf = exp(-0.09112-0.00005*ht);
 	      }
 	      else if(runZH && ht>=120 && ht<=500){ // Zh
 		if(tag_subcat.Contains("3b")) topptsf = exp(0.05378-0.00036*ht);
