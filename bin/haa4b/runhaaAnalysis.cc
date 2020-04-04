@@ -2731,7 +2731,7 @@ int main(int argc, char* argv[])
 	      else if(GoodIdJets.size()==4) {ptsf = getSFfrom1DHist(zpt, zptSF_4j);}//{ptsf = (zpt<thred_4j) ? zfit_4j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_4j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
 	      else if(GoodIdJets.size()>=5) {ptsf = getSFfrom1DHist(zpt, zptSF_5j);}//{ptsf = (zpt<thred_5j) ? zfit_5j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_5j);}// std::cout << "5j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_5j) << std::endl;}
 	    }
-	    std::cout << GoodIdJets.size() << ", " << zpt << ", sf: " << ptsf << std::endl;
+//	    std::cout << GoodIdJets.size() << ", " << zpt << ", sf: " << ptsf << std::endl;
 	    weight *= ptsf;
 	  }
 	  if(ivar == 0 && isMC_DY ){
