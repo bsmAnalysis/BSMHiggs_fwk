@@ -1632,9 +1632,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if(map_stack.find(ch->first)==map_stack.end()){
             map_stack[ch->first] = new THStack((ch->first+"stack").c_str(),(ch->first+"stack").c_str());
 	    map_mc   [ch->first] = (TH1D*)h->Clone((ch->first+"mc").c_str()); //utils::root::checkSumw2((ch->first+"mc").c_str());
-          }
+          }else{
+	    map_mc [ch->first]->Add(h); 
+	  }
           map_stack   [ch->first]->Add(h,"HIST");
-	  map_mc [ch->first]->Add(h); 
 	  //if(h!=NULL && h->Integral()>0){map_mc   [ch->first] = (TH1D*)h->Clone((ch->first+"mc").c_str());utils::root::checkSumw2((ch->first+"mc").c_str());}else{map_mc   [ch->first]->Add(h);}
 
         }else if(it->second.isSign){                    

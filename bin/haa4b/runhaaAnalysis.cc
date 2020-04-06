@@ -1070,15 +1070,16 @@ int main(int argc, char* argv[])
     TF1  *zfit_2j  = new TF1(), *zfit_3j  = new TF1(),  *zfit_4j  = new TF1(),  *zfit_5j  = new TF1();
     //double thred_2j, thred_3j, thred_4j, thred_5j;
     //double parmin;
-    if(!reweightDYZPt && isMC_DY && !dtag.Contains("amcNLO")){ // apply Z Pt weights on LO DY samples
+    if(reweightDYZPt && isMC_DY && !dtag.Contains("amcNLO")){ // apply Z Pt weights on LO DY samples
       TString zptfilename;
       if(is2016MC) zptfilename = zptDir + "/" +"DYSF_2016.root";
-      else if(is2017MC || is2018MC) zptfilename = zptDir + "/" +"DYSF_1718.root";
+      else if(is2017MC) zptfilename = zptDir + "/" +"DYSF_2017.root";
+      else if(is2018MC) zptfilename = zptDir + "/" +"DYSF_2018.root";
 //      else if(is2017MC) zptfilename = zptDir + "/" +"DYSF_2017.root";
 //      else if(is2018MC) zptfilename = zptDir + "/" +"DYSF_2018.root";
       TFile *zptfile = TFile::Open(zptfilename);
       if(zptfile->IsZombie() || !zptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< zptfilename<<std::endl;return -1;}
-      zptSF_2j = (TH1F *)zptfile->Get("2jets_sf");zptSF_2j->SetDirectory(0);
+//      zptSF_2j = (TH1F *)zptfile->Get("2jets_sf");zptSF_2j->SetDirectory(0);
       zptSF_3j = (TH1F *)zptfile->Get("3jets_sf");zptSF_3j->SetDirectory(0);
       zptSF_4j = (TH1F *)zptfile->Get("4jets_sf");zptSF_4j->SetDirectory(0);
       zptSF_5j = (TH1F *)zptfile->Get("5+jets_sf");zptSF_5j->SetDirectory(0);
@@ -1197,9 +1198,11 @@ int main(int argc, char* argv[])
 	    }
 	  }
 
-          if(zleps.size()==2 && zpt<=0){
-	    LorentzVector zll(zleps[0]+zleps[1]);
-	    zpt = zll.pt();
+	  if(zpt<=0){ // didn't find a Z or zpt = 0
+	    if(zleps.size()>=2 && zleps[0].momid==23 && zleps[1].momid==23){
+	      LorentzVector zll(zleps[0]+zleps[1]);
+	      zpt = zll.pt();
+	    }
 	  }
 	}
 
@@ -1970,29 +1973,6 @@ int main(int argc, char* argv[])
 	}
 
 
-	if(isMC_DY && !dtag.Contains("amcNLO") && !reweightDYZPt){
-	  double ptsf=1.0;
-	  if(GoodIdJets_orig.size()==2) {ptsf = getSFfrom1DHist(zpt, zptSF_2j);}//{ptsf = (zpt<thred_2j) ? zfit_2j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_2j);}// std::cout << "3j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_3j) << std::endl;}
-	  else if(GoodIdJets_orig.size()==3) {ptsf = getSFfrom1DHist(zpt, zptSF_3j);}//{ptsf = (zpt<thred_3j) ? zfit_3j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_3j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
-	  else if(GoodIdJets_orig.size()==4) {ptsf = getSFfrom1DHist(zpt, zptSF_4j);}//{ptsf = (zpt<thred_4j) ? zfit_4j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_4j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
-	  else if(GoodIdJets_orig.size()>=5) {ptsf = getSFfrom1DHist(zpt, zptSF_5j);}//{ptsf = (zpt<thred_5j) ? zfit_5j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_5j);}// std::cout << "5j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_5j) << std::endl;}
-	  weight *= ptsf;
-	}
-	if(isMC_DY ){
-	  mon.fillHisto("jetsMulti","alljets",GoodIdJets_orig.size(),1);
-	  mon.fillHisto("ptw","alljets",zpt,xsecWeight*genWeight); 
-	  mon.fillHisto("ptw_full","debug",zpt,1); 
-	  if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","2jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_2jets",zpt,xsecWeight*genWeight);}
-	  else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,xsecWeight*genWeight);}
-	  else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,xsecWeight*genWeight);}
-	  else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,xsecWeight*genWeight);}
-	  if(GoodIdbJets_orig.size()>=2){
-	    if(GoodIdJets_orig.size()==2) {mon.fillHisto("ptw","2jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_2jets_2bj",zpt,xsecWeight*genWeight);}
-	    else if(GoodIdJets_orig.size()==3) {mon.fillHisto("ptw","3jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets_2bj",zpt,xsecWeight*genWeight);}
-	    else if(GoodIdJets_orig.size()==4) {mon.fillHisto("ptw","4jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets_2bj",zpt,xsecWeight*genWeight);}
-	    else if(GoodIdJets_orig.size()>=5) {mon.fillHisto("ptw","5+jets_2bj",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets_2bj",zpt,xsecWeight*genWeight);}
-	  }
-	}
 	//note this also propagates to all MET uncertainties
 	//	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1));
 	// decorrelate JES uncertainties
@@ -2742,6 +2722,27 @@ int main(int argc, char* argv[])
 	  }
 	  
 	  if(!passNJ2) continue;
+	
+ 	  if(isMC_DY && !dtag.Contains("amcNLO") && reweightDYZPt){
+	    double ptsf=1.0;
+	    if(zpt >= 35){
+//	      if(GoodIdJets.size()==2) {ptsf = getSFfrom1DHist(zpt, zptSF_2j);}//{ptsf = (zpt<thred_2j) ? zfit_2j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_2j);}// std::cout << "3j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_3j) << std::endl;}
+	      if(GoodIdJets.size()==3) {ptsf = getSFfrom1DHist(zpt, zptSF_3j);}//{ptsf = (zpt<thred_3j) ? zfit_3j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_3j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
+	      else if(GoodIdJets.size()==4) {ptsf = getSFfrom1DHist(zpt, zptSF_4j);}//{ptsf = (zpt<thred_4j) ? zfit_4j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_4j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
+	      else if(GoodIdJets.size()>=5) {ptsf = getSFfrom1DHist(zpt, zptSF_5j);}//{ptsf = (zpt<thred_5j) ? zfit_5j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_5j);}// std::cout << "5j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_5j) << std::endl;}
+	    }
+//	    std::cout << GoodIdJets.size() << ", " << zpt << ", sf: " << ptsf << std::endl;
+	    weight *= ptsf;
+	  }
+	  if(ivar == 0 && isMC_DY ){
+	    mon.fillHisto("jetsMulti","alljets",GoodIdJets.size(),1);
+	    mon.fillHisto("ptw","alljets",zpt,xsecWeight*genWeight); 
+	    mon.fillHisto("ptw_full","debug",zpt,1); 
+//	    if(GoodIdJets.size()==2) {mon.fillHisto("ptw","2jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_2jets",zpt,xsecWeight*genWeight);}
+	    if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,xsecWeight*genWeight);}
+	    else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,xsecWeight*genWeight);}
+	    else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,xsecWeight*genWeight);}
+	}
 	  //	  if (!passMnBTag) continue; //at least 1 MediumWP b-tag if nBjets>0
 	  
 	  //#########################################################
