@@ -2918,13 +2918,13 @@ int main(int argc, char* argv[])
 	  if(reweightTopPt && isMC_ttbar){
 	    double topptsf=1.0;
 	    if(is2016MC){ // formula for 2016
-	      if(!runZH && ht>=160){ // Wh
-		if(tag_subcat.Contains("3b")) topptsf = exp(0.07445-0.00060*ht);
-		else if(tag_subcat.Contains("4b")) topptsf = exp(0.08045-0.00058*ht);
+	      if(!runZH){ // Wh
+		if(tag_subcat.Contains("3b")) topptsf = exp(0.17858-0.00092*ht);
+		else if(tag_subcat.Contains("4b")) topptsf = exp(0.17997-0.00076*ht);
 	      }
 	      else if(runZH && ht>=120 && ht<=500){ // Zh
-		if(tag_subcat.Contains("3b")) topptsf = exp(0.13063-0.00097*ht);
-		else if(tag_subcat.Contains("4b")) topptsf = exp(0.22667-0.00135*ht);
+		if(tag_subcat.Contains("3b")) topptsf = exp(0.17631-0.00104*ht);
+		else if(tag_subcat.Contains("4b")) topptsf = exp(0.41001-0.00184*ht);
 	      }
 	    }
 	    else if(is2017MC){
