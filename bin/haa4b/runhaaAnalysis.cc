@@ -1953,8 +1953,10 @@ int main(int argc, char* argv[])
 	      
 	  // //check overlaps with selected leptons
 	  bool hasOverlap(false);
-	  //    for(size_t ilep=0; ilep<selLeptons.size(); ilep++) {
-	  double dR = deltaR( corrJets[ijet], selLeptons[0] ); hasOverlap = (dR<0.4); 
+	  for(size_t ilep=0; ilep<selLeptons.size(); ilep++) {
+	    double dR = deltaR( corrJets[ijet], selLeptons[ilep] ); 
+	    if (dR<0.4) hasOverlap=true;  
+	  }
 	  //	  if (ivar==0) mon.fillHisto("dRlj_raw",tag_cat,dR,weight); 
 
 	  if(hasOverlap) continue;
