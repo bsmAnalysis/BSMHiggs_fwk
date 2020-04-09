@@ -14,13 +14,9 @@ iLumi=35866.932
 #iLumi=41529.152
 #iLumi=59740.565
 
-#hists = ['alljets','3jets','4jets','5+jets','2b_3j_jets','2b_4j_jets','2b_geq5j_jets','3b_3j_jets','3b_4j_jets','3b_geq5j_jets','4b_4j_jets','4b_geq5j_jets','5b_geq5j_jets']
-#hists_dy = ['alljets','2jets','3jets','4jets','5+jets']
-hists_dy = ['alljets','2jets','3jets','4jets','5+jets']
-hists_wj = ['alljets_w','3jets_w','4jets_w','5+jets_w']
-#hists = ['0b', '1b', '2b', '3b', '4+b']
+hists_dy = ['alljets','3jets','4jets','5+jets']
 
-startbin = 3 
+startbin = 1 
 
 """
 Gets the value of a given item
@@ -52,7 +48,8 @@ def weightedAverage(ratio, hNLO, threshold, end=300):
     mean_den = 0
     error = 0
     for i in range(start, stop+1):
-        weight = hNLO.GetBinContent(i)
+        #weight = hNLO.GetBinContent(i)
+        weight = 1
 	value = ratio.GetBinContent(i)
 	err = ratio.GetBinError(i)
 	mean_num += weight*value
@@ -78,14 +75,32 @@ def scaleinFile(in_f, weight, hists):
 	    h.Write()
     f.Close()
 
+def ratioOnly(ratio_h, thred, name):
+    c = r.TCanvas(name,name,800,800)
+#    ratio = ratio_h.Clone(name)
+    ratio = ratio_h.DrawCopy(name)
+    ratio.SetTitle(name.replace("_"," "))
+    ratio.SetDirectory(0)
+    pad = r.TPad("pad","pad", 0, 0, 1, 1)
+    pad.SetBottomMargin(0.1)
+    pad.Draw()
+    pad.cd()
+    fitf = r.TF1(name+"_f", "[0]", thred, 500)
+    ratio.Fit(name+"_f", "R")
+    #ratio.GetYaxis().SetRangeUser(ratio.GetMinimum()*0.8,1.2*ratio.GetMaximum())
+    ratio.GetYaxis().SetRangeUser(0, 2)
+    ratio.Draw("E0")
+    return c
+
+
 def ratioPlot(hLO,hNLO,ratio_h,name):
 
     thred = 500
     if '2jets' in name: thred = 150
-    elif '3jets' in name: thred = 200
+    elif '3jets' in name: thred = 150
     elif '4jets' in name: thred = 200
     elif '5+jets' in name: thred = 250
-    ratio_h = weightedAverage(ratio_h,hNLO,thred)
+#    ratio_h = weightedAverage(ratio_h,hNLO,thred)
     
     # Define the Canvas
     c = r.TCanvas(name,name,800,800)
@@ -93,7 +108,7 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     # Upper plot will be in pad1
     hLO.SetLineColor(r.kBlue)
     hLO.SetLineWidth(2)
-    hNLO.SetLineColor(r.kRed)
+    hNLO.SetLineColor(r.kBlack)
     hNLO.SetLineWidth(2)
     
     ymin = min(hLO.GetMinimum(), hNLO.GetMinimum())
@@ -101,59 +116,49 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     if ymin<0: ymin = 1.1*ymin
     else: ymin = 0.9*ymin
     hLO.GetYaxis().SetRangeUser(ymin,ymax)
-    hLO.GetXaxis().SetRangeUser(0,300)
+    hLO.GetXaxis().SetRangeUser(0,400)
     hLO.GetYaxis().SetTitleOffset(1.55)
     hLO.GetYaxis().SetTitleSize(25)
     hLO.GetYaxis().SetTitleFont(43)
     hLO.GetYaxis().SetLabelFont(43)
-    hLO.GetYaxis().SetLabelSize(30)
+    hLO.GetYaxis().SetLabelSize(25)
     hLO.GetXaxis().SetTitleSize(30)
     hLO.GetXaxis().SetTitleFont(43)
     hLO.GetXaxis().SetLabelFont(43)
-    hLO.GetXaxis().SetLabelSize(30)
+    hLO.GetXaxis().SetLabelSize(25)
     pad1 = r.TPad("pad1","pad1", 0, 0.3, 1, 1)
     pad1.SetBottomMargin(0) # Upper and lower plot are joined
-    pad1.SetGridx()         # Vertical grid
-    pad1.SetGridy()         # Vertical grid
+#    pad1.SetGridx()         # Vertical grid
+#    pad1.SetGridy()         # Vertical grid
     pad1.Draw()
     pad1.cd()		    # pad1 becomes the current pad
     hLO.SetStats(0)	    # No statistics on upper plot
     hLO.Draw("ehist")
     hNLO.Draw("ehistsame")
-    leg = r.TLegend(0.65,0.75,0.9,0.85)
-    leg.AddEntry(hLO,"LO DY scaled","lp")
-    leg.AddEntry(hNLO,"NLO DY scaled","lp")
+    leg = r.TLegend(0.65,0.7,0.9,0.85)
+    leg.AddEntry(hLO,"LO DY NJets","lp")
+    leg.AddEntry(hNLO,"NLO DY NJets","lp")
     leg.Draw("same")
     SetOwnership( leg, 0 ) # 0 = release (not keep), 1 = keep
-
-#    hLO.GetYaxis().SetLabelSize(0.)
-#    axis = r.TGaxis(-5, 20, -5, 220, 20,220,510,"")
-#    axis.SetLabelFont(43)
-#    axis.SetLabelSize(15)
-#    axis.Draw()
 
     c.cd()		    # Go back to the main canvas before defining pad2
     pad2 = r.TPad("pad2", "pad2", 0, 0, 1, 0.3)
     pad2.SetTopMargin(0)
-    pad2.SetBottomMargin(0.2)
-    pad2.SetGridx()
+    pad2.SetBottomMargin(0.25)
+#    pad2.SetGridx()
     pad2.SetGridy()
     pad2.Draw()
     pad2.cd()
 
     # Define the ratio plot
     ratio = ratio_h.DrawCopy("ehist")
-    ratio.GetXaxis().SetRangeUser(0,300)
-    ratio.GetYaxis().SetRangeUser(0.8,1.15)
 #    ratio.GetYaxis().SetRangeUser(ratio.GetMinimum()*0.8,1.2*ratio.GetMaximum())
-#    ratio = hNLO.Clone(name+"_clone")
     ratio.SetLineColor(r.kBlack)
     ratio.SetLineWidth(2)
 #    ratio.SetMinimum(0.8)
 #    ratio.SetMaximum(1.35)
     ratio.Sumw2()
     ratio.SetStats(0);      # No statistics on lower plot
-#    ratio.Divide(hLO)
     ratio.SetMarkerStyle(21)
 
     ratio.SetTitle("")      # Remove the ratio title
@@ -163,15 +168,27 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     ratio.GetYaxis().SetTitleOffset(1.55)
     ratio.GetYaxis().SetLabelFont(43)
     ratio.GetYaxis().SetLabelSize(25)
-    ratio.GetXaxis().SetTitleSize(35)
+    ratio.GetXaxis().SetTitle("Pt(Z)")
+    ratio.GetXaxis().SetTitleSize(25)
     ratio.GetXaxis().SetTitleFont(43)
-    ratio.GetXaxis().SetTitleOffset(4.)
+    ratio.GetXaxis().SetTitleOffset(3)
     ratio.GetXaxis().SetLabelFont(43)
-    ratio.GetXaxis().SetLabelSize(35)
-#    fitf = r.TF1(name+"_f", "pol4", 0, thred)
-    ratio.Fit(name+"_f", "R")
+    ratio.GetXaxis().SetLabelSize(25)
+    c1 = ratioOnly(ratio,thred, name+"_ratio")
+    pad2.cd()
+    if fit == "True":
+        fitf = r.TF1(name+"_f", "[0]", thred, 500)
+        ratio.Fit(name+"_f", "R0")
+        res_fit = fitf.GetParameter(0)
+        err_fit = fitf.GetParError(0)
+        start = ratio.GetXaxis().FindBin(thred)
+        for i in range(start,ratio.GetXaxis().GetNbins()+1):
+            ratio.SetBinContent(i, res_fit)
+	    ratio.SetBinError(i,err_fit)
+   
+    ratio.GetXaxis().SetRangeUser(0,400)
+    ratio.GetYaxis().SetRangeUser(0.4,1.6)
     ratio.Draw("E0")
-#    ratio.Draw("ehist");       # Draw the ratio plot
     r.gPad.Update()
     line = r.TLine(r.gPad.GetUxmin(), 1, r.gPad.GetUxmax(), 1)
     line.Draw("same")
@@ -179,7 +196,7 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
 #    func = ratio.GetFunction(name+"_f")
     
 #    return c,func
-    return c
+    return c, ratio, c1
 
 
 def produceZptSFs(inputLO, inputNLO, output_name):
@@ -209,33 +226,35 @@ def produceZptSFs(inputLO, inputNLO, output_name):
     	    histLO = inFileLO.Get(hist+ztype+"_ptw")
     	    histNLO = inFileNLO.Get(hist+ztype+"_ptw")
     	    if not (histLO and histNLO): continue
-    	
     	    histLO.SetDirectory(0)
     	    histNLO.SetDirectory(0)
+	    if '4' in hist or '5' in hist:
+		histLO.Rebin(2)
+		histNLO.Rebin(2)
     	    histLO.Scale(1./abs(histLO.Integral(startbin, histLO.GetNbinsX())))
     	    histNLO.Scale(1./abs(histNLO.Integral(startbin, histLO.GetNbinsX())))
     	    ratios_out = histNLO.Clone(hist+ztype+'_sf')
 	    ratios_out.Sumw2()
 	    ratios_out.Divide(histLO)
     	    print("  "+hist+ztype+'_sf')
-            for i in range(1,startbin):
-              ratios_out.SetBinContent(i,1)
-              ratios_out.SetBinError(i,0)
-#	    c,f = ratioPlot(histLO,histNLO, ratios_out, hist+ztype)
-	    c = ratioPlot(histLO,histNLO, ratios_out, hist+ztype)
+	    c,ratio,c1 = ratioPlot(histLO,histNLO, ratios_out, hist+ztype)
+	    ratio.SetName(hist+ztype+'_sf')
+#	    c = ratioPlot(histLO,histNLO, ratios_out, hist+ztype)
+	    histLO.Write()
+	    histNLO.Write()
     	    c.Write()
+    	    c1.Write()
 #	    f.Write()
-	    if "lowPt" in inputLO:  c.SaveAs(os.path.split(output_name)[0]+'/'+hist+ztype+ "_LowMass.pdf")
-	    elif "highPt" in inputLO: c.SaveAs(os.path.split(output_name)[0]+'/'+hist+ztype+ "_HighMass.pdf")
-	    else: c.SaveAs(os.path.split(output_name)[0]+'/'+hist+ztype+ ".pdf")
-    	    ratios_out.Write()
+	    c.SaveAs(os.path.split(output_name)[0]+'/'+hist+ztype+ ".pdf")
+	    c1.SaveAs(os.path.split(output_name)[0]+'/'+hist+ztype+ "_ratio.pdf")
+    	    ratio.Write()
     inFileLO.Close()
     inFileNLO.Close()
     output.Close()
 
 try:
      # retrive command line options
-    shortopts  = "s:e:j:d:o:c:l:p:t:g:r:?" #RJ
+    shortopts  = "s:e:j:d:f:o:c:l:p:t:g:r:?" #RJ
     opts, args = getopt.getopt( sys.argv[1:], shortopts )
 except getopt.GetoptError:
     # print help information and exit:
@@ -252,6 +271,7 @@ samplesDB=''
 inputdir=''
 outdir=''
 onlytag='all'
+fit = "False"
 
 DtagsList = []
 who = commands.getstatusoutput('whoami')[1]
@@ -261,9 +281,11 @@ for o,a in opts:
     elif o in('-d'): inputdir = a
     elif o in('-o'): outdir = a
     elif o in('-t'): onlytag = a
+    elif o in('-f'): fit = a
 
 jsonFile = open(samplesDB,'r')
 procList=json.load(jsonFile,encoding='utf-8').items()
+print("fit = {}".format(fit))
 
 inputdir += '/MC'
 
@@ -283,7 +305,7 @@ for proc in procList :
         data = desc['data']
         for d in data :
             origdtag = getByLabel(d,'dtag','')
-#	    if "10to50" in origdtag: continue
+	    if "10to50" in origdtag: continue
             dtag = origdtag
 	    if(onlytag!='all') :
 		if(dtag.find(onlytag)<0) : continue
@@ -311,16 +333,13 @@ for proc in procList :
             #commands.getstatusoutput('hadd -f '+outfile+' '+inputdir+'/'+dtag+'_*.root')
             commands.getstatusoutput('rm -rf '+outdir +'/'+ dtag + '_*' + '_zpt.root')
 	    
-#	    status, output = commands.getstatusoutput('find {} -name "{}*.root" | wc -l'.format(inputdir, dtag))
-#	    print(dtag+": "+str(iLumi/int(output)))
-#	    scaleinFile(outfile, iLumi/int(output), hists)
-#	    if "amcNLO" in dtag: 
-#		status, output = commands.getstatusoutput('find {} -name "{}*.root" | wc -l'.format(inputdir, dtag))
-#		print(dtag+": "+str(iLumi/int(output)))
-#		scaleinFile(outfile, iLumi/int(output), hists)
-#	    else: 
-#		print(dtag+": "+str(iLumi))
-#		scaleinFile(outfile, iLumi, hists)
+	    if "amcNLO" in dtag: 
+		status, output = commands.getstatusoutput('find {} -name "{}*.root" | wc -l'.format(inputdir, dtag))
+		print(dtag+": "+str(iLumi/int(output)))
+		scaleinFile(outfile, iLumi/int(output), hists)
+	    else: 
+		print(dtag+": "+str(iLumi))
+		scaleinFile(outfile, iLumi, hists)
 
 DY_LO_lowpt = ''
 DY_LO_highpt = ''
