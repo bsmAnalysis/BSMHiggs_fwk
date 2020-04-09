@@ -202,34 +202,34 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     ratio.GetXaxis().SetLabelFont(43)
     ratio.GetXaxis().SetLabelSize(20)
 
-    c1 = ratioOnly(ratio, name+"_ratio")
-#    pad2.cd()
-#    fitf = r.TF1(name+"_f", "exp([0]+[1]*x)", int(low), int(high))
-#    ratio.Draw("E0")
-#    if CC=="False":
-#      print("name of function: {}".format(name+"_f"))
-#      ratio.Fit(name+"_f", "R")
-#      func = ratio.GetFunction(name+"_f")
-#      print("Chi square of expo is: {}".format(func.GetChisquare()))
-#      if showfull=="True":
-#        func.SetRange(0, 500)
-#      func.Draw("same")
-#      a = func.GetParameter(0)
-#      b = func.GetParameter(1)
-#      if "3b" in name:
-#        a_3b = a
-#	b_3b = b
-#      elif "4b" in name:
-#        a_4b = a
-#	b_4b = b
+#    c1 = ratioOnly(ratio, name+"_ratio")
+    pad2.cd()
+    fitf = r.TF1(name+"_f", "exp([0]+[1]*x)", int(low), int(high))
+    ratio.Draw("E0")
+    if CC=="False":
+      print("name of function: {}".format(name+"_f"))
+      ratio.Fit(name+"_f", "R")
+      func = ratio.GetFunction(name+"_f")
+      print("Chi square of expo is: {}".format(func.GetChisquare()))
+      if showfull=="True":
+        func.SetRange(0, 500)
+      func.Draw("same")
+      a = func.GetParameter(0)
+      b = func.GetParameter(1)
+      if "3b" in name:
+        a_3b = a
+	b_3b = b
+      elif "4b" in name:
+        a_4b = a
+	b_4b = b
 
-#    r.gPad.Update()
-#    line = r.TLine(r.gPad.GetUxmin(), 1, r.gPad.GetUxmax(), 1)
-#    line.Draw("same")
-#    SetOwnership( line, 0 )
+    r.gPad.Update()
+    line = r.TLine(r.gPad.GetUxmin(), 1, r.gPad.GetUxmax(), 1)
+    line.Draw("same")
+    SetOwnership( line, 0 )
    
 #    return c,func
-    return c1
+    return c
 
 def getHists(channels, inf):
     for ch in channels:
