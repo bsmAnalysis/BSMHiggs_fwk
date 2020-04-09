@@ -2949,7 +2949,7 @@ int main(int argc, char* argv[])
 		else if(tag_subcat.Contains("4b")) topptsf = exp(-0.03831-0.00035*wsum.pt());
 	      }
 	    }
-	    std::cout << tag_subcat << ", ptw " << wsum.pt() << ", sf: " << topptsf << std::endl;
+//	    std::cout << tag_subcat << ", ptw " << wsum.pt() << ", sf: " << topptsf << std::endl;
 	    weight *= topptsf;
 	  }
 
