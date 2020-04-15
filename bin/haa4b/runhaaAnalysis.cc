@@ -2925,8 +2925,8 @@ int main(int argc, char* argv[])
 		else if(tag_subcat.Contains("4b")) topptsf = exp(0.02629-0.00098*wsum.pt());
 	      }
 	      else if(runZH){ // Zh
-		if(tag_subcat.Contains("3b")) topptsf = exp(0.17631-0.00104*wsum.pt());
-		else if(tag_subcat.Contains("4b")) topptsf = exp(0.41001-0.00184*wsum.pt());
+		if(tag_subcat.Contains("3b")) topptsf = exp(0.02826-0.00102*wsum.pt());
+		else if(tag_subcat.Contains("4b")) topptsf = exp(-0.04341-0.00067*wsum.pt());
 	      }
 	    }
 	    else if(is2017MC){
@@ -2935,8 +2935,8 @@ int main(int argc, char* argv[])
 		else if(tag_subcat.Contains("4b")) topptsf = exp(-0.07055-0.00171*wsum.pt());
 	      }
 	      else if(runZH){ // Zh
-		if(tag_subcat.Contains("3b")) topptsf = exp(-0.36720+0.00076*wsum.pt());
-		else if(tag_subcat.Contains("4b")) topptsf = exp(-0.18413-0.00008*wsum.pt());
+		if(tag_subcat.Contains("3b")) topptsf = exp(-0.10682-0.00098*wsum.pt());
+		else if(tag_subcat.Contains("4b")) topptsf = exp(0.03679-0.00143*wsum.pt());
 	      }
 	    }
 	    else if(is2018MC){
@@ -2945,8 +2945,8 @@ int main(int argc, char* argv[])
 		else if(tag_subcat.Contains("4b")) topptsf = exp(0.00503-0.00036*wsum.pt());
 	      }
 	      else if(runZH){ // Zh
-		if(tag_subcat.Contains("3b")) topptsf = exp(0.05378-0.00036*wsum.pt());
-		else if(tag_subcat.Contains("4b")) topptsf = exp(-0.03831-0.00035*wsum.pt());
+		if(tag_subcat.Contains("3b")) topptsf = exp(-0.18502+0.00059*wsum.pt());
+		else if(tag_subcat.Contains("4b")) topptsf = exp(-0.23199+0.00076*wsum.pt());
 	      }
 	    }
 //	    std::cout << tag_subcat << ", ptw " << wsum.pt() << ", sf: " << topptsf << std::endl;
