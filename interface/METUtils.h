@@ -42,6 +42,7 @@ namespace METUtils {
 			   PhysicsObjectJetCollection& jets,
 			   PhysicsObjectLeptonCollection &leptons,       
 			   std::vector<PhysicsObjectJetCollection>& jetsVar, 
+			   std::vector< std::vector<double> >& variedJECSFs, 
 			   std::vector<JetCorrectionUncertainty*>& jecUnc,
 			   Int_t yearBits);
 

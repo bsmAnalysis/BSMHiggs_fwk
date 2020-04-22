@@ -792,6 +792,9 @@ int main(int argc, char* argv[])
     for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){ Hoptim_cuts->Fill(index, 0.0, optim_Cuts1_bdt[index]); }
     for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
       mon.addHistogram( new TH2F (TString("bdt_shapes")+varNames[ivar],";cut index;BDT;Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 35,-0.35,0.35) );
+      if( (string(varNames[ivar].Data()).find("_jesup") != string::npos) || (string(varNames[ivar].Data()).find("_jesdown") != string::npos) ){
+	mon.addHistogram( new TH2F (TString("jecSF_bdt")+varNames[ivar],";bdt;jecSF;Events",35,-0.35,0.35,200,0.9,1.1) );
+      }
       if (ivar==0) {         
 	mon.addHistogram( new TH2F (TString("higgsMass_shapes")+varNames[ivar],";cut index;m_{h} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 40,0.,800.) );
 	mon.addHistogram( new TH2F (TString("higgsPt_shapes")+varNames[ivar],";cut index;p_{T}^{h} [GeV];Events",optim_Cuts1_bdt.size(),0,optim_Cuts1_bdt.size(), 30,0.,500.));
@@ -1974,13 +1977,15 @@ int main(int argc, char* argv[])
 
 	}
 
+	std::vector< std::vector<double> > variedJECSFs;
 
 	//note this also propagates to all MET uncertainties
 	//	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1));
 	// decorrelate JES uncertainties
 	//	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1)); // totalJESUnc -> vector of 27
 	//METUtils::computeJetVariation(phys.jets, selLeptons,variedJets,totalJESUnc,( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1)); // totalJESUnc -> vector of 6
-	METUtils::computeJetVariation(jer_sf, GoodIdJets_orig, selLeptons,variedJets,totalJESUnc,( (is2017data||is2017MC) << 0 ) | ( (is2018data||is2018MC) << 1)); // totalJESUnc -> vector of 6
+	//METUtils::computeJetVariation(jer_sf, GoodIdJets_orig, selLeptons,variedJets,totalJESUnc,( (is2017data||is2017MC) << 0 ) | ( (is2018data||is2018MC) << 1)); // totalJESUnc -> vector of 6
+	METUtils::computeJetVariation(jer_sf, GoodIdJets_orig, selLeptons,variedJets,variedJECSFs,totalJESUnc,( (is2017data||is2017MC) << 0 ) | ( (is2018data||is2018MC) << 1)); // totalJESUnc -> vector of 6
 
  	//	METUtils::computeVariation(phys.jets, selLeptons, (usemetNoHF ? phys.metNoHF : phys.met), variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1));
 	//	for (int isrc = 0; isrc < nsrc; isrc++) {
@@ -2737,13 +2742,16 @@ int main(int argc, char* argv[])
 	    weight *= ptsf;
 	  }
 	  if(ivar == 0 && isMC_DY ){
-	    mon.fillHisto("jetsMulti","alljets",GoodIdJets.size(),1);
+	    //mon.fillHisto("jetsMulti","alljets",GoodIdJets.size(),1);
 	    mon.fillHisto("ptw","alljets",zpt,xsecWeight*genWeight); 
+	    mon.fillHisto("ptw","alljets",zpt,weight); 
 	    mon.fillHisto("ptw_full","debug",zpt,1); 
-//	    if(GoodIdJets.size()==2) {mon.fillHisto("ptw","2jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_2jets",zpt,xsecWeight*genWeight);}
 	    if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,xsecWeight*genWeight);}
 	    else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,xsecWeight*genWeight);}
 	    else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,xsecWeight*genWeight);}
+	    //if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,weight);}
+	    //else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,weight);}
+	    //else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,weight);}
 	}
 	  //	  if (!passMnBTag) continue; //at least 1 MediumWP b-tag if nBjets>0
 	  
@@ -2919,10 +2927,13 @@ int main(int argc, char* argv[])
 
 	  if(reweightTopPt && isMC_ttbar){
 	    double topptsf=1.0;
-	    if(is2016MC){ // formula for 2016
+	    if(is2016MC && mctruthmode==1){ // formula for 2016
 	      if(!runZH){ // Wh
-		if(tag_subcat.Contains("3b")) topptsf = exp(0.04182-0.00095*wsum.pt());
-		else if(tag_subcat.Contains("4b")) topptsf = exp(0.02629-0.00098*wsum.pt());
+		if(tag_subcat.Contains("3b")) topptsf = exp(0.06117-0.00134*wsum.pt());
+		else if(tag_subcat.Contains("4b")) topptsf = exp(0.05567-0.00182*wsum.pt());
+		//if(tag_subcat.Contains("3b")) topptsf = exp(0.04182-0.00095*wsum.pt());
+		//else if(tag_subcat.Contains("4b")) topptsf = exp(0.02629-0.00098*wsum.pt());
+	        //std::cout << tag_subcat << ", ptw " << wsum.pt() << ", sf: " << topptsf << std::endl;
 	      }
 	      else if(runZH){ // Zh
 		if(tag_subcat.Contains("3b")) topptsf = exp(0.02826-0.00102*wsum.pt());
@@ -3050,6 +3061,11 @@ int main(int argc, char* argv[])
 	  //	  if (passZmass && passNJ2) {
 	  
 	    //scan the BDT cut and fill the shapes
+	    if( (string(varNames[ivar].Data()).find("_jesup") != string::npos) || (string(varNames[ivar].Data()).find("_jesdown") != string::npos) ){
+	      for (auto sf : variedJECSFs[ivar-3]){
+	        mon.fillHisto(TString("jecSF_bdt")+varNames[ivar],"all",mvaBDT,sf,weight);
+	      }
+	    }
 	    for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){
 	      if(mvaBDT>optim_Cuts1_bdt[index]){
 		mon.fillHisto(TString("bdt_shapes")+varNames[ivar],tags,index, mvaBDT,weight);

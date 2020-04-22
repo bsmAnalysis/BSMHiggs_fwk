@@ -292,7 +292,8 @@ PhysicsObject_Jet smearedJet(JME::JetResolutionScaleFactor& jer_sf, const Physic
 		      JME::JetResolutionScaleFactor& jer_sf,
 		      PhysicsObjectJetCollection& jets,
                       PhysicsObjectLeptonCollection& leptons,
-                       std::vector<PhysicsObjectJetCollection>& jetsVar,
+		      std::vector<PhysicsObjectJetCollection>& jetsVar,
+		      std::vector< std::vector<double> >& jecSFs,
  		      std::vector<JetCorrectionUncertainty*> &jecUnc,
 		      Int_t yearBits)
 		      //                      JetCorrectionUncertainty *jecUnc)
@@ -325,6 +326,7 @@ PhysicsObject_Jet smearedJet(JME::JetResolutionScaleFactor& jer_sf, const Physic
 
       for(size_t ivar=0; ivar<2; ivar++) { //ivar<sizeof(jesvars)/sizeof(int); ivar++) {
 	PhysicsObjectJetCollection newJets;
+	std::vector<double> jecSF;
 	LorentzVector jetDiff(0,0,0,0);
 	
 	for(size_t ijet=0; ijet<jets.size(); ijet++) {
@@ -339,7 +341,9 @@ PhysicsObject_Jet smearedJet(JME::JetResolutionScaleFactor& jer_sf, const Physic
 	    unc->setJetEta(jets[ijet].eta());
 	    unc->setJetPt(jets[ijet].pt());
 	    //jetScale = 1.0 + fabs(unc->getUncertainty(varSign)); 
-	    jetScale = 1.0 + varSign*fabs(unc->getUncertainty(true));
+	    //jetScale = 1.0 + varSign*fabs(unc->getUncertainty(true));
+	    // https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetCorUncertainties
+	    jetScale = 1.0 + varSign*unc->getUncertainty(true);
 	  } catch(std::exception &e) {
 	    cout << "[METUtils::computeVariation]" << e.what() << ijet << " " << jets[ijet].pt() << endl;
 	  }
@@ -348,12 +352,13 @@ PhysicsObject_Jet smearedJet(JME::JetResolutionScaleFactor& jer_sf, const Physic
 	  iScaleJet *= jetScale;
 	  jetDiff += (iScaleJet-jets[ijet]);
 	  newJets.push_back(iScaleJet);
-	  
+	  jecSF.push_back(jetScale);
 	  // up OR down end
 	} // ijet loop 
 
 	//add new jets (if some change has occured)
 	jetsVar.push_back(newJets);
+	jecSFs.push_back(jecSF);
       
       } // loop on up and down
     } //JES nsrc sources end

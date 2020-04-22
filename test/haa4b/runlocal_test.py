@@ -36,7 +36,7 @@ from PhysicsTools.PatAlgos.tools.jetTools import *
 updateJetCollection(
     process,
     jetSource = cms.InputTag('slimmedJets'),
-    jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
+    jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute','L2L3Residual']), 'None'), # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
     btagDiscriminators = bTagDiscriminators
 )
 
