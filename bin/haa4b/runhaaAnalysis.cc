@@ -2732,26 +2732,22 @@ int main(int argc, char* argv[])
 	
  	  if(isMC_DY && !dtag.Contains("amcNLO") && reweightDYZPt){
 	    double ptsf=1.0;
-	    if(zpt >= 35){
+//	    if(zpt >= 35){
 //	      if(GoodIdJets.size()==2) {ptsf = getSFfrom1DHist(zpt, zptSF_2j);}//{ptsf = (zpt<thred_2j) ? zfit_2j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_2j);}// std::cout << "3j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_3j) << std::endl;}
 	      if(GoodIdJets.size()==3) {ptsf = getSFfrom1DHist(zpt, zptSF_3j);}//{ptsf = (zpt<thred_3j) ? zfit_3j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_3j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
 	      else if(GoodIdJets.size()==4) {ptsf = getSFfrom1DHist(zpt, zptSF_4j);}//{ptsf = (zpt<thred_4j) ? zfit_4j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_4j);}// std::cout << "4j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_4j) << std::endl;}
 	      else if(GoodIdJets.size()>=5) {ptsf = getSFfrom1DHist(zpt, zptSF_5j);}//{ptsf = (zpt<thred_5j) ? zfit_5j->Eval(zpt) :  getSFfrom1DHist(zpt, zptSF_5j);}// std::cout << "5j: " << zpt << ", sf: " << getSFfrom1DHist(zpt, zptSF_5j) << std::endl;}
-	    }
+//	    }
 //	    std::cout << GoodIdJets.size() << ", " << zpt << ", sf: " << ptsf << std::endl;
 	    weight *= ptsf;
 	  }
 	  if(ivar == 0 && isMC_DY ){
-	    //mon.fillHisto("jetsMulti","alljets",GoodIdJets.size(),1);
-	    mon.fillHisto("ptw","alljets",zpt,xsecWeight*genWeight); 
+	    mon.fillHisto("jetsMulti","alljets",GoodIdJets.size(),1);
 	    mon.fillHisto("ptw","alljets",zpt,weight); 
 	    mon.fillHisto("ptw_full","debug",zpt,1); 
-	    if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,xsecWeight*genWeight);}
-	    else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,xsecWeight*genWeight);}
-	    else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,xsecWeight*genWeight);}
-	    //if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,weight);}
-	    //else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,weight);}
-	    //else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,weight);}
+	    if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,weight);}
+	    else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,weight);}
+	    else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,weight);}
 	}
 	  //	  if (!passMnBTag) continue; //at least 1 MediumWP b-tag if nBjets>0
 	  
@@ -2927,13 +2923,10 @@ int main(int argc, char* argv[])
 
 	  if(reweightTopPt && isMC_ttbar){
 	    double topptsf=1.0;
-	    if(is2016MC && mctruthmode==1){ // formula for 2016
+	    if(is2016MC){ // formula for 2016
 	      if(!runZH){ // Wh
-		if(tag_subcat.Contains("3b")) topptsf = exp(0.06117-0.00134*wsum.pt());
-		else if(tag_subcat.Contains("4b")) topptsf = exp(0.05567-0.00182*wsum.pt());
-		//if(tag_subcat.Contains("3b")) topptsf = exp(0.04182-0.00095*wsum.pt());
-		//else if(tag_subcat.Contains("4b")) topptsf = exp(0.02629-0.00098*wsum.pt());
-	        //std::cout << tag_subcat << ", ptw " << wsum.pt() << ", sf: " << topptsf << std::endl;
+		if(tag_subcat.Contains("3b")) topptsf = exp(0.04182-0.00095*wsum.pt());
+		else if(tag_subcat.Contains("4b")) topptsf = exp(0.02629-0.00098*wsum.pt());
 	      }
 	      else if(runZH){ // Zh
 		if(tag_subcat.Contains("3b")) topptsf = exp(0.02826-0.00102*wsum.pt());
