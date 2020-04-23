@@ -2743,11 +2743,11 @@ int main(int argc, char* argv[])
 	  }
 	  if(ivar == 0 && isMC_DY ){
 	    mon.fillHisto("jetsMulti","alljets",GoodIdJets.size(),1);
-	    mon.fillHisto("ptw","alljets",zpt,weight); 
 	    mon.fillHisto("ptw_full","debug",zpt,1); 
-	    if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,weight);}
-	    else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,weight);}
-	    else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,weight);}
+	    mon.fillHisto("ptw","alljets",zpt,weight);
+	    if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,xsecWeight*genWeight);}
+	    else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,xsecWeight*genWeight);}
+	    else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,xsecWeight*genWeight);}
 	}
 	  //	  if (!passMnBTag) continue; //at least 1 MediumWP b-tag if nBjets>0
 	  
