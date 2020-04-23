@@ -11,19 +11,19 @@ from ROOT import gROOT, gBenchmark, gRandom, gSystem, Double
 #iblind=-1
 iblind=3
 
-#limit_dir="/afs/cern.ch/work/y/yuanc/Analysis/H2a4b/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Zh_2018/0060/"
-limit_dir="/afs/cern.ch/work/y/yuanc/Analysis/H2a4b/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/JOBS/SB13TeV_SM_Zh_2017/out_60/"
+limit_dir="/afs/cern.ch/work/y/yuanc/Analysis/H2a4b/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Wh_2017/0060/"
+#limit_dir="/afs/cern.ch/work/y/yuanc/Analysis/H2a4b/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Wh_2018/0060/"
 
 
 # Picks up the pre-fit BDT:
-#dir1="shapes_prefit"
+dir1="shapes_prefit"
 #Picks up the post-fit BDT:
-dir1="shapes_fit_b"
+#dir1="shapes_fit_b"
 
 channels = ["mumu_A_CR_3b", "mumu_A_CR_4b", "mumu_A_SR_3b", "mumu_A_SR_4b", "emu_A_CR_3b", "emu_A_CR_4b", "emu_A_SR_3b", "emu_A_SR_4b", "ee_A_CR_3b", "ee_A_CR_4b", "ee_A_SR_3b", "ee_A_SR_4b"]
-#channels = ["ee_A_SR_4b"]
+#channels = ["mumu_A_CR_3b", "mumu_A_CR_4b","emu_A_CR_3b", "emu_A_CR_4b","ee_A_CR_3b", "ee_A_CR_4b"]
 #channels = ["mu_A_CR5j_3b", "mu_A_CR5j_4b", "mu_A_CR_3b", "mu_A_CR_4b", "mu_A_SR_3b", "mu_A_SR_4b", "e_A_CR5j_3b", "e_A_CR5j_4b", "e_A_CR_3b", "e_A_CR_4b", "e_A_SR_3b", "e_A_SR_4b"]
-#channels = ["mu_A_SR_3b", "mu_A_SR_4b", "e_A_SR_3b", "e_A_SR_4b"]
+#channels = ["mu_A_SR_4b"]
 e_mu = ["e", "mu"]
 #e_mu = ["e"]
 wz = "zh"
@@ -53,12 +53,17 @@ def printEvtYields(hist, name):
   if not hist: return
   printout = [name+":"]
   for ibin in range(1, hist.GetXaxis().GetNbins()+1):
-    content = hist.GetBinContent(ibin)
-    error = hist.GetBinError(ibin)
+#    content = hist.GetBinContent(ibin)
+#    error = hist.GetBinError(ibin)
+    error = Double()
+    content = hist.IntegralAndError(ibin, ibin, error)
     yields = "{:.2f}".format(content) +"+-" + "{:.2f}".format(error)
-#    print(yields)
     printout.append(yields)
-  print(" ".join(printout))
+#  error = Double()
+#  content = hist.IntegralAndError(1, hist.GetXaxis().GetNbins(), error)
+#  yields = "{:.2f}".format(content) +"+-" + "{:.2f}".format(error)
+#  printout.append(yields)
+  print("  ".join(printout))
 
 def convertXRange(hist, name, edges):
   out_h = rt.TH1F(name, name, len(edges)-1, array('d', edges))
@@ -143,19 +148,13 @@ for ch in e_mu:
 #    total = file.Get(dir+"total_background")
     total = convertXRange(file.Get(dir+"total_background"), "total_background", edges)
     
-    sig = convertXRange(file.Get(dir+"wh"), "wh", edges)
-    sig.SetLineColor(rt.kRed+4)
-    sig.SetLineWidth(2)
-    sig.SetLineStyle(2)
+    sig = file.Get(dir+"wh")
+    if sig:
+      sig = convertXRange(sig, "wh", edges)
+      sig.SetLineColor(rt.kRed+4)
+      sig.SetLineWidth(2)
+      sig.SetLineStyle(2)
     #sig.Scale(50)
-    
-    qcd = file.Get(dir+"ddqcd")
-    if qcd:
-      qcd = convertXRange(qcd, "ddqcd", edges)
-      qcd.SetFillColor(634)
-      qcd.SetLineColor(1)
-      bkgd_list.append(qcd)
-      lgname_list.append("DD qcd")
     
     otherbkg = file.Get(dir+"otherbkg")
     if otherbkg:
@@ -164,6 +163,14 @@ for ch in e_mu:
       otherbkg.SetLineColor(1)
       bkgd_list.append(otherbkg)
       lgname_list.append("Other bkgs")
+    
+    qcd = file.Get(dir+"ddqcd")
+    if qcd:
+      qcd = convertXRange(qcd, "ddqcd", edges)
+      qcd.SetFillColor(634)
+      qcd.SetLineColor(1)
+      bkgd_list.append(qcd)
+      lgname_list.append("DD qcd")
     
     zll = file.Get(dir+"zll")
     if zll:
@@ -285,9 +292,20 @@ for ch in e_mu:
     MC.Draw("histsame")
     hdata.Draw("epsame0")
     
-    sig.Draw("histsame")
+    if sig: 
+      sig.Draw("histsame")
     
-    hdata.SetMaximum(1.5*max(hdata.GetMaximum(), MC.GetMaximum()))
+#    hdata.SetMaximum(1.5*max(hdata.GetMaximum(), MC.GetMaximum()))
+    hdata.SetMinimum(0.1)
+    hmax = max(hdata.GetMaximum(), MC.GetMaximum())
+    if hmax > 50000:
+	hdata.SetMaximum(1000*hmax)
+    elif hmax > 10000:
+	hdata.SetMaximum(500*hmax)
+    elif hmax > 1000:
+        hdata.SetMaximum(100*hmax)
+    else:
+	hdata.SetMaximum(50*hmax)
     
     if (blind>0):
 #        for i in range(hdata.FindBin(blind),hdata.GetNbinsX()+1):
@@ -346,7 +364,7 @@ for ch in e_mu:
     
     ## latex.DrawLatex(xx_+1.*bwx_,yy_,"Data")
     legend.AddEntry(hdata,"Data","LP")
-    legend.AddEntry(sig,"Zh (60)","L")
+    if sig: legend.AddEntry(sig,"Zh (60)","L")
     print("-"*100)
     print(dir2) 
     for i in range(len(bkgd_list)):
@@ -355,7 +373,7 @@ for ch in e_mu:
     printEvtYields(total, "total")
     print("\n")
     printEvtYields(hdata, "data")
-    printEvtYields(sig, "signal")
+    if sig: printEvtYields(sig, "signal")
     
     #legend.AddEntry(wlnu,"W#rightarrow l#nu","LF")
     #legend.AddEntry(zll,"Z#rightarrow ll","LF")
@@ -369,6 +387,7 @@ for ch in e_mu:
         legend.AddEntry(blinding_box,"Blinded area","F")
     
     legend.Draw("same")
+    t1.SetLogy(True)
     
     #draw the lumi text on the canvas
     CMS_lumi.CMS_lumi(canvas, iPeriod, iPos)
@@ -449,14 +468,14 @@ for ch in e_mu:
     t2.Update()
     
     canvas.cd()
-    canvas.SetLogy(True)
     canvas.Update()
     canvas.RedrawAxis()
     #frame = canvas.GetFrame()
     #frame.Draw()
     
     #canvas.SaveAs(limit_dir+dir1+"_"+dir2+".pdf")
-    canvas.SaveAs(dir2+"_postfit.pdf")
+    #canvas.SaveAs(dir2+"_postfit.pdf")
+    canvas.SaveAs("{}_{}.pdf".format(dir1,dir2))
     
     canvas.Update()
 

@@ -2643,7 +2643,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       for(std::map<string, bool>::iterator U=allSysts.begin(); U!=allSysts.end();U++){
         char line[2048];
-        sprintf(line,"%-45s %-10s ", U->first.c_str(), U->second?"shapeN2":"lnN");
+        sprintf(line,"%-45s %-10s ", U->first.c_str(), U->second?"shape":"lnN");
         bool isNonNull = false;
         for(unsigned int j=0; j<valid_procs.size(); j++){
           ShapeData_t& shapeInfo = procs[valid_procs[j]].channels[C->first].shapes[histoName];
