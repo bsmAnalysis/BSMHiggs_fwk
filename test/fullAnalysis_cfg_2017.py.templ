@@ -89,6 +89,7 @@ process.mainNtuplizer.verbose = cms.bool(@verbose)
 process.mainNtuplizer.metFilterBitsTag = cms.InputTag('TriggerResults','','HLT')
 process.mainNtuplizer.metsTag = cms.InputTag("slimmedMETsModifiedMET","","bsmAnalysis")
 process.mainNtuplizer.objects = cms.InputTag("slimmedPatTrigger")
+process.mainNtuplizer.Legacy2016 = cms.bool(False)
 
 process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(),
@@ -103,7 +104,7 @@ process.TFileService = cms.Service("TFileService",
 )
 
 process.p = cms.Path( 
-#    process.ecalBadCalibReducedMINIAODFilter *
+    process.ecalBadCalibReducedMINIAODFilter *
     process.fullPatMetSequence *
     process.fullPatMetSequenceModifiedMET *
     process.egammaPostRecoSeq *
