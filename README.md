@@ -99,6 +99,27 @@ cd $CMSSW_BASE/src
 #And compile
 scram b -j 4
 ```
+# Installation for 94X (2016 Legacy)
+```bash
+export SCRAM_ARCH=slc6_amd64_gcc630
+#or
+setenv SCRAM_ARCH slc6_amd64_gcc630
+cmsrel CMSSW_9_4_9
+cd CMSSW_9_4_9/src
+cmsenv
+git cms-init
+
+git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
+cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
+git checkout -b modified #copy the branch to a new one to host future modifications (ease pull request and code merging)
+#Switching from 2016 version to 2017 by running:
+cd test/haa4b
+sh ./converter.sh # input 1 when you are prompted to select
+cd $CMSSW_BASE/src
+
+#And compile
+scram b -j 4
+```
 
 # Installation for 80X (2016) 
 
