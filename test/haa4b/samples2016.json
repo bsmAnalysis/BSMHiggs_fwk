@@ -1627,7 +1627,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass25_2016",
-                    "xsec": "0.8549*0.7435"
+                    "xsec": "0.9643*0.7435"
                 }
             ],
             "fill": 0,
