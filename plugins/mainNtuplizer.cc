@@ -185,6 +185,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
     double xsec_;
     int mctruthmode_;
     bool verbose_;
+    bool is2016Legacy;
   
     DataEvtSummaryHandler summaryHandler_;
 
@@ -296,6 +297,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
     xsec_(  iConfig.getParameter<double>("xsec")                                                                          ),
     mctruthmode_( iConfig.getParameter<int>("mctruthmode")                                                                ),
     verbose_(		iConfig.getParameter<bool>("verbose")								),
+    is2016Legacy(		iConfig.getParameter<bool>("Legacy2016")								),
   // std::vector<std::string> urls=runProcess.getUntrackedParameter<std::vector<std::string> >("input");
     //rhoAllTag_(			consumes<double>(iConfig.getParameter<edm::InputTag>("rhoAll"))				),
     //rhoFastjetAllCaloTag_( 	consumes<double>(iConfig.getParameter<edm::InputTag>("rhoFastjetAllCalo")) 		),
@@ -740,7 +742,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
     {DeepCSVLooseWP = 0.1241; DeepCSVMediumWP = 0.4184; DeepCSVTightWP = 0.7527;}
   else if(is2017) //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
     {DeepCSVLooseWP = 0.1522; DeepCSVMediumWP = 0.4941; DeepCSVTightWP = 0.8001;}
-  else if(is2016Signal) //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
+  else if(is2016Signal || is2016Legacy) //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
     {DeepCSVLooseWP = 0.2217; DeepCSVMediumWP = 0.6321; DeepCSVTightWP = 0.8953;}
   else
     {DeepCSVLooseWP = 0.2219;  DeepCSVMediumWP = 0.6324; DeepCSVTightWP = 0.8958;}
@@ -752,7 +754,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
   if(isMC_){
     for (pat::Jet &j : jets) {
       Float_t btag_dsc;
-      if(is2017 || is2018 || is2016Signal)  
+      if(is2017 || is2018 || is2016Signal || is2016Legacy)  
         btag_dsc = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
       else
         btag_dsc = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
@@ -942,11 +944,11 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	
     }
  
-//    if(is2017 || is2018){
-//	edm::Handle< bool > passecalBadCalibFilterUpdate;
-//	event.getByToken(ecalBadCalibFilterUpdate_token,passecalBadCalibFilterUpdate);
-//	passMETFilters &= (*passecalBadCalibFilterUpdate);
-//    }
+    if(is2017 || is2018){
+	edm::Handle< bool > passecalBadCalibFilterUpdate;
+	event.getByToken(ecalBadCalibFilterUpdate_token,passecalBadCalibFilterUpdate);
+	passMETFilters &= (*passecalBadCalibFilterUpdate);
+    }
   
     if(!passMETFilters) return;
    //   if( metFilterValue!=0 ) continue;	 //Note this must also be applied on MC
@@ -997,7 +999,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 bool passId;
 	 //if(is2017 || is2018) passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::Fall17v2);
 	 //else passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::ICHEP16Cut);
-	 if(is2017 || is2018) passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::Fall17v2);
+	 if(is2016Legacy || is2017 || is2018) passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::Fall17v2);
 	 else passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::ICHEP16Cut);
 	 if(!passId) continue;
 
@@ -1040,7 +1042,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 //	 bool passId(true);
 
          float relIso_mu = -1, trkrelIso = -1;
-	 if(is2017 || is2018){
+	 if(is2016Legacy || is2017 || is2018){
 	   ev.mn_passId[ev.mn]  = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::Fall17v2);
 	   ev.mn_passIdLoose[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::Fall17v2);
 	   ev.mn_passSoftMuon[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Soft, patUtils::CutVersion::Fall17v2);
@@ -1206,7 +1208,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	   btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
 	   nCSVLtags += (btag1>0.1522);  
 	 //	   ev.jet_btag1[ev.jet] = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
-	 } else if(is2016Signal){
+	 } else if(is2016Signal || is2016Legacy){
 	   btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
 	   nCSVLtags += (btag1>0.2217);
 	 }

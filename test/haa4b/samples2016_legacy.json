@@ -8,383 +8,11 @@
                         1.0
                     ],
                     "dset": [
-                        "/MuonEG/Run2016B-03Feb2017_ver2-v2/MINIAOD"
+                        "/MuonEG/Run2016B-17Jul2018_ver1-v1/MINIAOD"
                     ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_MuEG2016B_ver2",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt", 
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/MuonEG/Run2016C-03Feb2017-v1/MINIAOD"
-                    ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_MuEG2016C",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt", 
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/MuonEG/Run2016D-03Feb2017-v1/MINIAOD"
-                    ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_MuEG2016D",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/MuonEG/Run2016E-03Feb2017-v1/MINIAOD"
-                    ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_MuEG2016E",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/MuonEG/Run2016F-03Feb2017-v1/MINIAOD"
-                    ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_MuEG2016F",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/MuonEG/Run2016G-03Feb2017-v1/MINIAOD"
-                    ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_MuEG2016G",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/MuonEG/Run2016H-03Feb2017_ver2-v1/MINIAOD"
-                    ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_MuEG2016H_ver2",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/MuonEG/Run2016H-03Feb2017_ver3-v1/MINIAOD"
-                    ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_MuEG2016H_ver3",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-		},
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleElectron/Run2016B-03Feb2017_ver2-v2/MINIAOD"
-                    ],
-                    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_SingleElectron2016B_ver2",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleElectron/Run2016C-03Feb2017-v1/MINIAOD"
-                    ],
-                    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_SingleElectron2016C",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleElectron/Run2016D-03Feb2017-v1/MINIAOD"
-                    ],
-                    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_SingleElectron2016D",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleElectron/Run2016E-03Feb2017-v1/MINIAOD"
-                    ],
-                    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_SingleElectron2016E",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleElectron/Run2016F-03Feb2017-v1/MINIAOD"
-                    ],
-                    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_SingleElectron2016F",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleElectron/Run2016G-03Feb2017-v1/MINIAOD"
-                    ],
-                    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_SingleElectron2016G",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleElectron/Run2016H-03Feb2017_ver2-v1/MINIAOD"
-                    ],
-                    "gtag": "80X_dataRun2_Prompt_v16",
-                    "dtag": "Data13TeV_SingleElectron2016H_ver2",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleElectron/Run2016H-03Feb2017_ver3-v1/MINIAOD"
-                    ],
-                    "gtag": "80X_dataRun2_Prompt_v16",
-                    "dtag": "Data13TeV_SingleElectron2016H_ver3",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleMuon/Run2016B-03Feb2017_ver2-v2/MINIAOD"
-                    ],
-                    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_SingleMuon2016B_ver2",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleMuon/Run2016C-03Feb2017-v1/MINIAOD"
-                    ],
-                     "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_SingleMuon2016C",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleMuon/Run2016D-03Feb2017-v1/MINIAOD"
-                    ],
-                    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_SingleMuon2016D",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleMuon/Run2016E-03Feb2017-v1/MINIAOD"
-                    ],
-                    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_SingleMuon2016E",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleMuon/Run2016F-03Feb2017-v1/MINIAOD"
-                    ],
-                    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_SingleMuon2016F",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleMuon/Run2016G-03Feb2017-v1/MINIAOD"
-                    ],
-                    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_SingleMuon2016G",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleMuon/Run2016H-03Feb2017_ver2-v1/MINIAOD"
-                    ],
-                    "gtag": "80X_dataRun2_Prompt_v16",
-                    "dtag": "Data13TeV_SingleMuon2016H_ver2",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleMuon/Run2016H-03Feb2017_ver3-v1/MINIAOD"
-                    ],
-                    "gtag": "80X_dataRun2_Prompt_v16",
-                    "dtag": "Data13TeV_SingleMuon2016H_ver3",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-			 {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/DoubleMuon/Run2016B-03Feb2017_ver2-v2/MINIAOD"
-                    ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_DoubleMuon2016B_ver2",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/DoubleMuon/Run2016C-03Feb2017-v1/MINIAOD"
-                    ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_DoubleMuon2016C",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/DoubleMuon/Run2016D-03Feb2017-v1/MINIAOD"
-                    ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_DoubleMuon2016D",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/DoubleMuon/Run2016E-03Feb2017-v1/MINIAOD"
-                    ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_DoubleMuon2016E",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/DoubleMuon/Run2016F-03Feb2017-v1/MINIAOD"
-                    ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_DoubleMuon2016F",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/DoubleMuon/Run2016G-03Feb2017-v1/MINIAOD"
-                    ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_DoubleMuon2016G",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/DoubleMuon/Run2016H-03Feb2017_ver2-v1/MINIAOD"
-                    ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_DoubleMuon2016H_ver2",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/DoubleMuon/Run2016H-03Feb2017_ver3-v1/MINIAOD"
-                    ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_DoubleMuon2016H_ver3",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_MuEG2016B_ver1",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt", 
                     "xsec": 1.0
                 },
 		 {
@@ -392,11 +20,395 @@
                         1.0
                     ],
                     "dset": [
-                        "/DoubleEG/Run2016B-03Feb2017_ver2-v2/MINIAOD"
+                        "/MuonEG/Run2016B-17Jul2018_ver2-v1/MINIAOD" 
                     ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_MuEG2016B_ver2",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt", 
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                       "/MuonEG/Run2016C-17Jul2018-v1/MINIAOD" 
+                    ],
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_MuEG2016C",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt", 
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MuonEG/Run2016D-17Jul2018-v1/MINIAOD" 
+                    ],
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_MuEG2016D",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MuonEG/Run2016E-17Jul2018-v2/MINIAOD" 
+                    ],
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_MuEG2016E",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MuonEG/Run2016F-17Jul2018-v1/MINIAOD" 
+                    ],
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_MuEG2016F",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MuonEG/Run2016G-17Jul2018-v1/MINIAOD" 
+                    ],
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_MuEG2016G",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/MuonEG/Run2016H-17Jul2018-v1/MINIAOD" 
+                    ],
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_MuEG2016H",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SingleElectron/Run2016B-17Jul2018_ver1-v1/MINIAOD" 
+                    ],
+                    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_SingleElectron2016B_ver1",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SingleElectron/Run2016B-17Jul2018_ver2-v1/MINIAOD" 
+                    ],
+                    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_SingleElectron2016B_ver2",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SingleElectron/Run2016C-17Jul2018-v1/MINIAOD" 
+                    ],
+                    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_SingleElectron2016C",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SingleElectron/Run2016D-17Jul2018-v1/MINIAOD" 
+                    ],
+                    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_SingleElectron2016D",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SingleElectron/Run2016E-17Jul2018-v1/MINIAOD" 
+                    ],
+                    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_SingleElectron2016E",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SingleElectron/Run2016F-17Jul2018-v1/MINIAOD" 
+                    ],
+                    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_SingleElectron2016F",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SingleElectron/Run2016G-17Jul2018-v1/MINIAOD" 
+                    ],
+                    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_SingleElectron2016G",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SingleElectron/Run2016H-17Jul2018-v1/MINIAOD" 
+                    ],
+                    "gtag": "80X_dataRun2_Prompt_v16",
+                    "dtag": "Data13TeV_SingleElectron2016H",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SingleMuon/Run2016B-17Jul2018_ver1-v1/MINIAOD" 
+                    ],
+                    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_SingleMuon2016B_ver1",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SingleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD" 
+                    ],
+                    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_SingleMuon2016B_ver2",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SingleMuon/Run2016C-17Jul2018-v1/MINIAOD" 
+                    ],
+                     "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_SingleMuon2016C",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SingleMuon/Run2016D-17Jul2018-v1/MINIAOD" 
+                    ],
+                    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_SingleMuon2016D",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SingleMuon/Run2016E-17Jul2018-v1/MINIAOD" 
+                    ],
+                    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_SingleMuon2016E",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SingleMuon/Run2016F-17Jul2018-v1/MINIAOD" 
+                    ],
+                    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_SingleMuon2016F",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SingleMuon/Run2016G-17Jul2018-v1/MINIAOD" 
+                    ],
+                    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_SingleMuon2016G",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SingleMuon/Run2016H-17Jul2018-v1/MINIAOD" 
+                    ],
+                    "gtag": "80X_dataRun2_Prompt_v16",
+                    "dtag": "Data13TeV_SingleMuon2016H",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleMuon/Run2016B-17Jul2018_ver1-v1/MINIAOD" 
+                    ],
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_DoubleMuon2016B_ver1",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD" 
+                    ],
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_DoubleMuon2016B_ver2",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleMuon/Run2016C-17Jul2018-v1/MINIAOD" 
+                    ],
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_DoubleMuon2016C",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/DoubleMuon/Run2016D-17Jul2018-v1/MINIAOD" 
+                    ],
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_DoubleMuon2016D",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+			"/DoubleMuon/Run2016E-17Jul2018-v1/MINIAOD"
+                    ],
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_DoubleMuon2016E",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+			"/DoubleMuon/Run2016F-17Jul2018-v1/MINIAOD"
+                    ],
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_DoubleMuon2016F",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+			"/DoubleMuon/Run2016G-17Jul2018-v1/MINIAOD"
+                    ],
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_DoubleMuon2016G",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+			"/DoubleMuon/Run2016H-17Jul2018-v1/MINIAOD"
+                    ],
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_DoubleMuon2016H",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+		 {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+			"/DoubleEG/Run2016B-17Jul2018_ver1-v1/MINIAOD"
+                    ],
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_DoubleEle2016B_ver1",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
+                    "xsec": 1.0
+                },
+		 {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+			"/DoubleEG/Run2016B-17Jul2018_ver2-v1/MINIAOD"	
+                    ],
+		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleEle2016B_ver2",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
                 {
@@ -404,11 +416,11 @@
                         1.0
                     ],
                     "dset": [
-                        "/DoubleEG/Run2016C-03Feb2017-v1/MINIAOD"
+			"/DoubleEG/Run2016C-17Jul2018-v1/MINIAOD"
                     ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleEle2016C",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
                 {
@@ -416,11 +428,11 @@
                         1.0
                     ],
                     "dset": [
-                        "/DoubleEG/Run2016D-03Feb2017-v1/MINIAOD"
+			"/DoubleEG/Run2016D-17Jul2018-v1/MINIAOD"
                     ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleEle2016D",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
                 {
@@ -428,11 +440,11 @@
                         1.0
                     ],
                     "dset": [
-                        "/DoubleEG/Run2016E-03Feb2017-v1/MINIAOD"
+			"/DoubleEG/Run2016E-17Jul2018-v1/MINIAOD"
                     ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleEle2016E",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
                 {
@@ -440,11 +452,11 @@
                         1.0
                     ],
                     "dset": [
-                        "/DoubleEG/Run2016F-03Feb2017-v1/MINIAOD"
+			"/DoubleEG/Run2016F-17Jul2018-v1/MINIAOD"
                     ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleEle2016F",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
                 {
@@ -452,11 +464,11 @@
                         1.0
                     ],
                     "dset": [
-                        "/DoubleEG/Run2016G-03Feb2017-v1/MINIAOD"
+			"/DoubleEG/Run2016G-17Jul2018-v1/MINIAOD"
                     ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
+		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleEle2016G",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
                 {
@@ -464,25 +476,13 @@
                         1.0
                     ],
                     "dset": [
-                        "/DoubleEG/Run2016H-03Feb2017_ver2-v1/MINIAOD"
+			"/DoubleEG/Run2016H-17Jul2018-v1/MINIAOD"
                     ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_DoubleEle2016H_ver2",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+		    "gtag": "94X_dataRun2_v10",
+                    "dtag": "Data13TeV_DoubleEle2016H",
+                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/DoubleEG/Run2016H-03Feb2017_ver3-v1/MINIAOD"
-                    ],
-		    "gtag": "80X_dataRun2_2016SeptRepro_v7",
-                    "dtag": "Data13TeV_DoubleEle2016H_ver3",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
-                    "xsec": 1.0
-		} 
+                }
             ],
             "fill": 0,
             "isdata": true,
@@ -503,10 +503,10 @@
                         0.5
                     ],
                     "dset": [
-                       "/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+                       "/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM" 
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_ZZ_2016",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
+                    "dtag": "MC13TeV_ZZ_ext1_2016",
                     "xsec": 17.72 
                 },
                 {
@@ -514,10 +514,10 @@
                         0.5
                     ],
                     "dset": [
-                       "/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/ZZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"	
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_ZZ_ext1_2016",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
+                    "dtag": "MC13TeV_ZZ_2016",
                     "xsec": 17.72
                 },
                  {
@@ -525,53 +525,42 @@
                         1
                     ],
                     "dset": [
-                        "/WWTo2L2Nu_13TeV-powheg/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/WWTo2L2Nu_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WW2l2nu_2016",
                     "xsec": 12.178
                 },
                 {
                     "br": [
-                        0.15
+                        0.23
                     ],
                     "dset": [
-                        "/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WWlnu2q_2016",
                     "xsec": 49.997
                 },
                 {
                     "br": [
-                        0.35
+                        0.77
                     ],
                     "dset": [
-                        "/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WWlnu2q_ext1_2016",
                     "xsec": 49.997
 		},
 		  {
                     "br": [
-                        0.5
-                    ],
-                    "dset": [
-                        "/WWToLNuQQ_13TeV-powheg/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v2/MINIAODSIM"
-                    ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_WWlnu2q_ext2_2016",
-                    "xsec": 49.997
-		  },
-		  {
-                    "br": [
                         1.0
                     ],
                     "dset": [
-                        "/WWTo4Q_13TeV-powheg/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/WWTo4Q_13TeV-powheg/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WW4q_2016",
                     "xsec": 51.723
                 },
@@ -580,9 +569,9 @@
                         0.25
                     ],
                     "dset": [
-                       "/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WZ_2016",
                     "xsec": 47.13 
                     },
@@ -591,9 +580,9 @@
                         0.75
                     ],
                     "dset": [
-                       "/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/WZ_TuneCUETP8M1_13TeV-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WZ_ext1_2016",
                     "xsec": 47.13 
                 },
@@ -602,9 +591,9 @@
                         1.0
                     ],
                     "dset": [
-                        "/ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_ZZZ_2016",
                     "xsec": 0.01398
                 },
@@ -613,9 +602,9 @@
                         1.0
                     ],
                     "dset": [
-                        "/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WZZ_2016",
                     "xsec": 0.05565
                 },
@@ -624,9 +613,9 @@
                         1.0
                     ],
                     "dset": [
-                        "/WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WWZ_2016",
                     "xsec": 0.1651
                 },
@@ -635,9 +624,9 @@
                      1.0
                    ],
                    "dset": [
-                     "/WWW_4F_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"  
+		      "/WWW_4F_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                    ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                    "dtag": "MC13TeV_WWW_4F_2016",
                    "xsec": 0.2086
                 }, 
@@ -646,9 +635,9 @@
                         1.0
                     ],
                     "dset": [
-                        "/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_SingleT_s_2016",
                     "xsec": 3.362
                 },
@@ -657,9 +646,9 @@
                         1.0  
                     ], 
                     "dset": [ 
-                        "/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_SingleT_t_2016",
                     "xsec": 136.02 
                 },
@@ -668,9 +657,9 @@
                         1.0
                     ],
                     "dset": [
-                        "/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_SingleT_at_2016",
                     "xsec": 80.95
                 },
@@ -679,9 +668,9 @@
                         1.0
                     ],
                     "dset": [
-                        "/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_SingleT_atW_2016",
                     "xsec": 35.6
                 },
@@ -690,42 +679,53 @@
                         1.0
                     ],
                     "dset": [
-                        "/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_SingleT_tW_2016",
                     "xsec": 35.6
                 },
                 {
                     "br": [
-                        1.0
+                        0.33
                     ],
                     "dset": [
-                        "/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TTGJets_2016",
                     "xsec": 3.697
                 },
                 {
                     "br": [
-                        0.25
+                        0.67
                     ],
                     "dset": [
-                        "/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
+                    "dtag": "MC13TeV_TTGJets_ext1_2016",
+                    "xsec": 3.697
+                },
+                {
+                    "br": [
+                        0.16
+                    ],
+                    "dset": [
+		       "/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
+                    ],
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TGJets_2016",
                     "xsec": 2.967
                 },
                 {
                     "br": [
-                        0.75
+                        0.84
                     ],
                     "dset": [
-                        "/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/TGJets_TuneCUETP8M1_13TeV_amcatnlo_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TGJets_ext1_2016",
                     "xsec": 2.967
                 },
@@ -734,9 +734,9 @@
                         1
                     ],
                     "dset": [
-                        "/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
+		       "/TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TTWJetslnu_2016",
                     "xsec": 0.2043
                 },
@@ -745,75 +745,53 @@
                         1
                     ],
                     "dset": [
-                        "/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TTZJets2l2nu_2016",
                     "xsec": 0.2529
                 },
-                {
-                    "br": [
-                       0.5
-                     ],
-                    "dset": [ 
-		       "/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
-                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_WplusH_HToBB_WToLNu_ext1_2016",
-                    "xsec": 0.053 
-                },
 		 {
                     "br": [
-                       0.5
+                       1.0
                      ],
                     "dset": [ 
-		       "/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                      ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WplusH_HToBB_WToLNu_2016",
                     "xsec": 0.053
                  },
 		 {
                     "br": [
-                       0.5
+                       0.59
                      ],
                     "dset": [ 
-		       "/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                      ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WminusH_HToBB_WToLNu_ext1_2016",
                     "xsec": 0.03369
                  },
 		 {
                     "br": [
-                       0.5
+                       0.41
                      ],
                     "dset": [ 
-		       "/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                      ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WminusH_HToBB_WToLNu_2016",
                     "xsec": 0.03369
                  },
 		 {
                     "br": [
-                       0.5
+                       1.0
                      ],
                     "dset": [ 
-		       "/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                      ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_ZH_HToBB_ZToLL_ext1_2016",
-                    "xsec": 0.04865 
-                 },
-		 {
-                    "br": [
-                       0.5
-                     ],
-                    "dset": [ 
-		       "/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
-                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_ZH_HToBB_ZToLL_2016",
                     "xsec": 0.04865  
                  }
@@ -833,9 +811,9 @@
                        1.0
                      ],
                     "dset": [ 
-		       "/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
                      ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TTJets_powheg_2016",
                     "xsec": 831.76  
                 }
@@ -855,9 +833,9 @@
                        1.0
                      ],
                     "dset": [ 
-		       "/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
                      ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TTJets_powheg_2016",
                     "xsec": 831.76  
                 }
@@ -877,9 +855,9 @@
                        1.0
                      ],
                     "dset": [ 
-		       "/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
                      ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TTJets_powheg_2016",
                     "xsec": 831.76  
                 }
@@ -898,18 +876,18 @@
 	        {
 		    "br": [1.0],
 		    "dset": [
-			"/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v3/MINIAODSIM"
 		    ],
-		    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+		    "gtag": "94X_mcRun2_asymptotic_v3",
 		    "dtag": "MC13TeV_DYJetsToLL_10to50_amcNLO_2016",
 		    "xsec": 18610
 		},
 		{
 		    "br": [1.0],
 		    "dset": [
-			"/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
+		       "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/MINIAODSIM"
 		    ],
-		    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+		    "gtag": "94X_mcRun2_asymptotic_v3",
 		    "dtag": "MC13TeV_DYJetsToLL_50toInf_amcNLO_ext2_2016",
 		    "xsec": 5765.4
 		}
@@ -927,99 +905,99 @@
                 {
                     "br": [ 1.0 ],
                     "dset": [
-		        "/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_10to50_2016",
                     "xsec": 18610
                 },
                 {
                     "br": [ 1 ],
                     "dset": [
-                        "/DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DY1JetsToLL_10to50_2016",
                     "xsec": 725
                 },
                 {
                     "br": [ 1 ],
                     "dset": [
-                        "/DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DY2JetsToLL_10to50_2016",
                     "xsec": 394.5
                 },
                 {
                     "br": [ 1 ],
                     "dset": [
-                        "/DY3JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/DY3JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DY3JetsToLL_10to50_2016",
                     "xsec": 96.47
                 },
                 {
                     "br": [ 1 ],
                     "dset": [
-                        "/DY4JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/DY4JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DY4JetsToLL_10to50_2016",
                     "xsec": 34.84
                 },
                 {
                     "br": [ 0.35 ],
                     "dset": [
-                        "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/MINIAODSIM"
+		       "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_ext1_2016",
                     "xsec": 4895
                 },
                 {
                     "br": [ 0.65 ],
                     "dset": [
-                        "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
+		       "/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_ext2_2016",
                     "xsec": 4895
                 },
                 {
                     "br": [ 1 ],
                     "dset": [
-                        "/DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DY1JetsToLL_50toInf_2016",
                     "xsec": 1016
                 },
                 {
                     "br": [ 1 ],
                     "dset": [
-                        "/DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],                                                                                                                                                                                      
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DY2JetsToLL_50toInf_2016",
                     "xsec": 331.4
                 },
                 {
                     "br": [ 1 ],
                     "dset": [
-                        "/DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],                                                                                                                                                                                      
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DY3JetsToLL_50toInf_2016",
                     "xsec": 96.36
                 },
                 {
                     "br": [ 1 ],
                     "dset": [
-                        "/DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],                                                                                                                                                                                      
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DY4JetsToLL_50toInf_2016",
                     "xsec": 51.4
                 }
@@ -1037,13 +1015,24 @@
             "data": [
                 {
                     "br": [
-                       1.0
+                       0.09
                     ],
                     "dset": [
-                        "/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v5/MINIAODSIM" 
+		       "/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_amcNLO_2016",
+                    "xsec": 60430
+                },
+                {
+                    "br": [
+                       0.91
+                    ],
+                    "dset": [
+		       "/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/MINIAODSIM"
+                    ],
+                    "gtag": "94X_mcRun2_asymptotic_v3",
+                    "dtag": "MC13TeV_WJets_amcNLO_ext2_2016",
                     "xsec": 60430
                 }
             ],
@@ -1058,23 +1047,23 @@
             "data": [
                 {
                     "br": [
-                       0.3425
+                       0.33
                     ],
                     "dset": [
-                        "/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_2016",
                     "xsec": 50690
                 },
                 {   
                     "br": [
-                        0.6575
+                        0.67
                     ],
                     "dset": [
-                        "/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
+		       "/WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_ext2_2016",
                     "xsec": 50690
                 },
@@ -1083,87 +1072,76 @@
                         1
                     ],
                     "dset": [
-                        "/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_W1Jets_2016",
                     "xsec": 9493
                 },
                 {   
                     "br": [
-                        0.496
+                        0.5
                     ],
                     "dset": [
-                        "/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_W2Jets_2016",
                     "xsec": 3120
                 },
                 {   
                     "br": [
-                        0.504
+                        0.5
                     ],
                     "dset": [
-                        "/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_W2Jets_ext1_2016",
                     "xsec": 3120
                 },
                 {   
                     "br": [
-                        0.335
+                        0.33
                     ],
                     "dset": [
-                        "/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_W3Jets_2016",
                     "xsec": 942.3
                 },
                 {   
                     "br": [
-                        0.665
+                        0.67
                     ],
                     "dset": [
-                        "/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_W3Jets_ext1_2016",
                     "xsec": 942.3
                 },
                 {   
                     "br": [
-                        0.305
+                        0.815
                     ],
                     "dset": [
-                        "/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_W4Jets_2016",
                     "xsec": 524.2
                 },
                 {   
                     "br": [
-                        0.070
+                        0.185
                     ],
                     "dset": [
-                        "/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_W4Jets_ext1_2016",
-                    "xsec": 524.2
-                },
-                {
-                    "br": [
-                        0.625
-                    ],
-                    "dset": [
-                        "/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
-                    ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_W4Jets_ext2_2016",
                     "xsec": 524.2
                 }
             ],
@@ -1179,23 +1157,23 @@
             "data": [
                 {
                     "br": [
-                        0.461
+                        0.46
                     ],
                     "dset": [
-                        "/QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt80To120_EMEnr_2016",
                     "xsec": 350000
                 },
                 {
                     "br": [
-                        0.539
+                        0.54
                     ],
                     "dset": [
-                        "/QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt80To120_EMEnr_ext1_2016",
                     "xsec": 350000
                 },
@@ -1204,9 +1182,9 @@
                         0.46
                     ],
                     "dset": [
-                        "/QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt120To170_EMEnr_2016",
                     "xsec": 62964
                 },
@@ -1215,9 +1193,9 @@
                         0.54
                     ],
                     "dset": [
-                        "/QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt120To170_EMEnr_ext1_2016",
                     "xsec": 62964
                 },
@@ -1226,9 +1204,9 @@
                         1.0
                     ],
                     "dset": [
-                        "/QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt170To300_EMEnr_2016",
                     "xsec": 18810
                 },
@@ -1237,31 +1215,31 @@
                         1.0
                     ],
                     "dset": [
-                        "/QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt300ToInf_EMEnr_2016",
                     "xsec": 1350
                 },
                 {
                     "br": [
-                        0.584
+                        0.582
                     ],
                     "dset": [
-                        "/QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt80to120_MuEnrPt5_2016",
                     "xsec": 106033.6648
                 },
                 {
                     "br": [
-                        0.416
+                        0.414
                     ],
                     "dset": [
-                        "/QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v3/MINIAODSIM"
+		       "/QCD_Pt-80to120_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt80to120_MuEnrPt5_ext1_2016",
                     "xsec": 106033.6648
                 },
@@ -1270,152 +1248,141 @@
                         1.0
                     ],
                     "dset": [
-                        "/QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/QCD_Pt-120to170_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt120to170_MuEnrPt5_2016",
                     "xsec": 25190.51514
                 },
                 {
                     "br": [
-                        0.458
+                        0.68
                     ],
                     "dset": [
-                        "/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_backup_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt170to300_MuEnrPt5_2016",
                     "xsec": 8654.49315
                 },
                 {
                     "br": [
-                        0.542
+                        0.32
                     ],
                     "dset": [
-                        "/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/QCD_Pt-170to300_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt170to300_MuEnrPt5_ext1_2016",
                     "xsec": 8654.49315
                 },
                 {
                     "br": [
-                        0.162
+                        0.24
                     ],
                     "dset": [
-                        "/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt300to470_MuEnrPt5_2016",
                     "xsec": 797.35269
                 },
                 {
                     "br": [
-                        0.336
+                        0.76
                     ],
                     "dset": [
-                        "/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
-                    "dtag": "MC13TeV_QCD_Pt300to470_MuEnrPt5_ext1_2016",
-                    "xsec": 797.35269
-                },
-                {
-                    "br": [
-                        0.502
-                    ],
-                    "dset": [
-                        "/QCD_Pt-300to470_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
-                    ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt300to470_MuEnrPt5_ext2_2016",
                     "xsec": 797.35269
                 },
                 {
                     "br": [
-                        0.199
+                        0.204
                     ],
                     "dset": [
-                        "/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt470to600_MuEnrPt5_2016",
                     "xsec": 79.02553776
                 },
                 {
                     "br": [
-                        0.292
+                        0.291
                     ],
                     "dset": [
-                        "/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt470to600_MuEnrPt5_ext1_2016",
                     "xsec": 79.02553776
                 },
                 {
                     "br": [
-                        0.509
+                        0.504
                     ],
                     "dset": [
-                        "/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
+		       "/QCD_Pt-470to600_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt470to600_MuEnrPt5_ext2_2016",
                     "xsec": 79.02553776
                 },
                 {
                     "br": [
-                        0.402
+                        0.40
                     ],
                     "dset": [
-                        "/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt600to800_MuEnrPt5_2016",
                     "xsec": 25.09505908
                 },
                 {
                     "br": [
-                        0.598
+                        0.60
                     ],
                     "dset": [
-                        "/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/QCD_Pt-600to800_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt600to800_MuEnrPt5_ext1_2016",
                     "xsec": 25.09505908
                 },
                 {
                     "br": [
-                        0.200
+                        0.20
                     ],
                     "dset": [
-                        "/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt800to1000_MuEnrPt5_2016",
                     "xsec": 4.707368272
                 },
                 {
                     "br": [
-                        0.295
+                        0.30
                     ],
                     "dset": [
-                        "/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/MINIAODSIM"
+		       "/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt800to1000_MuEnrPt5_ext1_2016",
                     "xsec": 4.707368272
                 },
                 {
                     "br": [
-                        0.505
+                        0.50
                     ],
                     "dset": [
-                        "/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/MINIAODSIM"
+		       "/QCD_Pt-800to1000_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt800to1000_MuEnrPt5_ext2_2016",
                     "xsec": 4.707368272
                 },
@@ -1424,9 +1391,9 @@
                         0.293
                     ],
                     "dset": [
-                        "/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt1000toInf_MuEnrPt5_2016",
                     "xsec": 1.62131692
                 },
@@ -1435,9 +1402,9 @@
                         0.707
                     ],
                     "dset": [
-                        "/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v3/MINIAODSIM"
+		       "/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt1000toInf_MuEnrPt5_ext1_2016",
                     "xsec": 1.62131692
 		},     
@@ -1446,9 +1413,9 @@
                         0.01183
                     ],
                     "dset": [
-                        "/QCD_Pt_80to170_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/QCD_Pt_80to170_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_backup_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt_80to170_bcToE_2016",
                     "xsec": 3221000
                 },
@@ -1457,9 +1424,9 @@
                         0.02492
                     ],
                     "dset": [
-                        "/QCD_Pt_170to250_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/QCD_Pt_170to250_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt_170to250_bcToE_2016",
                     "xsec": 105771
                 },
@@ -1468,9 +1435,9 @@
                         0.03375
                     ],
                     "dset": [
-                        "/QCD_Pt_250toInf_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv2-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/MINIAODSIM"
+		       "/QCD_Pt_250toInf_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
                     ],
-                    "gtag": "80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                    "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt_250toInf_bcToE_2016",
                     "xsec": 21094.1
                 }
