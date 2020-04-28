@@ -153,6 +153,8 @@ int main(int argc, char* argv[])
     TString btagDir=runProcess.getParameter<std::string>("btagDir");
     TString zptDir=runProcess.getParameter<std::string>("zptDir");
 
+    bool is2016Legacy=runProcess.getParameter<bool>("Legacy2016");
+
     bool is2016data = (!isMC && dtag.Contains("2016"));
     bool is2016MC = (isMC && dtag.Contains("2016"));
     bool is2016Signal = (is2016MC && dtag.Contains("h_amass"));
@@ -211,7 +213,7 @@ int main(int argc, char* argv[])
   //    ele_threshold_=35.; mu_threshold_=25.;
     }
 
-    if(is2016Signal){//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
+    if(is2016Signal || is2016Legacy){//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
       DeepCSVLooseWP = 0.2217; DeepCSVMediumWP = 0.6321; DeepCSVTightWP = 0.8953;
     }
 
@@ -357,7 +359,7 @@ int main(int argc, char* argv[])
         csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                         "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_102XSF_V1.csv";
       }
-      if(is2016Signal){
+      if(is2016Signal || is2016Legacy){
 	csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
 			"/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_2016LegacySF_V1.csv";
       }
@@ -1001,6 +1003,8 @@ int main(int argc, char* argv[])
         MU_ID_SF_h = (TH2F*) MU_ID_SF_file->Get("NUM_TightID_DEN_genTracks_pt_abseta");
     else if(is2016data || is2016MC)
         MU_ID_SF_h = (TH2F*) MU_ID_SF_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio");
+    else if(is2016Legacy)
+	MU_ID_SF_h = (TH2F*) MU_ID_SF_file->Get("NUM_MediumID_DEN_gentracks_eta_pt");
     
     TString muID_sf2 = runProcess.getParameter<std::string>("mu_idSF2");    
     gSystem->ExpandPathName(muID_sf2); 
@@ -1013,6 +1017,8 @@ int main(int argc, char* argv[])
         MU_ID_SF_h2 = (TH2F*) MU_ID_SF_file->Get("NUM_TightID_DEN_genTracks_pt_abseta");
     else if(is2016data || is2016MC)
         MU_ID_SF_h2 = (TH2F*) MU_ID_SF_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio");
+    else if(is2016Legacy)
+	MU_ID_SF_h = (TH2F*) MU_ID_SF_file->Get("NUM_MediumID_DEN_gentracks_eta_pt");
 
     // mu ISO SFs
     TString muISO_sf = runProcess.getParameter<std::string>("mu_isoSF"); 
@@ -1026,6 +1032,8 @@ int main(int argc, char* argv[])
         MU_ISO_SF_h = (TH2F*) MU_ISO_SF_file->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
     else if(is2016data || is2016MC)
         MU_ISO_SF_h = (TH2F*) MU_ISO_SF_file->Get("TightISO_TightID_pt_eta/pt_abseta_ratio");
+    else if(is2016Legacy)
+        MU_ISO_SF_h = (TH2F*) MU_ISO_SF_file->Get("NUM_TightRelISO_DEN_TightIDandIPCut_eta_pt");
 
     TString muISO_sf2 = runProcess.getParameter<std::string>("mu_isoSF2");        
     gSystem->ExpandPathName(muISO_sf2);       
@@ -1038,6 +1046,8 @@ int main(int argc, char* argv[])
         MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
     else if(is2016data || is2016MC)
         MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file->Get("TightISO_TightID_pt_eta/pt_abseta_ratio");
+    else if(is2016Legacy)
+        MU_ISO_SF_h = (TH2F*) MU_ISO_SF_file->Get("NUM_TightRelISO_DEN_TightIDandIPCut_eta_pt");
 
     //####################################################################################################################
     //###########################################           BTaggingMC         ###########################################
@@ -1685,15 +1695,29 @@ int main(int argc, char* argv[])
 	    weight *= getSFfrom2DHist(selLeptons[0].en_EtaSC, selLeptons[0].pt(), E_TIGHTID_SF_h);
 	  } else if (abs(selLeptons[0].id)==13) {
 	    // ID + ISO
-	    musf_id->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()),MU_ID_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h2 ) );
-	    musf_iso->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()),MU_ISO_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h2) );
+	    if(is2016Legacy){
+	      musf_id->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), 0.55*getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ID_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ID_SF_h2 ) );
+	      musf_iso->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), 0.55*getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ISO_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ISO_SF_h2) );
+	    }else{
+	      musf_id->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()),MU_ID_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h2 ) );
+	      musf_iso->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()),MU_ISO_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h2) );
+	    }
 	    musf_trg->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h2) );
+	   
+	    if(is2016Legacy){
+	      weight *= (getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ID_SF_h ));
+	      std::cout << "2016 muon ID SF: " << getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ID_SF_h ) << std::endl;
 
-	    weight *= (getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h ));
+	      weight *= (getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ISO_SF_h  ));
+	      std::cout << "2016 muon ISO SF: " << getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ISO_SF_h  ) << std::endl;
+	    }
+	    else{
+	      weight *= (getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h ));
 		       //+ 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h2) ); 
 
-	    weight *= (getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h  ));
+	      weight *= (getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h  ));
 	    //		       + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h2  ) );       
+	   }
 	  }
 	}
 
@@ -1892,6 +1916,7 @@ int main(int argc, char* argv[])
 	  // TRG
 	  if(is2016MC && !isQCD) {
 	    weight*=getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
+	    std::cout << "2016 electron trigger SF: " << getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1) << std::endl;
 	  } else if(is2017MC && !isQCD){//2017 ele TRG scale factor: https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#E/gamma%20Trigger%20Recomendations
 	    weight*=0.991;
 	  } else if(is2018MC && !isQCD){ // https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations
@@ -2243,7 +2268,7 @@ int main(int argc, char* argv[])
 	  float mindphijmet(999.);
 	  for(size_t ijet=0; ijet<vJets.size(); ijet++) {
 	    
-	    if(vJets[ijet].pt()<jet_threshold_) continue;
+//	    if(vJets[ijet].pt()<jet_threshold_) continue;
 	    if(fabs(vJets[ijet].eta())>2.5) continue;
 	    /*
 	    //jet ID
@@ -2268,7 +2293,8 @@ int main(int argc, char* argv[])
 	  
 	    GoodIdJets.push_back(vJets[ijet]);    
   
-	    if(vJets[ijet].pt()>20. && fabs(vJets[ijet].eta())<2.4) {
+//	    if(vJets[ijet].pt()>20. && fabs(vJets[ijet].eta())<2.4) {
+	    if(fabs(vJets[ijet].eta())<2.4) {
 	      // B-tagging
 	      bool hasCSVtagL,hasCSVtagM;
 	      double btag_dsc = -1;
