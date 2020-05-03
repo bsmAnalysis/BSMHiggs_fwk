@@ -942,7 +942,7 @@
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT2500toInf_2018",
                     "xsec": 0.008001
-                },
+                }
             ],
             "isdata": false,
             "keys": [
