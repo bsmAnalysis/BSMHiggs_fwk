@@ -72,6 +72,7 @@ process.mainNtuplizer.xsec = cms.double(@xsec)
 process.mainNtuplizer.mctruthmode = cms.int32(@mctruthmode)
 process.mainNtuplizer.verbose = cms.bool(@verbose)
 process.mainNtuplizer.metFilterBitsTag = cms.InputTag('TriggerResults','','HLT')
+process.mainNtuplizer.Legacy2016 = cms.bool(False)
 
 process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(),

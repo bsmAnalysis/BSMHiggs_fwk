@@ -2243,7 +2243,7 @@ int main(int argc, char* argv[])
 	  float mindphijmet(999.);
 	  for(size_t ijet=0; ijet<vJets.size(); ijet++) {
 	    
-	    if(vJets[ijet].pt()<jet_threshold_) continue;
+//	    if(vJets[ijet].pt()<jet_threshold_) continue;
 	    if(fabs(vJets[ijet].eta())>2.5) continue;
 	    /*
 	    //jet ID
@@ -2268,7 +2268,8 @@ int main(int argc, char* argv[])
 	  
 	    GoodIdJets.push_back(vJets[ijet]);    
   
-	    if(vJets[ijet].pt()>20. && fabs(vJets[ijet].eta())<2.4) {
+//	    if(vJets[ijet].pt()>20. && fabs(vJets[ijet].eta())<2.4) {
+	    if(fabs(vJets[ijet].eta())<2.4) {
 	      // B-tagging
 	      bool hasCSVtagL,hasCSVtagM;
 	      double btag_dsc = -1;

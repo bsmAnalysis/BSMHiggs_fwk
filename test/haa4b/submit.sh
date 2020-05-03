@@ -36,15 +36,19 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 # Global Variables
 #--------------------------------------------------
 
-SUFFIX=_2018_10_29 #_2018_03_03
+#SUFFIX=_2018_10_29 #_2018_03_03
 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
 
 # Json and python template for 2016
-JSON=$MAINDIR/samples2016.json
-NTPL_JSON=$MAINDIR/samples2016.json
-FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg.py.templ
-RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg.py.templ
+#JSON=$MAINDIR/samples2016.json
+#NTPL_JSON=$MAINDIR/samples2016.json
+#FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg.py.templ
+#RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg.py.templ
+JSON=$MAINDIR/samples2016_legacy.json
+NTPL_JSON=$MAINDIR/samples2016_legacy.json
+FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_2016Legacy.py.templ
+RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_2016Legacy.py.templ  # to be added later
 
 # Json and python template for 2017
 #JSON=$MAINDIR/samples2017.json
