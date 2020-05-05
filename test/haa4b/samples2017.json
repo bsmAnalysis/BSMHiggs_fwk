@@ -726,7 +726,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_10to50_2017",
-                    "xsec": 18610
+                    "xsec": "18610*1.23"
                 },
                 {
                     "br": [ 0.99 ],
@@ -735,7 +735,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_10to50_ext1_2017",
-                    "xsec": 18610
+                    "xsec": "18610*1.23*
                 },
                 {
                     "br": [ 1.0 ],
@@ -744,7 +744,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_4to50_HT100to200_2017",
-                    "xsec": 204
+                    "xsec": "204*1.23"
                 },
                 {
                     "br": [ 1.0 ],
@@ -753,7 +753,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_4to50_HT200to400_2017",
-                    "xsec": 54.4
+                    "xsec": "54.4*1.23"
                 },
                 {
                     "br": [ 1.0 ],
@@ -762,7 +762,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_4to50_HT400to600_2017",
-                    "xsec": 5.70
+                    "xsec": "5.70*1.23"
                 },
                 {
                     "br": [ 0.68 ],
@@ -771,7 +771,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_4to50_HT600toInf_2017",
-                    "xsec": 1.85
+                    "xsec": "1.85*1.23"
                 },
                 {
                     "br": [ 0.32 ],
@@ -780,7 +780,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_4to50_HT600toInf_ext1_2017",
-                    "xsec": 1.85
+                    "xsec": "1.85*1.23"
                 },
                 {
                     "br": [ 0.4977 ],
@@ -789,7 +789,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_M50_2017",
-                    "xsec": 4895
+                    "xsec": "4895*1.23"
                 },
                 {
                     "br": [ 0.5023 ],
@@ -798,7 +798,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_M50_ext1_2017",
-                    "xsec": 4895
+                    "xsec": "4895*1.23"
                 },
                 {
                     "br": [ 1.0 ],
@@ -807,7 +807,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT70to100_2017",
-                    "xsec": 146.9
+                    "xsec": "146.9*1.23"
                 },
                 {
                     "br": [ 1.0 ],
@@ -816,7 +816,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT100to200_2017",
-                    "xsec": 161.1
+                    "xsec": "161.1*1.23"
                 },
                 {
                     "br": [ 1.0 ],
@@ -825,7 +825,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT200to400_2017",
-                    "xsec": 48.66
+                    "xsec": "48.66*1.23"
                 },
                 {
                     "br": [ 1.0 ],
@@ -834,7 +834,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT400to600_2017",
-                    "xsec": 6.97
+                    "xsec": "6.97*1.23"
                 },
                 {
                     "br": [ 1.0 ],
@@ -843,7 +843,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT600to800_2017",
-                    "xsec": 1.743
+                    "xsec": "1.743*1.23"
                 },
                 {
                     "br": [ 1.0 ],
@@ -852,7 +852,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT800to1200_2017",
-                    "xsec": 0.805
+                    "xsec": "0.805*1.23"
                 },
                 {
                     "br": [ 1.0 ],
@@ -861,7 +861,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT1200to2500_2017",
-                    "xsec": 0.193
+                    "xsec": "0.193*1.23"
                 },
                 {
                     "br": [ 1.0 ],
@@ -870,7 +870,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT2500toInf_2017",
-                    "xsec": 0.00347
+                    "xsec": "0.00347*1.23"
                 }
             ],
             "isdata": false,
@@ -1002,7 +1002,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_WJets_ext1_2017",
-                    "xsec": 50690
+                    "xsec": "50690*1.21"
                 },
                 {
                     "br": [
@@ -1013,7 +1013,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_WJets_2017",
-                    "xsec": 50690
+                    "xsec": "50690*1.21"
                 },
                 {
                     "br": [
@@ -1024,7 +1024,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_WJets_HT70to100_2017",
-                    "xsec": 1292
+                    "xsec": "1292*1.21"
                 },
                 {
                     "br": [
@@ -1035,7 +1035,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_WJets_HT100to200_2017",
-                    "xsec": 1395
+                    "xsec": "1395*1.21"
                 },
                 {
                     "br": [
@@ -1046,7 +1046,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_WJets_HT200to400_2017",
-                    "xsec": 407.9
+                    "xsec": "407.9*1.21"
                 },
                 {
                     "br": [
@@ -1057,7 +1057,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_WJets_HT400to600_2017",
-                    "xsec": 57.48
+                    "xsec": "57.48*1.21"
                 },
                 {
                     "br": [
@@ -1068,7 +1068,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_WJets_HT600to800_2017",
-                    "xsec": 12.87
+                    "xsec": "12.87*1.21"
                 },
                 {
                     "br": [
@@ -1079,7 +1079,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_WJets_HT800to1200_2017",
-                    "xsec": 5.366
+                    "xsec": "5.366*1.21"
                 },
                 {
                     "br": [
@@ -1090,7 +1090,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_WJets_HT1200to2500_2017",
-                    "xsec": 1.074
+                    "xsec": "1.074*1.21"
                 },
                 {
                     "br": [
@@ -1101,7 +1101,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_WJets_HT2500toInf_2017",
-                    "xsec": 0.008001
+                    "xsec": "0.008001*1.21"
                 }
             ],
             "isdata": false,
