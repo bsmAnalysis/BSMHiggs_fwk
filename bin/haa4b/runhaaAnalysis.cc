@@ -275,6 +275,8 @@ int main(int argc, char* argv[])
 
     bool isMC_WJets = isMC && ( (string(url.Data()).find("MC13TeV_WJets")  != string::npos) || (string(url.Data()).find("MC13TeV_W1Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W2Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W3Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W4Jets")  != string::npos) );
     bool isMC_DY = isMC && ( (string(url.Data()).find("MC13TeV_DY")  != string::npos) );
+    bool isMC_DY_HTbin = isMC_DY && dtag.Contains("HT") ;
+    bool isMC_WJets_HTbin = isMC_WJets && dtag.Contains("HT") ;
     
     bool isMC_Wh = isMC && (string(url.Data()).find("Wh")  != string::npos); 
     bool isMC_Zh = isMC && (string(url.Data()).find("Zh")  != string::npos); 
@@ -1148,6 +1150,12 @@ int main(int argc, char* argv[])
             cout << "nDuplicates: " << nDuplicates << endl;
             continue;
         }
+	// VJets sample check: only use HT<70 events in the inclusive samples:
+	if((isMC_DY && !(isMC_DY_HTbin)) || (isMC_WJets && !(isMC_WJets_HTbin)) ) {
+	  if(is2017MC && dtag.Contains("10to50") && (ev.lheHt >= 100)) continue; // only exception: 2017 low mass DY HT samples start from 100 HT.
+	  if(ev.lheHt >= 70) continue;
+	}
+	mon.fillHisto("ht","debug_lheHt",ev.lheHt,1.0); 
 	if(is2018data) afterRun319077 = (ev.run > 319077);
 
         // add PhysicsEvent_t class, get all tree to physics objects
@@ -1166,7 +1174,8 @@ int main(int argc, char* argv[])
         {
           weight *= genWeight;
           //Here is the tricky part.,... rewrite xsecWeight for WJets/WXJets and DYJets/DYXJets
-          if( isMC_WJets && !dtag.Contains("amcNLO") )
+	  /*
+	  if( isMC_WJets && !dtag.Contains("amcNLO") )
 	    { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(0, ev.lheNJets, is2016MC<<0|is2017MC<<1|is2018MC<<2); }
 	  else if( isMC_DY && !dtag.Contains("amcNLO") ) {
 	    if (string(url.Data()).find("10to50")  != string::npos)
@@ -1176,7 +1185,8 @@ int main(int argc, char* argv[])
 	    else
 	      { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(2, ev.lheNJets, is2016MC<<0|is2017MC<<1|is2018MC<<2); }
 	  }
-          weight *= xsecWeight; 
+          */
+	  weight *= xsecWeight; 
         }
 
 	// Extract Z pt reweights from LO and NLO DY samples
@@ -2924,6 +2934,7 @@ int main(int argc, char* argv[])
 
 	  if(reweightTopPt && isMC_ttbar){
 	    double topptsf=1.0;
+	    /*
 	    if(is2016MC){ // formula for 2016
 	      if(!runZH){ // Wh
 		if(tag_subcat.Contains("3b")) topptsf = exp(0.04182-0.00095*wsum.pt());
@@ -2952,6 +2963,13 @@ int main(int argc, char* argv[])
 	      else if(runZH){ // Zh
 		if(tag_subcat.Contains("3b")) topptsf = exp(-0.18502+0.00059*wsum.pt());
 		else if(tag_subcat.Contains("4b")) topptsf = exp(-0.23199+0.00076*wsum.pt());
+	      }
+	    }
+	    */
+	    if(is2018MC){
+	      if(!runZH){ // Wh
+		if(tag_subcat.Contains("3b")) topptsf = exp(0.08034-0.00026*ht);
+		else if(tag_subcat.Contains("4b")) topptsf = exp(-0.001373-0.00036*ht);
 	      }
 	    }
 //	    std::cout << tag_subcat << ", ptw " << wsum.pt() << ", sf: " << topptsf << std::endl;
