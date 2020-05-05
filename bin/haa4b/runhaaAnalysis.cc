@@ -956,20 +956,17 @@ int main(int argc, char* argv[])
     gSystem->ExpandPathName(eTRG_sf);
     TFile *E_TRG_SF_file = TFile::Open(eTRG_sf);
     TH2F*  E_TRG_SF_h1 = (TH2F*) E_TRG_SF_file->Get("Ele27_WPTight_Gsf");
-    if(E_TRG_SF_h1 == NULL) std::cout << "error: empty hist in E_TRG_SF_h1" << std::endl;
     // TH2F* E_TRG_SF_h2 = (TH2F*) E_TRG_SF_file->Get("Ele25_eta2p1_WPTight_Gsf");   
     // e RECO eff SF 2Dhisto          
     TString eRECO_sf = runProcess.getParameter<std::string>("ele_recoSF"); 
     gSystem->ExpandPathName(eRECO_sf); 
     TFile *E_RECO_SF_file = TFile::Open(eRECO_sf);          
     TH2F* E_RECO_SF_h = (TH2F*) E_RECO_SF_file->Get("EGamma_SF2D");
-    if(E_RECO_SF_h == NULL) std::cout << "error: empty hist E_RECO_SF_h" << std::endl;
     // e cut based TightID eff SF 2Dhisto          
     TString eTIGHTID_sf = runProcess.getParameter<std::string>("ele_TightIdSF");  
     gSystem->ExpandPathName(eTIGHTID_sf);     
     TFile *E_TIGHTID_SF_file = TFile::Open(eTIGHTID_sf);  
     TH2F* E_TIGHTID_SF_h = (TH2F*) E_TIGHTID_SF_file->Get("EGamma_SF2D");    
-    if(E_TIGHTID_SF_h == NULL) std::cout << "error: empty hist in E_TIGHTID_SF_h" << std::endl;
     
     // mu TRG eff SF 2Dhisto
     TString muTRG_sf = runProcess.getParameter<std::string>("mu_trgSF"); 
@@ -1923,7 +1920,6 @@ int main(int argc, char* argv[])
 	  // TRG
 	  if(is2016MC && !isQCD) {
 	    weight*=getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
-	    //std::cout << "2016 electron trigger SF: " << getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1) << std::endl;
 	  } else if(is2017MC && !isQCD){//2017 ele TRG scale factor: https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#E/gamma%20Trigger%20Recomendations
 	    weight*=0.991;
 	  } else if(is2018MC && !isQCD){ // https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations
