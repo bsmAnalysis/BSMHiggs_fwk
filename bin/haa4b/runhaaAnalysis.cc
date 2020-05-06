@@ -1161,7 +1161,7 @@ int main(int argc, char* argv[])
             continue;
         }
 	// VJets sample check: only use HT<70 events in the inclusive samples:
-	if((isMC_DY && !(isMC_DY_HTbin)) || (isMC_WJets && !(isMC_WJets_HTbin)) ) {
+	if( ((isMC_DY && !(isMC_DY_HTbin)) || (isMC_WJets && !(isMC_WJets_HTbin)) ) && !dtag.Contains("amcNLO")) {
 	  if(is2017MC && dtag.Contains("10to50") && (ev.lheHt >= 100)) continue; // only exception: 2017 low mass DY HT samples start from 100 HT.
 	  if(ev.lheHt >= 70) continue;
 	}
