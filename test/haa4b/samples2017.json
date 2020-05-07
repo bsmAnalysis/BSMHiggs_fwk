@@ -875,9 +875,7 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_prod", 
-                "haa_mcbased",
-                "haa_ztoll"
+		"haa_prod" 
             ],
             "tag": "Z#rightarrow ll"
         },
@@ -987,6 +985,8 @@
             "isdata": false,
             "keys": [
 		"haa_prod" 
+                "haa_mcbased",
+                "haa_ztoll"
             ],
             "tag": "Z#rightarrow ll+NJets"
         },
@@ -1106,8 +1106,7 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_prod",
-		"haa_mcbased"
+		"haa_prod"
             ],
             "tag": "W#rightarrow l#nu"
         },
@@ -1183,6 +1182,7 @@
             ],
             "isdata": false,
             "keys": [
+		"haa_mcbased",
 		"haa_prod"
             ],
             "tag": "W#rightarrow l#nu+NJets"
