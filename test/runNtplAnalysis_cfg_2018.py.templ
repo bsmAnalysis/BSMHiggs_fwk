@@ -43,6 +43,7 @@ runProcess = cms.PSet(
     PU_Down = cms.string("${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/weights/pileup_DATA_102x_full2018_69200_down.root"),
     muscleDir =  cms.string('${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/jec/'),
     jecDir = cms.string('${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/jec/25ns/'),
+    Legacy2016 = cms.bool(False),
     btagDir = cms.string("@btagDir"),
     zptDir = cms.string('${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/weights'),
     usemetNoHF = cms.bool(@usemetNoHF),	

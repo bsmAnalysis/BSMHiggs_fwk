@@ -153,6 +153,8 @@ int main(int argc, char* argv[])
     TString btagDir=runProcess.getParameter<std::string>("btagDir");
     TString zptDir=runProcess.getParameter<std::string>("zptDir");
 
+    bool is2016Legacy=runProcess.getParameter<bool>("Legacy2016");
+
     bool is2016data = (!isMC && dtag.Contains("2016"));
     bool is2016MC = (isMC && dtag.Contains("2016"));
     bool is2016Signal = (is2016MC && dtag.Contains("h_amass"));
@@ -211,7 +213,7 @@ int main(int argc, char* argv[])
   //    ele_threshold_=35.; mu_threshold_=25.;
     }
 
-    if(is2016Signal){//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
+    if(is2016Signal || is2016Legacy){//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
       DeepCSVLooseWP = 0.2217; DeepCSVMediumWP = 0.6321; DeepCSVTightWP = 0.8953;
     }
 
@@ -359,7 +361,7 @@ int main(int argc, char* argv[])
         csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
                         "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_102XSF_V1.csv";
       }
-      if(is2016Signal){
+      if(is2016Signal || is2016Legacy){
 	csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
 			"/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_2016LegacySF_V1.csv";
       }
@@ -985,11 +987,11 @@ int main(int argc, char* argv[])
     TH2F* MU_TRG_SF_h2 = new TH2F(); 
     if(is2018data || is2018MC)
         // https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffs2018, run >= 316361
-        MU_TRG_SF_h2 = (TH2F*) MU_TRG_SF_file->Get("IsoMu24_PtEtaBins/pt_abseta_ratio");
+        MU_TRG_SF_h2 = (TH2F*) MU_TRG_SF_file2->Get("IsoMu24_PtEtaBins/pt_abseta_ratio");
     else if(is2017data || is2017MC)
-        MU_TRG_SF_h2 = (TH2F*) MU_TRG_SF_file->Get("IsoMu27_PtEtaBins/pt_abseta_ratio");
+        MU_TRG_SF_h2 = (TH2F*) MU_TRG_SF_file2->Get("IsoMu27_PtEtaBins/pt_abseta_ratio");
     else if(is2016data || is2016MC)
-        MU_TRG_SF_h2 = (TH2F*) MU_TRG_SF_file->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/pt_abseta_ratio");
+        MU_TRG_SF_h2 = (TH2F*) MU_TRG_SF_file2->Get("IsoMu24_OR_IsoTkMu24_PtEtaBins/pt_abseta_ratio");
 
      // mu ID SFs
     TString muID_sf = runProcess.getParameter<std::string>("mu_idSF"); 
@@ -1001,6 +1003,8 @@ int main(int argc, char* argv[])
         MU_ID_SF_h = (TH2F*) MU_ID_SF_file->Get("NUM_TightID_DEN_TrackerMuons_pt_abseta");
     else if(is2017data || is2017MC)
         MU_ID_SF_h = (TH2F*) MU_ID_SF_file->Get("NUM_TightID_DEN_genTracks_pt_abseta");
+    else if(is2016Legacy)
+	MU_ID_SF_h = (TH2F*) MU_ID_SF_file->Get("NUM_TightID_DEN_genTracks_eta_pt");
     else if(is2016data || is2016MC)
         MU_ID_SF_h = (TH2F*) MU_ID_SF_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio");
     
@@ -1010,11 +1014,13 @@ int main(int argc, char* argv[])
     TH2F* MU_ID_SF_h2 = new TH2F();
     if(is2018data || is2018MC)
       // https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffs2018
-        MU_ID_SF_h2 = (TH2F*) MU_ID_SF_file->Get("NUM_TightID_DEN_TrackerMuons_pt_abseta");
+        MU_ID_SF_h2 = (TH2F*) MU_ID_SF_file2->Get("NUM_TightID_DEN_TrackerMuons_pt_abseta");
     else if(is2017data || is2017MC)
-        MU_ID_SF_h2 = (TH2F*) MU_ID_SF_file->Get("NUM_TightID_DEN_genTracks_pt_abseta");
+        MU_ID_SF_h2 = (TH2F*) MU_ID_SF_file2->Get("NUM_TightID_DEN_genTracks_pt_abseta");
+    else if(is2016Legacy)
+	MU_ID_SF_h2 = (TH2F*) MU_ID_SF_file2->Get("NUM_TightID_DEN_genTracks_eta_pt");
     else if(is2016data || is2016MC)
-        MU_ID_SF_h2 = (TH2F*) MU_ID_SF_file->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio");
+        MU_ID_SF_h2 = (TH2F*) MU_ID_SF_file2->Get("MC_NUM_TightID_DEN_genTracks_PAR_pt_eta/pt_abseta_ratio");
 
     // mu ISO SFs
     TString muISO_sf = runProcess.getParameter<std::string>("mu_isoSF"); 
@@ -1026,6 +1032,8 @@ int main(int argc, char* argv[])
         MU_ISO_SF_h = (TH2F*) MU_ISO_SF_file->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
     else if(is2017data || is2017MC)
         MU_ISO_SF_h = (TH2F*) MU_ISO_SF_file->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
+    else if(is2016Legacy)
+        MU_ISO_SF_h = (TH2F*) MU_ISO_SF_file->Get("NUM_TightRelIso_DEN_TightIDandIPCut_eta_pt");
     else if(is2016data || is2016MC)
         MU_ISO_SF_h = (TH2F*) MU_ISO_SF_file->Get("TightISO_TightID_pt_eta/pt_abseta_ratio");
 
@@ -1035,11 +1043,13 @@ int main(int argc, char* argv[])
     TH2F* MU_ISO_SF_h2 = new TH2F();
     if(is2018data || is2018MC)
       // https://twiki.cern.ch/twiki/bin/viewauth/CMS/MuonReferenceEffs2018
-        MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
+        MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file2->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
     else if(is2017data || is2017MC)
-        MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
+        MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file2->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
+    else if(is2016Legacy)
+        MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file2->Get("NUM_TightRelIso_DEN_TightIDandIPCut_eta_pt");
     else if(is2016data || is2016MC)
-        MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file->Get("TightISO_TightID_pt_eta/pt_abseta_ratio");
+        MU_ISO_SF_h2 = (TH2F*) MU_ISO_SF_file2->Get("TightISO_TightID_pt_eta/pt_abseta_ratio");
 
     //####################################################################################################################
     //###########################################           BTaggingMC         ###########################################
@@ -1151,10 +1161,10 @@ int main(int argc, char* argv[])
             continue;
         }
 	// VJets sample check: only use HT<70 events in the inclusive samples:
-	if((isMC_DY && !(isMC_DY_HTbin)) || (isMC_WJets && !(isMC_WJets_HTbin)) ) {
-	  if(is2017MC && dtag.Contains("10to50") && (ev.lheHt >= 100)) continue; // only exception: 2017 low mass DY HT samples start from 100 HT.
-	  if(ev.lheHt >= 70) continue;
-	}
+//	if( ((isMC_DY && !(isMC_DY_HTbin)) || (isMC_WJets && !(isMC_WJets_HTbin)) ) && !dtag.Contains("amcNLO")) {
+//	  if(is2017MC && dtag.Contains("10to50") && (ev.lheHt >= 100)) continue; // only exception: 2017 low mass DY HT samples start from 100 HT.
+//	  if(ev.lheHt >= 70) continue;
+//	}
 	mon.fillHisto("ht","debug_lheHt",ev.lheHt,1.0); 
 	if(is2018data) afterRun319077 = (ev.run > 319077);
 
@@ -1174,7 +1184,7 @@ int main(int argc, char* argv[])
         {
           weight *= genWeight;
           //Here is the tricky part.,... rewrite xsecWeight for WJets/WXJets and DYJets/DYXJets
-	  /*
+          
 	  if( isMC_WJets && !dtag.Contains("amcNLO") )
 	    { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(0, ev.lheNJets, is2016MC<<0|is2017MC<<1|is2018MC<<2); }
 	  else if( isMC_DY && !dtag.Contains("amcNLO") ) {
@@ -1185,7 +1195,7 @@ int main(int argc, char* argv[])
 	    else
 	      { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(2, ev.lheNJets, is2016MC<<0|is2017MC<<1|is2018MC<<2); }
 	  }
-          */
+          
 	  weight *= xsecWeight; 
         }
 
@@ -1695,15 +1705,23 @@ int main(int argc, char* argv[])
 	    weight *= getSFfrom2DHist(selLeptons[0].en_EtaSC, selLeptons[0].pt(), E_TIGHTID_SF_h);
 	  } else if (abs(selLeptons[0].id)==13) {
 	    // ID + ISO
-	    musf_id->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()),MU_ID_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h2 ) );
-	    musf_iso->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()),MU_ISO_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h2) );
-	    musf_trg->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h2) );
-
-	    weight *= (getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h ));
-		       //+ 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ID_SF_h2) ); 
-
-	    weight *= (getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h  ));
-	    //		       + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_ISO_SF_h2  ) );       
+	    float id_sf=1.0, iso_sf=1.0, trg_sf=1.0;
+	    if(is2016Legacy || is2016MC){
+	      id_sf = 0.55*getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ID_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ID_SF_h2 );
+	      iso_sf = 0.55*getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ISO_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ISO_SF_h2);
+	      trg_sf = 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h2);
+	    }else{
+	      id_sf = getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ID_SF_h);
+	      iso_sf = getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ISO_SF_h); 
+	      if(is2018MC) trg_sf = 0.15*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h) + 0.85*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h2);
+	      else trg_sf = getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h);
+	    }
+	    musf_id->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), id_sf);
+	    musf_iso->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), iso_sf); 
+	    musf_trg->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), trg_sf);
+	     
+	    weight *= id_sf;
+	    weight *= iso_sf;
 	  }
 	}
 
@@ -1882,7 +1900,7 @@ int main(int argc, char* argv[])
 	  */
 
 	  hasTrigger=true;
-
+ 
 	} else {
 	  if(evcat==E && hasEtrigger ) hasTrigger=true;   
 	  if(evcat==MU && hasMtrigger ) hasTrigger=true;   
@@ -1918,7 +1936,11 @@ int main(int argc, char* argv[])
 	} else if (abs(selLeptons[0].id)==13) {
 	    // TRG
 	  if(isMC && !isQCD) {
-	    weight *= (getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h ));
+	    float trg_sf = 1.0;
+	    if(is2016Legacy || is2016MC) trg_sf = 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h2);
+	    else if (is2018MC) trg_sf = 0.15*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h) + 0.85*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h2);
+	    else trg_sf = getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h );
+	    weight *= trg_sf;
 	  }
 	 
 	  mon.fillHisto("leadlep_pt_raw",tag_cat,selLeptons[0].pt(),weight);
