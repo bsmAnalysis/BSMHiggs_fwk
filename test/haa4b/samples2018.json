@@ -755,11 +755,9 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_prod", 
-                "haa_mcbased",
-                "haa_ztoll"
+		"haa_prod" 
             ],
-            "tag": "Z#rightarrow ll"
+            "tag": "Z#rightarrow ll HT-Binned"
         },
         {
             "color": 624,
@@ -821,9 +819,11 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_prod" 
+		"haa_prod" ,
+                "haa_mcbased",
+                "haa_ztoll"
             ],
-            "tag": "Z#rightarrow ll+NJets"
+            "tag": "Z#rightarrow ll"
         },
         {
             "color": 622,
@@ -930,10 +930,9 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_prod",
-		"haa_mcbased"
+		"haa_prod"
             ],
-            "tag": "W#rightarrow l#nu"
+            "tag": "W#rightarrow l#nu HT-Binned"
         },
         {
             "color": 622,
@@ -996,9 +995,10 @@
             ],
             "isdata": false,
             "keys": [
+		"haa_mcbased",
 		"haa_prod"
             ],
-            "tag": "W#rightarrow l#nu+NJets"
+            "tag": "W#rightarrow l#nu"
         },
         {
             "color": 634,

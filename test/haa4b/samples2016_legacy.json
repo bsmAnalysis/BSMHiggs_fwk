@@ -8,18 +8,6 @@
                         1.0
                     ],
                     "dset": [
-                        "/MuonEG/Run2016B-17Jul2018_ver1-v1/MINIAOD"
-                    ],
-		    "gtag": "94X_dataRun2_v10",
-                    "dtag": "Data13TeV_MuEG2016B_ver1",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt", 
-                    "xsec": 1.0
-                },
-		 {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
                         "/MuonEG/Run2016B-17Jul2018_ver2-v1/MINIAOD" 
                     ],
 		    "gtag": "94X_dataRun2_v10",
@@ -96,18 +84,6 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_MuEG2016H",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SingleElectron/Run2016B-17Jul2018_ver1-v1/MINIAOD" 
-                    ],
-                    "gtag": "94X_dataRun2_v10",
-                    "dtag": "Data13TeV_SingleElectron2016B_ver1",
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -200,18 +176,6 @@
                         1.0
                     ],
                     "dset": [
-                        "/SingleMuon/Run2016B-17Jul2018_ver1-v1/MINIAOD" 
-                    ],
-                    "gtag": "94X_dataRun2_v10",
-                    "dtag": "Data13TeV_SingleMuon2016B_ver1",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
                         "/SingleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD" 
                     ],
                     "gtag": "94X_dataRun2_v10",
@@ -296,18 +260,6 @@
                         1.0
                     ],
                     "dset": [
-                        "/DoubleMuon/Run2016B-17Jul2018_ver1-v1/MINIAOD" 
-                    ],
-		    "gtag": "94X_dataRun2_v10",
-                    "dtag": "Data13TeV_DoubleMuon2016B_ver1",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
                         "/DoubleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD" 
                     ],
 		    "gtag": "94X_dataRun2_v10",
@@ -384,18 +336,6 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleMuon2016H",
-                    "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
-                    "xsec": 1.0
-                },
-		 {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-			"/DoubleEG/Run2016B-17Jul2018_ver1-v1/MINIAOD"
-                    ],
-		    "gtag": "94X_dataRun2_v10",
-                    "dtag": "Data13TeV_DoubleEle2016B_ver1",
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -1115,7 +1055,7 @@
 		"haa_prod", 
                 "haa_ztoll"
             ],
-            "tag": "Z#rightarrow ll"
+            "tag": "Z#rightarrow ll HT-Binned"
         },
 	{
             "color": 624,
@@ -1226,7 +1166,7 @@
 		"haa_ztoll",
 		"haa_prod" 
             ],
-            "tag": "Z#rightarrow ll+NJets"
+            "tag": "Z#rightarrow ll"
         },
         {
             "color": 622,
@@ -1477,7 +1417,7 @@
             "keys": [
 	        "haa_prod"
             ],
-            "tag": "W#rightarrow l#nu"
+            "tag": "W#rightarrow l#nu HT-Binned"
         },
         {
             "color": 622,
@@ -1561,7 +1501,7 @@
                 },
                 {   
                     "br": [
-                        0.815
+                        0.304
                     ],
                     "dset": [
 		       "/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"
@@ -1572,13 +1512,24 @@
                 },
                 {   
                     "br": [
-                        0.185
+                        0.07
                     ],
                     "dset": [
 		       "/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_W4Jets_ext1_2016",
+                    "xsec": 524.2
+                },
+                {   
+                    "br": [
+                        0.626
+                    ],
+                    "dset": [
+		       "/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v1/MINIAODSIM" 
+                    ],
+                    "gtag": "94X_mcRun2_asymptotic_v3",
+                    "dtag": "MC13TeV_W4Jets_ext2_2016",
                     "xsec": 524.2
                 }
             ],
@@ -1587,7 +1538,7 @@
 		"haa_prod",
 		"haa_mcbased"
             ],
-            "tag": "W#rightarrow l#nu+NJets"
+            "tag": "W#rightarrow l#nu"
         },
         {
             "color": 634,
