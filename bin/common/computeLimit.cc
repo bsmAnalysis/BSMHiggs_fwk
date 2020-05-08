@@ -669,14 +669,14 @@ int main(int argc, char* argv[])
   std::vector<std::vector<string> > binsToMerge;
   for(unsigned int b=0;b<AnalysisBins.size();b++){
     if(AnalysisBins[b].find('+')!=std::string::npos){
-      std::cout << "Find the string: " << AnalysisBins[b] << std::endl;
+      //std::cout << "Find the string: " << AnalysisBins[b] << std::endl;
       std::vector<string> subBins;
       std::istringstream iss(AnalysisBins[b]);
       std::string token;
       while (std::getline(iss, token, '+')){
       //char* pch = strtok(&AnalysisBins[b][0],"+"); 
       //while (pch!=NULL){
-	std::cout << "subBin pushed: " << token << std::endl;
+	//std::cout << "subBin pushed: " << token << std::endl;
         indexcutV.push_back(indexcutV[b]);
         indexcutVL.push_back(indexcutVL[b]);
         indexcutVR.push_back(indexcutVR[b]);
