@@ -669,15 +669,23 @@ int main(int argc, char* argv[])
   std::vector<std::vector<string> > binsToMerge;
   for(unsigned int b=0;b<AnalysisBins.size();b++){
     if(AnalysisBins[b].find('+')!=std::string::npos){
+      //std::cout << "Find the string: " << AnalysisBins[b] << std::endl;
       std::vector<string> subBins;
-      char* pch = strtok(&AnalysisBins[b][0],"+"); 
-      while (pch!=NULL){
+      std::istringstream iss(AnalysisBins[b]);
+      std::string token;
+      while (std::getline(iss, token, '+')){
+      //char* pch = strtok(&AnalysisBins[b][0],"+"); 
+      //while (pch!=NULL){
+	//std::cout << "subBin pushed: " << token << std::endl;
         indexcutV.push_back(indexcutV[b]);
         indexcutVL.push_back(indexcutVL[b]);
         indexcutVR.push_back(indexcutVR[b]);
-        AnalysisBins.push_back(pch);
-        subBins.push_back(pch);
-        pch = strtok(NULL,"+");
+        AnalysisBins.push_back(token);
+        subBins.push_back(token);
+        //AnalysisBins.push_back(pch);
+        //subBins.push_back(pch);
+      //  pch = strtok(NULL,"+");
+      //}
       }
       binsToMerge.push_back(subBins);
       AnalysisBins.erase(AnalysisBins.begin()+b);
@@ -784,6 +792,11 @@ int main(int argc, char* argv[])
     if(subFake)allInfo.doBackgroundSubtraction(pFile,selCh,histo);
   }
 
+  for(unsigned int B=0;B<binsToMerge.size();B++){
+    std::string NewBinName = binsToMerge[B][0]; std::cout << "binsToMerge[B][0]: " << binsToMerge[B][0]; for(unsigned int b=1;b<binsToMerge[B].size();b++){NewBinName += "_"+binsToMerge[B][b];std::cout << "binsToMerge[B][b]: " << binsToMerge[B][b] << std::endl;;}
+//    std::string NewBinName = string("["); binsToMerge[B][0];  for(unsigned int b=1;b<binsToMerge[B].size();b++){NewBinName += "+"+binsToMerge[B][b];} NewBinName+="]";
+    allInfo.mergeBins(binsToMerge[B],NewBinName);
+  }
   //replace data by total MC background
   if(blindData)allInfo.blind();
 
@@ -797,10 +810,10 @@ int main(int argc, char* argv[])
   allInfo.dropCtrlChannels(selCh);
 
   //merge bins  
-  for(unsigned int B=0;B<binsToMerge.size();B++){
-    std::string NewBinName = string("["); binsToMerge[B][0];  for(unsigned int b=1;b<binsToMerge[B].size();b++){NewBinName += "+"+binsToMerge[B][b];} NewBinName+="]";
-    allInfo.mergeBins(binsToMerge[B],NewBinName);
-  }
+//  for(unsigned int B=0;B<binsToMerge.size();B++){
+//    std::string NewBinName = string("["); binsToMerge[B][0];  for(unsigned int b=1;b<binsToMerge[B].size();b++){NewBinName += "+"+binsToMerge[B][b];} NewBinName+="]";
+//    allInfo.mergeBins(binsToMerge[B],NewBinName);
+//  }
 
 
   //turn to CC analysis eventually
@@ -905,11 +918,15 @@ void AllInfo_t::addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool compute
 	if(uncS->first=="") continue; //We only take systematic (i.e non-nominal) shapes
 	if(shapesInfoSrc[sh->first].uncShape.find("")==shapesInfoSrc[sh->first].uncShape.end()) continue;
 	//1. Copy the nominal shape
-	shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) shapesInfoDest[sh->first].uncShape[""]->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
+	//shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) shapesInfoDest[sh->first].uncShape[""]->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
 	//2. we remove the nominal value of the process we are running on
-	shapesInfoDest[sh->first].uncShape[uncS->first]->Add(shapesInfoSrc[sh->first].uncShape[""], -1);
+	//shapesInfoDest[sh->first].uncShape[uncS->first]->Add(shapesInfoSrc[sh->first].uncShape[""], -1);
 	//3. and add the variation up/down
-	shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second); 
+	if(shapesInfoDest[sh->first].uncShape.find(uncS->first)==shapesInfoDest[sh->first].uncShape.end()){
+	  shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) uncS->second->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
+	}else{
+	  shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second); 
+	}
       }
     }
   }
@@ -2820,7 +2837,18 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       procInfo.shortName = shortName.Data();
 
       if(procInfo.isSign){
-        procInfo.xsec = procInfo.jsonObj["data"].daughters()[0].getDouble("xsec", 1);
+	std::string xsec_str = procInfo.jsonObj["data"].daughters()[0].getString("xsec", "1.0");
+	std::string delimiter = "*";
+	size_t pos = 0;
+	if((pos = xsec_str.find(delimiter)) != std::string::npos){
+	  double m1 = stod(xsec_str.substr(0,pos));
+	  double m2 = stod(xsec_str.erase(0,pos+delimiter.length()));
+	  procInfo.xsec = m1 * m2;
+	}else{
+	  procInfo.xsec = stod(xsec_str);
+	}
+//        procInfo.xsec = procInfo.jsonObj["data"].daughters()[0].getDouble("xsec", 1);
+//	std::cout << proc.Data() << ", xsec: " << procInfo.xsec << std::endl;
         if(procInfo.jsonObj["data"].daughters()[0].isTag("br")){
           std::vector<JSONWrapper::Object> BRs = procInfo.jsonObj["data"].daughters()[0]["br"].daughters();
           double totalBR=1.0; for(size_t ipbr=0; ipbr<BRs.size(); ipbr++){totalBR*=BRs[ipbr].toDouble();}   
@@ -3036,7 +3064,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             if(ch->second.channel != ch2->second.channel)continue; //make sure we merge bin in the same channel
             if(ch->second.bin     == ch2->second.bin    )continue; //make sure we do not merge with itself
             if(find(binsToMerge.begin(), binsToMerge.end(), ch2->second.bin)==binsToMerge.end())continue;  //make sure this bin should be merged
-            addChannel(ch->second, ch2->second); //FIXME this only adds the nominal shapes, not also the syst
+            addChannel(ch->second, ch2->second, false); // add nominal 
+            addChannel(ch->second, ch2->second, true); // add systematics
             it->second.channels.erase(ch2);  
             ch2=ch;
           }
