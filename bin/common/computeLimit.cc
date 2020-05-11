@@ -421,7 +421,7 @@ class AllInfo_t
     void sortProc();
 
     // Sum up all background processes and add this as a total process
-    void addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool computeSyst = false);
+    void addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool computeSyst = false, bool addDiffProcs = true);
 
     // Sum up all background processes and add this as a total process
     void addProc(ProcessInfo_t& dest, ProcessInfo_t& src, bool computeSyst = false);
@@ -881,7 +881,7 @@ void AllInfo_t::sortProc(){
 //
 // Sum up all shapes from one src channel to a total shapes in the dest channel
 //
-void AllInfo_t::addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool computeSyst){
+void AllInfo_t::addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool computeSyst, bool addDiffProcs){
   std::map<string, ShapeData_t>& shapesInfoDest = dest.shapes;
   std::map<string, ShapeData_t>& shapesInfoSrc  = src.shapes;
 
@@ -917,15 +917,19 @@ void AllInfo_t::addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool compute
       for(std::map<string, TH1*>::iterator uncS = sh->second.uncShape.begin();uncS!= sh->second.uncShape.end();uncS++){
 	if(uncS->first=="") continue; //We only take systematic (i.e non-nominal) shapes
 	if(shapesInfoSrc[sh->first].uncShape.find("")==shapesInfoSrc[sh->first].uncShape.end()) continue;
-	//1. Copy the nominal shape
-	//shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) shapesInfoDest[sh->first].uncShape[""]->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
-	//2. we remove the nominal value of the process we are running on
-	//shapesInfoDest[sh->first].uncShape[uncS->first]->Add(shapesInfoSrc[sh->first].uncShape[""], -1);
-	//3. and add the variation up/down
-	if(shapesInfoDest[sh->first].uncShape.find(uncS->first)==shapesInfoDest[sh->first].uncShape.end()){
-	  shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) uncS->second->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
-	}else{
+	if(addDiffProcs){ // add different procs
+	  //1. Copy the nominal shape
+	  shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) shapesInfoDest[sh->first].uncShape[""]->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
+	  //2. we remove the nominal value of the process we are running on
+	  shapesInfoDest[sh->first].uncShape[uncS->first]->Add(shapesInfoSrc[sh->first].uncShape[""], -1);
+	  //3. and add the variation up/down
 	  shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second); 
+	}else{ // add same proc in different channels
+	  if(shapesInfoDest[sh->first].uncShape.find(uncS->first)==shapesInfoDest[sh->first].uncShape.end()){
+	    shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) uncS->second->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
+	  }else{
+	    shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second); 
+	  }
 	}
       }
     }
@@ -2684,15 +2688,17 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n"); 
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");    
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){  
-	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_e rateParam bin1 zll 1 \n");
-	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_e rateParam bin1 zll 1 \n");
+//	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_e rateParam bin1 zll 1 \n");
+//	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_e rateParam bin1 zll 1 \n");
+	    fprintf(pFile,"z_norm_e rateParam bin1 zll 1 \n");
 	  }
 	} else if (C->first.find("mumu" )!=string::npos) {  
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n"); 
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");    
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){
-	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_mu rateParam bin1 zll 1 \n");
-	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_mu rateParam bin1 zll 1 \n");
+//	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_mu rateParam bin1 zll 1 \n");
+//	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_mu rateParam bin1 zll 1 \n");
+	    fprintf(pFile,"z_norm_mu rateParam bin1 zll 1 \n");
 	  }
 	} else if  (C->first.find("emu" )!=string::npos) {     
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  {fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");}
@@ -3065,7 +3071,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             if(ch->second.bin     == ch2->second.bin    )continue; //make sure we do not merge with itself
             if(find(binsToMerge.begin(), binsToMerge.end(), ch2->second.bin)==binsToMerge.end())continue;  //make sure this bin should be merged
             addChannel(ch->second, ch2->second, false); // add nominal 
-            addChannel(ch->second, ch2->second, true); // add systematics
+            addChannel(ch->second, ch2->second, true, false); // add systematics
             it->second.channels.erase(ch2);  
             ch2=ch;
           }
