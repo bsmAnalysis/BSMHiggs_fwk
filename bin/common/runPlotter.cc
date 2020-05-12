@@ -624,14 +624,14 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, TFile* OutputF
          if(!Process[i].getBoolFromKeyword(matchingKeyword, "isdata", false) && !Process[i].getBoolFromKeyword(matchingKeyword, "isdatadriven", false)){
 	   Weight=iLumi/fileList.size();
 	   // Overwrite weight for W+Nj and DY+Nj samples
-	   
+	 /*  
 	   if (dirProc.find("W#rightarrow l#nu")!=std::string::npos  && (Samples[j])["dtag"].toString().find("amcNLO")==std::string::npos) Weight=iLumi;
 	   if (dirProc.find("Z#rightarrow ll")!=std::string::npos && (Samples[j])["dtag"].toString().find("amcNLO")==std::string::npos) {
 	     if ((Samples[j])["dtag"].toString().find("10to50")!=std::string::npos && 
 		  ( (Samples[j])["dtag"].toString().find("2017")!=std::string::npos || (Samples[j])["dtag"].toString().find("2018")!=std::string::npos) );
 	     else Weight=iLumi;
 	   }
-	   
+	  */ 
 	   //	   if (Process[i].getStringFromKeyword(matchingKeyword, "tag", "W#rightarrow l#nu")) Weight=iLumi;
 	 } else {Weight=1.0;}  
 	 //	 {Weight= iLumi/fileList.size();}else{Weight=1.0;}

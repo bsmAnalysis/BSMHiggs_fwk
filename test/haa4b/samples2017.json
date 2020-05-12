@@ -735,7 +735,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_10to50_ext1_2017",
-                    "xsec": "18610*1.23*
+                    "xsec": "18610*1.23"
                 },
                 {
                     "br": [ 1.0 ],
@@ -875,9 +875,10 @@
             ],
             "isdata": false,
             "keys": [
+                "haa_mcbased",
 		"haa_prod" 
             ],
-            "tag": "Z#rightarrow ll HT-Binned"
+            "tag": "Z#rightarrow ll"
         },
         {
             "color": 624,
@@ -984,11 +985,10 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_prod" 
-                "haa_mcbased",
+		"haa_prod", 
                 "haa_ztoll"
             ],
-            "tag": "Z#rightarrow ll"
+            "tag": "Z#rightarrow ll + NJets"
         },
         {
             "color": 622,
@@ -1106,9 +1106,10 @@
             ],
             "isdata": false,
             "keys": [
+		"haa_mcbased",
 		"haa_prod"
             ],
-            "tag": "W#rightarrow l#nu HT-Binned"
+            "tag": "W#rightarrow l#nu"
         },
         {
             "color": 622,
@@ -1182,10 +1183,9 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_mcbased",
 		"haa_prod"
             ],
-            "tag": "W#rightarrow l#nu"
+            "tag": "W#rightarrow l#nu + NJets"
         },
         {
             "color": 634,
