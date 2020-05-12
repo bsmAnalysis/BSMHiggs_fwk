@@ -447,6 +447,7 @@
             ],
             "isdata": false,
             "keys": [
+		"haa_mcOnly1",
 		"haa_prod", 
                 "haa_mcbased"
             ],
@@ -491,6 +492,7 @@
             ],
             "isdata": false,
             "keys": [
+		"haa_mcOnly2",
 	        "haa_mcbased"	
             ],
             "mctruthmode": 5,
@@ -535,6 +537,7 @@
             ],
             "isdata": false,
             "keys": [
+		"haa_mcOnly2",
 	        "haa_mcbased"	
             ],
             "mctruthmode": 4,
@@ -579,6 +582,7 @@
             ],
             "isdata": false,
             "keys": [
+		"haa_mcOnly2",
 		"haa_prod", 
 	        "haa_mcbased"	
             ],
@@ -755,10 +759,10 @@
             ],
             "isdata": false,
             "keys": [
-                "haa_mcbased",
-		"haa_prod" 
+		"haa_prod", 
+                "haa_ztoll"
             ],
-            "tag": "Z#rightarrow ll"
+            "tag": "Z#rightarrow ll HT-Binned"
         },
         {
             "color": 624,
@@ -820,10 +824,11 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_prod" ,
-                "haa_ztoll"
+		"haa_mcOnly3",
+                "haa_mcbased",
+		"haa_prod"
             ],
-            "tag": "Z#rightarrow ll + NJets"
+            "tag": "Z#rightarrow ll"
         },
         {
             "color": 622,
@@ -930,6 +935,7 @@
             ],
             "isdata": false,
             "keys": [
+		"haa_mcOnly4",
 		"haa_mcbased",
 		"haa_prod"
             ],
@@ -1182,6 +1188,7 @@
             ],
             "isdata": false,
             "keys": [
+		"haa_mcOnly5",
 		"haa_prod", 
                 "haa_mcbased"
             ],

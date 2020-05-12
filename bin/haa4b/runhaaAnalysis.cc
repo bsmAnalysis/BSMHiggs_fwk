@@ -1161,8 +1161,9 @@ int main(int argc, char* argv[])
             continue;
         }
 	// VJets sample check: only use HT<70 events in the inclusive samples:
-	if( ((isMC_DY && !(isMC_DY_HTbin)) || (isMC_WJets && !(isMC_WJets_HTbin)) ) && !dtag.Contains("amcNLO")) {
-	  if(is2017MC && dtag.Contains("10to50") && (ev.lheHt >= 100)) continue; // only exception: 2017 low mass DY HT samples start from 100 HT.
+//	if( ((isMC_DY && !(isMC_DY_HTbin)) || (isMC_WJets && !(isMC_WJets_HTbin)) ) && !dtag.Contains("amcNLO")) {
+//	  if(is2017MC && dtag.Contains("10to50") && (ev.lheHt >= 100)) continue; // only exception: 2017 low mass DY HT samples start from 100 HT.
+	if( (isMC_WJets && !(isMC_WJets_HTbin) ) && !dtag.Contains("amcNLO")) {
 	  if(ev.lheHt >= 70) continue;
 	}
 	mon.fillHisto("ht","debug_lheHt",ev.lheHt,1.0); 
@@ -1188,6 +1189,8 @@ int main(int argc, char* argv[])
 	  if( isMC_WJets && !dtag.Contains("amcNLO") )
 	    { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(0, ev.lheNJets, is2016MC<<0|is2017MC<<1|is2018MC<<2); }
 	  else if( isMC_DY && !dtag.Contains("amcNLO") ) {
+	  */
+	  if( isMC_DY && !dtag.Contains("amcNLO") ) {  
 	    if (string(url.Data()).find("10to50")  != string::npos)
 	      {
 	  	if (is2016MC) xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(1, ev.lheNJets, is2016MC<<0|is2017MC<<1|is2018MC<<2);
@@ -1195,7 +1198,7 @@ int main(int argc, char* argv[])
 	    else
 	      { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(2, ev.lheNJets, is2016MC<<0|is2017MC<<1|is2018MC<<2); }
 	  }
-	  */
+//	  */
 	  weight *= xsecWeight; 
         }
 
