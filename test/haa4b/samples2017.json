@@ -735,7 +735,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DYJetsToLL_10to50_ext1_2017",
-                    "xsec": "18610*1.23*
+                    "xsec": "18610*1.23"
                 },
                 {
                     "br": [ 1.0 ],
@@ -985,7 +985,7 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_prod" 
+		"haa_prod", 
                 "haa_ztoll"
             ],
             "tag": "Z#rightarrow ll + NJets"
