@@ -755,10 +755,10 @@
             ],
             "isdata": false,
             "keys": [
-                "haa_mcbased",
-		"haa_prod" 
+		"haa_prod", 
+                "haa_ztoll"
             ],
-            "tag": "Z#rightarrow ll"
+            "tag": "Z#rightarrow ll HT-Binned"
         },
         {
             "color": 624,
@@ -820,10 +820,10 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_prod" ,
-                "haa_ztoll"
+                "haa_mcbased",
+		"haa_prod"
             ],
-            "tag": "Z#rightarrow ll + NJets"
+            "tag": "Z#rightarrow ll"
         },
         {
             "color": 622,

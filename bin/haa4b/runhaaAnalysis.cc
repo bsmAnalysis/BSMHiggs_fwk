@@ -1087,7 +1087,8 @@ int main(int argc, char* argv[])
     //double parmin;
     if(reweightDYZPt && isMC_DY && !dtag.Contains("amcNLO")){ // apply Z Pt weights on LO DY samples
       TString zptfilename;
-      if(is2016MC) zptfilename = zptDir + "/" +"DYSF_2016.root";
+      if(is2016Legacy) zptfilename = zptDir + "/" +"DYSF_2016Legacy.root";
+      else if(is2016MC) zptfilename = zptDir + "/" +"DYSF_2016.root";
       else if(is2017MC) zptfilename = zptDir + "/" +"DYSF_2017.root";
       else if(is2018MC) zptfilename = zptDir + "/" +"DYSF_2018.root";
 //      else if(is2017MC) zptfilename = zptDir + "/" +"DYSF_2017.root";
@@ -1160,10 +1161,13 @@ int main(int argc, char* argv[])
             cout << "nDuplicates: " << nDuplicates << endl;
             continue;
         }
-	// VJets sample check: only use HT<70 events in the inclusive samples:
-	if( ((isMC_DY && !(isMC_DY_HTbin)) || (isMC_WJets && !(isMC_WJets_HTbin)) ) && !dtag.Contains("amcNLO")) {
-	  if(is2017MC && dtag.Contains("10to50") && (ev.lheHt >= 100)) continue; // only exception: 2017 low mass DY HT samples start from 100 HT.
-	  if(ev.lheHt >= 70) continue;
+	// VJets sample check: only use HT<70 events in the WJets inclusive samples, DYJets remain +NJets samples
+//	if( ((isMC_DY && !(isMC_DY_HTbin)) || (isMC_WJets && !(isMC_WJets_HTbin)) ) && !dtag.Contains("amcNLO")) {
+//	  if(is2017MC && dtag.Contains("10to50") && (ev.lheHt >= 100)) continue; // only exception: 2017 low mass DY HT samples start from 100 HT.
+	if(is2016Legacy || is2017MC || is2018MC){ // 2016 non Legacy samples don't fall into here
+	  if( (isMC_WJets && !(isMC_WJets_HTbin) ) && !dtag.Contains("amcNLO")) {
+	    if(ev.lheHt >= 70) continue;
+	  }
 	}
 	mon.fillHisto("ht","debug_lheHt",ev.lheHt,1.0); 
 	if(is2018data) afterRun319077 = (ev.run > 319077);
@@ -1183,19 +1187,21 @@ int main(int argc, char* argv[])
         if(isMC) 
         {
           weight *= genWeight;
-	  /*
+//	  /*
           //Here is the tricky part.,... rewrite xsecWeight for WJets/WXJets and DYJets/DYXJets
-	  if( isMC_WJets && !dtag.Contains("amcNLO") )
-	    { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(0, ev.lheNJets, is2016MC<<0|is2017MC<<1|is2018MC<<2); }
-	  else if( isMC_DY && !dtag.Contains("amcNLO") ) {
+	  if( isMC_WJets && !dtag.Contains("amcNLO") ){ 
+	    if(!(is2016Legacy || is2017MC || is2018MC)) // only 2016 non legacy WJets samples need to use trick part
+	      xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(0, ev.lheNJets, is2016Legacy<<0|is2016MC<<1|is2017MC<<2|is2018MC<<3); 
+	  }
+	  if( isMC_DY && !dtag.Contains("amcNLO") ) {
 	    if (string(url.Data()).find("10to50")  != string::npos)
 	      {
-	  	if (is2016MC) xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(1, ev.lheNJets, is2016MC<<0|is2017MC<<1|is2018MC<<2);
+	  	if (is2016MC) xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(1, ev.lheNJets, is2016Legacy<<0|is2016MC<<1|is2017MC<<2|is2018MC<<3);
 	      }
 	    else
-	      { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(2, ev.lheNJets, is2016MC<<0|is2017MC<<1|is2018MC<<2); }
+	      { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(2, ev.lheNJets, is2016Legacy<<0|is2016MC<<1|is2017MC<<2|is2018MC<<3); }
 	  }
-	  */
+//	  */
 	  weight *= xsecWeight; 
         }
 
@@ -2795,9 +2801,10 @@ int main(int argc, char* argv[])
 	  // soft b-tag SF and uncertainty: 1.05 +/- 0.16
 	  if (isMC) {
 	    for (auto & i : SVs) {  
-	      weight *= 1.05;
+//	      weight *= 1.05;
 	      if (varNames[ivar]=="_softbup") { weight *= 1.21; }
-	      if (varNames[ivar]=="_softbdown") { weight *= 0.89; }
+	      else if (varNames[ivar]=="_softbdown") { weight *= 0.89; }
+	      else {weight *= 1.05;}
 	      //else { weight *= 1.05; }
 	    }
 	  }
@@ -2988,7 +2995,7 @@ int main(int argc, char* argv[])
 	      }
 	    }
 	    */
-	    if(is2016MC){
+	    if(is2016Legacy){ // for 2016 legacy
 	      if(!runZH){ // Wh
 		if(tag_subcat.Contains("3b")) topptsf = exp(0.01236-0.00061*ht);
 		else if(tag_subcat.Contains("4b")) topptsf = exp(0.00475-0.00045*ht);
@@ -2996,6 +3003,16 @@ int main(int argc, char* argv[])
 	      else if(runZH){ // Zh
 		if(tag_subcat.Contains("3b")) topptsf = exp(0.20019-0.00169*ht); 
 		else if(tag_subcat.Contains("4b")) topptsf = exp(0.20019-0.00169*ht);
+	      }
+	    }
+	    else if(is2016MC){ // for 2016 nonLegacy
+	      if(!runZH){ // Wh
+		if(tag_subcat.Contains("3b")) topptsf = exp(0.11617-0.00084*ht);
+		else if(tag_subcat.Contains("4b")) topptsf = exp(0.11118-0.00074*ht);
+	      }
+	      else if(runZH){ // Zh
+		if(tag_subcat.Contains("3b")) topptsf = exp(0.32783-0.00211*ht); 
+		else if(tag_subcat.Contains("4b")) topptsf = exp(0.11562-0.00084*ht);
 	      }
 	    }
 	    else if(is2017MC){
