@@ -208,7 +208,7 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
                     DSetFiles[dtag+filtExt].push_back(FileName);
                  }
 
-                 if(fileProcessed%2!=0){File->Close();fileProcessed++;continue;} //only consider 1file every 5 of each sample to get the list of object 
+                 if(fileProcessed%5!=0){File->Close();fileProcessed++;continue;} //only consider 1file every 5 of each sample to get the list of object 
  
                  //just to make it faster, only consider the first 3 sample of a same kind
                  if(fileProcessed==0 && isData){if(dataProcessed>=40 ){ File->Close(); continue;}else{dataProcessed++;}}
@@ -624,9 +624,8 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, TFile* OutputF
          if(!Process[i].getBoolFromKeyword(matchingKeyword, "isdata", false) && !Process[i].getBoolFromKeyword(matchingKeyword, "isdatadriven", false)){
 	   Weight=iLumi/fileList.size();
 	   // Overwrite weight for W+Nj and DY+Nj samples
-	 /*  
-	   if (dirProc.find("W#rightarrow l#nu")!=std::string::npos  && (Samples[j])["dtag"].toString().find("amcNLO")==std::string::npos) Weight=iLumi;
-	*/
+	   // comment the following line only when you use the WJets HTBinned samples
+//	   if (dirProc.find("W#rightarrow l#nu")!=std::string::npos  && (Samples[j])["dtag"].toString().find("amcNLO")==std::string::npos) Weight=iLumi;
 	   if (dirProc.find("Z#rightarrow ll")!=std::string::npos && (Samples[j])["dtag"].toString().find("amcNLO")==std::string::npos) {
 	     if ((Samples[j])["dtag"].toString().find("10to50")!=std::string::npos && 
 		  ( (Samples[j])["dtag"].toString().find("2017")!=std::string::npos || (Samples[j])["dtag"].toString().find("2018")!=std::string::npos) );
