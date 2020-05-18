@@ -447,7 +447,6 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_mcOnly1",
 		"haa_prod", 
                 "haa_mcbased"
             ],
@@ -492,7 +491,6 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_mcOnly2",
 	        "haa_mcbased"	
             ],
             "mctruthmode": 5,
@@ -537,7 +535,6 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_mcOnly2",
 	        "haa_mcbased"	
             ],
             "mctruthmode": 4,
@@ -582,7 +579,6 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_mcOnly2",
 		"haa_prod", 
 	        "haa_mcbased"	
             ],
@@ -824,7 +820,6 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_mcOnly3",
                 "haa_mcbased",
 		"haa_prod"
             ],
@@ -935,7 +930,6 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_mcOnly4",
 		"haa_mcbased",
 		"haa_prod"
             ],
@@ -1188,7 +1182,6 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_mcOnly5",
 		"haa_prod", 
                 "haa_mcbased"
             ],
