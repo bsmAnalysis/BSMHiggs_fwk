@@ -779,6 +779,12 @@ int main(int argc, char* argv[])
   inF->Close();
   printf("Loading all shapes... Done\n");
 
+  for(unsigned int B=0;B<binsToMerge.size();B++){
+    std::string NewBinName = binsToMerge[B][0]; std::cout << "binsToMerge[B][0]: " << binsToMerge[B][0]; for(unsigned int b=1;b<binsToMerge[B].size();b++){NewBinName += "_"+binsToMerge[B][b];std::cout << "binsToMerge[B][b]: " << binsToMerge[B][b] << std::endl;;}
+//    std::string NewBinName = string("["); binsToMerge[B][0];  for(unsigned int b=1;b<binsToMerge[B].size();b++){NewBinName += "+"+binsToMerge[B][b];} NewBinName+="]";
+    allInfo.mergeBins(binsToMerge[B],NewBinName);
+  }
+  
   allInfo.computeTotalBackground();
   if(MCclosureTest)allInfo.blind();
 
@@ -792,13 +798,8 @@ int main(int argc, char* argv[])
     if(subFake)allInfo.doBackgroundSubtraction(pFile,selCh,histo);
   }
 
-  for(unsigned int B=0;B<binsToMerge.size();B++){
-    std::string NewBinName = binsToMerge[B][0]; std::cout << "binsToMerge[B][0]: " << binsToMerge[B][0]; for(unsigned int b=1;b<binsToMerge[B].size();b++){NewBinName += "_"+binsToMerge[B][b];std::cout << "binsToMerge[B][b]: " << binsToMerge[B][b] << std::endl;;}
-//    std::string NewBinName = string("["); binsToMerge[B][0];  for(unsigned int b=1;b<binsToMerge[B].size();b++){NewBinName += "+"+binsToMerge[B][b];} NewBinName+="]";
-    allInfo.mergeBins(binsToMerge[B],NewBinName);
-  }
   //replace data by total MC background
-  if(blindData)allInfo.blind();
+  //if(blindData)allInfo.blind();
 
   //extrapolate backgrounds toward higher BDT region to make sure that there is no empty bins
   if(shape && BackExtrapol)allInfo.rebinMainHisto(histo.Data());
@@ -822,7 +823,7 @@ int main(int argc, char* argv[])
   allInfo.HandleEmptyBins(histo.Data()); //needed for negative bin content --> May happens due to NLO interference for instance
 
   // Blind data in Signal Regions only
-  //  if(blindData)allInfo.blind();
+  if(blindData) allInfo.blind();
 
   //print event yields from the histo shapes
   pFile = fopen(runZh?"Yields_zh.tex":"Yields_wh.tex","w");  FILE* pFileInc = fopen(runZh?"YieldsInc_zh.tex":"YieldsInc_wh.tex","w");
@@ -1156,7 +1157,9 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     //remove all syst uncertainty
     chDD->second.shapes[mainHisto.Data()].clearSyst();
     //add syst uncertainty
+    //chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_ddqcd_") + binName.Data() +"_"+chData->second.bin.c_str() + systpostfix.Data()] = valDD_err; //:1.8*valDD;
     chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_ddqcd_") + binName.Data() +"_"+chData->second.bin.c_str() + systpostfix.Data()] = valDD*datadriven_qcd_Syst; //:1.8*valDD;
+    
     //    chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_ddqcd_") + binName.Data() + systpostfix.Data()] = ratioMC<0.5?valDD*datadriven_qcd_Syst:fabs(1.-ratioMC)*valDD;    
 
     //printout
@@ -2589,7 +2592,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       dcName.ReplaceAll(".root","_"+TString(C->first.c_str())+".dat");
       //      dcName.ReplaceAll("_qcdB","_qcdB");  
 
-      if(C->first.find("emu")==string::npos) combinedcard += (C->first+"=").c_str()+dcName+" ";
+//      if(C->first.find("emu")==string::npos) combinedcard += (C->first+"=").c_str()+dcName+" ";
+      combinedcard += (C->first+"=").c_str()+dcName+" ";
       if(runZh) {
 	if(C->first.find("ee"  )!=string::npos)eecard   += (C->first+"=").c_str()+dcName+" ";
 	if(C->first.find("mumu")!=string::npos)mumucard += (C->first+"=").c_str()+dcName+" ";
@@ -2685,36 +2689,58 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       if(runZh) {
 	if(C->first.find("ee" )!=string::npos) {         
-	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n"); 
-	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");    
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm rateParam bin1 ttbarbba 1\n"); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm rateParam bin1 ttbarcba 1\n");    
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){  
+//	    fprintf(pFile,"z_norm rateParam bin1 zll 1 \n");
+	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b rateParam bin1 zll 1 \n");
+	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b rateParam bin1 zll 1 \n");
+//	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n"); 
+//	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");    
+//	  if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){  
 //	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_e rateParam bin1 zll 1 \n");
 //	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_e rateParam bin1 zll 1 \n");
-	    fprintf(pFile,"z_norm_e rateParam bin1 zll 1 \n");
+//	    fprintf(pFile,"z_norm_e rateParam bin1 zll 1 \n");
 	  }
 	} else if (C->first.find("mumu" )!=string::npos) {  
-	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n"); 
-	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");    
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm rateParam bin1 ttbarbba 1\n"); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm rateParam bin1 ttbarcba 1\n");    
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){
+	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b rateParam bin1 zll 1 \n");
+	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b rateParam bin1 zll 1 \n");
+//	    fprintf(pFile,"z_norm rateParam bin1 zll 1 \n");
+//	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n"); 
+//	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");    
+//	  if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){
 //	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_mu rateParam bin1 zll 1 \n");
 //	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_mu rateParam bin1 zll 1 \n");
-	    fprintf(pFile,"z_norm_mu rateParam bin1 zll 1 \n");
+//	    fprintf(pFile,"z_norm_mu rateParam bin1 zll 1 \n");
 	  }
 	} else if  (C->first.find("emu" )!=string::npos) {     
-	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  {fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");}
-	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  {fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");} 
+//	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  {fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");}
+//	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  {fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n");} 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  {fprintf(pFile,"tt_norm rateParam bin1 ttbarbba 1\n");}
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  {fprintf(pFile,"tt_norm rateParam bin1 ttbarcba 1\n");} 
 	} 
       } else {
 	if(C->first.find("e" )!=string::npos) {             
-	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");      
-	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");   
-	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_e rateParam bin1 wlnu 1 \n");
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm rateParam bin1 ttbarbba 1\n");      
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm rateParam bin1 ttbarcba 1\n");   
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm rateParam bin1 wlnu 1 \n");
 	  //	  fprintf(pFile,"w_norm_e rateParam bin1 wlnu 1 \n");     
+//	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarbba 1\n");      
+//	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e rateParam bin1 ttbarcba 1\n");   
+//	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_e rateParam bin1 wlnu 1 \n");
+//	  //	  fprintf(pFile,"w_norm_e rateParam bin1 wlnu 1 \n");     
 	} else if (C->first.find("mu" )!=string::npos) {    
-	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");            
-	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n"); 
-	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_mu rateParam bin1 wlnu 1 \n"); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm rateParam bin1 ttbarbba 1\n");            
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm rateParam bin1 ttbarcba 1\n"); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm rateParam bin1 wlnu 1 \n"); 
 	  //	  fprintf(pFile,"w_norm_mu rateParam bin1 wlnu 1 \n"); 
+//	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarbba 1\n");            
+//	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu rateParam bin1 ttbarcba 1\n"); 
+//	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_mu rateParam bin1 wlnu 1 \n"); 
+//	  //	  fprintf(pFile,"w_norm_mu rateParam bin1 wlnu 1 \n"); 
 	}                  
       }
       
@@ -3017,18 +3043,28 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    TString jetBin = ch->second.bin.c_str();
 
 	    //	    printf("Now going to rebinMainHisto of: %s\n",jetBin.Data());
+	      
+//	      double xbins[] = {-0.31, -0.09, 0.09, 0.19, 0.21, 0.35}; // 2016 wh merged 
+	      //double xbins[] = {-0.31, -0.09, 0.09, 0.15, 0.21, 0.35}; // 2016Legacy wh legacy merged 
+	      //double xbins[] = {-0.31, -0.09, 0.09, 0.15, 0.19, 0.35}; // 2017 wh merged 
+	      //double xbins[] = {-0.31, -0.09, 0.09, 0.17, 0.19, 0.35}; // 2018 wh merged 
+	      //if(runZh) {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.09;xbins[3]=0.15; xbins[4]=0.19;xbins[5]=0.35;} // 2018 zh merge 
+	      //if(runZh) {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.09;xbins[3]=0.13; xbins[4]=0.17;xbins[5]=0.35;} // 2017 zh merge
+	      //if(runZh) {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.09;xbins[3]=0.13; xbins[4]=0.19;xbins[5]=0.35;} // 2016Legacy zh merge
+//	      if(runZh) {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.07;xbins[3]=0.13; xbins[4]=0.19;xbins[5]=0.35;} // 2016 zh merge
+//	      int nbins=sizeof(xbins)/sizeof(double);
+//	      unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
+//	      utils::root::fixExtremities(unc->second, false, true); 
 
 	    if(jetBin.Contains("3b")){
-	      //double xbins[] = {-0.35, -0.13, 0.09, 0.17, 0.23, 0.35};     
 	      double xbins[] = {-0.31, -0.09, 0.09, 0.19, 0.21, 0.35};     
-	      if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.09;xbins[3]=0.17; xbins[4]=0.19;xbins[5]=0.35;} // xbins = {-0.30, -0.1, 0.1, 0.20, 0.22, 0.30};     
+	      if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.09;xbins[3]=0.13; xbins[4]=0.19;xbins[5]=0.35;} 
 	      int nbins=sizeof(xbins)/sizeof(double);    
 	      unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);  
 	      utils::root::fixExtremities(unc->second, false, true); 
 	    }else if(jetBin.Contains("4b")){ 
-	      //double xbins[] = {-0.35, -0.13, 0.09, 0.17, 0.21, 0.35}; 
-	      double xbins[] = {-0.31, -0.09, 0.07, 0.11, 0.15, 0.35}; 
-	      if(runZh) {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.09;xbins[3]=0.15; xbins[4]=0.21;xbins[5]=0.35;} // xbins = {-0.30, -0.1, 0.1, 0.22, 0.24, 0.30};
+	      double xbins[] = {-0.31, -0.09, 0.07, 0.11, 0.17, 0.35}; 
+	      if(runZh) {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.07;xbins[3]=0.11; xbins[4]=0.17;xbins[5]=0.35;} 
 	      int nbins=sizeof(xbins)/sizeof(double);
 	      unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
 	      utils::root::fixExtremities(unc->second, false, true); 
@@ -3081,7 +3117,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         //also update the map keys
         std::map<string, ChannelInfo_t> newMap;
         for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
-          newMap[ch->second.channel+ch->second.bin] = ch->second;
+          //newMap[ch->second.channel+ch->second.bin] = ch->second;
+          newMap[ch->second.channel+"_"+ch->second.bin] = ch->second;
         }
         it->second.channels = newMap;
       }
