@@ -330,6 +330,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   is2017     = (string(proc_.c_str()).find("2017") != string::npos);
   is2017BC   = (string(proc_.c_str()).find("2017B") != string::npos || string(proc_.c_str()).find("2017C") != string::npos);
   is2018     = (string(proc_.c_str()).find("2018") != string::npos);
+  is2016Legacy = is2016Legacy || is2016Signal;
   
   printf("Definition of plots\n");
   h_nevents = fs->make< TH1F>("nevents",";nevents; nevents",1,-0.5,0.5);
@@ -744,7 +745,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
     {DeepCSVLooseWP = 0.1241; DeepCSVMediumWP = 0.4184; DeepCSVTightWP = 0.7527;}
   else if(is2017) //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
     {DeepCSVLooseWP = 0.1522; DeepCSVMediumWP = 0.4941; DeepCSVTightWP = 0.8001;}
-  else if(is2016Signal || is2016Legacy) //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
+  else if(is2016Legacy) //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
     {DeepCSVLooseWP = 0.2217; DeepCSVMediumWP = 0.6321; DeepCSVTightWP = 0.8953;}
   else
     {DeepCSVLooseWP = 0.2219;  DeepCSVMediumWP = 0.6324; DeepCSVTightWP = 0.8958;}
@@ -756,7 +757,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
   if(isMC_){
     for (pat::Jet &j : jets) {
       Float_t btag_dsc;
-      if(is2017 || is2018 || is2016Signal || is2016Legacy)  
+      if(is2017 || is2018 || is2016Legacy)  
         btag_dsc = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
       else
         btag_dsc = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
@@ -1210,7 +1211,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	   btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
 	   nCSVLtags += (btag1>0.1522);  
 	 //	   ev.jet_btag1[ev.jet] = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
-	 } else if(is2016Signal || is2016Legacy){
+	 } else if(is2016Legacy){
 	   btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
 	   nCSVLtags += (btag1>0.2217);
 	 }
