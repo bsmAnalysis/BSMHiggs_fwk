@@ -218,6 +218,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
 
   bool isMC_ttbar;
   bool is2016Signal;
+  bool is2016;
   bool is2017;
   bool is2018;
   bool is2017BC;
@@ -325,6 +326,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   }
 
   is2016Signal	= (string(proc_.c_str()).find("2016") != string::npos && string(proc_.c_str()).find("h_amass") != string::npos );
+  is2016	= string(proc_.c_str()).find("2016") != string::npos;
   is2017     = (string(proc_.c_str()).find("2017") != string::npos);
   is2017BC   = (string(proc_.c_str()).find("2017B") != string::npos || string(proc_.c_str()).find("2017C") != string::npos);
   is2018     = (string(proc_.c_str()).find("2018") != string::npos);
@@ -1120,15 +1122,15 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 if(is2018){
 	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v2, rho);
 	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v2, rho);
-	   ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::Fall17v2, &relIso_el, is2016Legacy<<0|is2016MC<<1|is2017MC<<2|is2018MC<<3, rho) ;
+	   ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::Fall17v2, &relIso_el, is2016Legacy<<0|is2016<<1|is2017<<2|is2018<<3, rho) ;
 	 }else if(is2017 || is2016Legacy){
 	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v1, rho);
 	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v1, rho);
-	   ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::Fall17v1, &relIso_el, is2016Legacy<<0|is2016MC<<1|is2017MC<<2|is2018MC<<3, rho) ;
+	   ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::Fall17v1, &relIso_el, is2016Legacy<<0|is2016<<1|is2017<<2|is2018<<3, rho) ;
 	 } else{ //2016
 	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut, rho);
 	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut, rho);
-	   ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_el, is2016Legacy<<0|is2016MC<<1|is2017MC<<2|is2018MC<<3, rho) ;
+	   ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_el, is2016Legacy<<0|is2016<<1|is2017<<2|is2018<<3, rho) ;
 	 }
          ev.en_relIso[ev.en] = relIso_el;
 
