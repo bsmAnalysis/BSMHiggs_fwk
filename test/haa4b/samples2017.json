@@ -1330,7 +1330,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_Wh_amass12_2017",
-                    "xsec": "1.37*0.65"
+                    "xsec": "1.37*0.61"
                 },
                 {
                     "br": [
@@ -1371,7 +1371,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_Wh_amass15_2017",
-                    "xsec": "1.37*0.65"
+                    "xsec": "1.37*0.61"
                 },
                 {
                     "br": [
@@ -1412,7 +1412,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_Wh_amass20_2017",
-                    "xsec": "1.37*0.65"
+                    "xsec": "1.37*0.61"
                 },
                 {
                     "br": [
@@ -1452,7 +1452,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_Wh_amass25_2017",
-                    "xsec": "1.37*0.65"
+                    "xsec": "1.37*0.61"
                 },
                 {
                     "br": [
@@ -1493,7 +1493,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_Wh_amass30_2017",
-                    "xsec": "1.37*0.65"
+                    "xsec": "1.37*0.61"
                 },
                 {
                     "br": [
@@ -1534,7 +1534,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_Wh_amass40_2017",
-                    "xsec": "1.37*0.65"
+                    "xsec": "1.37*0.61"
                 },
                 {
                     "br": [
@@ -1575,7 +1575,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_Wh_amass50_2017",
-                    "xsec": "1.37*0.65"
+                    "xsec": "1.37*0.61"
                 },
                 {
                     "br": [
@@ -1616,7 +1616,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_Wh_amass60_2017",
-                    "xsec": "1.37*0.65"
+                    "xsec": "1.37*0.61"
                 },
                 {
                     "br": [
