@@ -2526,9 +2526,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt13TeV#WH_Process
 	  if (runZh) {
 	    if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["QCDscale_wh"]  = integral*0.038;} //QCD scale
-	    if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["PDFscale_wh"]  = integral*0.024;} //PDF+as scale 
+	    if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["PDFscale_wh"]  = integral*0.016;} //PDF+as scale 
 	  } else {
-	    if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["QCDscale_wh"]  = integral*0.006;} //QCD scale
+	    if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["QCDscale_wh"]  = integral*0.007;} //QCD scale
 	    if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["PDFscale_wh"]  = integral*0.019;} //PDF+as scale
 	  }
         }//end of uncertainties to be applied only in higgs analyses
