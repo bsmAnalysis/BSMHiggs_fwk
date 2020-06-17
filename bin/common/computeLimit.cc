@@ -779,6 +779,12 @@ int main(int argc, char* argv[])
   inF->Close();
   printf("Loading all shapes... Done\n");
 
+  for(unsigned int B=0;B<binsToMerge.size();B++){
+    std::string NewBinName = binsToMerge[B][0]; std::cout << "binsToMerge[B][0]: " << binsToMerge[B][0]; for(unsigned int b=1;b<binsToMerge[B].size();b++){NewBinName += "_"+binsToMerge[B][b];std::cout << "binsToMerge[B][b]: " << binsToMerge[B][b] << std::endl;;}
+//    std::string NewBinName = string("["); binsToMerge[B][0];  for(unsigned int b=1;b<binsToMerge[B].size();b++){NewBinName += "+"+binsToMerge[B][b];} NewBinName+="]";
+    allInfo.mergeBins(binsToMerge[B],NewBinName);
+  }
+  
   allInfo.computeTotalBackground();
   if(MCclosureTest)allInfo.blind();
 
@@ -792,13 +798,8 @@ int main(int argc, char* argv[])
     if(subFake)allInfo.doBackgroundSubtraction(pFile,selCh,histo);
   }
 
-  for(unsigned int B=0;B<binsToMerge.size();B++){
-    std::string NewBinName = binsToMerge[B][0]; std::cout << "binsToMerge[B][0]: " << binsToMerge[B][0]; for(unsigned int b=1;b<binsToMerge[B].size();b++){NewBinName += "_"+binsToMerge[B][b];std::cout << "binsToMerge[B][b]: " << binsToMerge[B][b] << std::endl;;}
-//    std::string NewBinName = string("["); binsToMerge[B][0];  for(unsigned int b=1;b<binsToMerge[B].size();b++){NewBinName += "+"+binsToMerge[B][b];} NewBinName+="]";
-    allInfo.mergeBins(binsToMerge[B],NewBinName);
-  }
   //replace data by total MC background
-  if(blindData)allInfo.blind();
+  //if(blindData)allInfo.blind();
 
   //extrapolate backgrounds toward higher BDT region to make sure that there is no empty bins
   if(shape && BackExtrapol)allInfo.rebinMainHisto(histo.Data());
@@ -822,7 +823,7 @@ int main(int argc, char* argv[])
   allInfo.HandleEmptyBins(histo.Data()); //needed for negative bin content --> May happens due to NLO interference for instance
 
   // Blind data in Signal Regions only
-  //  if(blindData)allInfo.blind();
+  if(blindData)allInfo.blind();
 
   //print event yields from the histo shapes
   pFile = fopen(runZh?"Yields_zh.tex":"Yields_wh.tex","w");  FILE* pFileInc = fopen(runZh?"YieldsInc_zh.tex":"YieldsInc_wh.tex","w");

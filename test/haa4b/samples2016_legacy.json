@@ -1859,7 +1859,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass12_2016",
-                    "xsec": "0.9643*0.7521"
+                    "xsec": "0.8839*0.7521"
                 }
             ],
             "fill": 0,
@@ -1900,7 +1900,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass15_2016",
-                    "xsec": "0.9643*0.7435"
+                    "xsec": "0.8839*0.7435"
                 }
             ],
             "fill": 0,
@@ -1941,7 +1941,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass20_2016",
-                    "xsec": "0.9643*0.7435"
+                    "xsec": "0.8839*0.7435"
                 }
             ],
             "fill": 0,
@@ -1982,7 +1982,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass25_2016",
-                    "xsec": "0.9643*0.7435"
+                    "xsec": "0.8839*0.7435"
                 }
             ],
             "fill": 0,
@@ -2023,7 +2023,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass30_2016",
-                    "xsec": "0.9643*0.7435"
+                    "xsec": "0.8839*0.7435"
                 }
             ],
             "fill": 0,
@@ -2064,7 +2064,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass40_2016",
-                    "xsec": "0.9643*0.7435"
+                    "xsec": "0.8839*0.7435"
                 }
             ],
             "fill": 0,
@@ -2105,7 +2105,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass50_2016",
-                    "xsec": "0.9643*0.7435"
+                    "xsec": "0.8839*0.7435"
                 }
             ],
             "fill": 0,
@@ -2146,7 +2146,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass60_2016",
-                    "xsec": "0.9643*0.7435"
+                    "xsec": "0.8839*0.7435"
                 }
             ],
             "fill": 0,
