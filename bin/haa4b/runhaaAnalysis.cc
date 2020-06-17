@@ -2814,17 +2814,28 @@ int main(int argc, char* argv[])
 	  // //Define ABCD regions
 	  TString tag_qcd; tag_qcd="";
 	  
-	  if (passMet25 && passMt) {
-	    if (ivar==0) mon.fillHisto("evt_cat",tag_cat+"_"+"sel2", evtCatPlot,weight);
+//	  if (passMet25 && passMt) {
+//	    if (ivar==0) mon.fillHisto("evt_cat",tag_cat+"_"+"sel2", evtCatPlot,weight);
 	    
-	    if (!runQCD) {tag_qcd="_A_";} // region A
-	    else {tag_qcd="_B_";} // region B
-	  } else if (!passMet25 && sqrt(tMass)<50.) {
+//	    if (!runQCD) {tag_qcd="_A_";} // region A
+//	    else {tag_qcd="_B_";} // region B
+//	  } else if (!passMet25 && sqrt(tMass)<50.) {
+//	    if(runZH) continue;
+//	    if (!runQCD) {tag_qcd="_C_";} // region C
+//	    else {tag_qcd="_D_";} // region D
+//	  } else { continue; }
+	 
+	  if (passMet25) {
+	    if (passMt && !runQCD) {
+	      tag_qcd="_A_"; 
+	      if (ivar==0) mon.fillHisto("evt_cat",tag_cat+"_"+"sel2", evtCatPlot,weight);
+	    } // region A
+	    else if(runQCD) {tag_qcd="_B_";} // region B
+	  } else if (!passMet25) {
 	    if(runZH) continue;
 	    if (!runQCD) {tag_qcd="_C_";} // region C
 	    else {tag_qcd="_D_";} // region D
 	  } else { continue; }
-	 
 
 	  
 	  //Define event category according to Nb multiplicity: Nb=0->W CR, Nb=1,2->top CR, Nb=3,4->SR

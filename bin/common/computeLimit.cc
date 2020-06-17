@@ -1154,6 +1154,11 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     //valDD = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins()+1,valDD_err); if(valDD<1E-6){valDD=0.0; valDD_err=0.0;}
     valDD = hDD->IntegralAndError(1,hDD->GetXaxis()->GetNbins()+1,valDD_err); if(valDD<1E-3){valDD=0.0; valDD_err=0.0;}
     
+    if(chDD->second.shapes[mainHisto.Data()].histo() == NULL){
+      hDD->SetFillColor(634); hDD->SetLineColor(1); hDD->SetMarkerColor(634);
+      hDD->SetFillStyle(1001);  hDD->SetLineWidth(1); hDD->SetMarkerStyle(20); hDD->SetLineStyle(1);
+      chDD->second.shapes[mainHisto.Data()].uncShape[""] = hDD;
+    }
     //remove all syst uncertainty
     chDD->second.shapes[mainHisto.Data()].clearSyst();
     //add syst uncertainty
