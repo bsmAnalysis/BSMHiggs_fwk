@@ -2826,11 +2826,13 @@ int main(int argc, char* argv[])
 //	  } else { continue; }
 	 
 	  if (passMet25) {
-	    if (passMt && !runQCD) {
-	      tag_qcd="_A_"; 
-	      if (ivar==0) mon.fillHisto("evt_cat",tag_cat+"_"+"sel2", evtCatPlot,weight);
-	    } // region A
-	    else if(runQCD) {tag_qcd="_B_";} // region B
+	    if (runQCD) {tag_qcd="_B_";} // region B
+	    else{
+	      if(passMt) {
+		tag_qcd="_A_";
+		if (ivar==0) mon.fillHisto("evt_cat",tag_cat+"_"+"sel2", evtCatPlot,weight);
+	      }
+	    }
 	  } else if (!passMet25) {
 	    if(runZH) continue;
 	    if (!runQCD) {tag_qcd="_C_";} // region C
