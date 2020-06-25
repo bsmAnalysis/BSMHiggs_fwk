@@ -349,7 +349,7 @@ int main(int argc, char* argv[])
                       "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_Moriond17_B_H.csv";
       if(is2017data || is2017MC){
           csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
-                          "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V4_B_F.csv";       
+                          "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_WP_V4_B_F.csv"; 
           csv_file_path1 = std::string(std::getenv("CMSSW_BASE"))+
                           "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V3_B.csv";       
           csv_file_path2 = std::string(std::getenv("CMSSW_BASE"))+
@@ -359,11 +359,11 @@ int main(int argc, char* argv[])
       }
       if(is2018data || is2018MC){
         csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
-                        "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_102XSF_V1.csv";
+                        "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_102XSF_WP_V1.csv";
       }
       if(is2016Signal || is2016Legacy){
 	csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
-			"/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_2016LegacySF_V1.csv";
+			"/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_2016LegacySF_WP_V1.csv";
       }
       LooseWP = DeepCSVLooseWP;
       MediumWP = DeepCSVMediumWP;
