@@ -2997,12 +2997,12 @@ int main(int argc, char* argv[])
 	    */
 	    if(is2016Legacy){ // for 2016 legacy
 	      if(!runZH){ // Wh
-		if(tag_subcat.Contains("3b")) topptsf = exp(0.01236-0.00061*ht);
-		else if(tag_subcat.Contains("4b")) topptsf = exp(0.00475-0.00045*ht);
+		if(tag_subcat.Contains("3b")) topptsf = exp(0.00679-0.00064*ht);
+		else if(tag_subcat.Contains("4b")) topptsf = exp(0.02119-0.00054*ht);
 	      }
 	      else if(runZH){ // Zh
-		if(tag_subcat.Contains("3b")) topptsf = exp(0.20019-0.00169*ht); 
-		else if(tag_subcat.Contains("4b")) topptsf = exp(0.20019-0.00169*ht);
+		if(tag_subcat.Contains("3b")) topptsf = exp(-0.0195-0.00171*ht); 
+		else if(tag_subcat.Contains("4b")) topptsf = exp(0.00895-0.00117*ht);
 	      }
 	    }
 	    else if(is2016MC){ // for 2016 nonLegacy
