@@ -11,23 +11,23 @@ from ROOT import gROOT, gBenchmark, gRandom, gSystem, Double
 #iblind=-1
 iblind=3
 
-limit_dir="/afs/cern.ch/work/y/yuanc/Analysis/H2a4b/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Wh_2017/0060/"
-#limit_dir="/afs/cern.ch/work/y/yuanc/Analysis/H2a4b/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Wh_2018/0060/"
-
+limit_dir="/afs/cern.ch/work/y/yuanc/Analysis/H2a4b/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Wh_2018_noSoftb/0060/"
 
 # Picks up the pre-fit BDT:
-dir1="shapes_prefit"
-#Picks up the post-fit BDT:
-#dir1="shapes_fit_b"
+#dir1="shapes_prefit"
+#Picks up the b post-fit BDT:
+dir1="shapes_fit_b"
+#Picks up the s+b post-fit BDT:
+#dir1="shapes_fit_s"
 
-channels = ["mumu_A_CR_3b", "mumu_A_CR_4b", "mumu_A_SR_3b", "mumu_A_SR_4b", "emu_A_CR_3b", "emu_A_CR_4b", "emu_A_SR_3b", "emu_A_SR_4b", "ee_A_CR_3b", "ee_A_CR_4b", "ee_A_SR_3b", "ee_A_SR_4b"]
-#channels = ["mumu_A_CR_3b", "mumu_A_CR_4b","emu_A_CR_3b", "emu_A_CR_4b","ee_A_CR_3b", "ee_A_CR_4b"]
-#channels = ["mu_A_CR5j_3b", "mu_A_CR5j_4b", "mu_A_CR_3b", "mu_A_CR_4b", "mu_A_SR_3b", "mu_A_SR_4b", "e_A_CR5j_3b", "e_A_CR5j_4b", "e_A_CR_3b", "e_A_CR_4b", "e_A_SR_3b", "e_A_SR_4b"]
-#channels = ["mu_A_SR_4b"]
-e_mu = ["e", "mu"]
-#e_mu = ["e"]
-wz = "zh"
-#wz = "wh"
+#wz = "zh"
+wz = "wh"
+if wz=="wh":
+  channels = ["mu_A_CR5j_3b", "mu_A_CR5j_4b", "mu_A_CR_3b", "mu_A_CR_4b", "mu_A_SR_3b", "mu_A_SR_4b", "e_A_CR5j_3b", "e_A_CR5j_4b", "e_A_CR_3b", "e_A_CR_4b", "e_A_SR_3b", "e_A_SR_4b"]
+  e_mu = [""]
+elif wz=="zh":
+  channels = ["mumu_A_CR_3b", "mumu_A_CR_4b", "mumu_A_SR_3b", "mumu_A_SR_4b", "emu_A_CR_3b", "emu_A_CR_4b", "emu_A_SR_3b", "emu_A_SR_4b", "ee_A_CR_3b", "ee_A_CR_4b", "ee_A_SR_3b", "ee_A_SR_4b"]
+  e_mu = ["e", "mu"]
 CRs = ["mumu_A_CR_3b", "mumu_A_CR_4b","emu_A_CR_3b", "emu_A_CR_4b", "emu_A_SR_3b", "emu_A_SR_4b", "ee_A_CR_3b", "ee_A_CR_4b", "mu_A_CR5j_3b", "mu_A_CR5j_4b", "mu_A_CR_3b", "mu_A_CR_4b", "e_A_CR5j_3b", "e_A_CR5j_4b", "e_A_CR_3b", "e_A_CR_4b"]
 
 
@@ -51,13 +51,14 @@ H  = H_ref
 
 def printEvtYields(hist, name):
   if not hist: return
-  printout = [name+":"]
+#  printout = [name+":"]
+  printout = ["{0: <19}:".format(name)]
   for ibin in range(1, hist.GetXaxis().GetNbins()+1):
 #    content = hist.GetBinContent(ibin)
 #    error = hist.GetBinError(ibin)
     error = Double()
     content = hist.IntegralAndError(ibin, ibin, error)
-    yields = "{:.2f}".format(content) +"+-" + "{:.2f}".format(error)
+    yields = "{0: 10.2f}".format(content) +" +- " + "{0: <10.2f}".format(error)
     printout.append(yields)
 #  error = Double()
 #  content = hist.IntegralAndError(1, hist.GetXaxis().GetNbins(), error)
@@ -94,9 +95,10 @@ B = 0.12*H_ref
 L = 0.12*W_ref
 R = 0.04*W_ref
 for ch in e_mu:
-#  file = rt.TFile(limit_dir+"0060/fitDiagnostics_{}.root".format(ch),"READ")
-  file = rt.TFile(limit_dir+"fitDiagnostics_{}.root".format(ch),"READ")
-#  file = rt.TFile(limit_dir+"fitDiagnostics.root","READ")
+  if wz=="zh":
+    file = rt.TFile(limit_dir+"fitDiagnostics_{}.root".format(ch),"READ")
+  elif wz=="wh":
+    file = rt.TFile(limit_dir+"fitDiagnostics.root","READ")
   inf = rt.TFile(limit_dir+"haa4b_60_13TeV_{}.root".format(wz),"READ")
   for dir2 in channels:
     blind=iblind
@@ -154,12 +156,13 @@ for ch in e_mu:
       sig.SetLineColor(rt.kRed+4)
       sig.SetLineWidth(2)
       sig.SetLineStyle(2)
+#      if((dir1 == "shapes_fit_s") and (dir2 not in CRs)): sig.Scale(10)
     #sig.Scale(50)
     
     otherbkg = file.Get(dir+"otherbkg")
     if otherbkg:
       otherbkg = convertXRange(otherbkg, "otherbkg", edges)
-      otherbkg.SetFillColor(424)
+      otherbkg.SetFillColor(852)
       otherbkg.SetLineColor(1)
       bkgd_list.append(otherbkg)
       lgname_list.append("Other bkgs")
@@ -468,6 +471,7 @@ for ch in e_mu:
     t2.Update()
     
     canvas.cd()
+#    canvas.SetLogy(True)
     canvas.Update()
     canvas.RedrawAxis()
     #frame = canvas.GetFrame()

@@ -3,7 +3,10 @@
 2. Generate observed test statistics and expected distribution:
    Configure your cards directory in the script goodnessfit.sh, and make sure comment out the Zh or Wh part of code
 > sh ./goodnessfit.sh
-3. Plot:
-   Configure your cards directory in the script plotGOF.py
+3. once finished, do the plot:
+   Configure the input variable directory in the script plotGOF.py
 > python plotGOF.py
    GOF.pdf will be produced under the current folder.
+
+Note: if running Zh part, GOF plot will be produced for ee and mumu channel separately,
+so you have to run ee and mumu part separately one by one in step 2.

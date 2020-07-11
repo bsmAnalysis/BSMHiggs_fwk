@@ -59,7 +59,7 @@ canvas.SetTickx(0)
 canvas.SetTicky(0)
 
 # configure your card directory below after running ./goodnessfit.sh
-directory = "/afs/cern.ch/work/y/yuanc/Analysis/H2a4b/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/JOBS/SB13TeV_SM_Zh_backup/test/out_60_4b"
+directory = "/afs/cern.ch/work/y/yuanc/Analysis/H2a4b/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Wh_2018_noSoftb/0060/"
 datafname = "higgsCombineTest.GoodnessOfFit.mH120.root"
 toyfname = "higgsCombineTest.GoodnessOfFit.mH120.123456.root"
 
@@ -69,20 +69,27 @@ toyf = rt.TFile.Open(os.path.join(directory, toyfname))
 toytree = toyf.limit
 
 toytree.Draw("limit>>toy", "limit>=0","")
-#toytree.Draw("limit>>toy({},0,{})".format(100,700), "limit>=0","")
+#toytree.Draw("limit>>toy(100,0,60)", "limit>=0","")
+#toytree.Draw("limit>>toy({},0,{})".format(100,1000), "limit>=0","")
 hist = rt.gDirectory.Get("toy")
 ymax = hist.GetMaximum()
 hist.GetYaxis().SetRangeUser(0, ymax*1.2)
+#hist.GetXaxis().SetRangeUser(0, 60)
+hist.SetStats(0)
 
 for iev in datatree:
   tobs = iev.limit
+
+pvalue=hist.Integral(hist.FindBin(tobs+1), hist.GetNbinsX())/hist.Integral()
+print("pvalue is: {}".format(pvalue))
 if(tobs>=hist.GetXaxis().GetXmax()):
   print("tobs: {}, max on Xaxis:{}".format(tobs, hist.GetXaxis().GetXmax()))
   toytree.Draw("limit>>toy({},0,{})".format(100,int(tobs*1.2)), "limit>=0","")
   hist = rt.gDirectory.Get("toy")
   ymax = hist.GetMaximum()
   hist.GetYaxis().SetRangeUser(0, ymax*1.2)
-  #hist.GetXaxis().SetRangeUser(0, 1000)
+  #hist.GetXaxis().SetRangeUser(0, 60)
+  hist.SetStats(0)
 line = rt.TLine(tobs, 0, tobs, ymax)
 line.SetLineColor(rt.kRed)
 line.SetLineWidth(3)
@@ -94,7 +101,23 @@ CMS_lumi.CMS_lumi(canvas, iPeriod, iPos)
 
 
 canvas.cd()
+
+ptext = rt.TText(0.55, 0.9, "p-value = {}".format(pvalue))
+#ptext = rt.TText(0.55, 0.9, "p-value = 0.836")
+ptext.SetNDC()
+#ptext.SetTextAlign(31)
+ptext.SetTextFont(63)
+ptext.SetTextSize(18)
+ptext.Draw("same")
+ptext1 = rt.TText(0.55, 0.87, "saturated model, {} toys".format(int(hist.GetEntries())))
+#ptext1 = rt.TText(0.55, 0.87, "saturated model, 500 toys")
+ptext1.SetNDC()
+#ptext1.SetTextAlign(31)
+ptext1.SetTextFont(63)
+ptext1.SetTextSize(18)
+ptext1.Draw("same")
 canvas.Update()
+
 #canvas.SetLogx(True)
 canvas.RedrawAxis()
 
