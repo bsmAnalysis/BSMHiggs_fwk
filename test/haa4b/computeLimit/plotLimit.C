@@ -297,7 +297,7 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   for(int i=0;i<TGExpLimit->GetN();i++){
      double M = ExpLimit->GetX()[i];
      fprintf(pFileSum, "$%8.6E$ & $%8.6E$ & $[%8.6E,%8.6E]$ & $[%8.6E,%8.6E]$ & $%8.6E$ & Th=$%8.6E$ & pValue=$%8.6E$\\\\\\hline\n",M, ExpLimit->Eval(M), ExpLimitm1->Eval(M), ExpLimitp1->Eval(M), ExpLimitm2->Eval(M),  ExpLimitp2->Eval(M), ObsLimit->Eval(M), 1.37, pValue->Eval(M));
-    if(int(ExpLimit->GetX()[i])%52!=0)continue; printf("%f ",ObsLimit->Eval(M));
+    if(int(ExpLimit->GetX()[i])%50!=0)continue; printf("%f ",ObsLimit->Eval(M));
   }printf("\n");
   fclose(pFileSum);
 
