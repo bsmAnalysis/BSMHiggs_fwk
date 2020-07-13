@@ -1,3 +1,33 @@
+# Run limits
+```bash
+export SCRAM_ARCH=slc7_amd64_gcc700
+cmsrel CMSSW_10_2_13
+cd CMSSW_10_2_13/src
+cmsenv
+
+# download the Higgs Combine tool
+
+# download the Higgs Combine tool
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+cd HiggsAnalysis/CombinedLimit
+# Update to a reccomended tag - currently the reccomended tag is v8.1.0
+git fetch origin
+git checkout v8.1.0
+scramv1 b clean; scramv1 b # always make a clean build
+cd $CMSSW_BASE/src
+
+# download Haa4b analysis code
+git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
+cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
+git checkout -b modified
+#Switching from CMSSW8_X version to CMSSW10_X version by running:
+cd test/haa4b
+sh ./converter.sh # input 1 when you are prompted to select
+cd $CMSSW_BASE/src
+
+scram b -j 4
+```
+
 # Installation for 102X (2018) 
 ```bash
 export SCRAM_ARCH=slc6_amd64_gcc700
@@ -250,9 +280,11 @@ runLocalAnalysisOverSamples.py -e my_exe -j data/my_samples.json -d my_input_dir
  UserCode/bsmhiggs_fwk/test/haa4b/bin directory (also add it to the
  Buildfile there)
 
-# NTuple locations (27 Jan 2020 Updated)
-- 2016 DATA  and  MC Samples: ```/eos/cms/store/user/georgia/results_2019_12_09```
-
-  2016   MC   Signal Samples: ```/eos/cms/store/user/georgia/results_2019_12_10```
-- 2017 DATA  and  MC Samples: ```/eos/cms/store/user/zhangyi/results_2019_11_22```
-- 2018 DATA  and  MC Samples: ```/eos/cms/store/user/yuanc/results_2019_11_22```
+# NTuple locations (11 July 2020 Updated)
+- 2016 DATA  and  MC Samples: ```/eos/cms/store/user/georgia/results_2020_06_19```
+- 2017 DATA  and  MC Samples: ```/eos/cms/store/user/zhangyi/results_2020_02_05```
+  
+  2017 DY NJets and W NJets samples: in ```/eos/user/z/zhangyi/``` (not available at the moment)
+- 2018 DATA  and  MC Samples: ```/eos/cms/store/user/yuanc/results_2020_02_05```
+  
+  2018 DY samples, W inclusive and NJets samples: ```/eos/user/y/yuanc/backup_2018Analysis```

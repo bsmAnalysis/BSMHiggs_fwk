@@ -349,7 +349,7 @@ int main(int argc, char* argv[])
                       "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_Moriond17_B_H.csv";
       if(is2017data || is2017MC){
           csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
-                          "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V4_B_F.csv";       
+                          "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_WP_V4_B_F.csv"; 
           csv_file_path1 = std::string(std::getenv("CMSSW_BASE"))+
                           "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V3_B.csv";       
           csv_file_path2 = std::string(std::getenv("CMSSW_BASE"))+
@@ -359,11 +359,11 @@ int main(int argc, char* argv[])
       }
       if(is2018data || is2018MC){
         csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
-                        "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_102XSF_V1.csv";
+                        "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_102XSF_WP_V1.csv";
       }
       if(is2016Signal || is2016Legacy){
 	csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
-			"/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_2016LegacySF_V1.csv";
+			"/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_2016LegacySF_WP_V1.csv";
       }
       LooseWP = DeepCSVLooseWP;
       MediumWP = DeepCSVMediumWP;
@@ -2997,12 +2997,12 @@ int main(int argc, char* argv[])
 	    */
 	    if(is2016Legacy){ // for 2016 legacy
 	      if(!runZH){ // Wh
-		if(tag_subcat.Contains("3b")) topptsf = exp(0.01236-0.00061*ht);
-		else if(tag_subcat.Contains("4b")) topptsf = exp(0.00475-0.00045*ht);
+		if(tag_subcat.Contains("3b")) topptsf = exp(0.00679-0.00064*ht);
+		else if(tag_subcat.Contains("4b")) topptsf = exp(0.02119-0.00054*ht);
 	      }
 	      else if(runZH){ // Zh
-		if(tag_subcat.Contains("3b")) topptsf = exp(0.20019-0.00169*ht); 
-		else if(tag_subcat.Contains("4b")) topptsf = exp(0.20019-0.00169*ht);
+		if(tag_subcat.Contains("3b")) topptsf = exp(-0.0195-0.00171*ht); 
+		else if(tag_subcat.Contains("4b")) topptsf = exp(0.00895-0.00117*ht);
 	      }
 	    }
 	    else if(is2016MC){ // for 2016 nonLegacy

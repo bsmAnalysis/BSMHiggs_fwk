@@ -10,6 +10,12 @@ from array import array
 import math
 from ROOT import SetOwnership
 
+import CMS_lumi
+CMS_lumi.writeExtraText = 1
+CMS_lumi.extraText = "Preliminary"
+iPos = 11
+iPeriod = 0
+
 iLumi=35866.932
 #iLumi=41529.152
 #iLumi=59740.565
@@ -77,19 +83,65 @@ def scaleinFile(in_f, weight, hists):
 
 def ratioOnly(ratio_h, thred, name):
     c = r.TCanvas(name,name,800,800)
-#    ratio = ratio_h.Clone(name)
-    ratio = ratio_h.DrawCopy(name)
-    ratio.SetTitle(name.replace("_"," "))
-    ratio.SetDirectory(0)
-    pad = r.TPad("pad","pad", 0, 0, 1, 1)
-    pad.SetBottomMargin(0.1)
-    pad.Draw()
-    pad.cd()
+    ratio = ratio_h.Clone(name)
+#    ratio = ratio_h.DrawCopy(name)
+    ratio.SetTitle("")
+    ratio.SetMarkerStyle(20)
+    ratio.SetMarkerSize(1.1)
+    ratio.GetYaxis().SetTitle("Correction")
+    ratio.GetYaxis().SetTitleSize(35)
+    ratio.GetYaxis().SetTitleFont(43)
+    ratio.GetYaxis().SetTitleOffset(1.1)
+    ratio.GetYaxis().SetLabelFont(43)
+    ratio.GetYaxis().SetLabelSize(30)
+    ratio.GetXaxis().SetTitle("Pt(Z)")
+    ratio.GetXaxis().SetTitleOffset(1.0)
+    ratio.GetXaxis().SetTitleSize(35)
+    ratio.GetXaxis().SetTitleFont(43)
+    ratio.GetXaxis().SetLabelFont(43)
+    ratio.GetXaxis().SetLabelSize(30)
+    
     fitf = r.TF1(name+"_f", "[0]", thred, 500)
-    ratio.Fit(name+"_f", "R")
-    #ratio.GetYaxis().SetRangeUser(ratio.GetMinimum()*0.8,1.2*ratio.GetMaximum())
+#    fitf.SetLineColor(r.kBlack)
+    fitf.SetLineWidth(2)
+    res = ratio.Fit(fitf, "R S")
     ratio.GetYaxis().SetRangeUser(0, 2)
+
+#    values = res.GetConfidenceIntervals(0.95, False)
+#    print("values:")
+#    print(len(values))
+#    interval = r.TGraphErrors(len(values))
+#    for i in range(len(values)):
+#	if i == 0:
+#	    xPos = ratio.GetXaxis().GetBinLowEdge(i+1) + thred
+#	elif i == (len(values)-1):
+#	    xPos = ratio.GetXaxis().GetBinLowEdge(i+2) + thred
+#	else:
+#	    xPos = ratio.GetXaxis().GetBinCenter(i+1) + thred
+#	interval.SetPoint(i, xPos, fitf.Eval( xPos ))
+#	interval.SetPointError(i, 0, values[i] )
+#	print("{} : {}".format(i, values[i]))
+#    interval.SetFillColor(r.kOrange)
+#    interval.Draw("3")
     ratio.Draw("E0")
+
+    leg = r.TLegend(0.6,0.79,0.89,0.89)
+    leg.AddEntry(ratio, "Measured")
+    leg.AddEntry(fitf, "Flatterning")
+#    text = "#splitline{Flatterning(95% CL)}{#chi^{2} = " + "{:.2f}".format(fitf.GetChisquare())  + " }"
+#    leg.AddEntry(interval, text)
+    leg.SetBorderSize(0)
+    leg.Draw("same")
+    
+    line = r.TLine(0, 1, 500, 1)
+    line.SetLineWidth(2)
+    line.Draw("same")
+    SetOwnership( line, 0 )
+
+    CMS_lumi.CMS_lumi(c, iPeriod, iPos)
+    c.cd()
+    c.Update()
+    c.SaveAs(outdir + "/"+name+"_Fit.pdf")
     return c
 
 
@@ -300,7 +352,8 @@ for proc in procList :
         mctruthmode=getByLabel(desc,'mctruthmode',0)
         tag = getByLabel(desc,'tag','')
 	# extract Z pt reweights only from LO and NLO DY samples
-	if not (tag == "Z#rightarrow ll" or tag == "W#rightarrow l#nu"): continue 
+#	if not (tag == "Z#rightarrow ll" or tag == "W#rightarrow l#nu"): continue 
+	if not (tag == "Z#rightarrow ll"): continue 
 	
         data = desc['data']
         for d in data :
@@ -319,9 +372,9 @@ for proc in procList :
 	    if tag == "Z#rightarrow ll": 
 	        DYs.append(dtag)
 		hists = hists_dy
-	    elif tag == "W#rightarrow l#nu": 
-	        WJs.append(dtag)
-		hists = hists_wj
+#	    elif tag == "W#rightarrow l#nu": 
+#	        WJs.append(dtag)
+#		hists = hists_wj
 	    if os.path.isfile(outfile): 
 		continue
             segment = 0
@@ -333,6 +386,9 @@ for proc in procList :
             #commands.getstatusoutput('hadd -f '+outfile+' '+inputdir+'/'+dtag+'_*.root')
             commands.getstatusoutput('rm -rf '+outdir +'/'+ dtag + '_*' + '_zpt.root')
 	    
+#	    status, output = commands.getstatusoutput('find {} -name "{}*.root" | wc -l'.format(inputdir, dtag))
+#	    print(dtag+": "+str(iLumi/int(output)))
+#	    scaleinFile(outfile, iLumi/int(output), hists)
 	    if "amcNLO" in dtag: 
 		status, output = commands.getstatusoutput('find {} -name "{}*.root" | wc -l'.format(inputdir, dtag))
 		print(dtag+": "+str(iLumi/int(output)))

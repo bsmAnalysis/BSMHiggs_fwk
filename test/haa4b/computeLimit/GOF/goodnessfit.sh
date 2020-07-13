@@ -1,24 +1,19 @@
-# cd to your card directory
-cd /afs/cern.ch/work/y/yuanc/Analysis/H2a4b/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Zh/0060
+# comment out Wh or Zh part
+###################### ZH #####################
+cd /afs/cern.ch/work/y/yuanc/Analysis/H2a4b/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Zh_2016_noSoftb/0060/
 
-######## ZH #########
-tt_e=`cat simfit_m60_e.txt | grep 'tt_norm_e' | awk '{print $4;}'`;
-tt_mu=`cat simfit_m60_mu.txt | grep 'tt_norm_mu' | awk '{print $4;}'`;
-v_3b_e=`cat simfit_m60_e.txt | grep 'z_norm_3b_e' | awk '{print $4;}'`;
-v_4b_e=`cat simfit_m60_e.txt | grep 'z_norm_4b_e' | awk '{print $4;}'`;
-v_3b_mu=`cat simfit_m60_mu.txt | grep 'z_norm_3b_mu' | awk '{print $4;}'`;
-v_4b_mu=`cat simfit_m60_mu.txt | grep 'z_norm_4b_mu' | awk '{print $4;}'`;
+# run distribution for ee channel
+combine -M GoodnessOfFit -d workspace_e.root --algo=saturated --setParametersForFit mask_ee_A_SR_3b=1,mask_ee_A_SR_4b=1 --setParametersForEval mask_ee_A_SR_3b=1,mask_ee_A_SR_4b=1 --freezeParameters r --setParameters r=0
+combine -M GoodnessOfFit -d workspace_e.root --algo=saturated --setParametersForFit mask_ee_A_SR_3b=1,mask_ee_A_SR_4b=1 --setParametersForEval mask_ee_A_SR_3b=1,mask_ee_A_SR_4b=1 --freezeParameters r --setParameters r=0,mask_ee_A_SR_3b=1,mask_ee_A_SR_4b=1 -t 500 --toysFrequentist
 
-combine -M GoodnessOfFit -d workspace.root --algo=saturated --setParametersForFit mask_ee_A_SR_3b=1,mask_ee_A_SR_4b=1,mask_mumu_A_SR_3b=1,mask_mumu_A_SR_4b=1 --setParametersForEval mask_ee_A_SR_3b=1,mask_ee_A_SR_4b=1,mask_mumu_A_SR_3b=1,mask_mumu_A_SR_4b=1 --freezeParameters r,tt_norm_e,tt_norm_mu --setParameters r=0,tt_norm_e=$tt_e,z_norm_3b_e=$v_3b_e,z_norm_4b_e=$v_4b_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$v_3b_mu,z_norm_4b_mu=$v_4b_mu
-combine -M GoodnessOfFit -d workspace.root --algo=saturated --setParametersForFit mask_ee_A_SR_3b=1,mask_ee_A_SR_4b=1,mask_mumu_A_SR_3b=1,mask_mumu_A_SR_4b=1 --setParametersForEval mask_ee_A_SR_3b=1,mask_ee_A_SR_4b=1,mask_mumu_A_SR_3b=1,mask_mumu_A_SR_4b=1 --freezeParameters r,tt_norm_e,tt_norm_mu --setParameters r=0,mask_ee_A_SR_3b=1,mask_ee_A_SR_4b=1,mask_mumu_A_SR_3b=1,mask_mumu_A_SR_4b=1,tt_norm_e=$tt_e,z_norm_3b_e=$v_3b_e,z_norm_4b_e=$v_4b_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$v_3b_mu,z_norm_4b_mu=$v_4b_mu -t 100 --toysFrequentist  -s -1
+# run distributioni for mumu channel
+#combine -M GoodnessOfFit -d workspace_mu.root --algo=saturated --setParametersForFit mask_mumu_A_SR_3b=1,mask_mumu_A_SR_4b=1 --setParametersForEval mask_mumu_A_SR_3b=1,mask_mumu_A_SR_4b=1 --freezeParameters r --setParameters r=0
+#combine -M GoodnessOfFit -d workspace_mu.root --algo=saturated --setParametersForFit mask_mumu_A_SR_3b=1,mask_mumu_A_SR_4b=1 --setParametersForEval mask_mumu_A_SR_3b=1,mask_mumu_A_SR_4b=1 --freezeParameters r --setParameters r=0,mask_ee_A_SR_3b=1,mask_ee_A_SR_4b=1 -t 500 --toysFrequentist
 
-######## WH #########
 
-#tt_e=`cat simfit_m60_e.txt | grep 'tt_norm_e' | awk '{print $4;}'`;
-#tt_mu=`cat simfit_m60_mu.txt | grep 'tt_norm_mu' | awk '{print $4;}'`;
-#v_e=`cat simfit_m60_e.txt | grep 'w_norm_e' | awk '{print $4;}'`;
-#v_mu=`cat simfit_m60_mu.txt | grep 'w_norm_mu' | awk '{print $4;}'`;
+##################### WH ######################
+#cd /afs/cern.ch/work/y/yuanc/Analysis/H2a4b/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Wh_2018_noSoftb/0060/
 
-#combine -M GoodnessOfFit -d workspace.root --algo=saturated --setParametersForFit mask_e_A_SR_3b=1,mask_e_A_SR_4b=1,mask_mu_A_SR_3b=1,mask_mu_A_SR_4b=1 --setParametersForEval mask_e_A_SR_3b=1,mask_e_A_SR_4b=1,mask_mu_A_SR_3b=1,mask_mu_A_SR_4b=1 --freezeParameters r --setParameters r=0,tt_norm_e=$tt_e,w_norm_e=$v_e,tt_norm_mu=$tt_mu,w_norm_mu=$v_mu
-#combine -M GoodnessOfFit -d workspace.root --algo=saturated --setParametersForFit mask_e_A_SR_3b=1,mask_e_A_SR_4b=1,mask_mu_A_SR_3b=1,mask_mu_A_SR_4b=1 --setParametersForEval mask_e_A_SR_3b=1,mask_e_A_SR_4b=1,mask_mu_A_SR_3b=1,mask_mu_A_SR_4b=1 --freezeParameters r --setParameters r=0,mask_e_A_SR_3b=1,mask_e_A_SR_4b=1,mask_mu_A_SR_3b=1,mask_mu_A_SR_4b=1,tt_norm_e=$tt_e,w_norm_e=$v_e,tt_norm_mu=$tt_mu,w_norm_mu=$v_mu -t 100 --toysFrequentist -s -1
+#combine -M GoodnessOfFit -d workspace.root --algo=saturated --setParametersForFit mask_e_A_SR_3b=1,mask_mu_A_SR_3b=1,mask_e_A_SR_4b=1,mask_mu_A_SR_4b=1 --setParametersForEval mask_e_A_SR_3b=1,mask_mu_A_SR_3b=1,mask_e_A_SR_4b=1,mask_mu_A_SR_4b=1 --freezeParameters r --setParameters r=0
+#combine -M GoodnessOfFit -d workspace.root --algo=saturated --setParametersForFit mask_e_A_SR_3b=1,mask_mu_A_SR_3b=1,mask_e_A_SR_4b=1,mask_mu_A_SR_4b=1 --setParametersForEval mask_e_A_SR_3b=1,mask_mu_A_SR_3b=1,mask_e_A_SR_4b=1,mask_mu_A_SR_4b=1 --freezeParameters r --setParameters r=0,mask_e_A_SR_3b=1,mask_mu_A_SR_3b=1,mask_e_A_SR_4b=1,mask_mu_A_SR_4b=1 -t 500 --toysFrequentist
 

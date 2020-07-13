@@ -75,9 +75,11 @@ BTAG_NTPL_OUTDIR=$MAINDIR/btag_Ntpl$SUFFIX
 NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX
 #NTPL_OUTDIR=/eos/cms/store/user/georgia/results_Ntpl$SUFFIX #only for Data
 RUNLOG=$NTPL_OUTDIR/LOGFILES/runSelection.log
+queue='workday'   
+
 TopSF_INPUT=$MAINDIR/computeLimit/PrefitPlots_2016WH_nottbarSF/TEST_ht
 TopSF_OUT=$MAINDIR/TopPtSF
-queue='workday'   
+vh_tag="wh" # wh or zh channel when computing Top Pt weights
 
 #IF CRAB3 is provided in argument, use crab submission instead of condor/lsf 
 if [[ $arguments == *"crab3"* ]]; then queue='crab3' ;fi  
@@ -143,7 +145,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        if [ ! -d "$TopSF_OUT" ]; then
 	   mkdir $TopSF_OUT
        fi
-        computeTopSF.py -d $TopSF_INPUT -o $TopSF_OUT
+        computeTopSF.py -d $TopSF_INPUT -o $TopSF_OUT -c $vh_tag -l 160 -u 600 -a False -f True
    fi
    
    if [[ $step == 1.1 ]]; then  #submit jobs for h->aa->XXYY analysis
