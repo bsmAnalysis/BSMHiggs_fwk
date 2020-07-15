@@ -513,7 +513,7 @@ int main(int argc, char* argv[])
       varNames.push_back("_ctagup"); varNames.push_back("_ctagdown");//13, 14
       varNames.push_back("_ltagup"); varNames.push_back("_ltagdown");//15, 16
       
-      varNames.push_back("_softbup"); varNames.push_back("_softbdown");//11, 12      
+      //      varNames.push_back("_softbup"); varNames.push_back("_softbdown");//11, 12      
       //	  varNames.push_back("_bnormup"); varNames.push_back("_bnormdown");//11, 12   
       //
       //varNames.push_back("_scale_mup");    varNames.push_back("_scale_mdown");  //muon energy scale
@@ -649,11 +649,12 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "db_discrim"," ;double-b discriminator;",25,-1.,1.) );
     mon.addHistogram( new TH1F( "sd_mass"," ;soft-drop Mass;",60,0.,300.) );
     mon.addHistogram( new TH1F( "pruned_mass"," ;pruned Mass;",60,0.,300.) );
+    /*
     mon.addHistogram( new TH1F( "softb_ntrk"," ; SV Ntrks;",21,-0.5,21.5) );
     mon.addHistogram( new TH1F( "softb_dxy"," ; SV dxy;",50,0.,20.) );
     mon.addHistogram( new TH1F( "softb_dxyz_signif"," ; SVSIP3D;",50,1.,100.) );
     mon.addHistogram( new TH1F( "softb_cos"," ; SV cos((PV,SV),p_{SV});",25,-1.,1.) );
-
+    */
 
     //for MC normalization (to 1/pb)
     TH1F* Hcutflow = (TH1F*) mon.addHistogram( new TH1F ("cutflow" , "cutflow" ,6,0,6) ) ;
@@ -1354,7 +1355,7 @@ int main(int argc, char* argv[])
 
 	PhysicsObjectJetCollection &corrJets = phys.jets; 
 	//        PhysicsObjectFatJetCollection &fatJets = phys.fatjets;
-        PhysicsObjectSVCollection &secVs = phys.svs;
+	//        PhysicsObjectSVCollection &secVs = phys.svs;
 
         //
         // LEPTON ANALYSIS
@@ -2112,6 +2113,7 @@ int main(int argc, char* argv[])
 	
 	// SVs collection
 	//PhysicsObjectSVCollection SVs;
+	/*
 	PhysicsObjectSVCollection SVs_raw; // non-cross-cleaned secondary vertices
 	  
 	for (auto & isv : secVs) {
@@ -2152,7 +2154,7 @@ int main(int argc, char* argv[])
 	    
 	// 	sort(SVs.begin(), SVs.end(), ptsort());
 	sort(SVs_raw.begin(), SVs_raw.end(), ptsort());
-
+	*/
 	
 	//##############################################################################
         //### 	// LOOP ON SYSTEMATIC VARIATION FOR THE STATISTICAL ANALYSIS
@@ -2589,6 +2591,7 @@ int main(int argc, char* argv[])
 	  sort(CSVLoosebJets.begin(), CSVLoosebJets.end(), ptsort());
 
 	  // SVs cross-cleaned with AK4 + CSV jets
+	  /*
 	  PhysicsObjectSVCollection SVs;
 	  
 	  int isoft(0);
@@ -2613,6 +2616,7 @@ int main(int argc, char* argv[])
 	    }
 	    if (isoft>=1) break; //only allow [0,1] SVs to enter    
 	  }
+	  */
 
 	  // JET KINEMATICS
 	  if(ivar==0){
@@ -2656,6 +2660,7 @@ int main(int argc, char* argv[])
 	    //--------------------------------------------------------------------------
 	    // Soft-b tagging properties
 	    //--------------------------------------------------------------------------
+	    /*
 	    mon.fillHisto("nbtags_raw",tag_cat,SVs.size(),weight);
 	    
 	    is=0;
@@ -2671,11 +2676,12 @@ int main(int argc, char* argv[])
 	      double dR=deltaR(SVs[0], SVs[1]);
 	      mon.fillHisto("dR_raw",tag_cat+"_"+"svs",dR,weight);
 	    }
-	    
+	    */
 	    // dphi(jet,MET)
 	    mon.fillHisto("dphijmet",tag_cat+"_"+"raw",mindphijmet,weight);
+	    
 	  } //ivar=0
-	  
+	    
 	  
 	  
 	  //#########################################################
@@ -2723,11 +2729,11 @@ int main(int argc, char* argv[])
 	  // First set all b-tags (x-cleaned) in one vector<LorentzVector>
 	  vector<LorentzVector> GoodIdbJets;
 	  for (auto & i : CSVLoosebJets) { GoodIdbJets.push_back(i);}
-	  for (auto & i : SVs) {  GoodIdbJets.push_back(i); }
+	  //	  for (auto & i : SVs) {  GoodIdbJets.push_back(i); }
 
 	  vector<LorentzVector> pseudoGoodIdbJets;
 	  for (auto & i : GoodIdJets) { pseudoGoodIdbJets.push_back(i);}
-	  for (auto & i : SVs) {  pseudoGoodIdbJets.push_back(i); } // have you x-cleaned jets and SVs?
+	  //	  for (auto & i : SVs) {  pseudoGoodIdbJets.push_back(i); } // have you x-cleaned jets and SVs?
 	  
 	  //At least 2 jets && 2 b-tags  
 	  //	  bool passNJ2(GoodIdJets.size()>=3 && GoodIdbJets.size()>=2);     
@@ -2799,6 +2805,7 @@ int main(int argc, char* argv[])
 	  //	  if (evtCatPlot<3) continue;
 
 	  // soft b-tag SF and uncertainty: 1.05 +/- 0.16
+	  /*
 	  if (isMC) {
 	    for (auto & i : SVs) {  
 //	      weight *= 1.05;
@@ -2808,7 +2815,7 @@ int main(int argc, char* argv[])
 	      //else { weight *= 1.05; }
 	    }
 	  }
-	  
+	  */
 	  if (ivar==0) mon.fillHisto("evt_cat",tag_cat+"_"+"sel1", evtCatPlot,weight);
 	  
 	  // //Define ABCD regions
@@ -2846,7 +2853,7 @@ int main(int argc, char* argv[])
 	    // contains (2b,3j) and (2b, 4j)
 	    GoodIdbJets.clear();
 	    for (auto & i : GoodIdJets) { GoodIdbJets.push_back(i);}
-	    for (auto & i : SVs) {  GoodIdbJets.push_back(i); }
+	    //	    for (auto & i : SVs) {  GoodIdbJets.push_back(i); }
 	  } else if(tag_subcat.Contains("SR")) {  
 	    isSignalRegion=true;
 	  } else {
@@ -3072,7 +3079,7 @@ int main(int argc, char* argv[])
 	    }
 	    
 	    // soft-bs + b-tagged jets
-	    mon.fillHisto("nbtags_raw",tags,SVs.size(),weight);    
+	    //	    mon.fillHisto("nbtags_raw",tags,SVs.size(),weight);    
 	    mon.fillHisto("nbjets_raw",tags, CSVLoosebJets.size(),weight);  
 	    
 	    // higgs mass
@@ -3212,7 +3219,7 @@ int main(int argc, char* argv[])
     ofile->Close();
 
     if ( outTxtFile_final ) fclose(outTxtFile_final);
-}
+    }
 
 // fill the histograms (done once)
 // https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration
