@@ -2555,6 +2555,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	}
         //uncertainties to be applied only in higgs analyses
         if(mass>0){
+
+	  //Introduce theory uncertaintly in signal x-section between 2016 and 2017/2018 samples due to change in PYTHIA tune:
+	  // https://hypernews.cern.ch/HyperNews/CMS/get/generators/4546/1.html
+	  if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["thxsec_wh"] = integral*0.011;}
+
           //bin migration at theory level
 	  // https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt13TeV#WH_Process
 	  if (runZh) {
