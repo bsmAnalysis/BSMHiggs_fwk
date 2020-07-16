@@ -334,7 +334,8 @@ def CreateTheCmdFile():
         cmd_file.write('error                   = $(log).err\n')
         cmd_file.write('log                     = $(log).out\n')
         cmd_file.write('request_cpus            = 2\n')
-        cmd_file.write('+JobFlavour             = "microcentury"\n')
+        #cmd_file.write('+JobFlavour             = "microcentury"\n')
+        cmd_file.write('+JobFlavour             = "workday"\n')
 	cmd_file.write('queue exe,log from ' + HtCondor_Sub)
     else:
         cmd_file.write(CopyRights + '\n')

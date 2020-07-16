@@ -39,8 +39,8 @@ jsonPath='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples2016_legacy.js
 #jsonPath='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples2017.json'
 #jsonPath='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples2018.json'
 
-inUrl_wh='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2017_WH_Sys_noSoftb_forLimits.root'
-inUrl_zh='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2017_ZH_noSoftb_forLimits.root'
+inUrl_wh='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2016_Wh_Sys_noSoftb_forLimits.root'
+inUrl_zh='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2016_Zh_Sys_noSoftb_forLimits.root'
 
 # configure your  forLimits files and json files below in order to have combined RunII data limits
 jsonPaths=[
@@ -167,7 +167,8 @@ for signalSuffix in signalSuffixVec :
    binSuffix = ""
    if(',' not in BIN[iConf]):binSuffix="_"+ BIN[iConf]   
 
-   if(phase == 4.0):
+   ##########if(phase == 4.0): # owen
+   if(phase == 4.0 or phase == 6.0):
       inUrl = inUrl_wh
    if(phase == 4.1 or phase == 6.1):
       OUTName[iConf] = OUTName[iConf].replace('_Wh','_Zh')
@@ -473,9 +474,9 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("hadd -f higgsCombineTest.HybridNewMerged.mH"+str(m)+".root  higgsCombineTest.HybridNew.mH"+str(m)+"*.root;\n")
               SCRIPT.writelines("rm higgsCombineTest.HybridNew.mH"+str(m)+"*.root;\n")
 
-           SCRIPT.writelines('#mkdir -p ' + CWD+'/'+cardsdir+';\n')
-           SCRIPT.writelines('#mv * ' + CWD+'/'+cardsdir+'/.;\n')
-           SCRIPT.writelines('#cd ..;\n\n') 
+           SCRIPT.writelines('mkdir -p ' + CWD+'/'+cardsdir+';\n')
+           SCRIPT.writelines('mv * ' + CWD+'/'+cardsdir+'/.;\n')
+           SCRIPT.writelines('cd ..;\n\n') 
            SCRIPT.close()
            #os.system('sh ' + OUT+'script_mass_'+str(m)+'.sh ')  #uncomment this line to launch interactively (this may take a lot of time)
            LaunchOnCondor.SendCluster_Push(["BASH", 'sh ' + OUT+'script_mass_'+str(m)+'.sh'])
@@ -607,9 +608,9 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("hadd -f higgsCombineTest.HybridNewMerged.mH"+str(m)+".root  higgsCombineTest.HybridNew.mH"+str(m)+"*.root;\n")
               SCRIPT.writelines("rm higgsCombineTest.HybridNew.mH"+str(m)+"*.root;\n")
 
-           SCRIPT.writelines('#mkdir -p ' + CWD+'/'+cardsdir+';\n')
-           SCRIPT.writelines('#mv * ' + CWD+'/'+cardsdir+'/.;\n')
-           SCRIPT.writelines('#cd ..;\n\n') 
+           SCRIPT.writelines('mkdir -p ' + CWD+'/'+cardsdir+';\n')
+           SCRIPT.writelines('mv * ' + CWD+'/'+cardsdir+'/.;\n')
+           SCRIPT.writelines('cd ..;\n\n') 
            SCRIPT.close()
            #os.system('sh ' + OUT+'script_mass_'+str(m)+'.sh ')  #uncomment this line to launch interactively (this may take a lot of time)
            LaunchOnCondor.SendCluster_Push(["BASH", 'sh ' + OUT+'script_mass_'+str(m)+'.sh'])
