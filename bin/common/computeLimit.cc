@@ -105,6 +105,8 @@ bool replaceHighSensitivityBinsWithBG = false ;
 
 TString inFileUrl(""),jsonFile("");
 
+TString sumFileUrl("") ;
+
 double shapeMin =-9999;
 double shapeMax = 9999;
 double shapeMinVBF =-9999;
@@ -486,11 +488,16 @@ class ProcessInfo_t
                  if ( hp != 0x0 ) {
                     //printf("                  hist name = %s, n bins = %d\n", hp -> GetName(), hp -> GetNbinsX() ) ;
                     printf(" %2d bins | ", hp -> GetNbinsX() ) ;
+                    bool is_data_sr = false ;
+                    if ( shortName == "data" && chan_key.find("SR")!=string::npos && chan_key.find("emu")==string::npos ) {
+                       is_data_sr = true ;
+                    }
+                    if ( !is_data_sr ) {
+                       printf(" entries = %9.1f integral = %9.1f | ", hp -> GetEntries(), hp -> Integral() ) ;
+                    } else {
+                       printf(" entries = *******.* integral = *******.* | " ) ;
+                    }
                     if ( hp -> GetNbinsX() < 10 ) {
-                       bool is_data_sr = false ;
-                       if ( shortName == "data" && chan_key.find("SR")!=string::npos && chan_key.find("emu")==string::npos ) {
-                          is_data_sr = true ;
-                       }
                        for ( int bi=1; bi<= hp -> GetNbinsX(); bi++ ) {
                           if ( !(is_data_sr && bi >= 4) ) {
                              printf(" b%d %9.1f |", bi, hp -> GetBinContent( bi ) ) ;
@@ -553,7 +560,7 @@ class AllInfo_t
     void dropCtrlChannels(std::vector<TString>& selCh);
 
    // Subtract nonQCD MC processes from A,C,D regions in data
-    void doBackgroundSubtraction(FILE* pFile, std::vector<TString>& selCh,TString mainHisto);
+    void doBackgroundSubtraction(FILE* pFile, std::vector<TString>& selCh,TString mainHisto, AllInfo_t* sumAllInfo=0x0 );
 
     // Make a summary plot
     void showShape(std::vector<TString>& selCh , TString histoName, TString SaveName);
@@ -671,6 +678,7 @@ int main(int argc, char* argv[])
   for(int i=1;i<argc;i++){
     string arg(argv[i]);
     if(arg.find("--help")          !=string::npos) { printHelp(); return -1;} 
+    else if(arg.find("--sumInputFile")       !=string::npos && i+1<argc)  { sumFileUrl = argv[i+1];  i++;  printf("sumFileUrl = %s\n", sumFileUrl.Data());  }
     else if(arg.find("--minErrOverSqrtNBGForBinByBin") !=string::npos) { sscanf(argv[i+1],"%f",&minErrOverSqrtNBGForBinByBin); printf("minErrOverSqrtNBGForBinByBin = %.3f\n", minErrOverSqrtNBGForBinByBin);}
     else if(arg.find("--replaceHighSensitivityBinsWithBG") !=string::npos) { replaceHighSensitivityBinsWithBG = true; printf("replaceHighSensitivityBinsWithBG = True\n");}
     else if(arg.find("--autoMCStats")  !=string::npos) { autoMCStats=true; printf("autoMCStats = True\n");}
@@ -898,6 +906,16 @@ int main(int argc, char* argv[])
 
   AllInfo_t allInfo;
 
+  AllInfo_t* allInfoSum(0x0) ;
+  TFile* inF_sum(0x0) ;
+  if ( !sumFileUrl.IsNull() ) {
+     printf("\n\n  sumInputFile is set to %s.  Will read it in to a separate allInfo.\n\n", sumFileUrl.Data() ) ;
+     allInfoSum = new AllInfo_t() ;
+     inF_sum = TFile::Open(sumFileUrl);
+     if( !inF_sum || inF_sum->IsZombie() ){ printf("Invalid file name : %s\n", sumFileUrl.Data()); gSystem -> Exit(-1); }
+     gROOT->cd();  //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
+  }
+
 
 
 
@@ -922,7 +940,10 @@ int main(int argc, char* argv[])
     }
     double cutMin=shapeMin; double cutMax=shapeMax;
     allInfo.getShapeFromFile(inF, channelsAndShapes, indexcutM[AnalysisBins[b]], Root, cutMin, cutMax   );     
+    if ( !sumFileUrl.IsNull() && inF_sum!=0x0 ) allInfoSum -> getShapeFromFile(inF_sum, channelsAndShapes, indexcutM[AnalysisBins[b]], Root, cutMin, cutMax   );     
   }
+
+
 
 
   inF->Close();
@@ -932,10 +953,19 @@ int main(int argc, char* argv[])
     std::string NewBinName = binsToMerge[B][0]; std::cout << "binsToMerge[B][0]: " << binsToMerge[B][0]; for(unsigned int b=1;b<binsToMerge[B].size();b++){NewBinName += "_"+binsToMerge[B][b];std::cout << "binsToMerge[B][b]: " << binsToMerge[B][b] << std::endl;;}
 //    std::string NewBinName = string("["); binsToMerge[B][0];  for(unsigned int b=1;b<binsToMerge[B].size();b++){NewBinName += "+"+binsToMerge[B][b];} NewBinName+="]";
     allInfo.mergeBins(binsToMerge[B],NewBinName);
+    if ( !sumFileUrl.IsNull() && allInfoSum != 0x0 ) allInfoSum -> mergeBins(binsToMerge[B],NewBinName);
   }
 
 
-  if ( verbose ) allInfo.printInventory() ;
+  if ( verbose ) {
+     printf("\n\n --- verbose : main :  calling allInfo.printInventory for main allInfo\n\n") ;
+     allInfo.printInventory() ;
+     if ( !sumFileUrl.IsNull() && allInfoSum != 0x0 ) {
+        printf("\n\n --- verbose : main :  calling allInfo.printInventory for sum allInfo\n\n") ;
+        allInfoSum -> printInventory() ;
+     }
+  }
+
   
   if ( verbose ) { printf("\n --- verbose : main :  calling allInfo.computeTotalBackground() for first time.\n") ; fflush(stdout) ; }
   allInfo.computeTotalBackground();
@@ -951,8 +981,15 @@ int main(int argc, char* argv[])
   std::vector<TString>& selCh = Channels;
 
   if(modeDD) {
+    if ( allInfoSum != 0x0 ) {
+       if ( verbose ) { printf("\n --- verbose : main :  calling doBackgroundSubtraction for sum allInfo first.\n") ; }
+       pFile = fopen("datadriven_qcd"+year+"-sum.tex","w");
+       if(subFake) allInfoSum -> doBackgroundSubtraction(pFile,selCh,histo);
+       fclose(pFile);
+    }
+    if ( verbose ) { printf("\n --- verbose : main :  calling doBackgroundSubtraction for main allInfo.\n") ; }
     pFile = fopen("datadriven_qcd"+year+".tex","w");
-    if(subFake)allInfo.doBackgroundSubtraction(pFile,selCh,histo);
+    if(subFake)allInfo.doBackgroundSubtraction(pFile,selCh,histo, allInfoSum);
     fclose(pFile);
   }
 
@@ -1187,7 +1224,21 @@ void AllInfo_t::addProc(ProcessInfo_t& dest, ProcessInfo_t& src, bool computeSys
 //
 // Subtract nonQCD MC from A,C,D regions in QCD Analysis
 //
-void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,TString mainHisto) {
+void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,TString mainHisto, AllInfo_t* sumAllInfo) {
+
+  if ( verbose ) { printf("\n\n --- verbose :  AllInfo_t::doBackgroundSubtraction : begin\n\n") ; }
+
+  if ( verbose ) {
+     if ( sumAllInfo != 0x0 ) {
+        printf("\n\n --- verbose :  AllInfo_t::doBackgroundSubtraction :  sumAllInfo is set.  Will use sum for 4b SR shape for B and C/D ratio.\n\n") ;
+     } else {
+        printf("\n\n --- verbose :  AllInfo_t::doBackgroundSubtraction :  sumAllInfo is NOT set.\n\n") ;
+     }
+     printf("  --- verbose :  AllInfo_t::doBackgroundSubtraction :  contents of selCh vector:\n") ;
+     for ( int i = 0; i<selCh.size(); i++ ) {
+        printf("   %3d : %s\n", i, selCh[i].Data() ) ;
+     } // i
+  }
 
   // Closure test for DD QCD predictions
   char Lcol     [1024] = "|c";
@@ -1228,11 +1279,18 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     addProc(procInfo_NRB, it->second, false);
   }
 
+  if ( verbose ) { printf("  --- verbose :  AllInfo_t::doBackgroundSubtraction :  proc for all non-QCD backgrounds:\n") ; procInfo_NRB.printProcess() ; }
+
+
+
   for(std::map<string, ChannelInfo_t>::iterator chData = dataProcIt->second.channels.begin(); chData!=dataProcIt->second.channels.end(); chData++){
     if(std::find(selCh.begin(), selCh.end(), chData->second.channel)==selCh.end())continue;
 
+
     // if(chData->first.find("CR5j"))continue;
     if(chData->first.find("_A_")!=string::npos)continue; // do not subtract nonQCD MC in regions A...
+
+    if ( verbose ) { printf("  --- verbose :  AllInfo_t::doBackgroundSubtraction :  loop over data channels :  %s\n", chData->first.c_str() ) ; }
 
     // now look at the channels in the nonQCD MC process
     std::map<string, ChannelInfo_t>::iterator chNRB = procInfo_NRB.channels.find(chData->first); 
@@ -1257,6 +1315,8 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
 	//	  shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) uncS->second->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
 	//	}else{
 	//	printf("Here start subtracting NonQCD %s \n",uncS->second->GetName());
+        
+        if ( verbose ) { printf("  --- verbose :  AllInfo_t::doBackgroundSubtraction :  subtracting %s from %s\n", uncS->second->GetName(), shapesInfoDest[sh->first].uncShape[uncS->first]->GetName() ) ; }
 	shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second,-1);
 	  //	}
       }
@@ -1294,10 +1354,16 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
   }
   for(std::vector<string>::iterator p=toBeDelete.begin();p!=toBeDelete.end();p++){procs.erase(procs.find((*p)));}
 
+
+
+
+
   for(std::map<string, ChannelInfo_t>::iterator chData = dataProcIt->second.channels.begin(); chData!=dataProcIt->second.channels.end(); chData++){
     if(std::find(selCh.begin(), selCh.end(), chData->second.channel)==selCh.end())continue;
 
     if(!(chData->first.find("_A_")!=string::npos))continue; // replace only in regions A...
+
+    if ( verbose ) { printf(" --- verbose :  AllInfo_t::doBackgroundSubtraction :  ChannelInfo_t loop, chData->first = %s, chData->second.channel = %s\n", chData->first.c_str(), chData->second.channel.c_str() ) ; }
 
     //   printf("Channel 2:%s\n",chData->first.c_str());
     //  if (chData->second.channel.find("CR5j")) continue;
@@ -1331,6 +1397,23 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     TH1* hDD_D = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()+year).Data())->second.shapes[mainHisto.Data()].histo();
     binName.ReplaceAll("D_","B_");    
     TH1* hDD_B = procInfo_DD.channels.find((binName+"_"+chData->second.bin.c_str()+year).Data())->second.shapes[mainHisto.Data()].histo();  
+
+    if ( verbose ) {
+
+       double val, err ;
+
+       val = hChan_SB -> IntegralAndError( 1,hChan_SB->GetXaxis()->GetNbins(), err ) ;
+       printf(" --- verbose :  AllInfo_t::doBackgroundSubtraction :  hChan_SB (C) :  integral = %9.1f +/- %6.1f | \n", val, err ) ;
+
+       val = hCtrl_SB -> IntegralAndError( 1,hCtrl_SB->GetXaxis()->GetNbins(), err ) ;
+       printf(" --- verbose :  AllInfo_t::doBackgroundSubtraction :  hCtrl_SB (D) :  integral = %9.1f +/- %6.1f | \n", val, err ) ;
+
+       val = hCtrl_SI -> IntegralAndError( 1,hCtrl_SI->GetXaxis()->GetNbins(), err ) ;
+       printf(" --- verbose :  AllInfo_t::doBackgroundSubtraction :  hCtrl_SI (B) :  integral = %9.1f +/- %6.1f | ", val, err ) ;
+       for ( int i=1; i<=hCtrl_SI->GetNbinsX(); i++ ) { printf(" bin %2d = %7.1f +/- %7.1f | ", i, hCtrl_SI->GetBinContent( i ), hCtrl_SI->GetBinError( i ) ) ; }
+       printf("\n") ;
+
+    }
     
     
     binName.ReplaceAll("B_","");   
@@ -1380,11 +1463,169 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     std::cout << "hDD_B hDD_C hDD_D hCtrl_SI hChan_SB hCtrl_SB" << std::endl;
     std::cout << (hDD_B!=NULL) << "     " << (hDD_C!=NULL) << "     " << (hDD_D!=NULL) << "     " << (hCtrl_SI!=NULL) << "        " << (hChan_SB!=NULL) << "        " << (hCtrl_SB!=NULL) << std::endl;
     hDD->Reset();
-    hDD->Add(hCtrl_SI , 1.0);
+    if ( sumAllInfo != 0x0 && ( strcmp( chData->first.c_str(), "e_A_SR_4b" ) == 0 || strcmp( chData->first.c_str(), "mu_A_SR_4b" ) == 0 ) ) {
 
-    if(hCtrl_SB->Integral()<=0 || hCtrl_SI->Integral()<0 || hChan_SB->Integral()<0) alpha = 0;
-    hDD->Scale(alpha);
+       printf("\n sumAllInfo set and this is a SR 4b channel: %s.  Will use sum for C/D ratio and B shape.\n", chData->first.c_str() ) ;
+
+       std::map<string, ProcessInfo_t>::iterator iSumDataProc = (*sumAllInfo).procs.find("data") ;
+       if ( iSumDataProc==(*sumAllInfo).procs.end() ) { printf("\n\n *** can't find data proc in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+
+       ProcessInfo_t sumDataProc = iSumDataProc -> second ;
+
+
+      //--- B
+       
+       TH1* h_B(0x0) ;
+       {
+          std::map<string, ChannelInfo_t>::iterator ichan_e = sumDataProc.channels.find( "e_B_SR_4b" ) ;
+          if ( ichan_e == sumDataProc.channels.end() ) { printf("\n\n *** can't find data e_B_SR_4b channel in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+          ChannelInfo_t chan_e = ichan_e->second ;
+
+          std::map<string, ChannelInfo_t>::iterator ichan_mu = sumDataProc.channels.find( "mu_B_SR_4b" ) ;
+          if ( ichan_mu == sumDataProc.channels.end() ) { printf("\n\n *** can't find data mu_B_SR_4b channel in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+          ChannelInfo_t chan_mu = ichan_mu->second ;
+
+          std::map<string, ShapeData_t>::iterator ishape_e = chan_e.shapes.find( mainHisto.Data() ) ;
+          if ( ishape_e == chan_e.shapes.end() ) { printf("\n\n *** can't find data e_B_SR_4b channel shape in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+          ShapeData_t shape_e = ishape_e->second ;
+          TH1* h_B_e = shape_e.histo() ;
+          if ( h_B_e == 0x0 ) { printf("\n\n *** can't find data e_B_SR_4b channel shape histogram in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+
+          std::map<string, ShapeData_t>::iterator ishape_mu = chan_mu.shapes.find( mainHisto.Data() ) ;
+          if ( ishape_mu == chan_mu.shapes.end() ) { printf("\n\n *** can't find data mu_B_SR_4b channel shape in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+          ShapeData_t shape_mu = ishape_mu->second ;
+          TH1* h_B_mu = shape_mu.histo() ;
+          if ( h_B_mu == 0x0 ) { printf("\n\n *** can't find data mu_B_SR_4b channel shape histogram in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+
+          h_B = (TH1*) h_B_e -> Clone("h_B_from_sumAllInfo") ;
+          h_B -> Add( h_B_mu ) ;
+
+          if ( verbose ) {
+             printf(" --- verbose :  AllInfo_t::doBackgroundSubtraction :  hist from sumAllInfo for  e_B_SR_4b :  integral = %9.1f\n", h_B_e->Integral() ) ;
+             printf(" --- verbose :  AllInfo_t::doBackgroundSubtraction :  hist from sumAllInfo for mu_B_SR_4b :  integral = %9.1f\n", h_B_mu->Integral() ) ;
+          }
+       }
+
+
+      //--- C
+       
+       TH1* h_C(0x0) ;
+       {
+          std::map<string, ChannelInfo_t>::iterator ichan_e = sumDataProc.channels.find( "e_C_SR_4b" ) ;
+          if ( ichan_e == sumDataProc.channels.end() ) { printf("\n\n *** can't find data e_C_SR_4b channel in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+          ChannelInfo_t chan_e = ichan_e->second ;
+
+          std::map<string, ChannelInfo_t>::iterator ichan_mu = sumDataProc.channels.find( "mu_C_SR_4b" ) ;
+          if ( ichan_mu == sumDataProc.channels.end() ) { printf("\n\n *** can't find data mu_C_SR_4b channel in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+          ChannelInfo_t chan_mu = ichan_mu->second ;
+
+          std::map<string, ShapeData_t>::iterator ishape_e = chan_e.shapes.find( mainHisto.Data() ) ;
+          if ( ishape_e == chan_e.shapes.end() ) { printf("\n\n *** can't find data e_C_SR_4b channel shape in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+          ShapeData_t shape_e = ishape_e->second ;
+          TH1* h_C_e = shape_e.histo() ;
+          if ( h_C_e == 0x0 ) { printf("\n\n *** can't find data e_C_SR_4b channel shape histogram in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+
+          std::map<string, ShapeData_t>::iterator ishape_mu = chan_mu.shapes.find( mainHisto.Data() ) ;
+          if ( ishape_mu == chan_mu.shapes.end() ) { printf("\n\n *** can't find data mu_C_SR_4b channel shape in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+          ShapeData_t shape_mu = ishape_mu->second ;
+          TH1* h_C_mu = shape_mu.histo() ;
+          if ( h_C_mu == 0x0 ) { printf("\n\n *** can't find data mu_C_SR_4b channel shape histogram in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+
+          h_C = (TH1*) h_C_e -> Clone("h_C_from_sumAllInfo") ;
+          h_C -> Add( h_C_mu ) ;
+
+          if ( verbose ) {
+             printf(" --- verbose :  AllInfo_t::doBackgroundSubtraction :  hist from sumAllInfo for  e_C_SR_4b :  integral = %9.1f\n", h_C_e->Integral() ) ;
+             printf(" --- verbose :  AllInfo_t::doBackgroundSubtraction :  hist from sumAllInfo for mu_C_SR_4b :  integral = %9.1f\n", h_C_mu->Integral() ) ;
+          }
+       }
+
+
+      //--- D
+       
+       TH1* h_D(0x0) ;
+       {
+          std::map<string, ChannelInfo_t>::iterator ichan_e = sumDataProc.channels.find( "e_D_SR_4b" ) ;
+          if ( ichan_e == sumDataProc.channels.end() ) { printf("\n\n *** can't find data e_D_SR_4b channel in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+          ChannelInfo_t chan_e = ichan_e->second ;
+
+          std::map<string, ChannelInfo_t>::iterator ichan_mu = sumDataProc.channels.find( "mu_D_SR_4b" ) ;
+          if ( ichan_mu == sumDataProc.channels.end() ) { printf("\n\n *** can't find data mu_D_SR_4b channel in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+          ChannelInfo_t chan_mu = ichan_mu->second ;
+
+          std::map<string, ShapeData_t>::iterator ishape_e = chan_e.shapes.find( mainHisto.Data() ) ;
+          if ( ishape_e == chan_e.shapes.end() ) { printf("\n\n *** can't find data e_D_SR_4b channel shape in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+          ShapeData_t shape_e = ishape_e->second ;
+          TH1* h_D_e = shape_e.histo() ;
+          if ( h_D_e == 0x0 ) { printf("\n\n *** can't find data e_D_SR_4b channel shape histogram in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+
+          std::map<string, ShapeData_t>::iterator ishape_mu = chan_mu.shapes.find( mainHisto.Data() ) ;
+          if ( ishape_mu == chan_mu.shapes.end() ) { printf("\n\n *** can't find data mu_D_SR_4b channel shape in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+          ShapeData_t shape_mu = ishape_mu->second ;
+          TH1* h_D_mu = shape_mu.histo() ;
+          if ( h_D_mu == 0x0 ) { printf("\n\n *** can't find data mu_D_SR_4b channel shape histogram in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+
+          h_D = (TH1*) h_D_e -> Clone("h_D_from_sumAllInfo") ;
+          h_D -> Add( h_D_mu ) ;
+
+          if ( verbose ) {
+             printf(" --- verbose :  AllInfo_t::doBackgroundSubtraction :  hist from sumAllInfo for  e_D_SR_4b :  integral = %9.1f\n", h_D_e->Integral() ) ;
+             printf(" --- verbose :  AllInfo_t::doBackgroundSubtraction :  hist from sumAllInfo for mu_D_SR_4b :  integral = %9.1f\n", h_D_mu->Integral() ) ;
+          }
+       }
+
+       double sum_C_val, sum_C_err ;
+       double sum_D_val, sum_D_err ;
+
+       sum_C_val = h_C -> IntegralAndError( 1, h_C->GetNbinsX(), sum_C_err ) ;
+       sum_D_val = h_D -> IntegralAndError( 1, h_D->GetNbinsX(), sum_D_err ) ;
+
+       double sum_C_over_D_val(0.) ;
+       double sum_C_over_D_err(0.) ;
+       if ( sum_D_val > 0 && sum_C_val > 0 ) {
+          sum_C_over_D_val = sum_C_val / sum_D_val ;
+          sum_C_over_D_err = sum_C_over_D_val * sqrt( pow( sum_C_err/sum_C_val, 2. ) + pow( sum_D_err/sum_D_val, 2. ) ) ;
+       }
+       if ( verbose ) {
+          printf(" --- verbose :  AllInfo_t::doBackgroundSubtraction :  from sumAllInfo, C/D = (%9.1f +/- %6.1f)/(%9.1f +/- %6.1f) = %6.3f +/- %6.3f\n",
+             sum_C_val, sum_C_err, sum_D_val, sum_D_err, sum_C_over_D_val, sum_C_over_D_err ) ;
+       }
+
+      //-- use h_B from sum for the shape, but normalize B with the non-sum version
+
+       hDD -> Add( h_B ) ;
+       double integral_nonsum_B = hCtrl_SI -> Integral() ;
+       double integral_sum_B = h_B -> Integral() ;
+       if ( integral_sum_B > 0 ) {
+          hDD -> Scale(  integral_nonsum_B / integral_sum_B ) ;
+       } else {
+          printf("\n\n *** integral of h_B from sumAllInfo is negative!!!  I quit.\n\n") ; gSystem -> Exit(-1) ;
+       }
+
+       hDD -> Scale( sum_C_over_D_val ) ;
+
+
+
+    } else {
+
+       hDD->Add(hCtrl_SI , 1.0);
+
+       if(hCtrl_SB->Integral()<=0 || hCtrl_SI->Integral()<0 || hChan_SB->Integral()<0) alpha = 0;
+
+       if ( verbose ) { printf(" --- verbose :  AllInfo_t::doBackgroundSubtraction :  %s  final C/D = %6.3f\n", chData->first.c_str(), alpha ) ; }
+       hDD->Scale(alpha);
+
+    }
+
+
     hDD->SetTitle(DDProcName.Data());
+    if ( verbose ) {
+       printf(" --- verbose :  AllInfo_t::doBackgroundSubtraction :  %s  final prediction hist:  integral = %9.1f | ", chData->first.c_str(), hDD->Integral() ) ;
+       for ( int i=1; i<hDD->GetNbinsX(); i++ ) {
+          printf(" bin %2d = %9.1f +/- %6.1f | ", i, hDD->GetBinContent( i ) , hDD->GetBinError( i ) ) ;
+       }
+       printf("\n") ;
+    }
 
     //save values for printout
     double valDD, valDD_err;
@@ -1415,6 +1656,9 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     sprintf(RatioMC, "%s%25s",RatioMC, (string(" &") + utils::toLatexRounded(ratioMC,ratioMC_err)).c_str());
   } // end data channels
 
+
+
+
   procs["NonQCD"] = ProcessInfo_t(); //reset  
 
   //recompute total background  
@@ -1440,7 +1684,15 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     fprintf(pFile,"\\end{tabular}\n\\end{center}\n\\end{sidewaystable}\n\\end{document}\n");
   }
 
-}
+  if ( verbose ) { printf("\n\n --- verbose :  AllInfo_t::doBackgroundSubtraction : end \n\n") ; }
+
+} // doBackgroundSubtraction
+
+
+
+
+
+
 
 
 //
