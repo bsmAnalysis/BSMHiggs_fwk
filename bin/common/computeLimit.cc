@@ -173,6 +173,39 @@ bool matchKeyword(JSONWrapper::Object& process, std::vector<string>& keywords){
 
 
 
+//--------------
+
+void resetNegativeBinsAndErrors( TH1* hp, double val_for_reset = 1., double min_error = 1. ) {
+   
+   if ( hp == 0x0 ) { printf("\n\n *** resetNegativeBinsAndErrors: null pointer.\n\n") ; gSystem -> Exit(-1) ; }
+
+   for ( int hbi=1; hbi<= hp->GetNbinsX(); hbi++ ) {
+      double val, err ;
+      val = hp -> GetBinContent( hbi ) ;
+      err = hp -> GetBinError( hbi ) ;
+      if ( err < min_error ) {
+         if ( verbose ) { printf("  resetNegativeBinsAndErrors : hist %s, bin %d, err = %.1f, reset err to %.1f\n", hp->GetName(), hbi, err, min_error ) ; }
+         hp -> SetBinError( hbi, min_error ) ;
+         err = min_error ;
+      }
+      if ( val <= 0 ) {
+         if ( verbose ) {
+            printf("  resetNegativeBinsAndErrors : hist %s, bin %d, val = %.1f, reset val to %.1f and err to %.1f.\n",
+             hp->GetName(), hbi, val, val_for_reset, sqrt( pow( err, 2. ) + pow( val, 2. ) ) ) ;
+         }
+         hp -> SetBinContent( hbi, val_for_reset ) ;
+         hp -> SetBinError( hbi, sqrt( pow( err, 2. ) + pow( val, 2. ) ) ) ;
+      }
+   } // hbi
+
+} // resetNegativeBinsAndErrors
+
+//--------------
+
+
+
+
+
 void filterBinContent(TH1* histo){
   if(shapeBinToConsider.size()<=0)return;
   for(int i=0;i<=histo->GetNbinsX()+1;i++){
@@ -1539,6 +1572,13 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     double valMC=0, valMC_err=0;
     double valDD_MC=0, valDD_MC_err=0;
     double ratioMC=0, ratioMC_err=0;
+
+
+   //-- For every bin in B, C, and D, check if it's negative.  If it is, set error to sqrt( err^2 + val^2 ) and value to 1 event.
+    resetNegativeBinsAndErrors( hChan_SB, 1. ) ; // C
+    resetNegativeBinsAndErrors( hCtrl_SB, 1. ) ; // D
+    resetNegativeBinsAndErrors( hCtrl_SI, 0. ) ; // B
+
  
     if(hCtrl_SB->Integral()>0){
       alpha     = hChan_SB->IntegralAndError(1,hChan_SB->GetXaxis()->GetNbins(),errC) / hCtrl_SB->IntegralAndError(1,hCtrl_SB->GetXaxis()->GetNbins(),errD);
@@ -1685,6 +1725,10 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
              printf(" --- verbose :  AllInfo_t::doBackgroundSubtraction :  hist from sumAllInfo for mu_D_SR_4b :  integral = %9.1f\n", h_D_mu->Integral() ) ;
           }
        }
+
+       resetNegativeBinsAndErrors( h_C, 1. ) ;
+       resetNegativeBinsAndErrors( h_D, 1. ) ;
+       resetNegativeBinsAndErrors( h_B, 0. ) ;
 
        double sum_C_val, sum_C_err ;
        double sum_D_val, sum_D_err ;
@@ -2200,6 +2244,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     for(unsigned int p=0;p<sorted_procs.size();p++){
       string procName = sorted_procs[p];
       if(procName.compare("total") == 0) continue;
+      if ( procName.compare("ddqcd") == 0 ) {
+         printf("  AllInfo_t::dropSmallBckgProc:  excluding ddqcd proc from consideration.  Always keep it.\n") ; fflush(stdout) ;
+         continue ;
+      }
       std::map<string, ProcessInfo_t>::iterator it=procs.find(procName);
       if(it==procs.end())continue;
       if(!it->second.isBckg)continue;
