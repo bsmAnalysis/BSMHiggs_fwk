@@ -33,6 +33,9 @@
 #include "TMath.h"
 #include "TGraphAsymmErrors.h"
 
+#include "RooFitResult.h"
+#include "RooRealVar.h"
+
 #include<iostream>
 #include<fstream>
 #include<map>
@@ -106,6 +109,7 @@ bool replaceHighSensitivityBinsWithBG = false ;
 TString inFileUrl(""),jsonFile("");
 
 TString sumFileUrl("") ;
+TString fdInputFile("") ;
 
 double shapeMin =-9999;
 double shapeMax = 9999;
@@ -533,10 +537,12 @@ class AllInfo_t
     void sortProc();
 
     // Sum up all background processes and add this as a total process
-    void addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool computeSyst = false, bool addDiffProcs = true);
+    //////void addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool computeSyst = false, bool addDiffProcs = true);
+    void addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool computeSyst = false, bool addDiffProcs = true, double scale_factor = 1.);
 
     // Sum up all background processes and add this as a total process
-    void addProc(ProcessInfo_t& dest, ProcessInfo_t& src, bool computeSyst = false);
+    ///////void addProc(ProcessInfo_t& dest, ProcessInfo_t& src, bool computeSyst = false);
+    void addProc(ProcessInfo_t& dest, ProcessInfo_t& src, bool computeSyst = false, double scale_factor_e = 1., double scale_factor_mu = 1. );
 
     // Sum up all background processes and add this as a total process
     void computeTotalBackground();
@@ -678,6 +684,7 @@ int main(int argc, char* argv[])
   for(int i=1;i<argc;i++){
     string arg(argv[i]);
     if(arg.find("--help")          !=string::npos) { printHelp(); return -1;} 
+    else if(arg.find("--fitDiagnosticsInputFile") !=string::npos && i+1<argc) { fdInputFile = argv[i+1]; i++;  printf("fdInputFile = %s\n", fdInputFile.Data()); }
     else if(arg.find("--sumInputFile")       !=string::npos && i+1<argc)  { sumFileUrl = argv[i+1];  i++;  printf("sumFileUrl = %s\n", sumFileUrl.Data());  }
     else if(arg.find("--minErrOverSqrtNBGForBinByBin") !=string::npos) { sscanf(argv[i+1],"%f",&minErrOverSqrtNBGForBinByBin); printf("minErrOverSqrtNBGForBinByBin = %.3f\n", minErrOverSqrtNBGForBinByBin);}
     else if(arg.find("--replaceHighSensitivityBinsWithBG") !=string::npos) { replaceHighSensitivityBinsWithBG = true; printf("replaceHighSensitivityBinsWithBG = True\n");}
@@ -932,15 +939,23 @@ int main(int argc, char* argv[])
   const size_t nsh=sh.size();
   for(size_t b=0; b<AnalysisBins.size(); b++){
     std::vector<string> channelsAndShapes;
+    std::vector<string> channelsAndShapesSum;
     for(size_t i=0; i<nch; i++){
       for(size_t j=0; j<nsh; j++){
 	channelsAndShapes.push_back((ch[i]+TString(";")+AnalysisBins[b]+TString(";")+sh[j]).Data());
-	printf("Adding shape %s\n",(ch[i]+TString(";")+AnalysisBins[b]+TString(";")+sh[j]).Data());
+	printf("allInfo   : Adding shape %s\n",(ch[i]+TString(";")+AnalysisBins[b]+TString(";")+sh[j]).Data());
+        if ( !sumFileUrl.IsNull() && inF_sum!=0x0 ) {
+          //--- only need SR 4b for sum (used in DD QCD).
+           if ( ch[i].Contains("SR") && strcmp( AnalysisBins[b].c_str(), "4b" ) == 0 ) {
+              channelsAndShapesSum.push_back((ch[i]+TString(";")+AnalysisBins[b]+TString(";")+sh[j]).Data());
+	      printf("allInfoSum: Adding shape %s\n",(ch[i]+TString(";")+AnalysisBins[b]+TString(";")+sh[j]).Data());
+           }
+        }
       }
     }
     double cutMin=shapeMin; double cutMax=shapeMax;
     allInfo.getShapeFromFile(inF, channelsAndShapes, indexcutM[AnalysisBins[b]], Root, cutMin, cutMax   );     
-    if ( !sumFileUrl.IsNull() && inF_sum!=0x0 ) allInfoSum -> getShapeFromFile(inF_sum, channelsAndShapes, indexcutM[AnalysisBins[b]], Root, cutMin, cutMax   );     
+    if ( !sumFileUrl.IsNull() && inF_sum!=0x0 ) allInfoSum -> getShapeFromFile(inF_sum, channelsAndShapesSum, indexcutM[AnalysisBins[b]], Root, cutMin, cutMax   );     
   }
 
 
@@ -975,6 +990,25 @@ int main(int argc, char* argv[])
   if ( verbose ) allInfo.printInventory() ;
 
 
+
+
+  if ( verbose ) { if (shape && BackExtrapol ) printf("\n  --- verbose : main :  calling allInfo.rebinMainHisto(histo.Data()) where histo = %s\n", histo.Data() ) ; fflush(stdout) ; }
+
+
+  //extrapolate backgrounds toward higher BDT region to make sure that there is no empty bins
+  //
+  if(shape && BackExtrapol)allInfo.rebinMainHisto(histo.Data());
+
+  if ( shape && BackExtrapol && allInfoSum != 0x0 ) {
+     if ( verbose ) { printf("\n --- verbose : main :  calling rebinMainHisto(histo.Data()) for allInfoSum.\n") ; fflush(stdout) ; }
+     allInfoSum -> rebinMainHisto(histo.Data());
+  }
+
+
+  if ( verbose ) allInfo.printInventory() ;
+
+
+
   FILE* pFile;
 
   //define vector for search
@@ -998,15 +1032,6 @@ int main(int argc, char* argv[])
 
 
 
-
-  if ( verbose ) { if (shape && BackExtrapol ) printf("\n  --- verbose : main :  calling allInfo.rebinMainHisto(histo.Data()) where histo = %s\n", histo.Data() ) ; fflush(stdout) ; }
-
-
-  //extrapolate backgrounds toward higher BDT region to make sure that there is no empty bins
-  if(shape && BackExtrapol)allInfo.rebinMainHisto(histo.Data());
-
-
-  if ( verbose ) allInfo.printInventory() ;
 
 
 
@@ -1120,7 +1145,9 @@ int main(int argc, char* argv[])
   allInfo.buildDataCards(histo.Data(), limitFile);
 
   //all done
+  printf("\n\n calling fout->Close();\n\n") ; fflush(stdout) ;
   fout->Close();
+  printf("\n\n At the end of main.\n\n") ; fflush(stdout) ;
 }
 
 //
@@ -1149,7 +1176,7 @@ void AllInfo_t::sortProc(){
 //
 // Sum up all shapes from one src channel to a total shapes in the dest channel
 //
-void AllInfo_t::addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool computeSyst, bool addDiffProcs){
+void AllInfo_t::addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool computeSyst, bool addDiffProcs, double scale_factor ){
   std::map<string, ShapeData_t>& shapesInfoDest = dest.shapes;
   std::map<string, ShapeData_t>& shapesInfoSrc  = src.shapes;
 
@@ -1163,7 +1190,8 @@ void AllInfo_t::addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool compute
 	if(shapesInfoDest[sh->first].uncShape.find(uncS->first)==shapesInfoDest[sh->first].uncShape.end()){
 	  shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) uncS->second->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
 	}else{
-	  shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second);
+	  //////////shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second);
+	  shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second, scale_factor );
 	}
       }
       
@@ -1191,12 +1219,14 @@ void AllInfo_t::addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool compute
 	  //2. we remove the nominal value of the process we are running on
 	  shapesInfoDest[sh->first].uncShape[uncS->first]->Add(shapesInfoSrc[sh->first].uncShape[""], -1);
 	  //3. and add the variation up/down
-	  shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second); 
+	  /////shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second); 
+	  shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second, scale_factor ); 
 	}else{ // add same proc in different channels
 	  if(shapesInfoDest[sh->first].uncShape.find(uncS->first)==shapesInfoDest[sh->first].uncShape.end()){
 	    shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) uncS->second->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
 	  }else{
-	    shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second); 
+	    ////////shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second); 
+	    shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second, scale_factor ); 
 	  }
 	}
       }
@@ -1208,7 +1238,7 @@ void AllInfo_t::addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool compute
 //
 // Sum up all background processes and add this as a total process
 //
-void AllInfo_t::addProc(ProcessInfo_t& dest, ProcessInfo_t& src, bool computeSyst){
+void AllInfo_t::addProc(ProcessInfo_t& dest, ProcessInfo_t& src, bool computeSyst, double scale_factor_e, double scale_factor_mu ){
   dest.xsec = src.xsec*src.br;
   for(std::map<string, ChannelInfo_t>::iterator ch = src.channels.begin(); ch!=src.channels.end(); ch++){
     if(dest.channels.find(ch->first)==dest.channels.end()){   //this channel does not exist, create it
@@ -1217,7 +1247,15 @@ void AllInfo_t::addProc(ProcessInfo_t& dest, ProcessInfo_t& src, bool computeSys
       dest.channels[ch->first].channel = ch->second.channel;
     }
 
-    addChannel(dest.channels[ch->first], ch->second, computeSyst);
+    //addChannel(dest.channels[ch->first], ch->second, computeSyst);
+    TString ts_channel_name( ch->first ) ;
+    if ( ts_channel_name.Contains( "mu_" ) ) {
+       addChannel(dest.channels[ch->first], ch->second, computeSyst, true, scale_factor_mu );
+    } else if ( ts_channel_name.Contains( "e_" ) ) {
+       addChannel(dest.channels[ch->first], ch->second, computeSyst, true, scale_factor_e );
+    } else {
+       addChannel(dest.channels[ch->first], ch->second, computeSyst, true, 1.0 );
+    }
   }
 }
 
@@ -1233,6 +1271,9 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
         printf("\n\n --- verbose :  AllInfo_t::doBackgroundSubtraction :  sumAllInfo is set.  Will use sum for 4b SR shape for B and C/D ratio.\n\n") ;
      } else {
         printf("\n\n --- verbose :  AllInfo_t::doBackgroundSubtraction :  sumAllInfo is NOT set.\n\n") ;
+     }
+     if ( fdInputFile.Length() > 0 ) {
+        printf(" --- verbose :  AllInfo_t::doBackgroundSubtraction :  fdInputFile is set to %s.  Will apply scale factors from fit_b from that file.\n", fdInputFile.Data() ) ;
      }
      printf("  --- verbose :  AllInfo_t::doBackgroundSubtraction :  contents of selCh vector:\n") ;
      for ( int i = 0; i<selCh.size(); i++ ) {
@@ -1251,6 +1292,62 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
   char LalphMC  [1024] = "";
   char LyieldPred[1024] = "";
   char RatioMC  [1024] = "";
+
+  double w_norm_e_val(1.0) ;
+  double w_norm_mu_val(1.0) ;
+  double tt_norm_e_val(1.0) ;
+  double tt_norm_mu_val(1.0) ;
+
+  double w_norm_e_err(0.0) ;
+  double w_norm_mu_err(0.0) ;
+  double tt_norm_e_err(0.0) ;
+  double tt_norm_mu_err(0.0) ;
+
+  if ( fdInputFile.Length() > 0 ) {
+
+     TFile tf_fd( fdInputFile, "READ" ) ;
+     if ( !(tf_fd.IsOpen()) ) {
+        printf("\n\n *** AllInfo_t::doBackgroundSubtraction : fdInputFile set to %s.  problem opening this file.  I quit.\n\n", fdInputFile.Data() ) ;
+        gSystem -> Exit(-1) ;
+     }
+
+     RooFitResult* rfr = (RooFitResult*) tf_fd.Get( "fit_b" ) ;
+     if ( rfr == 0x0 ) { printf("\n\n *** did not find fit_b RooFitResult in %s.  I quit.\n\n", fdInputFile.Data() ) ; gSystem -> Exit(-1) ; }
+
+     RooRealVar* rrv_w_e = (RooRealVar*)(rfr -> floatParsFinal()).find( "w_norm_e" ) ;
+     if ( rrv_w_e == 0x0 ) { printf("\n\n *** did not find w_norm_e in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; gSystem -> Exit(-1) ; }
+
+     RooRealVar* rrv_w_mu = (RooRealVar*)(rfr -> floatParsFinal()).find( "w_norm_mu" ) ;
+     if ( rrv_w_mu == 0x0 ) { printf("\n\n *** did not find w_norm_mu in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; gSystem -> Exit(-1) ; }
+
+     RooRealVar* rrv_tt_e = (RooRealVar*)(rfr -> floatParsFinal()).find( "tt_norm_e" ) ;
+     if ( rrv_tt_e == 0x0 ) { printf("\n\n *** did not find tt_norm_e in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; gSystem -> Exit(-1) ; }
+
+     RooRealVar* rrv_tt_mu = (RooRealVar*)(rfr -> floatParsFinal()).find( "tt_norm_mu" ) ;
+     if ( rrv_tt_mu == 0x0 ) { printf("\n\n *** did not find tt_norm_mu in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; gSystem -> Exit(-1) ; }
+
+     w_norm_e_val = rrv_w_e -> getVal() ;
+     w_norm_e_err = rrv_w_e -> getError() ;
+
+     w_norm_mu_val = rrv_w_mu -> getVal() ;
+     w_norm_mu_err = rrv_w_mu -> getError() ;
+
+     tt_norm_e_val = rrv_tt_e -> getVal() ;
+     tt_norm_e_err = rrv_tt_e -> getError() ;
+
+     tt_norm_mu_val = rrv_tt_mu -> getVal() ;
+     tt_norm_mu_err = rrv_tt_mu -> getError() ;
+
+     if ( verbose ) {
+         printf( "\n\n --- verbose :  AllInfo_t::doBackgroundSubtraction :  post-fit scale factors from %s\n", fdInputFile.Data() ) ;
+         printf( "     w_norm_e = %6.3f +/- %6.3f ,    w_norm_mu = %6.3f +/- %6.3f\n", w_norm_e_val, w_norm_e_err, w_norm_mu_val, w_norm_mu_err ) ;
+         printf( "    tt_norm_e = %6.3f +/- %6.3f ,   tt_norm_mu = %6.3f +/- %6.3f\n", tt_norm_e_val, tt_norm_e_err, tt_norm_mu_val, tt_norm_mu_err ) ;
+         printf("\n") ;
+     }
+
+     tf_fd.Close() ;
+
+  }
 
   //check that the data proc exist
   std::map<string, ProcessInfo_t>::iterator dataProcIt=procs.find("data");             
@@ -1275,8 +1372,23 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     TString procName = it->first.c_str();
     //if(!(procName.Contains("Single Top") || procName.Contains("t#bar{t}+#gammaZW") || procName.Contains("Z#rightarrow") || procName.Contains("VV") || procName.Contains("Vh") || procName.Contains("t#bar{t}") || procName.Contains("W#rightarrow")))continue;
     if(!(procName.Contains("Other Bkgds") || procName.Contains("Z#rightarrow") || procName.Contains("t#bar{t}") || procName.Contains("W#rightarrow")))continue;
-        printf("Subtracting nonQCD process from data: %s \n",procName.Data()); 
-    addProc(procInfo_NRB, it->second, false);
+        printf("Subtracting nonQCD process from data: %s, long name %s \n", it->second.shortName.c_str(), procName.Data() ); 
+    if ( fdInputFile.Length() > 0 ) {
+       if ( strcmp( it->second.shortName.c_str(), "wlnu" ) == 0 ) {
+          if ( verbose ) { printf("  applying w_norm_e and w_norm_mu\n") ; }
+          addProc(procInfo_NRB, it->second, false, w_norm_e_val, w_norm_mu_val );
+       } else if ( strcmp( it->second.shortName.c_str(), "ttbarbba" ) == 0 ) {
+          if ( verbose ) { printf("  applying tt_norm_e and tt_norm_mu\n") ; }
+          addProc(procInfo_NRB, it->second, false, tt_norm_e_val, tt_norm_mu_val );
+       } else if ( strcmp( it->second.shortName.c_str(), "ttbarcba" ) == 0 ) {
+          if ( verbose ) { printf("  applying tt_norm_e and tt_norm_mu\n") ; }
+          addProc(procInfo_NRB, it->second, false, tt_norm_e_val, tt_norm_mu_val );
+       } else {
+          addProc(procInfo_NRB, it->second, false );
+       }
+    } else {
+       addProc(procInfo_NRB, it->second, false);
+    }
   }
 
   if ( verbose ) { printf("  --- verbose :  AllInfo_t::doBackgroundSubtraction :  proc for all non-QCD backgrounds:\n") ; procInfo_NRB.printProcess() ; }
@@ -2974,14 +3086,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     for(unsigned int p=0;p<sorted_procs.size();p++){
       string procName = sorted_procs[p];
 
-      if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  proc_name = %s\n", procName.c_str() ) ; fflush(stdout) ; }
+      //////if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  proc_name = %s\n", procName.c_str() ) ; fflush(stdout) ; }
 
       std::map<string, ProcessInfo_t>::iterator it=procs.find(procName);
       if(it==procs.end())continue;
       for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
         TString chbin = ch->first;
 
-        if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  chbin = %s , directory for next histograms.\n", chbin.Data() ) ; fflush(stdout) ; }
+        //////if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  chbin = %s , directory for next histograms.\n", chbin.Data() ) ; fflush(stdout) ; }
 
         if(!fout->GetDirectory(chbin)){fout->mkdir(chbin);}fout->cd(chbin);
 
@@ -3018,7 +3130,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	//                 shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), it->second.isSign );//add stat uncertainty to the uncertainty map;
         //shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );//add stat uncertainty to the uncertainty map;
 
-        if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  TH1 name : %s\n", h -> GetName() ) ; fflush(stdout) ; }
+        //////if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  TH1 name : %s\n", h -> GetName() ) ; fflush(stdout) ; }
 
         //Li Fix
         if((it->second.shortName).find("ggH")!=std::string::npos)shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_ggH")).Data(),systpostfix.Data(), false, h_total );// attention
@@ -3064,14 +3176,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             //write variation to file
 	    hshape->SetName(proc+syst);
 
-            if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  hshape name just before Write = %s, Write argument = %s\n", hshape->GetName(), (proc+postfix+syst).Data() ) ; fflush(stdout) ; }
+            //////if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  hshape name just before Write = %s, Write argument = %s\n", hshape->GetName(), (proc+postfix+syst).Data() ) ; fflush(stdout) ; }
 
 	    hshape->Write(proc+postfix+syst);
           }else if(runSystematics && proc!="data"){
             //for one sided systematics the down variation mirrors the difference bin by bin
             hshape->SetName(proc+syst);
 
-            if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  hshape name just before Write = %s, Write argument = %s\n", hshape->GetName(), (proc+postfix+syst+"Up").Data() ) ; fflush(stdout) ; }
+            //////if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  hshape name just before Write = %s, Write argument = %s\n", hshape->GetName(), (proc+postfix+syst+"Up").Data() ) ; fflush(stdout) ; }
 
             hshape->Write(proc+postfix+syst+"Up");
             TH1 *hmirrorshape=(TH1 *)hshape->Clone(proc+syst+"Down");
@@ -3082,7 +3194,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             }
             if(hmirrorshape->Integral()<=0) hmirrorshape->SetBinContent(1, 1E-10);
 
-            if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  hshape name just before Write = %s, Write argument = %s\n", hmirrorshape->GetName(), (proc+postfix+syst+"Down").Data() ) ; fflush(stdout) ; }
+            //////if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  hshape name just before Write = %s, Write argument = %s\n", hmirrorshape->GetName(), (proc+postfix+syst+"Down").Data() ) ; fflush(stdout) ; }
 
             hmirrorshape->Write(proc+postfix+syst+"Down");
           }
