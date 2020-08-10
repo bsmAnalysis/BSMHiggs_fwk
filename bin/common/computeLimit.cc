@@ -3406,6 +3406,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       dcName.ReplaceAll(".root","_"+TString(C->first.c_str())+".dat");
       //      dcName.ReplaceAll("_qcdB","_qcdB");  
 
+      //-- owen: August 10, 2020:  remove CR5j completely.
+      if (C->first.find("CR5j")!=string::npos) continue;
+
       if(C->first.find("emu")==string::npos) combinedcard += (C->first+"=").c_str()+dcName+" ";
       if(runZh) {
 	if(C->first.find("ee"  )!=string::npos)eecard   += (C->first+"=").c_str()+dcName+" ";
