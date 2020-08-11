@@ -340,6 +340,10 @@ def CreateTheCmdFile():
     else:
         cmd_file.write(CopyRights + '\n')
     cmd_file.close()
+    #-- owen: check if HtCondor_Sub already exists.  If it does, move it out of the way to avoid duplicate entries.
+    if os.path.exists( HtCondor_Sub ):
+       print("\n\n Found an existing HtCondor_Sub file with name " + HtCondor_Sub + "\n\n Moving it out of the way.\n\n")
+       os.rename( HtCondor_Sub, HtCondor_Sub+"-old" )
 
 def AddJobToCmdFile():
     global subTool
