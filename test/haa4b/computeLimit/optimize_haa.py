@@ -50,7 +50,7 @@ if args.no_submit:
    print("\n no_submit set to True.  Will not call condor_submit.\n\n")
 
 year_to_run = args.year_to_run
-if ( not (year_to_run=="2016" or year_to_run=="2017" or year_to_run=="2018")):
+if ( not (year_to_run=="2016" or year_to_run=="2017" or year_to_run=="2018" or year_to_run=="all")):
    print "\n\n *** invalid year_to_run : " + year_to_run + "\n\n"
    help()
    sys.exit(-1)
@@ -934,33 +934,57 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("\n#****************** {} *****************\n".format(year)) 
 	      if "2016" in inUrl:
 	          #SCRIPT.writelines("\ncomputeLimit --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +" ;\n")  
-	          SCRIPT.writelines("\ncomputeLimit --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +" >& cl-"+ year + ".log\n")  
+	          SCRIPT.writelines("\ncomputeLimit  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root   >& cl-"+ year + ".log\n")  
 	      else:
 	          #SCRIPT.writelines("\ncomputeLimit --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" ;\n")  
-	          SCRIPT.writelines("\ncomputeLimit --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" >& cl-" + year + ".log\n")  
+	          SCRIPT.writelines("\ncomputeLimit  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root   >& cl-" + year + ".log\n")  
 	      SCRIPT.writelines("sh combineCards_"+year+"_wh.sh;\n"); 
 
 	   SCRIPT.writelines("\ncombineCards.py card_combined_2016_wh.dat card_combined_2017_wh.dat card_combined_2018_wh.dat > card_combined_wh.dat")
 	   SCRIPT.writelines("\ntext2workspace.py card_combined_wh.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
-	   SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace.root > COMB-signif.log;\n")
+	   SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace.root > COMB-signif.log;\n\n\n")
 
 	    
 	   if(ASYMTOTICLIMIT==True):
            ### THIS is for toy (hybridNew) fit
-	      # put normalizations below	      
-	      SCRIPT.writelines("\ntt_e_2016=1\n")
-	      SCRIPT.writelines("tt_mu_2016=1\n")
-	      SCRIPT.writelines("v_e_2016=1\n")
-	      SCRIPT.writelines("v_mu_2016=1\n")
-	      SCRIPT.writelines("tt_e_2017=1\n")
-	      SCRIPT.writelines("tt_mu_2017=1\n")
-	      SCRIPT.writelines("v_e_2017=1\n")
-	      SCRIPT.writelines("v_mu_2017=1\n")
-	      SCRIPT.writelines("tt_e_2018=1\n")
-	      SCRIPT.writelines("tt_mu_2018=1\n")
-	      SCRIPT.writelines("v_e_2018=1\n")
-	      SCRIPT.writelines("v_mu_2018=1\n")
-	      #SCRIPT.writelines("combine -M AsymptoticLimits -m " +  str(m) + " workspace.root -t -1 --setParameters tt_norm_e_2016=$tt_e_2016,w_norm_e_2016=$v_e_2016,tt_norm_mu_2016=$tt_mu_2016,w_norm_mu_2016=$v_mu_2016,tt_norm_e_2017=$tt_e_2017,w_norm_e_2017=$v_e_2017,tt_norm_mu_2017=$tt_mu_2017,w_norm_mu_2017=$v_mu_2017,tt_norm_e_2018=$tt_e_2018,w_norm_e_2018=$v_e_2018,tt_norm_mu_2018=$tt_mu_2018,w_norm_mu_2018=$v_mu_2018 > COMB.log;\n")
+
+              wh2016simfit  = CWD + "/cards_SB13TeV_SM_Wh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
+              wh2017simfit  = CWD + "/cards_SB13TeV_SM_Wh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
+              wh2018simfit  = CWD + "/cards_SB13TeV_SM_Wh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
+
+              SCRIPT.writelines("if [ -f " + wh2016simfit + " ]; then\n")
+              SCRIPT.writelines("   tt_e_2016=`cat "  + wh2016simfit + " | grep 'tt_norm_e'  | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   tt_mu_2016=`cat " + wh2016simfit + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   v_e_2016=`cat "   + wh2016simfit + " | grep 'w_norm_e'   | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   v_mu_2016=`cat "  + wh2016simfit + " | grep 'w_norm_mu'  | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find wh2016simfit file " + wh2016simfit + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2016,   tt_e = %s , tt_mu = %s , w_e = %s , w_mu = %s\\n\" $tt_e_2016, $tt_mu_2016, $v_e_2016, $v_mu_2016\n\n")
+
+              SCRIPT.writelines("if [ -f " + wh2017simfit + " ]; then\n")
+              SCRIPT.writelines("   tt_e_2017=`cat "  + wh2017simfit + " | grep 'tt_norm_e'  | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   tt_mu_2017=`cat " + wh2017simfit + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   v_e_2017=`cat "   + wh2017simfit + " | grep 'w_norm_e'   | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   v_mu_2017=`cat "  + wh2017simfit + " | grep 'w_norm_mu'  | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find wh2017simfit file " + wh2017simfit + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2017,   tt_e = %s , tt_mu = %s , w_e = %s , w_mu = %s\\n\" $tt_e_2017, $tt_mu_2017, $v_e_2017, $v_mu_2017\n\n")
+
+              SCRIPT.writelines("if [ -f " + wh2018simfit + " ]; then\n")
+              SCRIPT.writelines("   tt_e_2018=`cat "  + wh2018simfit + " | grep 'tt_norm_e'  | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   tt_mu_2018=`cat " + wh2018simfit + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   v_e_2018=`cat "   + wh2018simfit + " | grep 'w_norm_e'   | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   v_mu_2018=`cat "  + wh2018simfit + " | grep 'w_norm_mu'  | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find wh2018simfit file " + wh2018simfit + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2018,   tt_e = %s , tt_mu = %s , w_e = %s , w_mu = %s\\n\" $tt_e_2018, $tt_mu_2018, $v_e_2018, $v_mu_2018\n\n")
+
 	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  -m " +  str(m) + " workspace.root -t -1 --setParameters tt_norm_e_2016=$tt_e_2016,w_norm_e_2016=$v_e_2016,tt_norm_mu_2016=$tt_mu_2016,w_norm_mu_2016=$v_mu_2016,tt_norm_e_2017=$tt_e_2017,w_norm_e_2017=$v_e_2017,tt_norm_mu_2017=$tt_mu_2017,w_norm_mu_2017=$v_mu_2017,tt_norm_e_2018=$tt_e_2018,w_norm_e_2018=$v_e_2018,tt_norm_mu_2018=$tt_mu_2018,w_norm_mu_2018=$v_mu_2018 >& COMB.log;\n")
 
            else:
@@ -1069,26 +1093,77 @@ for signalSuffix in signalSuffixVec :
 	    
 	   if(ASYMTOTICLIMIT==True):
            ### THIS is for toy (hybridNew) fit
-	      # put normalizations below	      
-	      SCRIPT.writelines("tt_e_2016=1\n")
-	      SCRIPT.writelines("tt_mu_2016=1\n")
-	      SCRIPT.writelines("v_3b_e_2016=1\n")
-	      SCRIPT.writelines("v_4b_e_2016=1\n")
-	      SCRIPT.writelines("v_3b_mu_2016=1\n")
-	      SCRIPT.writelines("v_4b_mu_2016=1\n")
-	      SCRIPT.writelines("tt_e_2017=1\n")
-	      SCRIPT.writelines("tt_mu_2017=1\n")
-	      SCRIPT.writelines("v_3b_e_2017=1\n")
-	      SCRIPT.writelines("v_4b_e_2017=1\n")
-	      SCRIPT.writelines("v_3b_mu_2017=1\n")
-	      SCRIPT.writelines("v_4b_mu_2017=1\n")
-	      SCRIPT.writelines("tt_e_2018=1\n")
-	      SCRIPT.writelines("tt_mu_2018=1\n")
-	      SCRIPT.writelines("v_3b_e_2018=1\n")
-	      SCRIPT.writelines("v_4b_e_2018=1\n")
-	      SCRIPT.writelines("v_3b_mu_2018=1\n")
-	      SCRIPT.writelines("v_4b_mu_2018=1\n")
-	      #SCRIPT.writelines("combine -M AsymptoticLimits -m " +  str(m) + " workspace.root -t -1 --freezeParameters tt_norm_e_2016,tt_norm_mu_2016,tt_norm_e_2017,tt_norm_mu_2017,tt_norm_e_2018,tt_norm_mu_2018 --setParameters tt_norm_e_2016=$tt_e_2016,z_norm_3b_e_2016=$v_3b_e_2016,z_norm_4b_e_2016=$v_4b_e_2016,tt_norm_mu_2016=$tt_mu_2016,z_norm_3b_mu_2016=$v_3b_mu_2016,z_norm_4b_mu_2016=$v_4b_mu_2016,tt_norm_e_2017=$tt_e_2017,z_norm_3b_e_2017=$v_3b_e_2017,z_norm_4b_e_2017=$v_4b_e_2017,tt_norm_mu_2017=$tt_mu_2017,z_norm_3b_mu_2017=$v_3b_mu_2017,z_norm_4b_mu_2017=$v_4b_mu_2017,tt_norm_e_2018=$tt_e_2018,z_norm_3b_e_2018=$v_3b_e_2018,z_norm_4b_e_2018=$v_4b_e_2018,tt_norm_mu_2018=$tt_mu_2018,z_norm_3b_mu_2018=$v_3b_mu_2018,z_norm_4b_mu_2018=$v_4b_mu_2018 > COMB.log;\n") 
+
+              zh2016simfit_e  = CWD + "/cards_SB13TeV_SM_Zh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
+              zh2017simfit_e  = CWD + "/cards_SB13TeV_SM_Zh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
+              zh2018simfit_e  = CWD + "/cards_SB13TeV_SM_Zh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
+              zh2016simfit_mu = CWD + "/cards_SB13TeV_SM_Zh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
+              zh2017simfit_mu = CWD + "/cards_SB13TeV_SM_Zh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
+              zh2018simfit_mu = CWD + "/cards_SB13TeV_SM_Zh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
+
+              SCRIPT.writelines("if [ -f " + zh2016simfit_e + " ]; then\n")
+              SCRIPT.writelines("   tt_e_2016=`cat " + zh2016simfit_e + " | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   v_3b_e_2016=`cat " + zh2016simfit_e + " | grep 'z_norm_3b_e' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   v_4b_e_2016=`cat " + zh2016simfit_e + " | grep 'z_norm_4b_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find zh2016simfit file " + zh2016simfit_e + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2016,  e:  tt = %s , v_3b = %s , v_4b = %s\\n\" $tt_e_2016, $v_3b_e_2016, $v_4b_e_2016\n\n")
+
+              SCRIPT.writelines("if [ -f " + zh2016simfit_mu + " ]; then\n")
+              SCRIPT.writelines("   tt_mu_2016=`cat " + zh2016simfit_mu + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   v_3b_mu_2016=`cat " + zh2016simfit_mu + " | grep 'z_norm_3b_mu' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   v_4b_mu_2016=`cat " + zh2016simfit_mu + " | grep 'z_norm_4b_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find zh2016simfit file " + zh2016simfit_mu + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2016, mu:  tt = %s , v_3b = %s , v_4b = %s\\n\" $tt_mu_2016, $v_3b_mu_2016, $v_4b_mu_2016\n\n")
+
+
+              SCRIPT.writelines("if [ -f " + zh2017simfit_e + " ]; then\n")
+              SCRIPT.writelines("   tt_e_2017=`cat " + zh2017simfit_e + " | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   v_3b_e_2017=`cat " + zh2017simfit_e + " | grep 'z_norm_3b_e' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   v_4b_e_2017=`cat " + zh2017simfit_e + " | grep 'z_norm_4b_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find zh2017simfit file " + zh2017simfit_e + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2017,  e:  tt = %s , v_3b = %s , v_4b = %s\\n\" $tt_e_2017, $v_3b_e_2017, $v_4b_e_2017\n\n")
+
+              SCRIPT.writelines("if [ -f " + zh2017simfit_mu + " ]; then\n")
+              SCRIPT.writelines("   tt_mu_2017=`cat " + zh2017simfit_mu + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   v_3b_mu_2017=`cat " + zh2017simfit_mu + " | grep 'z_norm_3b_mu' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   v_4b_mu_2017=`cat " + zh2017simfit_mu + " | grep 'z_norm_4b_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find zh2017simfit file " + zh2017simfit_mu + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2017, mu:  tt = %s , v_3b = %s , v_4b = %s\\n\" $tt_mu_2017, $v_3b_mu_2017, $v_4b_mu_2017\n\n")
+
+
+              SCRIPT.writelines("if [ -f " + zh2018simfit_e + " ]; then\n")
+              SCRIPT.writelines("   tt_e_2018=`cat " + zh2018simfit_e + " | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   v_3b_e_2018=`cat " + zh2018simfit_e + " | grep 'z_norm_3b_e' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   v_4b_e_2018=`cat " + zh2018simfit_e + " | grep 'z_norm_4b_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find zh2018simfit file " + zh2018simfit_e + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2018,  e:  tt = %s , v_3b = %s , v_4b = %s\\n\" $tt_e_2018, $v_3b_e_2018, $v_4b_e_2018\n\n")
+
+              SCRIPT.writelines("if [ -f " + zh2018simfit_mu + " ]; then\n")
+              SCRIPT.writelines("   tt_mu_2018=`cat " + zh2018simfit_mu + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   v_3b_mu_2018=`cat " + zh2018simfit_mu + " | grep 'z_norm_3b_mu' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   v_4b_mu_2018=`cat " + zh2018simfit_mu + " | grep 'z_norm_4b_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find zh2018simfit file " + zh2018simfit_mu + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2018, mu:  tt = %s , v_3b = %s , v_4b = %s\\n\" $tt_mu_2018, $v_3b_mu_2018, $v_4b_mu_2018\n\n")
+
+
 	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  -m " +  str(m) + " workspace.root -t -1 --freezeParameters tt_norm_e_2016,tt_norm_mu_2016,tt_norm_e_2017,tt_norm_mu_2017,tt_norm_e_2018,tt_norm_mu_2018 --setParameters tt_norm_e_2016=$tt_e_2016,z_norm_3b_e_2016=$v_3b_e_2016,z_norm_4b_e_2016=$v_4b_e_2016,tt_norm_mu_2016=$tt_mu_2016,z_norm_3b_mu_2016=$v_3b_mu_2016,z_norm_4b_mu_2016=$v_4b_mu_2016,tt_norm_e_2017=$tt_e_2017,z_norm_3b_e_2017=$v_3b_e_2017,z_norm_4b_e_2017=$v_4b_e_2017,tt_norm_mu_2017=$tt_mu_2017,z_norm_3b_mu_2017=$v_3b_mu_2017,z_norm_4b_mu_2017=$v_4b_mu_2017,tt_norm_e_2018=$tt_e_2018,z_norm_3b_e_2018=$v_3b_e_2018,z_norm_4b_e_2018=$v_4b_e_2018,tt_norm_mu_2018=$tt_mu_2018,z_norm_3b_mu_2018=$v_3b_mu_2018,z_norm_4b_mu_2018=$v_4b_mu_2018 >& COMB.log;\n") 
 
            else:
@@ -1183,10 +1258,10 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("\n#****************** {} Wh *****************\n".format(year)) 
 	      if "2016" in inUrl:
 	          #SCRIPT.writelines("\n#computeLimit --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +" ;\n")  
-	          SCRIPT.writelines("\ncomputeLimit --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +" >& cl-wh-" + year + ".log \n")  
+	          SCRIPT.writelines("\ncomputeLimit --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root >& cl-wh-" + year + ".log \n")  
 	      else:
 	          #SCRIPT.writelines("\n#computeLimit --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" ;\n")  
-	          SCRIPT.writelines("\ncomputeLimit --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" >& cl-wh-" + year + ".log \n")  
+	          SCRIPT.writelines("\ncomputeLimit --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root >& cl-wh-" + year + ".log \n")  
 	      SCRIPT.writelines("sh combineCards_"+year+"_wh.sh;\n"); 
 	      
 	      inUrl = inUrl_zhs[i]
@@ -1195,7 +1270,7 @@ for signalSuffix in signalSuffixVec :
          
 	      SCRIPT.writelines("\n#****************** {} Zh *****************\n".format(year)) 
 	      #SCRIPT.writelines("\n#computeLimit --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
-	      SCRIPT.writelines("\ncomputeLimit --replaceHighSensitivityBinsWithBG  --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-zh-" + year + ".log ;\n")
+	      SCRIPT.writelines("\ncomputeLimit --verbose  --replaceHighSensitivityBinsWithBG  --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-zh-" + year + ".log ;\n")
 	      SCRIPT.writelines("sh combineCards_{}_zh.sh;\n".format(year))
 
 	      SCRIPT.writelines("combineCards.py card_combined_{}_wh.dat card_combined_{}_zh.dat > card_combined_{}.dat\n".format(year, year, year))
@@ -1209,31 +1284,114 @@ for signalSuffix in signalSuffixVec :
            ### THIS is for toy (hybridNew) fit
 	      # put normalizations below	      
 
-	      SCRIPT.writelines("tt_e_2016=1\n")
-	      SCRIPT.writelines("z_3b_e_2016=1\n")
-	      SCRIPT.writelines("z_4b_e_2016=1\n")
-	      SCRIPT.writelines("w_e_2016=1\n")
-	      SCRIPT.writelines("tt_mu_2016=1\n")
-	      SCRIPT.writelines("z_3b_mu_2016=1\n")
-	      SCRIPT.writelines("z_4b_mu_2016=1\n")
-	      SCRIPT.writelines("w_mu_2016=1\n")
-	      SCRIPT.writelines("tt_e_2017=1\n")
-	      SCRIPT.writelines("z_3b_e_2017=1\n")
-	      SCRIPT.writelines("z_4b_e_2017=1\n")
-	      SCRIPT.writelines("w_e_2017=1\n")
-	      SCRIPT.writelines("tt_mu_2017=1\n")
-	      SCRIPT.writelines("z_3b_mu_2017=1\n")
-	      SCRIPT.writelines("z_4b_mu_2017=1\n")
-	      SCRIPT.writelines("w_mu_2017=1\n")
-	      SCRIPT.writelines("tt_e_2018=1\n")
-	      SCRIPT.writelines("z_3b_e_2018=1\n")
-	      SCRIPT.writelines("z_4b_e_2018=1\n")
-	      SCRIPT.writelines("w_e_2018=1\n")
-	      SCRIPT.writelines("tt_mu_2018=1\n")
-	      SCRIPT.writelines("z_3b_mu_2018=1\n")
-	      SCRIPT.writelines("z_4b_mu_2018=1\n")
-	      SCRIPT.writelines("w_mu_2018=1\n")
-	      #SCRIPT.writelines("combine -M AsymptoticLimits -m " +  str(m) + " workspace.root -t -1 --freezeParameters tt_norm_e_2016,tt_norm_mu_2016,tt_norm_e_2017,tt_norm_mu_2017,tt_norm_e_2018,tt_norm_mu_2018 --setParameters tt_norm_e_2016=$tt_e_2016,z_norm_3b_e_2016=$z_3b_e_2016,z_norm_4b_e_2016=$z_4b_e_2016,w_norm_e_2016=$w_e_2016,tt_norm_mu_2016=$tt_mu_2016,z_norm_3b_mu_2016=$z_3b_mu_2016,z_norm_4b_mu_2016=$z_4b_mu_2016,w_norm_mu_2016=$w_mu_2016,tt_norm_e_2017=$tt_e_2017,z_norm_3b_e_2017=$z_3b_e_2017,z_norm_4b_e_2017=$z_4b_e_2017,w_norm_e_2017=$w_e_2017,tt_norm_mu_2017=$tt_mu_2017,z_norm_3b_mu_2017=$z_3b_mu_2017,z_norm_4b_mu_2017=$z_4b_mu_2017,w_norm_mu_2017=$w_mu_2017,tt_norm_e_2018=$tt_e_2018,z_norm_3b_e_2018=$z_3b_e_2018,z_norm_4b_e_2018=$z_4b_e_2018,w_norm_e_2018=$w_e_2018,tt_norm_mu_2018=$tt_mu_2018,z_norm_3b_mu_2018=$z_3b_mu_2018,z_norm_4b_mu_2018=$z_4b_mu_2018,w_norm_mu_2018=$w_mu_2018  > COMB.log;\n") 
+              wh2016simfit  = CWD + "/cards_SB13TeV_SM_Wh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
+              wh2017simfit  = CWD + "/cards_SB13TeV_SM_Wh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
+              wh2018simfit  = CWD + "/cards_SB13TeV_SM_Wh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
+
+              SCRIPT.writelines("if [ -f " + wh2016simfit + " ]; then\n")
+              SCRIPT.writelines("   tt_e_2016=`cat "  + wh2016simfit + " | grep 'tt_norm_e'  | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   tt_mu_2016=`cat " + wh2016simfit + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   w_e_2016=`cat "   + wh2016simfit + " | grep 'w_norm_e'   | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   w_mu_2016=`cat "  + wh2016simfit + " | grep 'w_norm_mu'  | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find wh2016simfit file " + wh2016simfit + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2016,   tt_e = %s , tt_mu = %s , w_e = %s , w_mu = %s\\n\" $tt_e_2016, $tt_mu_2016, $w_e_2016, $w_mu_2016\n\n")
+
+              SCRIPT.writelines("if [ -f " + wh2017simfit + " ]; then\n")
+              SCRIPT.writelines("   tt_e_2017=`cat "  + wh2017simfit + " | grep 'tt_norm_e'  | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   tt_mu_2017=`cat " + wh2017simfit + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   w_e_2017=`cat "   + wh2017simfit + " | grep 'w_norm_e'   | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   w_mu_2017=`cat "  + wh2017simfit + " | grep 'w_norm_mu'  | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find wh2017simfit file " + wh2017simfit + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2017,   tt_e = %s , tt_mu = %s , w_e = %s , w_mu = %s\\n\" $tt_e_2017, $tt_mu_2017, $w_e_2017, $w_mu_2017\n\n")
+
+              SCRIPT.writelines("if [ -f " + wh2018simfit + " ]; then\n")
+              SCRIPT.writelines("   tt_e_2018=`cat "  + wh2018simfit + " | grep 'tt_norm_e'  | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   tt_mu_2018=`cat " + wh2018simfit + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   w_e_2018=`cat "   + wh2018simfit + " | grep 'w_norm_e'   | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   w_mu_2018=`cat "  + wh2018simfit + " | grep 'w_norm_mu'  | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find wh2018simfit file " + wh2018simfit + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2018,   tt_e = %s , tt_mu = %s , w_e = %s , w_mu = %s\\n\" $tt_e_2018, $tt_mu_2018, $w_e_2018, $w_mu_2018\n\n")
+
+
+              zh2016simfit_e  = CWD + "/cards_SB13TeV_SM_Zh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
+              zh2017simfit_e  = CWD + "/cards_SB13TeV_SM_Zh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
+              zh2018simfit_e  = CWD + "/cards_SB13TeV_SM_Zh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
+              zh2016simfit_mu = CWD + "/cards_SB13TeV_SM_Zh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
+              zh2017simfit_mu = CWD + "/cards_SB13TeV_SM_Zh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
+              zh2018simfit_mu = CWD + "/cards_SB13TeV_SM_Zh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
+
+              SCRIPT.writelines("if [ -f " + zh2016simfit_e + " ]; then\n")
+              SCRIPT.writelines("   tt_e_2016=`cat " + zh2016simfit_e + " | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   z_3b_e_2016=`cat " + zh2016simfit_e + " | grep 'z_norm_3b_e' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   z_4b_e_2016=`cat " + zh2016simfit_e + " | grep 'z_norm_4b_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find zh2016simfit file " + zh2016simfit_e + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2016,  e:  tt = %s , z_3b = %s , z_4b = %s\\n\" $tt_e_2016, $z_3b_e_2016, $z_4b_e_2016\n\n")
+
+              SCRIPT.writelines("if [ -f " + zh2016simfit_mu + " ]; then\n")
+              SCRIPT.writelines("   tt_mu_2016=`cat " + zh2016simfit_mu + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   z_3b_mu_2016=`cat " + zh2016simfit_mu + " | grep 'z_norm_3b_mu' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   z_4b_mu_2016=`cat " + zh2016simfit_mu + " | grep 'z_norm_4b_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find zh2016simfit file " + zh2016simfit_mu + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2016, mu:  tt = %s , z_3b = %s , z_4b = %s\\n\" $tt_mu_2016, $z_3b_mu_2016, $z_4b_mu_2016\n\n")
+
+
+              SCRIPT.writelines("if [ -f " + zh2017simfit_e + " ]; then\n")
+              SCRIPT.writelines("   tt_e_2017=`cat " + zh2017simfit_e + " | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   z_3b_e_2017=`cat " + zh2017simfit_e + " | grep 'z_norm_3b_e' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   z_4b_e_2017=`cat " + zh2017simfit_e + " | grep 'z_norm_4b_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find zh2017simfit file " + zh2017simfit_e + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2017,  e:  tt = %s , z_3b = %s , z_4b = %s\\n\" $tt_e_2017, $z_3b_e_2017, $z_4b_e_2017\n\n")
+
+              SCRIPT.writelines("if [ -f " + zh2017simfit_mu + " ]; then\n")
+              SCRIPT.writelines("   tt_mu_2017=`cat " + zh2017simfit_mu + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   z_3b_mu_2017=`cat " + zh2017simfit_mu + " | grep 'z_norm_3b_mu' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   z_4b_mu_2017=`cat " + zh2017simfit_mu + " | grep 'z_norm_4b_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find zh2017simfit file " + zh2017simfit_mu + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2017, mu:  tt = %s , z_3b = %s , z_4b = %s\\n\" $tt_mu_2017, $z_3b_mu_2017, $z_4b_mu_2017\n\n")
+
+
+              SCRIPT.writelines("if [ -f " + zh2018simfit_e + " ]; then\n")
+              SCRIPT.writelines("   tt_e_2018=`cat " + zh2018simfit_e + " | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   z_3b_e_2018=`cat " + zh2018simfit_e + " | grep 'z_norm_3b_e' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   z_4b_e_2018=`cat " + zh2018simfit_e + " | grep 'z_norm_4b_e' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find zh2018simfit file " + zh2018simfit_e + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2018,  e:  tt = %s , z_3b = %s , z_4b = %s\\n\" $tt_e_2018, $z_3b_e_2018, $z_4b_e_2018\n\n")
+
+              SCRIPT.writelines("if [ -f " + zh2018simfit_mu + " ]; then\n")
+              SCRIPT.writelines("   tt_mu_2018=`cat " + zh2018simfit_mu + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("   z_3b_mu_2018=`cat " + zh2018simfit_mu + " | grep 'z_norm_3b_mu' | awk '{print $4;}'`;\n") 
+              SCRIPT.writelines("   z_4b_mu_2018=`cat " + zh2018simfit_mu + " | grep 'z_norm_4b_mu' | awk '{print $4;}'`;\n")
+              SCRIPT.writelines("else\n")
+              SCRIPT.writelines("   printf \" cant find zh2018simfit file " + zh2018simfit_mu + ".  quitting\\n\\n \" \n")
+              SCRIPT.writelines("   exit -1\n")
+              SCRIPT.writelines("fi\n")
+              SCRIPT.writelines("printf \" 2018, mu:  tt = %s , z_3b = %s , z_4b = %s\\n\" $tt_mu_2018, $z_3b_mu_2018, $z_4b_mu_2018\n\n")
+
+
 	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  -m " +  str(m) + " workspace.root -t -1 --freezeParameters tt_norm_e_2016,tt_norm_mu_2016,tt_norm_e_2017,tt_norm_mu_2017,tt_norm_e_2018,tt_norm_mu_2018 --setParameters tt_norm_e_2016=$tt_e_2016,z_norm_3b_e_2016=$z_3b_e_2016,z_norm_4b_e_2016=$z_4b_e_2016,w_norm_e_2016=$w_e_2016,tt_norm_mu_2016=$tt_mu_2016,z_norm_3b_mu_2016=$z_3b_mu_2016,z_norm_4b_mu_2016=$z_4b_mu_2016,w_norm_mu_2016=$w_mu_2016,tt_norm_e_2017=$tt_e_2017,z_norm_3b_e_2017=$z_3b_e_2017,z_norm_4b_e_2017=$z_4b_e_2017,w_norm_e_2017=$w_e_2017,tt_norm_mu_2017=$tt_mu_2017,z_norm_3b_mu_2017=$z_3b_mu_2017,z_norm_4b_mu_2017=$z_4b_mu_2017,w_norm_mu_2017=$w_mu_2017,tt_norm_e_2018=$tt_e_2018,z_norm_3b_e_2018=$z_3b_e_2018,z_norm_4b_e_2018=$z_4b_e_2018,w_norm_e_2018=$w_e_2018,tt_norm_mu_2018=$tt_mu_2018,z_norm_3b_mu_2018=$z_3b_mu_2018,z_norm_4b_mu_2018=$z_4b_mu_2018,w_norm_mu_2018=$w_mu_2018  >& COMB.log;\n") 
 
            else:
