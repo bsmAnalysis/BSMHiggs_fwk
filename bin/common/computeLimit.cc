@@ -520,7 +520,7 @@ class ProcessInfo_t
 
                  int nshapesyst = shape.uncShape.size()-1 ;
                  if ( nshapesyst < 0 ) nshapesyst = 0 ;
-                 printf("    printProcess:  %15s :  %15s  : N syst, scale = %2lu, shape = %2d : hist ",  shortName.c_str(), chan_key.c_str(), shape.uncScale.size(), nshapesyst ) ;
+                 printf("    printProcess:  %15s :  %18s  : N syst, scale = %2lu, shape = %2d : hist ",  shortName.c_str(), chan_key.c_str(), shape.uncScale.size(), nshapesyst ) ;
                  TH1* hp = shape.histo() ;
                  if ( hp != 0x0 ) {
                     //printf("                  hist name = %s, n bins = %d\n", hp -> GetName(), hp -> GetNbinsX() ) ;
@@ -1615,7 +1615,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     std::cout << "hDD_B hDD_C hDD_D hCtrl_SI hChan_SB hCtrl_SB" << std::endl;
     std::cout << (hDD_B!=NULL) << "     " << (hDD_C!=NULL) << "     " << (hDD_D!=NULL) << "     " << (hCtrl_SI!=NULL) << "        " << (hChan_SB!=NULL) << "        " << (hCtrl_SB!=NULL) << std::endl;
     hDD->Reset();
-    if ( sumAllInfo != 0x0 && ( strcmp( chData->first.c_str(), "e_A_SR_4b" ) == 0 || strcmp( chData->first.c_str(), "mu_A_SR_4b" ) == 0 ) ) {
+    if ( sumAllInfo != 0x0 && ( startsWith( chData->first, "e_A_SR_4b") || startsWith( chData->first, "mu_A_SR_4b")  ) ) {
 
        printf("\n sumAllInfo set and this is a SR 4b channel: %s.  Will use sum for C/D ratio and B shape.\n", chData->first.c_str() ) ;
 
@@ -1629,11 +1629,16 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
        
        TH1* h_B(0x0) ;
        {
-          std::map<string, ChannelInfo_t>::iterator ichan_e = sumDataProc.channels.find( "e_B_SR_4b" ) ;
-          if ( ichan_e == sumDataProc.channels.end() ) { printf("\n\n *** can't find data e_B_SR_4b channel in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
+          string ch_name ;
+          ch_name = "e_B_SR_4b" ;
+          if ( year != "" ) { ch_name += year ; }
+          std::map<string, ChannelInfo_t>::iterator ichan_e = sumDataProc.channels.find( ch_name ) ;
+          if ( ichan_e == sumDataProc.channels.end() ) { printf("\n\n *** can't find data %s channel in sumAllInfo.  I quit.\n\n", ch_name.c_str() ) ; gSystem -> Exit(-1); }
           ChannelInfo_t chan_e = ichan_e->second ;
 
-          std::map<string, ChannelInfo_t>::iterator ichan_mu = sumDataProc.channels.find( "mu_B_SR_4b" ) ;
+          ch_name = "mu_B_SR_4b" ;
+          if ( year != "" ) { ch_name += year ; }
+          std::map<string, ChannelInfo_t>::iterator ichan_mu = sumDataProc.channels.find( ch_name ) ;
           if ( ichan_mu == sumDataProc.channels.end() ) { printf("\n\n *** can't find data mu_B_SR_4b channel in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
           ChannelInfo_t chan_mu = ichan_mu->second ;
 
@@ -1663,11 +1668,16 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
        
        TH1* h_C(0x0) ;
        {
-          std::map<string, ChannelInfo_t>::iterator ichan_e = sumDataProc.channels.find( "e_C_SR_4b" ) ;
+          string ch_name ;
+          ch_name = "e_C_SR_4b" ;
+          if ( year != "" ) { ch_name += year ; }
+          std::map<string, ChannelInfo_t>::iterator ichan_e = sumDataProc.channels.find( ch_name ) ;
           if ( ichan_e == sumDataProc.channels.end() ) { printf("\n\n *** can't find data e_C_SR_4b channel in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
           ChannelInfo_t chan_e = ichan_e->second ;
 
-          std::map<string, ChannelInfo_t>::iterator ichan_mu = sumDataProc.channels.find( "mu_C_SR_4b" ) ;
+          ch_name = "mu_C_SR_4b" ;
+          if ( year != "" ) { ch_name += year ; }
+          std::map<string, ChannelInfo_t>::iterator ichan_mu = sumDataProc.channels.find( ch_name ) ;
           if ( ichan_mu == sumDataProc.channels.end() ) { printf("\n\n *** can't find data mu_C_SR_4b channel in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
           ChannelInfo_t chan_mu = ichan_mu->second ;
 
@@ -1697,11 +1707,16 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
        
        TH1* h_D(0x0) ;
        {
-          std::map<string, ChannelInfo_t>::iterator ichan_e = sumDataProc.channels.find( "e_D_SR_4b" ) ;
+          string ch_name ;
+          ch_name = "e_D_SR_4b" ;
+          if ( year != "" ) { ch_name += year ; }
+          std::map<string, ChannelInfo_t>::iterator ichan_e = sumDataProc.channels.find( ch_name ) ;
           if ( ichan_e == sumDataProc.channels.end() ) { printf("\n\n *** can't find data e_D_SR_4b channel in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
           ChannelInfo_t chan_e = ichan_e->second ;
 
-          std::map<string, ChannelInfo_t>::iterator ichan_mu = sumDataProc.channels.find( "mu_D_SR_4b" ) ;
+          ch_name = "mu_D_SR_4b" ;
+          if ( year != "" ) { ch_name += year ; }
+          std::map<string, ChannelInfo_t>::iterator ichan_mu = sumDataProc.channels.find( ch_name ) ;
           if ( ichan_mu == sumDataProc.channels.end() ) { printf("\n\n *** can't find data mu_D_SR_4b channel in sumAllInfo.  I quit.\n\n") ; gSystem -> Exit(-1); }
           ChannelInfo_t chan_mu = ichan_mu->second ;
 
