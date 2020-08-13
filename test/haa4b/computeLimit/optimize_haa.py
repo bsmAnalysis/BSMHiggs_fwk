@@ -936,12 +936,11 @@ for signalSuffix in signalSuffixVec :
 	      datacard = "card_{}_wh.dat".format(year)
          
 	      SCRIPT.writelines("\n#****************** {} *****************\n".format(year)) 
+              whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnostics.root"
 	      if "2016" in inUrl:
-	          #SCRIPT.writelines("\ncomputeLimit --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +" ;\n")  
-	          SCRIPT.writelines("\ncomputeLimit   --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root   >& cl-"+ year + ".log\n")  
+	          SCRIPT.writelines("\ncomputeLimit   --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-"+ year + ".log\n")  
 	      else:
-	          #SCRIPT.writelines("\ncomputeLimit --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" ;\n")  
-	          SCRIPT.writelines("\ncomputeLimit   --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root   >& cl-" + year + ".log\n")  
+	          SCRIPT.writelines("\ncomputeLimit   --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-" + year + ".log\n")  
 	      SCRIPT.writelines("sh combineCards_"+year+"_wh.sh;\n"); 
 
 	   SCRIPT.writelines("\ncombineCards.py card_combined_2016_wh.dat card_combined_2017_wh.dat card_combined_2018_wh.dat > card_combined_wh.dat")
@@ -1089,7 +1088,6 @@ for signalSuffix in signalSuffixVec :
 	      datacard = "card_{}_zh.dat".format(year)
          
 	      SCRIPT.writelines("\n#****************** {} *****************\n".format(year)) 
-	      #SCRIPT.writelines("\ncomputeLimit --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
 	      SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --replaceHighSensitivityBinsWithBG  --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-" + year + ".log \n")
 	      SCRIPT.writelines("sh combineCards_{}_zh.sh;\n".format(year))
            
@@ -1266,12 +1264,11 @@ for signalSuffix in signalSuffixVec :
 	      year = years[i]
          
 	      SCRIPT.writelines("\n#****************** {} Wh *****************\n".format(year)) 
+              whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnostics.root"
 	      if "2016" in inUrl:
-	          #SCRIPT.writelines("\n#computeLimit --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +" ;\n")  
-	          SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root >& cl-wh-" + year + ".log \n")  
+	          SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-wh-" + year + ".log \n")  
 	      else:
-	          #SCRIPT.writelines("\n#computeLimit --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" ;\n")  
-	          SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root >& cl-wh-" + year + ".log \n")  
+	          SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-wh-" + year + ".log \n")  
 	      SCRIPT.writelines("sh combineCards_"+year+"_wh.sh;\n"); 
 	      
 	      inUrl = inUrl_zhs[i]
@@ -1279,7 +1276,6 @@ for signalSuffix in signalSuffixVec :
 	      year = years[i]
          
 	      SCRIPT.writelines("\n#****************** {} Zh *****************\n".format(year)) 
-	      #SCRIPT.writelines("\n#computeLimit --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
 	      SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-zh-" + year + ".log ;\n")
 	      SCRIPT.writelines("sh combineCards_{}_zh.sh;\n".format(year))
 
