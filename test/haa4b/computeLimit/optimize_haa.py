@@ -1437,8 +1437,8 @@ for signalSuffix in signalSuffixVec :
       if year_to_run == "all":
          integrated_luminosity = 137183.86
 
-      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , "+integrated_luminosity+" )'")
-      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , "+integrated_luminosity+" , \"Wh channels\" ,false)'")
+      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , "+str(integrated_luminosity)+" )'")
+      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , "+str(integrated_luminosity)+" , \"Wh channels\" ,false)'")
 
 
 #      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 35914.143 )'")
