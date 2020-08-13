@@ -105,6 +105,7 @@ bool subFake = false;
 bool blindData = false;
 bool blindWithSignal = false; 
 bool replaceHighSensitivityBinsWithBG = false ;
+bool noCorrelatedStatUnc = false ;
 
 TString inFileUrl(""),jsonFile("");
 
@@ -721,6 +722,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--sumInputFile")       !=string::npos && i+1<argc)  { sumFileUrl = argv[i+1];  i++;  printf("sumFileUrl = %s\n", sumFileUrl.Data());  }
     else if(arg.find("--minErrOverSqrtNBGForBinByBin") !=string::npos) { sscanf(argv[i+1],"%f",&minErrOverSqrtNBGForBinByBin); printf("minErrOverSqrtNBGForBinByBin = %.3f\n", minErrOverSqrtNBGForBinByBin);}
     else if(arg.find("--replaceHighSensitivityBinsWithBG") !=string::npos) { replaceHighSensitivityBinsWithBG = true; printf("replaceHighSensitivityBinsWithBG = True\n");}
+    else if(arg.find("--noCorrelatedStatUnc") !=string::npos) { noCorrelatedStatUnc = true; printf("noCorrelatedStatUnc = True\n");}
     else if(arg.find("--autoMCStats")  !=string::npos) { autoMCStats=true; printf("autoMCStats = True\n");}
     else if(arg.find("--verbose")  !=string::npos) { verbose=true; printf("verbose = True\n");}
     else if(arg.find("--minSignalYield") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%lf",&minSignalYield ); i++; printf("minSignalYield = %f\n", minSignalYield);}
@@ -3396,6 +3398,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         ShapeData_t& shapeInfo = ch->second.shapes[histoName];      
         for(std::map<string, double>::iterator unc=shapeInfo.uncScale.begin();unc!=shapeInfo.uncScale.end();unc++){
           if(unc->first=="")continue;
+          if ( verbose ) { printf(" --- verbose : AllInfo_t::buildDataCards :  proc = %20s , chan = %20s , syst = %s\n", procName.c_str(), chbin.Data(), unc->first.c_str() ) ; }
           allSysts[unc->first] = unc->second==-1?true:false;
         }
       }
@@ -3502,6 +3505,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       fprintf(pFile, "-------------------------------\n");
 
       for(std::map<string, bool>::iterator U=allSysts.begin(); U!=allSysts.end();U++){
+        if ( verbose ) { printf(" --- verbose : AllInfo_t::buildDataCards : datacard %s :  allSysts : %s  %s \n", dcName.Data(), U->first.c_str(), U->second?"shape":"lnN" ) ; }
+        if ( noCorrelatedStatUnc && U->first.find("CMS_haa4b_stat_") !=string::npos ) {
+           if ( verbose ) { printf(" --- verbose : AllInfo_t::buildDataCards :   noCorrelatedStatUnc set to true.  Skipping this one.\n") ; }
+           continue ;
+        }
         char line[2048];
         sprintf(line,"%-45s %-10s ", U->first.c_str(), U->second?"shape":"lnN");
         bool isNonNull = false;

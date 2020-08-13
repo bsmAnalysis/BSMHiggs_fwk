@@ -19,12 +19,12 @@ def help() :
    print '\t 1 --> compute limit for all possible selection cuts  (in view of optimization)'
    print '\t 2 --> wrap-up and order the results either by best significance or best limit'
    print '\t 3 --> choose the best cuts for the selection and produce limits and control plots for this selection'
-   print '\t 4.0 --> produce final limit plot in WH channel (brazilian flag plot)'
-   print '\t 4.1 --> produce final limit plot in ZH channel (brazilian flag plot)'
-   print '\t 4.2 --> produce final limit plot in WH and ZH combined channel (brazilian flag plot)'
-   print '\t 5.0 --> produce final limit plot in WH channel combined Run II data'
-   print '\t 5.1 --> produce final limit plot in ZH channel combined Run II data'
-   print '\t 5.2 --> produce final limit plot in WH and ZH combined channel with Run II data'
+   print '\t 4.0 --> run combine jobs for final limit plot in WH channel (brazilian flag plot)'
+   print '\t 4.1 --> run combine jobs for final limit plot in ZH channel (brazilian flag plot)'
+   print '\t 4.2 --> run combine jobs for final limit plot in WH and ZH combined channel (brazilian flag plot)'
+   print '\t 5.0 --> run combine jobs for final limit plot in WH channel combined Run II data'
+   print '\t 5.1 --> run combine jobs for final limit plot in ZH channel combined Run II data'
+   print '\t 5.2 --> run combine jobs for final limit plot in WH and ZH combined channel with Run II data'
    print '\t 6.0, 6.1, 6.2 to make limit plots for WH channel, ZH Channel, combined WH+ZH channels respectively'
    print '\t 7.0, 7.1, 7.2 to make limit plots for WH channel, ZH Channel, combined WH+ZH channels respectively, with combined Run II data'
    print '\nNote: CMSSW_BASE must be set when launching optimize.py (current values is: ' + CMSSW_BASE + ')\n' 
@@ -425,6 +425,7 @@ for signalSuffix in signalSuffixVec :
            listcuts.writelines('\n');
       listcuts.close();
 
+  #------------------------------------------------------------------------------------------------
 
    elif(phase == 4.0 ):
       LaunchOnCondor.Jobs_RunHere        = 0
@@ -497,8 +498,7 @@ for signalSuffix in signalSuffixVec :
 
           #--- first pass
 
-           #SCRIPT.writelines("computeLimit --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" ;\n")
-           SCRIPT.writelines("computeLimit --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root >& cl-first.log\n")
+           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root >& cl-first.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
 
 
@@ -510,11 +510,13 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=0 --rMax=20 --stepSize=0.05 --robustFit 1  >& log-first.txt \n") 
 
            SCRIPT.writelines("mv fitDiagnostics.root fitDiagnostics-first.root\n\n\n")
+           SCRIPT.writelines("mkdir datacards-wh-first-pass\n") ;
+           SCRIPT.writelines("cp *.dat datacards-wh-first-pass\n\n") ;
 
 
           #--- second pass
 
-           SCRIPT.writelines("computeLimit --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root  --fitDiagnosticsInputFile fitDiagnostics-first.root >& cl-second.log\n")
+           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root  --fitDiagnosticsInputFile fitDiagnostics-first.root >& cl-second.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
 
 
@@ -571,6 +573,8 @@ for signalSuffix in signalSuffixVec :
            LaunchOnCondor.SendCluster_Push(["BASH", 'sh ' + OUT+'script_mass_'+str(m)+'.sh'])
       if ( not no_submit ):
          LaunchOnCondor.SendCluster_Submit()
+
+  #------------------------------------------------------------------------------------------------
 
    elif(phase == 4.1 ):
       LaunchOnCondor.Jobs_RunHere        = 0
@@ -639,7 +643,7 @@ for signalSuffix in signalSuffixVec :
 
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
            SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
-           SCRIPT.writelines("computeLimit  --verbose  --replaceHighSensitivityBinsWithBG  --runZh --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +"  >& cl.log\n")
+           SCRIPT.writelines("computeLimit   --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --runZh --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +"  >& cl.log\n")
            SCRIPT.writelines("sh combineCards_zh.sh;\n"); 
 
 	   if autoMCstats:
@@ -653,8 +657,8 @@ for signalSuffix in signalSuffixVec :
 
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_mu_zh.dat".format(thredMCstat))
-           SCRIPT.writelines("\ntext2workspace.py card_mu_zh.dat -o workspace_mu.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\'  \n")  
-           SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_mu.root > COMB.log;\n")
+           SCRIPT.writelines("\ntext2workspace.py card_mu_zh.dat -o workspace_mu.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu.log \n")  
+           SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_mu.root > COMB-signif-mu.log;\n")
            SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=0 --rMax=10 --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
            SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnostics.root > simfit_m"+ str(m)+"_mu.txt \n")
 	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnostics.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_mu.txt\n")
@@ -778,7 +782,7 @@ for signalSuffix in signalSuffixVec :
 
           #--- first pass for Wh
 
-           SCRIPT.writelines("computeLimit --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +  " --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root >& cl-wh-first.log\n")
+           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +  " --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root >& cl-wh-first.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
            SCRIPT.writelines("text2workspace.py card_combined_wh.dat -o workspace-wh-first.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-wh-first.log \n")  
            SCRIPT.writelines("combine -M FitDiagnostics workspace-wh-first.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=0 --rMax=20 --stepSize=0.05 --robustFit 1  >& log-wh-first.txt \n") 
@@ -787,12 +791,12 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("cp *.dat datacards-wh-first-pass\n\n") ;
 
           #--- second pass for Wh
-           SCRIPT.writelines("computeLimit --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root  --fitDiagnosticsInputFile fitDiagnostics-wh-first.root >& cl-wh-second.log\n")
+           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root  --fitDiagnosticsInputFile fitDiagnostics-wh-first.root >& cl-wh-second.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
 
 
 
-           SCRIPT.writelines("computeLimit --verbose  --replaceHighSensitivityBinsWithBG  --runZh --m " + str(m) + BackExtrapol + " --in " + inUrl_zh + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-zh.log\n")
+           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --runZh --m " + str(m) + BackExtrapol + " --in " + inUrl_zh + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-zh.log\n")
 
            SCRIPT.writelines("sh combineCards_zh.sh;\n"); 
            SCRIPT.writelines("combineCards.py card_e_wh.dat card_e_zh.dat > card_e.dat\n"); 
@@ -934,10 +938,10 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("\n#****************** {} *****************\n".format(year)) 
 	      if "2016" in inUrl:
 	          #SCRIPT.writelines("\ncomputeLimit --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +" ;\n")  
-	          SCRIPT.writelines("\ncomputeLimit  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root   >& cl-"+ year + ".log\n")  
+	          SCRIPT.writelines("\ncomputeLimit   --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root   >& cl-"+ year + ".log\n")  
 	      else:
 	          #SCRIPT.writelines("\ncomputeLimit --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" ;\n")  
-	          SCRIPT.writelines("\ncomputeLimit  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root   >& cl-" + year + ".log\n")  
+	          SCRIPT.writelines("\ncomputeLimit   --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root   >& cl-" + year + ".log\n")  
 	      SCRIPT.writelines("sh combineCards_"+year+"_wh.sh;\n"); 
 
 	   SCRIPT.writelines("\ncombineCards.py card_combined_2016_wh.dat card_combined_2017_wh.dat card_combined_2018_wh.dat > card_combined_wh.dat")
@@ -1000,6 +1004,9 @@ for signalSuffix in signalSuffixVec :
       if ( not no_submit ):
          LaunchOnCondor.SendCluster_Submit()
    
+
+  #------------------------------------------------------------------------------------------------
+
    elif(phase == 5.1 ):
       LaunchOnCondor.Jobs_RunHere        = 0
       print '# FINAL COMBINED LIMITS  for ' + DataCardsDir + '#\n'
@@ -1083,7 +1090,7 @@ for signalSuffix in signalSuffixVec :
          
 	      SCRIPT.writelines("\n#****************** {} *****************\n".format(year)) 
 	      #SCRIPT.writelines("\ncomputeLimit --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
-	      SCRIPT.writelines("\ncomputeLimit --replaceHighSensitivityBinsWithBG  --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-" + year + ".log \n")
+	      SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --replaceHighSensitivityBinsWithBG  --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-" + year + ".log \n")
 	      SCRIPT.writelines("sh combineCards_{}_zh.sh;\n".format(year))
            
 	   SCRIPT.writelines("\ncombineCards.py card_combined_2016_zh.dat card_combined_2017_zh.dat card_combined_2018_zh.dat > card_combined_zh.dat")
@@ -1179,6 +1186,9 @@ for signalSuffix in signalSuffixVec :
       if ( not no_submit ):
          LaunchOnCondor.SendCluster_Submit()
    
+
+  #------------------------------------------------------------------------------------------------
+
    elif(phase == 5.2 ):
       LaunchOnCondor.Jobs_RunHere        = 0
       print '# FINAL COMBINED LIMITS  for ' + DataCardsDir + '#\n'
@@ -1258,10 +1268,10 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("\n#****************** {} Wh *****************\n".format(year)) 
 	      if "2016" in inUrl:
 	          #SCRIPT.writelines("\n#computeLimit --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +" ;\n")  
-	          SCRIPT.writelines("\ncomputeLimit --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root >& cl-wh-" + year + ".log \n")  
+	          SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root >& cl-wh-" + year + ".log \n")  
 	      else:
 	          #SCRIPT.writelines("\n#computeLimit --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" ;\n")  
-	          SCRIPT.writelines("\ncomputeLimit --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root >& cl-wh-" + year + ".log \n")  
+	          SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root >& cl-wh-" + year + ".log \n")  
 	      SCRIPT.writelines("sh combineCards_"+year+"_wh.sh;\n"); 
 	      
 	      inUrl = inUrl_zhs[i]
@@ -1270,7 +1280,7 @@ for signalSuffix in signalSuffixVec :
          
 	      SCRIPT.writelines("\n#****************** {} Zh *****************\n".format(year)) 
 	      #SCRIPT.writelines("\n#computeLimit --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
-	      SCRIPT.writelines("\ncomputeLimit --verbose  --replaceHighSensitivityBinsWithBG  --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-zh-" + year + ".log ;\n")
+	      SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-zh-" + year + ".log ;\n")
 	      SCRIPT.writelines("sh combineCards_{}_zh.sh;\n".format(year))
 
 	      SCRIPT.writelines("combineCards.py card_combined_{}_wh.dat card_combined_{}_zh.dat > card_combined_{}.dat\n".format(year, year, year))
@@ -1421,10 +1431,24 @@ for signalSuffix in signalSuffixVec :
       else:
          os.system("hadd -f "+DataCardsDir+"/LimitTree.root "+DataCardsDir+"/*/higgsCombineTest.HybridNewMerged.*.root > /dev/null")
 
+      integrated_luminosity = 0
+      if year_to_run == "2016":
+         integrated_luminosity =  35914.143
+      if year_to_run == "2017":
+         integrated_luminosity =  41529.152
+      if year_to_run == "2018":
+         integrated_luminosity =  59740.565
+      if year_to_run == "all":
+         integrated_luminosity = 137183.86
+
+      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , "+integrated_luminosity+" )'")
+      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , "+integrated_luminosity+" , \"Wh channels\" ,false)'")
+
+
 #      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 35914.143 )'")
 #      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 35914.143 , \"Wh channels\" ,false)'")
-      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 41529.152 )'")
-      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 41529.152 , \"Wh channels\" ,false)'")
+#      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 41529.152 )'")
+#      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 41529.152 , \"Wh channels\" ,false)'")
 #      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 59740.565 )'")
 #      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 59740.565 , \"Wh channels\" ,false)'")
 #      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 137183.86 )'")
