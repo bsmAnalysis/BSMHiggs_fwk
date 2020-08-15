@@ -444,25 +444,50 @@ class ShapeData_t
      	return Total>0?sqrt(Total):-1;
   	}
 
+      //------------------------------------
+
         double getBinShapeUncertainty(string name, int bin, string upORdown){
-     	double Total=0;
+     	   double Total=0;
      	//this = ch->second.shapes[histoName.Data()]
-     	for(std::map<string, TH1*>::iterator var = uncShape.begin(); var!=uncShape.end(); var++){
-       	TString systName = var->first.c_str();
+     	   for(std::map<string, TH1*>::iterator var = uncShape.begin(); var!=uncShape.end(); var++){
+       	      TString systName = var->first.c_str();
 
-       	if(var->first=="")continue; //Skip Nominal shape
-       	//if(!systName.Contains(upORdown))continue; //only look for syst up or down at a time (upORdown should be either "Up" or "Down"
-       	if(!systName.EndsWith(upORdown.c_str()))continue; //only look for syst up or down at a time (upORdown should be either "Up" or "Down"
-       	TH1* hvar = (TH1*)(var->second->Clone((name+var->first).c_str()));
-	
-	double varYield = hvar->GetBinContent(bin);
-	TH1* h = (TH1*)(this->histo()->Clone((name+"Nominal").c_str()));
-	double yield = h->GetBinContent(bin);
-       	Total+=pow(varYield-yield,2); //the total shape unc is the sqrt of the quadratical sum of the difference between the nominal and the variated yields.
-     	}     
-     	return Total>0?sqrt(Total):-1;
-  	}
+       	      if(var->first=="")continue; //Skip Nominal shape
+       	    //if(!systName.Contains(upORdown))continue; //only look for syst up or down at a time (upORdown should be either "Up" or "Down"
+       	      if(!systName.EndsWith(upORdown.c_str()))continue; //only look for syst up or down at a time (upORdown should be either "Up" or "Down"
 
+
+        //--owen: aug 15, 2020:  Why are the histograms cloned?  This is super slow.  Is it necessary???  Are they ever used later???
+        //                       Looks safe to not clone, so removing this.  Speeds it up a lot.
+       
+            //--- with cloning
+        ////  TH1* hvar = (TH1*)(var->second->Clone((name+var->first).c_str()));
+        ////  double varYield = hvar->GetBinContent(bin);
+        ////  TH1* h = (TH1*)(this->histo()->Clone((name+"Nominal").c_str()));
+        ////  double yield = h->GetBinContent(bin);
+
+            //--- no cloning
+              double varYield = var->second->GetBinContent(bin);
+              double yield = this->histo()->GetBinContent(bin);
+
+
+        ////  if ( verbose ) {
+        ////     printf(" --- verbose : getBinShapeUncertainty : name = %s , bin = %d , upORdown = %s , hvar clone name = %s , h clone name = %s, varYield = %.1f, yield = %.1f, diff = %.1f\n",
+        ////        name.c_str(), bin, upORdown.c_str(),
+        ////        (name+var->first).c_str(),
+        ////        (name+"Nominal").c_str(),
+        ////        varYield, yield, (varYield-yield)
+        ////        ) ;
+        ////     fflush(stdout) ;
+        ////  }
+
+       	      Total+=pow(varYield-yield,2); //the total shape unc is the sqrt of the quadratical sum of the difference between the nominal and the variated yields.
+
+     	   } // var     
+     	   return Total>0?sqrt(Total):-1;
+  	} // getBinShapeUncertainty
+
+      //------------------------------------
 
   	void rescaleScaleUncertainties(double StartIntegral, double EndIntegral){
      	for(std::map<string, double>::iterator unc=uncScale.begin();unc!=uncScale.end();unc++){
@@ -2304,11 +2329,25 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 //    }
   }
 
+
+
+  //------------------------------------------------------------------------------------------------------
+
+
   //
   // Make a summary plot
   //
   void AllInfo_t::showShape(std::vector<TString>& selCh , TString histoName, TString SaveName)
   {
+
+    if ( verbose ) {
+       printf(" --- verbose : AllInfo_t::showShape :  begin \n") ;
+       printf(" --- verbose : AllInfo_t::showShape :  channels : ") ;
+       for ( int ci=0; ci<selCh.size(); ci++ ) { printf(" %s , ", selCh[ci].Data() ) ; }
+       printf("\n") ;
+       printf(" --- verbose : AllInfo_t::showShape :  histoName = %s , SaveName = %s\n", histoName.Data(), SaveName.Data() ) ;
+       fflush(stdout) ;
+    }
     int NLegEntry = 0;
     
     std::map<string, THStack*          > map_stack;
@@ -2342,6 +2381,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       TString process(procName.c_str());
       //      if( process.Contains("BOnly_B") || process.Contains("SandBandInterf_SBI") ) continue;
 
+      if ( verbose ) { printf(" --- verbose : AllInfo_t::showShape :  proc = %s\n", process.Data() ) ; fflush(stdout) ; }
+
       if(it==procs.end())continue;
       //loop on channels for each process
       for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
@@ -2352,6 +2393,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
         TH1* h = ch->second.shapes[histoName.Data()].histo();
 	if (!h) continue;
+        if ( verbose ) { printf(" --- verbose : AllInfo_t::showShape :  proc = %s , chan = %s, hist = %s\n", process.Data(), ch->first.c_str(), h->GetName() ) ; fflush(stdout) ; }
         //if(process.Contains("SOnly_S") ) h->Scale(10);  
         if(it->first=="total"){
           //double Uncertainty = std::max(0.0, ch->second.shapes[histoName.Data()].getScaleUncertainty() / h->Integral() );;
@@ -2571,7 +2613,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	 int bbin=axis->FindBin(0.1);
 	 int totNbins = map_dataE[p->first]->GetN();
        	 for (int i=bbin-1; i<totNbins; i++){
-       	 //for (int i=0; i<map_dataE[p->first]->GetN()+1; i++){
        	   map_dataE[p->first]->RemovePoint(bbin-1);
 	 }
 	
@@ -2759,7 +2800,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 
          //add comparisons
-      //  for(size_t icd=0; icd<compDists.size(); icd++){
       TString name("CompHistogram"); //name+=icd;
       TH1 *dataToObsH = (TH1D*)map_data[p->first]->Clone(name);
       utils::root::checkSumw2(dataToObsH);
@@ -2828,9 +2868,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       
       I++;
     }
+    if ( verbose ) {
+       printf(" --- verbose : AllInfo_t::showShape :  end \n") ;
+       fflush(stdout) ;
+    }
+  } // showShape
 
-  }
 
+  //------------------------------------------------------------------------------------------------------
 
   //
   // Make a summary plot
@@ -3786,18 +3831,25 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             hshape->GetYaxis()->SetTitle("Entries");// (/25GeV)");
           }
           hshape->Scale(MCRescale);
+          if ( verbose ) {
+             printf(" --- verbose : AllInfo_t::getShapeFromFile : " ) ;
+             printf(" proc = %s ", proc.Data() ) ;
+             printf(", shortName = %s ", shortName.Data() ) ;
+             printf(", chName = %s ", chName.Data() ) ;
+             printf(", binName = %s ", binName.Data() ) ;
+             printf(", ch = %s ", ch.Data() ) ;
+             printf(", ch_postfix = %s ", ch_postfix.Data() ) ;
+             printf(", year = %s ", year.Data() ) ;
+             printf(", histoName = %s ", histoName.Data() ) ;
+             printf("\n") ;
+          }
 	  if (postfit) {
 	    if(!(ch.Contains("_A_"))) {
 	      printf("W/Top NORMALIZATIONs: Process = %s and channel = %s\n\n",proc.Data(),ch.Data());
 
 	      // Top normalization
-              // --- compiler says this is always true.  Make it compile clean (and fix it?)
-	      ///////if ( (proc.Contains("t#bar{t} + b#bar{b}")!=std::string::npos) ||
-              ///////(proc.Contains("t#bar{t} + c#bar{c}")!=std::string::npos) )
-              printf("  *** debug: proc = %s\n", proc.Data() ) ;
 	      if ( proc.Contains("t#bar{t} + b#bar{b}") ||
 		   proc.Contains("t#bar{t} + c#bar{c}") ){   
-                printf("     *** debug :  contains ttbar + bbbar or ttbar + ccbar\n") ;
 		if (ch.Contains("e")) {  
 		  if(ch.Contains("3b")) hshape->Scale(norm_top);
 		  if(ch.Contains("4b")) hshape->Scale(norm_top);   
@@ -3809,8 +3861,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	      }
 	    
 	    // W normalization
-              // --- compiler says this is always true.  Make it compile clean (and fix it?)
-	      /////////if (proc.Contains("W#rightarrow l#nu")!=std::string::npos) 
 	      if (proc.Contains("W#rightarrow l#nu")) {
                 printf("     *** debug :  contains W -> l nu\n") ;
 		if (ch.Contains("e")) {  
