@@ -106,6 +106,7 @@ bool blindData = false;
 bool blindWithSignal = false; 
 bool replaceHighSensitivityBinsWithBG = false ;
 bool noCorrelatedStatUnc = false ;
+bool plotsOnly = false ;
 
 TString inFileUrl(""),jsonFile("");
 
@@ -246,13 +247,26 @@ class ShapeData_t
      	for(auto unc = uncShape.begin(); unc!= uncShape.end(); unc++){
         TString name = unc->first.c_str();
         if(name.Contains("stat") && (name.EndsWith("Up") || name.EndsWith("Down"))){
+          //-- owen: do I need to delete the histogram before calling erase to avoid a memory leak???
+          //delete unc->second ;
           uncShape.erase(unc);
           unc--;
         }
      	}
   	}
 
+
+
+
+
+      //----------------------------------------------------------------------------------
+
+
+
   	void makeStatUnc(string prefix="", string suffix="", string suffix2="", bool noBinByBin=false, TH1* total_hist = 0x0 ){
+
+          if ( verbose ) { printf("\n --- verbose : makeStatUnc : begin.  prefix = %s, suffix = %s, suffix2 = %s\n", prefix.c_str(), suffix.c_str(), suffix2.c_str() ) ; fflush(stdout) ; }
+
 	  if(!histo() || histo()->Integral()<=0)return;
 	  string delimiter = "_";
 	  unsigned firstDelimiter = suffix.find(delimiter);
@@ -273,11 +287,21 @@ class ShapeData_t
 	      if( true /*h->GetBinContent(ibin)/h->Integral()>0.01*/){ //This condition is removed for the moment, we may put it back in the future. 
 		
 		char ibintxt[255]; sprintf(ibintxt, "_b%i", BIN);BIN++;
+
+                if ( verbose ) { 
+                   TString hname( TString(h->GetName())+"StatU"+ibintxt ) ;
+                   printf(" --- verbose : makeStatUnc : making clones 1.  name = %s\n", hname.Data() ) ; fflush(stdout) ;
+                }
+
+
 		TH1* statU=(TH1 *)h->Clone(TString(h->GetName())+"StatU"+ibintxt);//  statU->Reset();
 		TH1* statD=(TH1 *)h->Clone(TString(h->GetName())+"StatD"+ibintxt);//  statD->Reset();           
 		
 		statU->SetBinContent(ibin, std::max(0.0, h_InstrMET_Up_gammaStats->GetBinContent(ibin))>0 ? h_InstrMET_Up_gammaStats->GetBinContent(ibin) : 0.115);
 		statD->SetBinContent(ibin, std::max(0.0, h_InstrMET_Down_gammaStats->GetBinContent(ibin))); 
+
+                if ( verbose ) { printf(" --- verbose : makeStatUnc : 1 adding to uncShape with key %s\n", (prefix+"stat"+suffix+ibintxt+suffix2+"Up").c_str() ) ; fflush(stdout) ; }
+
 		uncShape[prefix+"stat"+suffix+ibintxt+suffix2+"Up"  ] = statU;
 		uncShape[prefix+"stat"+suffix+ibintxt+suffix2+"Down"] = statD;
 		
@@ -287,6 +311,12 @@ class ShapeData_t
 	      }
 	    }
 	    
+            if ( verbose ) {
+               TString hname( TString(h->GetName())+"StatU" ) ;
+               printf(" --- verbose : makeStatUnc : making clones 2.  name = %s\n", hname.Data() ) ; fflush(stdout) ;
+            }
+
+
 	    TH1* statU=(TH1 *)h->Clone(TString(h->GetName())+"StatU");
 	    TH1* statD=(TH1 *)h->Clone(TString(h->GetName())+"StatD");
 	    
@@ -295,6 +325,9 @@ class ShapeData_t
 		statU->SetBinContent(v_lowStatBin[j], std::max(0.0, h_InstrMET_Up_gammaStats->GetBinContent(v_lowStatBin[j])));   
 		statD->SetBinContent(v_lowStatBin[j], std::max(0.0, h_InstrMET_Down_gammaStats->GetBinContent(v_lowStatBin[j])));   
 	      }
+
+              if ( verbose ) { printf(" --- verbose : makeStatUnc : 2 adding to uncShape with key %s\n", (prefix+"stat"+suffix+"Up").c_str() ) ; fflush(stdout) ; }
+
 	      uncShape[prefix+"stat"+suffix+"Up"  ] = statU;
 	      uncShape[prefix+"stat"+suffix+"Down"] = statD;
 	    }	
@@ -305,15 +338,15 @@ class ShapeData_t
 	  }
 	  else{
 
-            if ( verbose ) {
-               printf(" --- verbose: makeStatUnc : %s   %s   %s  histo name: %s\n", prefix.c_str(), suffix.c_str(), suffix2.c_str(), histo()->GetName() ) ;
-               if ( total_hist != 0x0 ) {
-                  printf("     --- verbose: makeStatUnc : have total_hist histogram,  name = %s,  n bins = %d\n", total_hist -> GetName(), total_hist -> GetNbinsX() ) ;
-               } else {
-                  printf("     --- verbose: makeStatUnc : total_hist pointer is null.\n") ;
-               }
-               fflush(stdout) ;
-            }
+         // if ( verbose ) {
+         //    printf(" --- verbose: makeStatUnc : %s   %s   %s  histo name: %s\n", prefix.c_str(), suffix.c_str(), suffix2.c_str(), histo()->GetName() ) ;
+         //    if ( total_hist != 0x0 ) {
+         //       printf("     --- verbose: makeStatUnc : have total_hist histogram,  name = %s,  n bins = %d\n", total_hist -> GetName(), total_hist -> GetNbinsX() ) ;
+         //    } else {
+         //       printf("     --- verbose: makeStatUnc : total_hist pointer is null.\n") ;
+         //    }
+         //    fflush(stdout) ;
+         // }
 
 	    
 	    TH1* h = (TH1*) histo()->Clone("TMPFORSTAT");
@@ -350,6 +383,12 @@ class ShapeData_t
 
 
 		char ibintxt[255]; sprintf(ibintxt, "_b%i", BIN);BIN++;
+
+                if ( verbose ) {
+                   TString hname( TString(h->GetName())+"StatU"+ibintxt ) ;
+                   printf(" --- verbose : makeStatUnc : making clones 3.  name = %s\n", hname.Data() ) ; fflush(stdout) ;
+                }
+
 		TH1* statU=(TH1 *)h->Clone(TString(h->GetName())+"StatU"+ibintxt);//  statU->Reset();
 		TH1* statD=(TH1 *)h->Clone(TString(h->GetName())+"StatD"+ibintxt);//  statD->Reset();           
 		if(h->GetBinContent(ibin)>0){
@@ -363,6 +402,8 @@ class ShapeData_t
                 if ( verbose ) { printf(" --- verbose: makeStatUnc : setting uncShape[%s] to hist with name %s\n", (prefix+"stat"+suffix+ibintxt+suffix2+"Up").c_str(), statU -> GetName() ) ; fflush(stdout) ; }
                 if ( verbose ) { printf(" --- verbose: makeStatUnc : setting uncShape[%s] to hist with name %s\n", (prefix+"stat"+suffix+ibintxt+suffix2+"Down").c_str(), statD -> GetName() ) ; fflush(stdout) ; }
 
+                if ( verbose ) { printf(" --- verbose : makeStatUnc : 3 adding to uncShape with key %s\n", (prefix+"stat"+suffix+ibintxt+suffix2+"Up").c_str() ) ; fflush(stdout) ; }
+
 		uncShape[prefix+"stat"+suffix+ibintxt+suffix2+"Up"  ] = statU;
 		uncShape[prefix+"stat"+suffix+ibintxt+suffix2+"Down"] = statD;
 		/*h->SetBinContent(ibin, 0);*/  h->SetBinError(ibin, 0);  //remove this bin from shape variation for the other ones
@@ -373,6 +414,13 @@ class ShapeData_t
 	    //after this line, all bins with large stat uncertainty have been considered separately
 	    //so now it remains to consider all the other bins for which we assume a total correlation bin by bin
 	    if(h->Integral()<=0)return; //all non empty bins have already bin variated
+
+
+            if ( verbose ) {
+               TString hname( TString(h->GetName())+"StatU" ) ;
+               printf(" --- verbose : makeStatUnc : making clones 4.  name = %s\n", hname.Data() ) ; fflush(stdout) ;
+            }
+
 	    TH1* statU=(TH1 *)h->Clone(TString(h->GetName())+"StatU");
 	    TH1* statD=(TH1 *)h->Clone(TString(h->GetName())+"StatD");
 	    for(int ibin=1; ibin<=statU->GetXaxis()->GetNbins(); ibin++){
@@ -385,13 +433,38 @@ class ShapeData_t
 		statD->SetBinContent(ibin,std::min(0.0, statD->GetBinContent(ibin) - statD->GetBinError(ibin)));
 	      }
 	    }
+
+            if ( verbose ) { printf(" --- verbose : makeStatUnc : 4 adding to uncShape with key %s\n", (prefix+"stat"+suffix+"Up").c_str() ) ; fflush(stdout) ; }
+
+           //-- owen: first check if this is already set.  If so, delete the existing one to avoid memory leak.
+            if ( uncShape.find( prefix+"stat"+suffix+"Up" ) != uncShape.end() ) {
+               if ( uncShape[prefix+"stat"+suffix+"Up"  ] != 0x0 ) {
+                  if ( verbose ) { printf(" --- verbose : makeStatUnc : 4 deleting existing hist with name %s before assignment.\n", uncShape[prefix+"stat"+suffix+"Up"  ] -> GetName() ) ; fflush(stdout) ; }
+                  delete uncShape[prefix+"stat"+suffix+"Up"  ] ;
+               }
+            }
+            if ( uncShape.find( prefix+"stat"+suffix+"Down" ) != uncShape.end() ) {
+               if ( uncShape[prefix+"stat"+suffix+"Down"  ] != 0x0 ) {
+                  if ( verbose ) { printf(" --- verbose : makeStatUnc : 4 deleting existing hist with name %s before assignment.\n", uncShape[prefix+"stat"+suffix+"Down"  ] -> GetName() ) ; fflush(stdout) ; }
+                  delete uncShape[prefix+"stat"+suffix+"Down"  ] ;
+               }
+            }
+
 	    uncShape[prefix+"stat"+suffix+"Up"  ] = statU;
 	    uncShape[prefix+"stat"+suffix+"Down"] = statD;
 	    
 	    delete h; //all done with this copy
 	  }
-	}
+	} // makeStatUnc
   
+
+
+      //----------------------------------------------------------------------------------
+
+
+
+
+
   	double getScaleUncertainty(){
      	double Total=0;
 	TH1* h = NULL;
@@ -748,6 +821,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--minErrOverSqrtNBGForBinByBin") !=string::npos) { sscanf(argv[i+1],"%f",&minErrOverSqrtNBGForBinByBin); printf("minErrOverSqrtNBGForBinByBin = %.3f\n", minErrOverSqrtNBGForBinByBin);}
     else if(arg.find("--replaceHighSensitivityBinsWithBG") !=string::npos) { replaceHighSensitivityBinsWithBG = true; printf("replaceHighSensitivityBinsWithBG = True\n");}
     else if(arg.find("--noCorrelatedStatUnc") !=string::npos) { noCorrelatedStatUnc = true; printf("noCorrelatedStatUnc = True\n");}
+    else if(arg.find("--plotsOnly") !=string::npos) { plotsOnly = true ; printf("plotsOnly = True\n") ; }
     else if(arg.find("--autoMCStats")  !=string::npos) { autoMCStats=true; printf("autoMCStats = True\n");}
     else if(arg.find("--verbose")  !=string::npos) { verbose=true; printf("verbose = True\n");}
     else if(arg.find("--minSignalYield") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%lf",&minSignalYield ); i++; printf("minSignalYield = %f\n", minSignalYield);}
@@ -1176,12 +1250,16 @@ int main(int argc, char* argv[])
   //produce a plot
   allInfo.showShape(selCh,histo,"plot"); //this produce the final global shape
   
+  if ( plotsOnly ) {
+     printf("\n\n plotsOnly is set to true.  Bailing out now.\n\n") ; fflush(stdout) ;
+     return 0 ;
+  }
 
 
   if ( verbose && runSystematics ) { printf("\n  --- verbose : main :    calling allInfo.showUncertainty(selCh,histo,\"plot\"); \n") ; fflush(stdout) ; }
 
   //produce a plot
-  if(runSystematics) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst
+  /////////if(runSystematics) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  // owen: temporarily turn this off.  Slows it down.
   
 
   if ( verbose ) allInfo.printInventory() ;
