@@ -12,6 +12,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_MuEG2016B_ver2",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt", 
                     "xsec": 1.0
                 },
@@ -24,6 +25,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_MuEG2016C",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt", 
                     "xsec": 1.0
                 },
@@ -36,6 +38,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_MuEG2016D",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -48,6 +51,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_MuEG2016E",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -60,6 +64,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_MuEG2016F",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -72,6 +77,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_MuEG2016G",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -84,6 +90,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_MuEG2016H",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -96,6 +103,7 @@
                     ],
                     "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_SingleElectron2016B_ver2",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -108,6 +116,7 @@
                     ],
                     "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_SingleElectron2016C",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -120,6 +129,7 @@
                     ],
                     "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_SingleElectron2016D",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -132,6 +142,7 @@
                     ],
                     "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_SingleElectron2016E",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -144,6 +155,7 @@
                     ],
                     "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_SingleElectron2016F",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -156,6 +168,7 @@
                     ],
                     "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_SingleElectron2016G",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -168,6 +181,7 @@
                     ],
                     "gtag": "80X_dataRun2_Prompt_v16",
                     "dtag": "Data13TeV_SingleElectron2016H",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -180,6 +194,7 @@
                     ],
                     "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_SingleMuon2016B_ver2",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -192,6 +207,7 @@
                     ],
                      "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_SingleMuon2016C",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -204,6 +220,7 @@
                     ],
                     "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_SingleMuon2016D",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -216,6 +233,7 @@
                     ],
                     "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_SingleMuon2016E",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -228,6 +246,7 @@
                     ],
                     "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_SingleMuon2016F",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -240,6 +259,7 @@
                     ],
                     "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_SingleMuon2016G",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -252,6 +272,7 @@
                     ],
                     "gtag": "80X_dataRun2_Prompt_v16",
                     "dtag": "Data13TeV_SingleMuon2016H",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -264,6 +285,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleMuon2016B_ver2",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -276,6 +298,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleMuon2016C",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -288,6 +311,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleMuon2016D",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -300,6 +324,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleMuon2016E",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -312,6 +337,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleMuon2016F",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -324,6 +350,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleMuon2016G",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -336,6 +363,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleMuon2016H",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -348,6 +376,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleEle2016B_ver2",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -360,6 +389,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleEle2016C",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -372,6 +402,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleEle2016D",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -384,6 +415,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleEle2016E",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -396,6 +428,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleEle2016F",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -408,6 +441,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleEle2016G",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 },
@@ -420,6 +454,7 @@
                     ],
 		    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_DoubleEle2016H",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
                     "xsec": 1.0
                 }
@@ -447,6 +482,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_ZZ_ext1_2016",
+                    "nevts": 998034,
                     "xsec": 17.72 
                 },
                 {
@@ -458,6 +494,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_ZZ_2016",
+                    "nevts": 990064,
                     "xsec": 17.72
                 },
                  {
@@ -469,6 +506,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WW2l2nu_2016",
+                    "nevts": 1999000,
                     "xsec": 12.178
                 },
                 {
@@ -480,6 +518,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WWlnu2q_2016",
+                    "nevts": 1999200,
                     "xsec": 49.997
                 },
                 {
@@ -491,6 +530,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WWlnu2q_ext1_2016",
+                    "nevts": 6655400,
                     "xsec": 49.997
 		},
 		  {
@@ -502,6 +542,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WW4q_2016",
+                    "nevts": 1998400,
                     "xsec": 51.723
                 },
                 {
@@ -513,6 +554,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WZ_2016",
+                    "nevts": 1000000,
                     "xsec": 47.13 
                     },
                    {
@@ -524,6 +566,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WZ_ext1_2016",
+                    "nevts": 2997571,
                     "xsec": 47.13 
                 },
                 {
@@ -535,6 +578,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_ZZZ_2016",
+                    "nevts": 213197,
                     "xsec": 0.01398
                 },
                 {
@@ -546,6 +590,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WZZ_2016",
+                    "nevts": 216366,
                     "xsec": 0.05565
                 },
                 {
@@ -557,6 +602,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WWZ_2016",
+                    "nevts": 221468,
                     "xsec": 0.1651
                 },
                 {
@@ -568,6 +614,7 @@
                    ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                    "dtag": "MC13TeV_WWW_4F_2016",
+                    "nevts": 210538,
                    "xsec": 0.2086
                 }, 
                 {
@@ -579,6 +626,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_SingleT_s_2016",
+                    "nevts": 622990,
                     "xsec": 3.362
                 },
                 {
@@ -590,6 +638,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_SingleT_t_2016",
+                    "nevts": 67105876,
                     "xsec": 136.02 
                 },
                 {
@@ -601,6 +650,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_SingleT_at_2016",
+                    "nevts": 38811017,
                     "xsec": 80.95
                 },
                 {
@@ -612,6 +662,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_SingleT_atW_2016",
+                    "nevts": 6933094,
                     "xsec": 35.6
                 },
                 {
@@ -623,6 +674,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_SingleT_tW_2016",
+                    "nevts": 6952830,
                     "xsec": 35.6
                 },
                 {
@@ -634,6 +686,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TTGJets_2016",
+                    "nevts": 1577833,
                     "xsec": 3.697
                 },
                 {
@@ -645,6 +698,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TTGJets_ext1_2016",
+                    "nevts": 3196614,
                     "xsec": 3.697
                 },
                 {
@@ -656,6 +710,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TGJets_2016",
+                    "nevts": 58120,
                     "xsec": 2.967
                 },
                 {
@@ -667,6 +722,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TGJets_ext1_2016",
+                    "nevts": 310442,
                     "xsec": 2.967
                 },
                 {
@@ -678,6 +734,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TTWJetslnu_2016",
+                    "nevts": 1112722,
                     "xsec": 0.2043
                 },
                 {
@@ -689,6 +746,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TTZJets2l2nu_2016",
+                    "nevts": 927976,
                     "xsec": 0.2529
                 },
 		 {
@@ -700,6 +758,7 @@
                      ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WplusH_HToBB_WToLNu_2016",
+                    "nevts": 1382309,
                     "xsec": 0.053
                  },
 		 {
@@ -711,6 +770,7 @@
                      ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WminusH_HToBB_WToLNu_ext1_2016",
+                    "nevts": 1349140,
                     "xsec": 0.03369
                  },
 		 {
@@ -722,6 +782,7 @@
                      ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WminusH_HToBB_WToLNu_2016",
+                    "nevts": 944303,
                     "xsec": 0.03369
                  },
 		 {
@@ -733,6 +794,7 @@
                      ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_ZH_HToBB_ZToLL_2016",
+                    "nevts": 1861020,
                     "xsec": 0.04865  
                  }
             ],
@@ -755,6 +817,7 @@
                      ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TTJets_powheg_2016",
+                    "nevts": 76915549,
                     "xsec": 831.76  
                 }
             ],
@@ -777,6 +840,7 @@
                      ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TTJets_powheg_2016",
+                    "nevts": 76915549,
                     "xsec": 831.76  
                 }
             ],
@@ -799,6 +863,7 @@
                      ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_TTJets_powheg_2016",
+                    "nevts": 76915549,
                     "xsec": 831.76  
                 }
             ],
@@ -820,6 +885,7 @@
 		    ],
 		    "gtag": "94X_mcRun2_asymptotic_v3",
 		    "dtag": "MC13TeV_DYJetsToLL_10to50_amcNLO_2016",
+                    "nevts": 22405750,
 		    "xsec": 18610
 		},
 		{
@@ -829,6 +895,7 @@
 		    ],
 		    "gtag": "94X_mcRun2_asymptotic_v3",
 		    "dtag": "MC13TeV_DYJetsToLL_50toInf_amcNLO_ext2_2016",
+                    "nevts": 80924255,
 		    "xsec": 5765.4
 		}
 	    ],
@@ -849,6 +916,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_10to50_2016",
+                    "nevts": 70229922,
                     "xsec": "18610*1.23"
                 },
                 {
@@ -858,6 +926,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_5to50_HT70to100_2016",
+                    "nevts": 10084984,
                     "xsec": "301*1.23"
                 },
                 {
@@ -867,6 +936,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_5to50_HT100to200_2016",
+                    "nevts": 1008250,
                     "xsec": "224*1.23"
                 },
                 {
@@ -876,6 +946,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_5to50_HT100to200_ext1_2016",
+                    "nevts": 8583596,
                     "xsec": "224*1.23"
                 },
                 {
@@ -885,6 +956,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_5to50_HT200to400_2016",
+                    "nevts": 1045127,
                     "xsec": "37.87*1.23"
                 },
                 {
@@ -894,6 +966,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_5to50_HT200to400_ext1_2016",
+                    "nevts": 2077880,
                     "xsec": "37.87*1.23"
                 },
                 {
@@ -903,6 +976,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_5to50_HT400to600_2016",
+                    "nevts": 1016799,
                     "xsec": "3.628*1.23"
                 },
                 {
@@ -912,6 +986,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_5to50_HT400to600_ext1_2016",
+                    "nevts": 2071405,
                     "xsec": "3.628*1.23"
                 },
                 {
@@ -921,6 +996,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_5to50_HT600toInf_2016",
+                    "nevts": 1021077,
                     "xsec": "1.107*1.23"
                 },
                 {
@@ -930,6 +1006,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_5to50_HT600toInf_ext1_2016",
+                    "nevts": 2017380,
                     "xsec": "1.107*1.23"
                 },
                 {
@@ -939,6 +1016,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_ext1_2016",
+                    "nevts": 99497934,
                     "xsec": "4895*1.23"
                 },
                 {
@@ -948,6 +1026,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_ext2_2016",
+                    "nevts": 193062856,
                     "xsec": "4895*1.23"
                 },
                 {
@@ -957,6 +1036,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_HT70to100_2016",
+                    "nevts": 9691660,
                     "xsec": "169.9*1.23"
                 },
                 {
@@ -966,6 +1046,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_HT100to200_2016",
+                    "nevts": 2751187,
                     "xsec": "147.4*1.23"
                 },
                 {
@@ -975,6 +1056,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_HT100to200_ext1_2016",
+                    "nevts": 8265899,
                     "xsec": "147.4*1.23"
                 },
                 {
@@ -984,6 +1066,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_HT200to400_2016",
+                    "nevts": 962195,
                     "xsec": "40.99*1.23"
                 },
                 {
@@ -993,6 +1076,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_HT200to400_ext1_2016",
+                    "nevts": 8646942,
                     "xsec": "40.99*1.23"
                 },
                 {
@@ -1002,6 +1086,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_HT400to600_2016",
+                    "nevts": 1070454,
                     "xsec": "5.674*1.23"
                 },
                 {
@@ -1011,6 +1096,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_HT400to600_ext1_2016",
+                    "nevts": 8655207,
                     "xsec": "5.674*1.23"
                 },
                 {
@@ -1020,6 +1106,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_HT600to800_2016",
+                    "nevts": 8292957,
                     "xsec": "1.367*1.23"
                 },
                 {
@@ -1029,6 +1116,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_HT800to1200_2016",
+                    "nevts": 2673066,
                     "xsec": "0.6304*1.23"
                 },
                 {
@@ -1038,6 +1126,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_HT1200to2500_2016",
+                    "nevts": 596079,
                     "xsec": "0.1514*1.23"
                 },
                 {
@@ -1047,6 +1136,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_HT2500toInf_2016",
+                    "nevts": 399492,
                     "xsec": "0.003565*1.23"
                 }
             ],
@@ -1067,6 +1157,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_10to50_2016",
+                    "nevts": 70229922,
                     "xsec": 18610
                 },
                 {
@@ -1076,6 +1167,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DY1JetsToLL_10to50_2016",
+                    "nevts": 39958449,
                     "xsec": 725
                 },
                 {
@@ -1085,6 +1177,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DY2JetsToLL_10to50_2016",
+                    "nevts": 19461065,
                     "xsec": 394.5
                 },
                 {
@@ -1094,6 +1187,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DY3JetsToLL_10to50_2016",
+                    "nevts": 4964197,
                     "xsec": 96.47
                 },
                 {
@@ -1103,6 +1197,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DY4JetsToLL_10to50_2016",
+                    "nevts": 2087849,
                     "xsec": 34.84
                 },
                 {
@@ -1112,6 +1207,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_ext1_2016",
+                    "nevts": 99497934,
                     "xsec": 4895
                 },
                 {
@@ -1121,6 +1217,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DYJetsToLL_50toInf_ext2_2016",
+                    "nevts": 193062856,
                     "xsec": 4895
                 },
                 {
@@ -1130,6 +1227,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DY1JetsToLL_50toInf_2016",
+                    "nevts": 63730337,
                     "xsec": 1016
                 },
                 {
@@ -1139,6 +1237,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DY2JetsToLL_50toInf_2016",
+                    "nevts": 19212384,
                     "xsec": 331.4
                 },
                 {
@@ -1148,6 +1247,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DY3JetsToLL_50toInf_2016",
+                    "nevts": 5857441,
                     "xsec": 96.36
                 },
                 {
@@ -1157,6 +1257,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_DY4JetsToLL_50toInf_2016",
+                    "nevts": 4197868,
                     "xsec": 51.4
                 }
             ],
@@ -1180,6 +1281,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_amcNLO_2016",
+                    "nevts": 16497029,
                     "xsec": 60430
                 },
                 {
@@ -1191,6 +1293,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_amcNLO_ext2_2016",
+                    "nevts": 162297341,
                     "xsec": 60430
                 }
             ],
@@ -1212,6 +1315,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_2016",
+                    "nevts": 59028040,
                     "xsec": "50690*1.21"
                 },
                 {   
@@ -1223,6 +1327,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_ext2_2016",
+                    "nevts": 111213597,
                     "xsec": "50690*1.21"
                 },
                 {   
@@ -1234,6 +1339,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT70to100_2016",
+                    "nevts": 10020533,
                     "xsec": "1353*1.21"
                 },
                 {   
@@ -1245,6 +1351,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT100to200_2016",
+                    "nevts": 9945478,
                     "xsec": "1346*1.21"
                 },
                 {   
@@ -1256,6 +1363,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT100to200_ext1_2016",
+                    "nevts": 24307634,
                     "xsec": "1346*1.21"
                 },
                 {   
@@ -1267,6 +1375,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT100to200_ext2_2016",
+                    "nevts": 38593839,
                     "xsec": "1346*1.21"
                 },
                 {   
@@ -1278,6 +1387,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT200to400_2016",
+                    "nevts": 4238585,
                     "xsec": "359.7*1.21"
                 },
                 {   
@@ -1289,6 +1399,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT200to400_ext1_2016",
+                    "nevts": 10833616,
                     "xsec": "359.7*1.21"
                 },
                 {   
@@ -1300,6 +1411,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT200to400_ext2_2016",
+                    "nevts": 19914590,
                     "xsec": "359.7*1.21"
                 },
                 {   
@@ -1311,6 +1423,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT400to600_2016",
+                    "nevts": 1963464,
                     "xsec": "48.91*1.21"
                 },
                 {   
@@ -1322,6 +1435,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT400to600_ext1_2016",
+                    "nevts": 5796237,
                     "xsec": "48.91*1.21"
                 },
                 {   
@@ -1333,6 +1447,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT600to800_2016",
+                    "nevts": 3779141,
                     "xsec": "12.05*1.21"
                 },
                 {   
@@ -1344,6 +1459,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT600to800_ext1_2016",
+                    "nevts": 14908339,
                     "xsec": "12.05*1.21"
                 },
                 {   
@@ -1355,6 +1471,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT800to1200_2016",
+                    "nevts": 1544513,
                     "xsec": "5.501*1.21"
                 },
                 {   
@@ -1366,6 +1483,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT800to1200_ext1_2016",
+                    "nevts": 6286023,
                     "xsec": "5.501*1.21"
                 },
                 {   
@@ -1377,6 +1495,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT1200to2500_2016",
+                    "nevts": 244532,
                     "xsec": "1.329*1.21"
                 },
                 {   
@@ -1388,6 +1507,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT1200to2500_ext1_2016",
+                    "nevts": 6627909,
                     "xsec": "1.329*1.21"
                 },
                 {   
@@ -1399,6 +1519,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT2500toInf_2016",
+                    "nevts": 253561,
                     "xsec": "0.03216*1.21"
                 },
                 {   
@@ -1410,6 +1531,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_HT2500toInf_ext1_2016",
+                    "nevts": 2384260,
                     "xsec": "0.03216*1.21"
                 }
             ],
@@ -1432,6 +1554,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_2016",
+                    "nevts": 59028040,
                     "xsec": 50690
                 },
                 {   
@@ -1443,6 +1566,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_WJets_ext2_2016",
+                    "nevts": 111213597,
                     "xsec": 50690
                 },
                 {   
@@ -1454,6 +1578,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_W1Jets_2016",
+                    "nevts": 45283121,
                     "xsec": 9493
                 },
                 {   
@@ -1465,6 +1590,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_W2Jets_2016",
+                    "nevts": 30064264,
                     "xsec": 3120
                 },
                 {   
@@ -1476,6 +1602,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_W2Jets_ext1_2016",
+                    "nevts": 30374504,
                     "xsec": 3120
                 },
                 {   
@@ -1487,6 +1614,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_W3Jets_2016",
+                    "nevts": 19798117,
                     "xsec": 942.3
                 },
                 {   
@@ -1498,6 +1626,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_W3Jets_ext1_2016",
+                    "nevts": 39501912,
                     "xsec": 942.3
                 },
                 {   
@@ -1509,6 +1638,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_W4Jets_2016",
+                    "nevts": 9116657,
                     "xsec": 524.2
                 },
                 {   
@@ -1520,6 +1650,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_W4Jets_ext1_2016",
+                    "nevts": 2073275,
                     "xsec": 524.2
                 },
                 {   
@@ -1531,6 +1662,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_W4Jets_ext2_2016",
+                    "nevts": 18751462,
                     "xsec": 524.2
                 }
             ],
@@ -1552,6 +1684,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt80To120_EMEnr_2016",
+                    "nevts": 35926841,
                     "xsec": 350000
                 },
                 {
@@ -1563,6 +1696,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt80To120_EMEnr_ext1_2016",
+                    "nevts": 41873363,
                     "xsec": 350000
                 },
                 {
@@ -1574,6 +1708,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt120To170_EMEnr_2016",
+                    "nevts": 36015016,
                     "xsec": 62964
                 },
                 {
@@ -1585,6 +1720,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt120To170_EMEnr_ext1_2016",
+                    "nevts": 42563399,
                     "xsec": 62964
                 },
                 {
@@ -1596,6 +1732,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt170To300_EMEnr_2016",
+                    "nevts": 11540163,
                     "xsec": 18810
                 },
                 {
@@ -1607,6 +1744,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt300ToInf_EMEnr_2016",
+                    "nevts": 7380341,
                     "xsec": 1350
                 },
                 {
@@ -1618,6 +1756,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt80to120_MuEnrPt5_2016",
+                    "nevts": 13895437,
                     "xsec": 106033.6648
                 },
                 {
@@ -1629,6 +1768,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt80to120_MuEnrPt5_ext1_2016",
+                    "nevts": 9809949,
                     "xsec": 106033.6648
                 },
                 {
@@ -1640,6 +1780,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt120to170_MuEnrPt5_2016",
+                    "nevts": 7897731,
                     "xsec": 25190.51514
                 },
                 {
@@ -1651,6 +1792,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt170to300_MuEnrPt5_2016",
+                    "nevts": 19789673,
                     "xsec": 8654.49315
                 },
                 {
@@ -1662,6 +1804,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt170to300_MuEnrPt5_ext1_2016",
+                    "nevts": 9403072,
                     "xsec": 8654.49315
                 },
                 {
@@ -1673,6 +1816,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt300to470_MuEnrPt5_2016",
+                    "nevts": 7937590,
                     "xsec": 797.35269
                 },
                 {
@@ -1684,6 +1828,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt300to470_MuEnrPt5_ext2_2016",
+                    "nevts": 24605508,
                     "xsec": 797.35269
                 },
                 {
@@ -1695,6 +1840,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt470to600_MuEnrPt5_2016",
+                    "nevts": 3972819,
                     "xsec": 79.02553776
                 },
                 {
@@ -1706,6 +1852,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt470to600_MuEnrPt5_ext1_2016",
+                    "nevts": 5668793,
                     "xsec": 79.02553776
                 },
                 {
@@ -1717,6 +1864,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt470to600_MuEnrPt5_ext2_2016",
+                    "nevts": 9847664,
                     "xsec": 79.02553776
                 },
                 {
@@ -1728,6 +1876,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt600to800_MuEnrPt5_2016",
+                    "nevts": 4010136,
                     "xsec": 25.09505908
                 },
                 {
@@ -1739,6 +1888,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt600to800_MuEnrPt5_ext1_2016",
+                    "nevts": 5971175,
                     "xsec": 25.09505908
                 },
                 {
@@ -1750,6 +1900,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt800to1000_MuEnrPt5_2016",
+                    "nevts": 3962749,
                     "xsec": 4.707368272
                 },
                 {
@@ -1761,6 +1912,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt800to1000_MuEnrPt5_ext1_2016",
+                    "nevts": 6011849,
                     "xsec": 4.707368272
                 },
                 {
@@ -1772,6 +1924,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt800to1000_MuEnrPt5_ext2_2016",
+                    "nevts": 9966149,
                     "xsec": 4.707368272
                 },
                 {
@@ -1783,6 +1936,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt1000toInf_MuEnrPt5_2016",
+                    "nevts": 3990117,
                     "xsec": 1.62131692
                 },
                 {
@@ -1794,6 +1948,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt1000toInf_MuEnrPt5_ext1_2016",
+                    "nevts": 9638102,
                     "xsec": 1.62131692
 		},     
                 {
@@ -1805,6 +1960,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt_80to170_bcToE_2016",
+                    "nevts": 14851987,
                     "xsec": 3221000
                 },
                 {
@@ -1816,6 +1972,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt_170to250_bcToE_2016",
+                    "nevts": 9862070,
                     "xsec": 105771
                 },
                 {
@@ -1827,6 +1984,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_QCD_Pt_250toInf_bcToE_2016",
+                    "nevts": 9861593,
                     "xsec": 21094.1
                 }
             ],
@@ -1848,6 +2006,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Wh_amass12_2016",
+                    "nevts": 1010516,
                     "xsec": "1.37*0.61"
                 },
 		            {
@@ -1859,6 +2018,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass12_2016",
+                    "nevts": 965463,
                     "xsec": "0.8839*0.7521"
                 }
             ],
@@ -1889,6 +2049,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Wh_amass15_2016",
+                    "nevts": 996279,
                     "xsec": "1.37*0.61"
                 },
                 {
@@ -1900,6 +2061,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass15_2016",
+                    "nevts": 990410,
                     "xsec": "0.8839*0.7435"
                 }
             ],
@@ -1930,6 +2092,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Wh_amass20_2016",
+                    "nevts": 999279,
                     "xsec": "1.37*0.61"
                 },
 		{
@@ -1941,6 +2104,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass20_2016",
+                    "nevts": 965694,
                     "xsec": "0.8839*0.7435"
                 }
             ],
@@ -1971,6 +2135,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Wh_amass25_2016",
+                    "nevts": 1010277,
                     "xsec": "1.37*0.61"
                 },
 		{
@@ -1982,6 +2147,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass25_2016",
+                    "nevts": 985066,
                     "xsec": "0.8839*0.7435"
                 }
             ],
@@ -2012,6 +2178,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Wh_amass30_2016",
+                    "nevts": 998095,
                     "xsec": "1.37*0.61"
                 },
 		{
@@ -2023,6 +2190,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass30_2016",
+                    "nevts": 994159,
                     "xsec": "0.8839*0.7435"
                 }
             ],
@@ -2053,6 +2221,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Wh_amass40_2016",
+                    "nevts": 1010418,
                     "xsec": "1.37*0.61"
                 },
 		 {
@@ -2064,6 +2233,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass40_2016",
+                    "nevts": 986613,
                     "xsec": "0.8839*0.7435"
                 }
             ],
@@ -2094,6 +2264,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Wh_amass50_2016",
+                    "nevts": 995119,
                     "xsec": "1.37*0.61"
                 },
 		            {
@@ -2105,6 +2276,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass50_2016",
+                    "nevts": 993354,
                     "xsec": "0.8839*0.7435"
                 }
             ],
@@ -2135,6 +2307,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Wh_amass60_2016",
+                    "nevts": 1008303,
                     "xsec": "1.37*0.61"
                 },
 		  {
@@ -2146,6 +2319,7 @@
                     ],
                     "gtag": "94X_mcRun2_asymptotic_v3",
                     "dtag": "MC13TeV_Zh_amass60_2016",
+                    "nevts": 974094,
                     "xsec": "0.8839*0.7435"
                 }
             ],
