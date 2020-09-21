@@ -12,6 +12,7 @@
                     ],
                     "gtag": "102X_dataRun2_v11",
                     "dtag": "Data13TeV_MuEG2018A_17Sep2018_v1",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                     "xsec": 1.0
                 },
@@ -24,6 +25,7 @@
                     ],
                     "gtag": "102X_dataRun2_v11",
                     "dtag": "Data13TeV_MuEG2018B_17Sep2018_v1",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                     "xsec": 1.0
                 },
@@ -36,6 +38,7 @@
                     ],
                     "gtag": "102X_dataRun2_v11",
                     "dtag": "Data13TeV_MuEG2018C_17Sep2018_v1",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                     "xsec": 1.0
                 },
@@ -48,6 +51,7 @@
                     ],
                     "gtag": "102X_dataRun2_Prompt_v14",
                     "dtag": "Data13TeV_MuEG2018D_PromptReco_v2",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                     "xsec": 1.0
                 },
@@ -60,6 +64,7 @@
                     ],
                     "gtag": "102X_dataRun2_v11",
                     "dtag": "Data13TeV_EGamma2018A_17Sep2018_v2",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                     "xsec": 1.0
                 },
@@ -72,6 +77,7 @@
                     ],
                     "gtag": "102X_dataRun2_v11",
                     "dtag": "Data13TeV_EGamma2018B_17Sep2018_v1",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                     "xsec": 1.0
                 },
@@ -84,6 +90,7 @@
                     ],
                     "gtag": "102X_dataRun2_v11",
                     "dtag": "Data13TeV_EGamma2018C_17Sep2018_v1",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                     "xsec": 1.0
                 },
@@ -96,6 +103,7 @@
                     ],
                     "gtag": "102X_dataRun2_Prompt_v14",
                     "dtag": "Data13TeV_EGamma2018D_PromptReco_v2",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                     "xsec": 1.0
                 },
@@ -108,6 +116,7 @@
                     ],
                     "gtag": "102X_dataRun2_v11",
                     "dtag": "Data13TeV_SingleMuon2018A_17Sep2018_v2",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                     "xsec": 1.0
                 },
@@ -120,6 +129,7 @@
                     ],
                     "gtag": "102X_dataRun2_v11",
                     "dtag": "Data13TeV_SingleMuon2018B_17Sep2018_v1",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                     "xsec": 1.0
                 },
@@ -132,6 +142,7 @@
                     ],
                     "gtag": "102X_dataRun2_v11",
                     "dtag": "Data13TeV_SingleMuon2018C_17Sep2018_v1",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                     "xsec": 1.0
                 },
@@ -144,6 +155,7 @@
                     ],
                     "gtag": "102X_dataRun2_Prompt_v14",
                     "dtag": "Data13TeV_SingleMuon2018D_PromptReco_v2",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                     "xsec": 1.0
                 },
@@ -156,6 +168,7 @@
                     ],
                     "gtag": "102X_dataRun2_v11",
                     "dtag": "Data13TeV_DoubleMuon2018A_17Sep2018_v2",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                     "xsec": 1.0
                 },
@@ -168,6 +181,7 @@
                     ],
                     "gtag": "102X_dataRun2_v11",
                     "dtag": "Data13TeV_DoubleMuon2018B_17Sep2018_v1",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                     "xsec": 1.0
                 },
@@ -180,6 +194,7 @@
                     ],
                     "gtag": "102X_dataRun2_v11",
                     "dtag": "Data13TeV_DoubleMuon2018C_17Sep2018_v1",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                     "xsec": 1.0
                 },
@@ -192,6 +207,7 @@
                     ],
                     "gtag": "102X_dataRun2_Prompt_v14",
                     "dtag": "Data13TeV_DoubleMuon2018D_PromptReco_v2",
+                    "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                     "xsec": 1.0
                 }
@@ -219,6 +235,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WW_2018",
+                    "nevts": 7850000,
                     "xsec": 118.7
                 },
                 {
@@ -230,6 +247,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WZ_2018",
+                    "nevts": 3885000,
                     "xsec": 47.13
                 },
                 {
@@ -241,6 +259,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_ZZ_2018",
+                    "nevts": 1979000,
                     "xsec": 16.523
                 },
                 {
@@ -252,6 +271,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_ZZZ_2018",
+                    "nevts": 214282,
                     "xsec": 0.01398
                 },
                 {
@@ -263,6 +283,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WZZ_2018",
+                    "nevts": 219250,
                     "xsec": 0.05565
                 },
                 {
@@ -274,6 +295,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WWZ_2018",
+                    "nevts": 219910,
                     "xsec": 0.1651
                 },
                 {
@@ -285,6 +307,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WWW_4F_2018",
+                    "nevts": 210100,
                     "xsec": 0.2086
                 },
                 {
@@ -296,6 +319,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_SingleT_s_2018",
+                    "nevts": 12458638,
                     "xsec": 3.354
                 },
                 {
@@ -307,6 +331,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_SingleT_t_antitop_2018",
+                    "nevts": 74227130,
                     "xsec": 26.30875
                 },
                 {
@@ -318,6 +343,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_SingleT_t_top_2018",
+                    "nevts": 144094782,
                     "xsec": 44.2065
                 },
                 {
@@ -329,6 +355,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_SingleT_tW_antitop_2018",
+                    "nevts": 7588180,
                     "xsec": 35.6
                 },
                 {
@@ -340,6 +367,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_SingleT_tW_top_2018",
+                    "nevts": 9553912,
                     "xsec": 35.6
                 },
                 {
@@ -349,6 +377,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTGJets_2018",
+                    "nevts": 1842387,
                     "xsec": 3.697
                 },
                 {
@@ -358,6 +387,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TGJets_2018",
+                    "nevts": 374278,
                     "xsec": 2.967
                 },
                 {
@@ -367,6 +397,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTWJetslnu_2018",
+                    "nevts": 2686095,
                     "xsec": 0.2043
                 },
                 {
@@ -376,6 +407,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTZJets2l2nu_2018",
+                    "nevts": 6274046,
                     "xsec": 0.2529
                 },
                 {
@@ -387,6 +419,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WplusH_HToBB_WToLNu_2018",
+                    "nevts": 704737,
                     "xsec": 0.053
                 },
                 {
@@ -398,6 +431,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WplusH_HToBB_WToLNu_ext1_2018",
+                    "nevts": 1133498,
                     "xsec": 0.053
                 },
                 {
@@ -409,6 +443,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WminusH_HToBB_WToLNu_2018",
+                    "nevts": 737723,
                     "xsec": 0.03369
                 },
                 {
@@ -420,6 +455,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WminusH_HToBB_WToLNu_ext1_2018",
+                    "nevts": 1136836,
                     "xsec": 0.03369
                 },
                 {
@@ -431,6 +467,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_ZH_HToBB_ZToLL_2018",
+                    "nevts": 4532556,
                     "xsec": 0.04865
                 }, 
                 {
@@ -442,6 +479,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_ZH_HToBB_ZToLL_ext1_2018",
+                    "nevts": 2091798,
                     "xsec": 0.04865
                 } 
             ],
@@ -464,6 +502,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTTo2L2Nu_powheg_2018",
+                    "nevts": 63791484,
                     "xsec": 88.29
                 },
                 {
@@ -475,6 +514,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTToSemiLeptonic_powheg_2018",
+                    "nevts": 100728756,
                     "xsec": 365.34
                 },
                 {
@@ -486,6 +526,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTToHadronic_powheg_2018",
+                    "nevts": 132725582,
                     "xsec": 377.96
                 }
             ],
@@ -508,6 +549,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTTo2L2Nu_powheg_2018",
+                    "nevts": 63791484,
                     "xsec": 88.29
                 },
                 {
@@ -519,6 +561,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTToSemiLeptonic_powheg_2018",
+                    "nevts": 100728756,
                     "xsec": 365.34
                 },
                 {
@@ -530,6 +573,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTToHadronic_powheg_2018",
+                    "nevts": 132725582,
                     "xsec": 377.96
                 }
             ],
@@ -552,6 +596,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTTo2L2Nu_powheg_2018",
+                    "nevts": 63791484,
                     "xsec": 88.29
                 },
                 {
@@ -563,6 +608,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTToSemiLeptonic_powheg_2018",
+                    "nevts": 100728756,
                     "xsec": 365.34
                 },
                 {
@@ -574,6 +620,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTToHadronic_powheg_2018",
+                    "nevts": 132725582,
                     "xsec": 377.96
                 }
             ],
@@ -595,6 +642,7 @@
 		    ],
 		    "gtag": "102X_upgrade2018_realistic_v19",
 		    "dtag": "MC13TeV_DYJetsToLL_M50_amcNLO_2018",
+                    "nevts": 1,
 		    "xsec": 5765.4
 		},
 		{
@@ -604,6 +652,7 @@
 		    ],
 		    "gtag": "102X_upgrade2018_realistic_v19",
 		    "dtag": "MC13TeV_DYJetsToLL_M50_amcNLO_ext2_2018",
+                    "nevts": 1,
 		    "xsec": 5765.4
 		}
             ],
@@ -624,6 +673,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_10to50_2018",
+                    "nevts": 1,
                     "xsec": "18610*1.23"
                 },
                 {
@@ -633,6 +683,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_4to50_HT70to100_2018",
+                    "nevts": 1,
                     "xsec": "145.5*1.23"
                 },
                 {
@@ -642,6 +693,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_4to50_HT100to200_2018",
+                    "nevts": 1,
                     "xsec": "204*1.23"
                 },
                 {
@@ -651,6 +703,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_4to50_HT200to400_2018",
+                    "nevts": 1,
                     "xsec": "54.4*1.23"
                 },
                 {
@@ -660,6 +713,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_4to50_HT400to600_2018",
+                    "nevts": 1,
                     "xsec": "5.7*1.23"
                 },
                 {
@@ -669,6 +723,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_4to50_HT600toInf_2018",
+                    "nevts": 1,
                     "xsec": "1.85*1.23"
                 },
                 {
@@ -678,6 +733,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_2018",
+                    "nevts": 1,
                     "xsec": "4895*1.23"
                 },
                 {
@@ -687,6 +743,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT70to100_2018",
+                    "nevts": 1,
                     "xsec": "146.9*1.23"
                 },
                 {
@@ -696,6 +753,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT100to200_2018",
+                    "nevts": 1,
                     "xsec": "161.1*1.23"
                 },
                 {
@@ -705,6 +763,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT200to400_2018",
+                    "nevts": 1,
                     "xsec": "48.66*1.23"
                 },
                 {
@@ -714,6 +773,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT400to600_2018",
+                    "nevts": 1,
                     "xsec": "6.97*1.23"
                 },
                 {
@@ -723,6 +783,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT600to800_2018",
+                    "nevts": 1,
                     "xsec": "1.743*1.23"
                 },
                 {
@@ -732,6 +793,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT800to1200_2018",
+                    "nevts": 1,
                     "xsec": "0.805*1.23"
                 },
                 {
@@ -741,6 +803,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT1200to2500_2018",
+                    "nevts": 1,
                     "xsec": "0.193*1.23"
                 },
                 {
@@ -750,6 +813,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT2500toInf_2018",
+                    "nevts": 1,
                     "xsec": "0.00347*1.23"
                 }
             ],
@@ -770,6 +834,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_10to50_2018",
+                    "nevts": 1,
                     "xsec": 18610
                 },
                 {
@@ -779,6 +844,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_2018",
+                    "nevts": 1,
                     "xsec": 4895
                 },
                 {
@@ -788,6 +854,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DY1JetsToLL_M50_2018",
+                    "nevts": 1,
                     "xsec": 1016
                 },
                 {
@@ -797,6 +864,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DY2JetsToLL_M50_2018",
+                    "nevts": 1,
                     "xsec": 331.4
                 },
                 {
@@ -806,6 +874,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DY3JetsToLL_M50_2018",
+                    "nevts": 1,
                     "xsec": 96.36
                 },
                 {
@@ -815,6 +884,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DY4JetsToLL_M50_2018",
+                    "nevts": 1,
                     "xsec": 51.4
                 }
             ],
@@ -837,6 +907,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_2018",
+                    "nevts": 1,
                     "xsec": "50960*1.21"
                 },
                 {
@@ -848,6 +919,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT70to100_2018",
+                    "nevts": 28060302,
                     "xsec": "1292*1.21"
                 },
                 {
@@ -859,6 +931,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT100to200_2018",
+                    "nevts": 29488310,
                     "xsec": "1395*1.21"
                 },
                 {
@@ -870,6 +943,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT200to400_2018",
+                    "nevts": 25423155,
                     "xsec": "407.9*1.21"
                 },
                 {
@@ -881,6 +955,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT400to600_2018",
+                    "nevts": 5915969,
                     "xsec": "57.48*1.21"
                 },
                 {
@@ -892,6 +967,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT600to800_2018",
+                    "nevts": 19699782,
                     "xsec": "12.87*1.21"
                 },
                 {
@@ -903,6 +979,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT800to1200_2018",
+                    "nevts": 8362227,
                     "xsec": "5.366*1.21"
                 },
                 {
@@ -914,6 +991,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT1200to2500_2018",
+                    "nevts": 7571583,
                     "xsec": "1.074*1.21"
                 },
                 {
@@ -925,6 +1003,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT2500toInf_2018",
+                    "nevts": 3191612,
                     "xsec": "0.008001*1.21"
                 }
             ],
@@ -947,6 +1026,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_2018",
+                    "nevts": 1,
                     "xsec": 50960
                 },
                 {
@@ -958,6 +1038,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_W1Jets_2018",
+                    "nevts": 1,
                     "xsec": 9493
                 },
                 {
@@ -969,6 +1050,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_W2Jets_2018",
+                    "nevts": 1,
                     "xsec": 3120
                 },
                 {
@@ -980,6 +1062,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_W3Jets_2018",
+                    "nevts": 1,
                     "xsec": 942.3
                 },
                 {
@@ -991,6 +1074,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_W4Jets_2018",
+                    "nevts": 1,
                     "xsec": 524.2
                 }
             ],
@@ -1012,6 +1096,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_QCD_Pt80To120_EMEnr_2018",
+                    "nevts": 9648791,
                     "xsec": 350000
                 },
                 {
@@ -1023,6 +1108,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_QCD_Pt120To170_EMEnr_2018",
+                    "nevts": 9964143,
                     "xsec": 62964
                 },
                 {
@@ -1034,6 +1120,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_QCD_Pt170To300_EMEnr_2018",
+                    "nevts": 3712174,
                     "xsec": 18810
                 },
                 {
@@ -1045,6 +1132,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_QCD_Pt300ToInf_EMEnr_2018",
+                    "nevts": 2901355,
                     "xsec": 1350
                 },
                 {
@@ -1056,6 +1144,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_QCD_Pt80to120_MuEnrPt5_2018",
+                    "nevts": 612919,
                     "xsec": 106033.6648
                 },
                 {
@@ -1067,6 +1156,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_QCD_Pt80to120_MuEnrPt5_ext1_2018",
+                    "nevts": 25039361,
                     "xsec": 106033.6648
                 },
                 {
@@ -1078,6 +1168,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_QCD_Pt120to170_MuEnrPt5_2018",
+                    "nevts": 633668,
                     "xsec": 25190.51514
                 },
                 {
@@ -1089,6 +1180,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_QCD_Pt120to170_ext1_MuEnrPt5_2018",
+                    "nevts": 20682254,
                     "xsec": 25190.51514
                 },
                 {
@@ -1100,6 +1192,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_QCD_Pt170to300_MuEnrPt5_2018",
+                    "nevts": 35978539,
                     "xsec": 8654.49315
                 },
                 {
@@ -1111,6 +1204,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_QCD_Pt300to470_MuEnrPt5_2018",
+                    "nevts": 492418,
                     "xsec": 797.35269
                 },
                 {
@@ -1122,6 +1216,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_QCD_Pt300to470_ext3_MuEnrPt5_2018",
+                    "nevts": 28996145,
                     "xsec": 797.35269
                 },
                 {
@@ -1133,6 +1228,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_QCD_Pt470to600_MuEnrPt5_2018",
+                    "nevts": 492716,
                     "xsec": 79.02553776
                 },
                 {
@@ -1144,6 +1240,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_QCD_Pt470to600_ext1_MuEnrPt5_2018",
+                    "nevts": 20003034,
                     "xsec": 79.02553776
                 },
                 {
@@ -1155,6 +1252,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_QCD_Pt600to800_MuEnrPt5_2018",
+                    "nevts": 16618977,
                     "xsec": 25.09505908
                 },
                 {
@@ -1166,6 +1264,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_QCD_Pt800to1000_ext3_MuEnrPt5_2018",
+                    "nevts": 16749914,
                     "xsec": 4.707368272
                 },
                 {
@@ -1177,6 +1276,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_QCD_Pt1000toInf_MuEnrPt5_2018",
+                    "nevts": 10719790,
                     "xsec": 1.62131692
                 }
             ],
@@ -1198,6 +1298,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_Wh_amass12_2018",
+                    "nevts": 1020300,
                     "xsec": "1.37*0.61"
                 },
                 {
@@ -1209,6 +1310,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_Zh_amass12_2018",
+                    "nevts": 496721,
                     "xsec": "0.8839*0.75"
                 }
             ],
@@ -1239,6 +1341,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_Wh_amass15_2018",
+                    "nevts": 1022564,
                     "xsec": "1.37*0.61"
                 },
                 {
@@ -1250,6 +1353,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_Zh_amass15_2018",
+                    "nevts": 297501,
                     "xsec": "0.8839*0.75"
                 }
             ],
@@ -1280,6 +1384,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_Wh_amass20_2018",
+                    "nevts": 1020605,
                     "xsec": "1.37*0.61"
                 },
                 {
@@ -1291,6 +1396,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_Zh_amass20_2018",
+                    "nevts": 494820,
                     "xsec": "0.8839*0.75"
                 }
             ],
@@ -1320,6 +1426,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_Wh_amass25_2018",
+                    "nevts": 1021525,
                     "xsec": "1.37*0.61"
                 },
                 {
@@ -1331,6 +1438,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_Zh_amass25_2018",
+                    "nevts": 484463,
                     "xsec": "0.8839*0.75"
                 }
             ],
@@ -1361,6 +1469,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_Wh_amass30_2018",
+                    "nevts": 1011352,
                     "xsec": "1.37*0.61"
                 },
                 {
@@ -1372,6 +1481,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_Zh_amass30_2018",
+                    "nevts": 490005,
                     "xsec": "0.8839*0.75"
                 }
             ],
@@ -1402,6 +1512,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_Wh_amass40_2018",
+                    "nevts": 1019418,
                     "xsec": "1.37*0.61"
                 },
                 {
@@ -1413,6 +1524,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_Zh_amass40_2018",
+                    "nevts": 484314,
                     "xsec": "0.8839*0.75"
                 }
             ],
@@ -1443,6 +1555,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_Wh_amass50_2018",
+                    "nevts": 1015129,
                     "xsec": "1.37*0.61"
                 },
                 {
@@ -1454,6 +1567,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_Zh_amass50_2018",
+                    "nevts": 472187,
                     "xsec": "0.8839*0.75"
                 }
             ],
@@ -1484,6 +1598,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_Wh_amass60_2018",
+                    "nevts": 1019047,
                     "xsec": "1.37*0.61"
                 },
                 {
@@ -1495,6 +1610,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_Zh_amass60_2018",
+                    "nevts": 495592,
                     "xsec": "0.8839*0.75"
                 }
             ],
