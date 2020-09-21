@@ -126,6 +126,8 @@ for proc in procList :
             origdtag = getByLabel(d,'dtag','')
             dtag = origdtag
             xsec = getByLabel(d,'xsec',-1)
+            nevts = getByLabel(d,'nevts',1)
+            print( "\n *** debug:  dtag {} has nevts {}\n".format( dtag, nevts ) )
             br = getByLabel(d,'br',[])
             suffix = str(getByLabel(d,'suffix' ,""))
             if(onlytag!='all') :
@@ -196,7 +198,9 @@ for proc in procList :
                 SCRIPT_DTag.writelines('cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/; \n\n')
                 
             # Loop over files for given dtag name:
-                ntplpath = '/eos/cms/store/user/' + who + '/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
+                ############ntplpath = '/eos/cms/store/user/' + who + '/'+inputdir + '/*/crab_' + origdtag + '*/*/*/'
+                ntplpath = inputdir + '/*/crab_' + origdtag + '*/*/*/'
+                print "\n *** debug: ntplpath = {}\n\n".format( ntplpath )
                 # FileList = [file for file in glob.glob(ntplpath+'analysis_*.root')] 
                 
                 segment=0
@@ -209,6 +213,7 @@ for proc in procList :
                     
                     sedcmd = 'sed \"s%"@input"%' +eventsFile +'%;'
                     sedcmd += 's%"@outdir"%' + ntpl_out +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
+                    sedcmd += 's%"@nevts"%' + str(nevts) + '%;'
                     sedcmd += 's%"@btagDir"%' + btagDir + '%;'
                     sedcmd += 's%"@suffix"%' + suffix + '%;'
                     sedcmd += 's%"@proc"%' + dtag + '%;'

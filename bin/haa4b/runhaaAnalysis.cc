@@ -1,4 +1,4 @@
-//#define YEAR_2017
+#define YEAR_2017
 
 #include <iostream>
 #include <map>
@@ -145,6 +145,7 @@ int main(int argc, char* argv[])
   
     bool isMC = runProcess.getParameter<bool>("isMC");
     double xsec = runProcess.getParameter<double>("xsec");
+    double nevts = runProcess.getParameter<double>("nevts"); // owen, Sept 19, 2020: get total number of events, put in cfg from the json file
 
     TString proc=runProcess.getParameter<std::string>("proc");
     TString dtag=runProcess.getParameter<std::string>("tag");
@@ -864,7 +865,8 @@ int main(int argc, char* argv[])
       if(rescaleFactor>0) cnorm /= rescaleFactor;
       printf("cnorm = %f and totalNumberOfEvents= %f\n", cnorm, totalNumberofEvents);
       //xsecWeight=xsec/totalNumberofEvents;
-      xsecWeight=xsec/cnorm; // effective luminosity}
+      /////////////xsecWeight=xsec/cnorm; // effective luminosity}
+      xsecWeight=xsec/nevts; // owen, Sept 19, 2020: use the total number of events for the dataset from the json file.
       /*
       std::map<std::string, int> xsec_map = mStat;
       //std::string myproc = proc.Data();
