@@ -256,7 +256,8 @@ class ShapeData_t
         void removeStatUnc(){
         for(auto unc = uncShape.begin(); unc!= uncShape.end(); unc++){
         TString name = unc->first.c_str();
-        if(name.Contains("stat") && (name.EndsWith("Up") || name.EndsWith("Down"))){
+	if(name.Contains("stat") && (name.Contains("Up") || name.Contains("Down"))){  
+	//        if(name.Contains("stat") && (name.EndsWith("Up") || name.EndsWith("Down"))){
           //-- owen: do I need to delete the histogram before calling erase to avoid a memory leak???
           //delete unc->second ;
           uncShape.erase(unc);
@@ -447,6 +448,7 @@ class ShapeData_t
             if ( verbose ) { printf(" --- verbose : makeStatUnc : 4 adding to uncShape with key %s\n", (prefix+"stat"+suffix+"Up").c_str() ) ; fflush(stdout) ; }
 
            //-- owen: first check if this is already set.  If so, delete the existing one to avoid memory leak.
+	    
             if ( uncShape.find( prefix+"stat"+suffix+"Up" ) != uncShape.end() ) {
                if ( uncShape[prefix+"stat"+suffix+"Up"  ] != 0x0 ) {
                   if ( verbose ) { printf(" --- verbose : makeStatUnc : 4 deleting existing hist with name %s before assignment.\n", uncShape[prefix+"stat"+suffix+"Up"  ] -> GetName() ) ; fflush(stdout) ; }
@@ -459,7 +461,7 @@ class ShapeData_t
                   delete uncShape[prefix+"stat"+suffix+"Down"  ] ;
                }
             }
-
+	    
             uncShape[prefix+"stat"+suffix+"Up"  ] = statU;
             uncShape[prefix+"stat"+suffix+"Down"] = statD;
             
@@ -544,10 +546,10 @@ class ShapeData_t
         //                       Looks safe to not clone, so removing this.  Speeds it up a lot.
        
             //--- with cloning
-        ////  TH1* hvar = (TH1*)(var->second->Clone((name+var->first).c_str()));
-        ////  double varYield = hvar->GetBinContent(bin);
-        ////  TH1* h = (TH1*)(this->histo()->Clone((name+"Nominal").c_str()));
-        ////  double yield = h->GetBinContent(bin);
+	      //TH1* hvar = (TH1*)(var->second->Clone((name+var->first).c_str()));
+	      // double varYield = hvar->GetBinContent(bin);
+	      //TH1* h = (TH1*)(this->histo()->Clone((name+"Nominal").c_str()));
+	      //double yield = h->GetBinContent(bin);
 
             //--- no cloning
               double varYield = var->second->GetBinContent(bin);
@@ -932,18 +934,19 @@ int main(int argc, char* argv[])
         Channels.push_back("e_B_CR");Channels.push_back("mu_B_CR"); // Top CR 
         Channels.push_back("e_C_CR");Channels.push_back("mu_C_CR"); // Top CR 
         Channels.push_back("e_D_CR");Channels.push_back("mu_D_CR"); // Top CR
-
+	/*
         Channels.push_back("e_A_CR5j");Channels.push_back("mu_A_CR5j"); // tt+bb CR
         Channels.push_back("e_B_CR5j");Channels.push_back("mu_B_CR5j"); // tt+bb CR 
         Channels.push_back("e_C_CR5j");Channels.push_back("mu_C_CR5j"); // tt+bb CR 
         Channels.push_back("e_D_CR5j");Channels.push_back("mu_D_CR5j"); // tt+bb CR 
+	*/
       } else {
         if(runZh){ // Zh
           Channels.push_back("ee_A_CR");Channels.push_back("mumu_A_CR"); // DY CR
           Channels.push_back("emu_A_SR");Channels.push_back("emu_A_CR"); // Top CR     
         }else{ // Wh
           Channels.push_back("e_A_CR");Channels.push_back("mu_A_CR"); // Top/W CR
-          Channels.push_back("e_A_CR5j");Channels.push_back("mu_A_CR5j"); // tt+bb CR   
+          //Channels.push_back("e_A_CR5j");Channels.push_back("mu_A_CR5j"); // tt+bb CR   
         }
       }
     }
@@ -1021,11 +1024,12 @@ int main(int argc, char* argv[])
       ch.push_back("e_B_CR"); ch.push_back("mu_B_CR"); 
       ch.push_back("e_C_CR"); ch.push_back("mu_C_CR"); 
       ch.push_back("e_D_CR"); ch.push_back("mu_D_CR");
-
+      /*
       ch.push_back("e_A_CR5j"); ch.push_back("mu_A_CR5j");  
       ch.push_back("e_B_CR5j"); ch.push_back("mu_B_CR5j"); 
       ch.push_back("e_C_CR5j"); ch.push_back("mu_C_CR5j"); 
       ch.push_back("e_D_CR5j"); ch.push_back("mu_D_CR5j"); 
+      */
     }
   } else {
     if(runZh){ // Zh
@@ -1039,7 +1043,7 @@ int main(int argc, char* argv[])
       ch.push_back("e_A_SR"); ch.push_back("mu_A_SR");
       if (simfit) { 
         ch.push_back("e_A_CR"); ch.push_back("mu_A_CR");
-        ch.push_back("e_A_CR5j"); ch.push_back("mu_A_CR5j"); 
+	//        ch.push_back("e_A_CR5j"); ch.push_back("mu_A_CR5j"); 
       }
     }
 
@@ -1401,9 +1405,9 @@ int main(int argc, char* argv[])
   if ( verbose && runSystematics ) { printf("\n  --- verbose : main :    calling allInfo.showUncertainty(selCh,histo,\"plot\"); \n") ; fflush(stdout) ; }
 
   //produce a plot
-  /////////if(runSystematics) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  // owen: temporarily turn this off.  Slows it down.
+  if(runSystematics && !(simfit)) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  
+  // owen: temporarily turn this off.  Slows it down.
   
-
   if ( verbose ) allInfo.printInventory() ;
 
 
@@ -3110,6 +3114,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     string UncertaintyOnYield="";  char txtBuffer[4096];
     TFile *unc_f = TFile::Open("unc.root", "recreate");
 
+    sprintf(txtBuffer,"\\documentclass{article}\n\\usepackage{graphicx}\n\\usepackage{geometry}\n\\geometry{\n\tleft=10mm,\n\tright=10mm,\n\ttop=10mm,\n\tbottom=10mm\n}\n\\usepackage[utf8]{inputenc}\n\\usepackage{rotating}\n\\begin{document}\n"); UncertaintyOnYield += txtBuffer;    
+
     //loop on sorted proc
     for(unsigned int p=0;p<sorted_procs.size();p++){
       int NLegEntry = 0;
@@ -3280,7 +3286,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           systName.ReplaceAll("_","");
           //systName.ReplaceAll("up","");
           //systName.ReplaceAll("down","");
-          if(systName.Index("jes")<0 && systName.Index("umet")<0 && systName.Index("resj")<0) continue;
+          //if(systName.Index("jes")<0 && systName.Index("umet")<0 && systName.Index("resj")<0) continue;
 
           int color = ColorIndex;
           if(systName.Contains("stat")){systName = "stat"; color=2;}
@@ -3333,7 +3339,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       //save canvas
       ////////////c1->SaveAs(SaveName+vh_tag+"_Uncertainty_"+it->second.shortName+".png");  //-- owen: temporarily disable this (file is huge)
-      ////////////c1->SaveAs(SaveName+vh_tag+"_Uncertainty_"+it->second.shortName+".pdf");  //-- owen: temporarily disable this (file is huge)
+      c1->SaveAs(SaveName+vh_tag+"_Uncertainty_"+it->second.shortName+".pdf");  //-- owen: temporarily disable this (file is huge)
       ////////////c1->SaveAs(SaveName+vh_tag+"_Uncertainty_"+it->second.shortName+".C");  //-- owen: temporarily disable this (file is huge)
       delete c1;             
 
@@ -3344,8 +3350,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       //
       for(auto systIt=mapYieldInc.begin(); systIt!=mapYieldInc.end(); systIt++){ mapYieldPerBin[systIt->first][" Inc"] = systIt->second.first/systIt->second.second;  }
       //print uncertainty on yield            
-      //
-      sprintf(txtBuffer, "\\multicolumn{%i}{'c'}{\\bf{%s}}\\\\ \n", I+1, it->first.c_str());  UncertaintyOnYield+= txtBuffer;
+      sprintf(txtBuffer,"\\begin{table}[htp]\n\\begin{center}\n\\caption{}\n\\label{tab:tablesys}\n\\resizebox{\\textwidth}{!}{\n "); UncertaintyOnYield += txtBuffer; 
+      sprintf(txtBuffer, "\\begin{tabular}{ccccccc} \n {\\bf{%s}} & & & & & & \\\\ \\hline \n", it->first.c_str());  UncertaintyOnYield+= txtBuffer; 
+      //      sprintf(txtBuffer, "\\multicolumn{%i}{'c'}{\\bf{%s}}\\\\ \n", I+1, it->first.c_str());  UncertaintyOnYield+= txtBuffer;
       sprintf(txtBuffer, "%10s & %25s", "Type", "Uncertainty");
       for(auto chIt=mapYieldPerBin[""].begin();chIt!=mapYieldPerBin[""].end();chIt++){ sprintf(txtBuffer, "%s & %12s ", txtBuffer, chIt->first.c_str()); } sprintf(txtBuffer, "%s\\\\ \\hline\n", txtBuffer);  UncertaintyOnYield += txtBuffer;
       sprintf(txtBuffer, "%10s & %25s", "", "Nominal yields ");
@@ -3359,7 +3366,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           }
         }sprintf(txtBuffer, "%s\\\\ \n", txtBuffer);   UncertaintyOnYield += txtBuffer;
       }sprintf(txtBuffer, "\\hline \n"); UncertaintyOnYield += txtBuffer;
+      sprintf(txtBuffer,"\\end{tabular}\n}\n\\end{center}\n\\end{table}\n");UncertaintyOnYield += txtBuffer; 
     }
+    sprintf(txtBuffer,"\\end{document}\n");UncertaintyOnYield += txtBuffer;
 
     FILE* pFile = fopen(SaveName+vh_tag+"_Uncertainty.txt", "w");
     if(pFile){ fprintf(pFile, "%s\n", UncertaintyOnYield.c_str()); fclose(pFile);}
@@ -3695,7 +3704,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       //      dcName.ReplaceAll("_qcdB","_qcdB");  
 
       //-- owen: August 10, 2020:  remove CR5j completely.
-      if (C->first.find("CR5j")!=string::npos) continue;
+      //      if (C->first.find("CR5j")!=string::npos) continue;
 
       if(C->first.find("emu")==string::npos) combinedcard += (C->first+"=").c_str()+dcName+" ";
       if(runZh) {
