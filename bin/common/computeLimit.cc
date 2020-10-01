@@ -256,8 +256,8 @@ class ShapeData_t
         void removeStatUnc(){
         for(auto unc = uncShape.begin(); unc!= uncShape.end(); unc++){
         TString name = unc->first.c_str();
-	//	if(name.Contains("stat") && (name.Contains("Up") || name.Contains("Down"))){  
-	if(name.Contains("stat") && (name.EndsWith("Up") || name.EndsWith("Down"))){
+	if(name.Contains("stat") && (name.Contains("Up") || name.Contains("Down"))){  
+	//        if(name.Contains("stat") && (name.EndsWith("Up") || name.EndsWith("Down"))){
           //-- owen: do I need to delete the histogram before calling erase to avoid a memory leak???
           //delete unc->second ;
           uncShape.erase(unc);
@@ -1406,7 +1406,6 @@ int main(int argc, char* argv[])
 
   //produce a plot
   if(runSystematics && !(simfit)) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  
-  // georgia : now run reporting systematics only if simfit=false 
   // owen: temporarily turn this off.  Slows it down.
   
   if ( verbose ) allInfo.printInventory() ;
@@ -3302,7 +3301,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
           if(yield>0){
             if(mapYieldPerBin[systName.Data()].find(ch->first)==mapYieldPerBin[systName.Data()].end()){
-              mapYieldPerBin[systName.Data()][ch->first] = fabs( 1 - (varYield/yield));
+              mapYieldPerBin[systName.Data()][ch->first] =  ( 1 - (varYield/yield)); // fabs( 1 - (varYield/yield));
               mapUncType[systName.Data()] = true;                        
             }else{
               mapYieldPerBin[systName.Data()][ch->first] = std::max(fabs( 1 - (varYield/yield) ), mapYieldPerBin[systName.Data()][ch->first]);
@@ -3351,8 +3350,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       //
       for(auto systIt=mapYieldInc.begin(); systIt!=mapYieldInc.end(); systIt++){ mapYieldPerBin[systIt->first][" Inc"] = systIt->second.first/systIt->second.second;  }
       //print uncertainty on yield            
-      sprintf(txtBuffer,"\\begin{table}[htp]\n\\begin{center}\n\\caption{}\n\\label{tab:tablesys}\n\\resizebox{\\textwidth}{!}{\n "); UncertaintyOnYield += txtBuffer; 
-      sprintf(txtBuffer, "\\begin{tabular}{ccccccc} \n {\\bf{%s}} & & & & & & \\\\ \\hline \n", it->first.c_str());  UncertaintyOnYield+= txtBuffer; 
+      sprintf(txtBuffer,"\\begin{table}[htp]\n\\tiny\n\\begin{center}\n\\caption{Uncertainty on the yield for the process: \\bf{%s}}\n\\label{tab:tablesys}\n\\resizebox{\\textwidth}{!}{\n ",it->first.c_str()); UncertaintyOnYield += txtBuffer; 
+      sprintf(txtBuffer, "\\begin{tabular}{ccccccc} \n"); UncertaintyOnYield+= txtBuffer; 
+      //      sprintf(txtBuffer, "\\begin{tabular}{ccccccc} \n {\\bf{%s}} & & & & & & \\\\ \\hline \n", it->first.c_str());  UncertaintyOnYield+= txtBuffer; 
       //      sprintf(txtBuffer, "\\multicolumn{%i}{'c'}{\\bf{%s}}\\\\ \n", I+1, it->first.c_str());  UncertaintyOnYield+= txtBuffer;
       sprintf(txtBuffer, "%10s & %25s", "Type", "Uncertainty");
       for(auto chIt=mapYieldPerBin[""].begin();chIt!=mapYieldPerBin[""].end();chIt++){ sprintf(txtBuffer, "%s & %12s ", txtBuffer, chIt->first.c_str()); } sprintf(txtBuffer, "%s\\\\ \\hline\n", txtBuffer);  UncertaintyOnYield += txtBuffer;
