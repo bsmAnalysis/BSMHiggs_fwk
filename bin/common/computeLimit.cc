@@ -3302,7 +3302,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
           if(yield>0){
             if(mapYieldPerBin[systName.Data()].find(ch->first)==mapYieldPerBin[systName.Data()].end()){
-              mapYieldPerBin[systName.Data()][ch->first] = fabs( 1 - (varYield/yield));
+              mapYieldPerBin[systName.Data()][ch->first] =  ( 1 - (varYield/yield)); // fabs( 1 - (varYield/yield));
               mapUncType[systName.Data()] = true;                        
             }else{
               mapYieldPerBin[systName.Data()][ch->first] = std::max(fabs( 1 - (varYield/yield) ), mapYieldPerBin[systName.Data()][ch->first]);
@@ -3351,8 +3351,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       //
       for(auto systIt=mapYieldInc.begin(); systIt!=mapYieldInc.end(); systIt++){ mapYieldPerBin[systIt->first][" Inc"] = systIt->second.first/systIt->second.second;  }
       //print uncertainty on yield            
-      sprintf(txtBuffer,"\\begin{table}[htp]\n\\begin{center}\n\\caption{}\n\\label{tab:tablesys}\n\\resizebox{\\textwidth}{!}{\n "); UncertaintyOnYield += txtBuffer; 
-      sprintf(txtBuffer, "\\begin{tabular}{ccccccc} \n {\\bf{%s}} & & & & & & \\\\ \\hline \n", it->first.c_str());  UncertaintyOnYield+= txtBuffer; 
+      sprintf(txtBuffer,"\\begin{table}[htp]\n\\tiny\n\\begin{center}\n\\caption{Uncertainty on the yield for the process: \\bf{%s}}\n\\label{tab:tablesys}\n\\resizebox{\\textwidth}{!}{\n ",it->first.c_str()); UncertaintyOnYield += txtBuffer; 
+      sprintf(txtBuffer, "\\begin{tabular}{ccccccc} \n"); UncertaintyOnYield+= txtBuffer; 
+      //      sprintf(txtBuffer, "\\begin{tabular}{ccccccc} \n {\\bf{%s}} & & & & & & \\\\ \\hline \n", it->first.c_str());  UncertaintyOnYield+= txtBuffer; 
       //      sprintf(txtBuffer, "\\multicolumn{%i}{'c'}{\\bf{%s}}\\\\ \n", I+1, it->first.c_str());  UncertaintyOnYield+= txtBuffer;
       sprintf(txtBuffer, "%10s & %25s", "Type", "Uncertainty");
       for(auto chIt=mapYieldPerBin[""].begin();chIt!=mapYieldPerBin[""].end();chIt++){ sprintf(txtBuffer, "%s & %12s ", txtBuffer, chIt->first.c_str()); } sprintf(txtBuffer, "%s\\\\ \\hline\n", txtBuffer);  UncertaintyOnYield += txtBuffer;
