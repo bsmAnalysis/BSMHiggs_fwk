@@ -256,8 +256,8 @@ class ShapeData_t
         void removeStatUnc(){
         for(auto unc = uncShape.begin(); unc!= uncShape.end(); unc++){
         TString name = unc->first.c_str();
-	if(name.Contains("stat") && (name.Contains("Up") || name.Contains("Down"))){  
-	//        if(name.Contains("stat") && (name.EndsWith("Up") || name.EndsWith("Down"))){
+	//	if(name.Contains("stat") && (name.Contains("Up") || name.Contains("Down"))){  
+	if(name.Contains("stat") && (name.EndsWith("Up") || name.EndsWith("Down"))){
           //-- owen: do I need to delete the histogram before calling erase to avoid a memory leak???
           //delete unc->second ;
           uncShape.erase(unc);
@@ -1406,6 +1406,7 @@ int main(int argc, char* argv[])
 
   //produce a plot
   if(runSystematics && !(simfit)) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  
+  // georgia : now run reporting systematics only if simfit=false 
   // owen: temporarily turn this off.  Slows it down.
   
   if ( verbose ) allInfo.printInventory() ;
