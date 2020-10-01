@@ -92,18 +92,18 @@ inUrl_zh=''
 
 if ( year_to_run == "2016" ):
    jsonPath='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples2016_legacy.json'
-   inUrl_wh='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2016_Wh_Sys_noSoftb_forLimits.root'
-   inUrl_zh='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2016_Zh_Sys_noSoftb_forLimits.root'
+   inUrl_wh='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2016_WH_Sys_noSoftb_forLimits-replaced-signal-mc.root'
+   inUrl_zh='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2016_ZH_Sys_noSoftb_forLimits-replaced-signal-mc.root'
 
 if ( year_to_run == "2017" ):
    jsonPath='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples2017.json'
-   inUrl_wh='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2017_WH_Sys_noSoftb_forLimits.root'
-   inUrl_zh='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2017_ZH_Sys_noSoftb_forLimits.root'
+   inUrl_wh='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2017_WH_Sys_noSoftb_forLimits-replaced-signal-mc.root'
+   inUrl_zh='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2017_ZH_Sys_noSoftb_forLimits-replaced-signal-mc.root'
 
 if ( year_to_run == "2018" ):
    jsonPath='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples2018.json'
-   inUrl_wh='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2018_WH_Sys_noSoftb_forLimits.root'
-   inUrl_zh='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2018_ZH_Sys_noSoftb_forLimits.root'
+   inUrl_wh='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2018_WH_Sys_noSoftb_forLimits-replaced-signal-mc.root'
+   inUrl_zh='$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2018_ZH_Sys_noSoftb_forLimits-replaced-signal-mc.root'
 
 # configure your  forLimits files and json files below in order to have combined RunII data limits
 jsonPaths=[
@@ -112,14 +112,14 @@ jsonPaths=[
   '$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples2018.json'
 ]
 inUrl_whs=[
-  '$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2016_Wh_Sys_noSoftb_forLimits.root',
-  '$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2017_WH_Sys_noSoftb_forLimits.root',
-  '$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2018_WH_Sys_noSoftb_forLimits.root'
+  '$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2016_WH_Sys_noSoftb_forLimits-replaced-signal-mc.root',
+  '$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2017_WH_Sys_noSoftb_forLimits-replaced-signal-mc.root',
+  '$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2018_WH_Sys_noSoftb_forLimits-replaced-signal-mc.root'
 ]
 inUrl_zhs=[
-  '$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2016_Zh_Sys_noSoftb_forLimits.root',
-  '$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2017_ZH_Sys_noSoftb_forLimits.root',
-  '$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2018_ZH_Sys_noSoftb_forLimits.root'
+  '$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2016_ZH_Sys_noSoftb_forLimits-replaced-signal-mc.root',
+  '$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2017_ZH_Sys_noSoftb_forLimits-replaced-signal-mc.root',
+  '$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_2018_ZH_Sys_noSoftb_forLimits-replaced-signal-mc.root'
 ]
 years = ["2016", "2017", "2018"]
 
@@ -498,7 +498,7 @@ for signalSuffix in signalSuffixVec :
 
           #--- first pass
 
-           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root >& cl-first.log\n")
+           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits-replaced-signal-mc.root >& cl-first.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
 
 
@@ -516,7 +516,7 @@ for signalSuffix in signalSuffixVec :
 
           #--- second pass
 
-           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root  --fitDiagnosticsInputFile fitDiagnostics-first.root >& cl-second.log\n")
+           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits-replaced-signal-mc.root  --fitDiagnosticsInputFile fitDiagnostics-first.root >& cl-second.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
 
 
@@ -782,7 +782,7 @@ for signalSuffix in signalSuffixVec :
 
           #--- first pass for Wh
 
-           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +  " --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root >& cl-wh-first.log\n")
+           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +  " --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits-replaced-signal-mc.root >& cl-wh-first.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
            SCRIPT.writelines("text2workspace.py card_combined_wh.dat -o workspace-wh-first.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-wh-first.log \n")  
            SCRIPT.writelines("combine -M FitDiagnostics workspace-wh-first.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=0 --rMax=20 --stepSize=0.05 --robustFit 1  >& log-wh-first.txt \n") 
@@ -791,7 +791,7 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("cp *.dat datacards-wh-first-pass\n\n") ;
 
           #--- second pass for Wh
-           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root  --fitDiagnosticsInputFile fitDiagnostics-wh-first.root >& cl-wh-second.log\n")
+           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits-replaced-signal-mc.root  --fitDiagnosticsInputFile fitDiagnostics-wh-first.root >& cl-wh-second.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
 
 
@@ -938,9 +938,9 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("\n#****************** {} *****************\n".format(year)) 
               whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnostics.root"
 	      if "2016" in inUrl:
-	          SCRIPT.writelines("\ncomputeLimit   --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-"+ year + ".log\n")  
+	          SCRIPT.writelines("\ncomputeLimit   --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits-replaced-signal-mc.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-"+ year + ".log\n")  
 	      else:
-	          SCRIPT.writelines("\ncomputeLimit   --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-" + year + ".log\n")  
+	          SCRIPT.writelines("\ncomputeLimit   --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits-replaced-signal-mc.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-" + year + ".log\n")  
 	      SCRIPT.writelines("sh combineCards_"+year+"_wh.sh;\n"); 
 
 	   SCRIPT.writelines("\ncombineCards.py card_combined_2016_wh.dat card_combined_2017_wh.dat card_combined_2018_wh.dat > card_combined_wh.dat")
@@ -1266,9 +1266,9 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("\n#****************** {} Wh *****************\n".format(year)) 
               whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnostics.root"
 	      if "2016" in inUrl:
-	          SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-wh-" + year + ".log \n")  
+	          SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits-replaced-signal-mc.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-wh-" + year + ".log \n")  
 	      else:
-	          SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-wh-" + year + ".log \n")  
+	          SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_Sys_noSoftb_forLimits-replaced-signal-mc.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-wh-" + year + ".log \n")  
 	      SCRIPT.writelines("sh combineCards_"+year+"_wh.sh;\n"); 
 	      
 	      inUrl = inUrl_zhs[i]
