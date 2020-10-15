@@ -1,4 +1,5 @@
 #!/bin/sh -f
+
 #----------------------------------------------------------- $1 ZH, WH ---------------------------------------------------
 #---------------------------- all variables except bdt -------------------------------
 shapes=("higgsMass" "higgsPt" "ht" "pfmet" "ptw" "mtw" "dphiWh" "dRave" "dmmin" "dphijmet" "lep_pt_raw")
@@ -6,7 +7,7 @@ blind=""
 flds=("PrefitPlots_$1ZH_noSoftb" "PrefitPlots_$1WH_noSoftb") 
 
 if [[ $1 =~ "2016" ]]; then  
-    INTLUMI=35.9
+    INTLUMI=35866.932
 elif [[ $1 =~ "2017" ]]; then
     INTLUMI=41529.152
 elif [[ $1 =~ "2018" ]]; then
