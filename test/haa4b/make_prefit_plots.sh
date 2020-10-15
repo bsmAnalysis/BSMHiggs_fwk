@@ -48,7 +48,7 @@ do
     mkdir -p "${dir}";
     cd "${dir}";
 
-    computeLimit "${blind}" --noLogy --lumi $INTLUMI --signalScale 10 --m 60 --histo "${shape}_shapes" --in $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_$1_WH_Sys_noSoftb_forLimits-replaced-signal-mc.root --syst --simfit --shape --index 1 --bins 3b,4b --json $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples$1.json --key haa_mcbased  --modeDD --subFake  --systpostfix _13TeV --dropBckgBelow 0.015  ;
+    computeLimit "${blind}" --noLogy --lumi $INTLUMI --signalScale 10 --m 60 --histo "${shape}_shapes" --modeDD --shape --subFake --in $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_$1_WH_Sys_noSoftb_forLimits-replaced-signal-mc.root --syst --simfit --index 1 --bins 3b,4b --json $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples$1.json --key haa_mcbased  --systpostfix _13TeV --dropBckgBelow 0.015  ;
 
     cd ..
     count=${count}+1
@@ -92,7 +92,7 @@ do
     mkdir -p "${dir}";
     cd "${dir}";
 
-    computeLimit "${blind}" --noLogy --lumi $INTLUMI --signalScale 10 --m 60 --histo "${shape}_shapes" --in $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_$1_WH_Sys_noSoftb_forLimits-replaced-signal-mc.root --syst --simfit --shape --index 1 --bins 3b,4b --json $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples$1.json --key haa_mcbased --modeDD --subFake  --systpostfix _13TeV  --dropBckgBelow 0.015  ;
+    computeLimit "${blind}" --noLogy --lumi $INTLUMI --signalScale 10 --m 60 --histo "${shape}_shapes" --modeDD --shape --subFake --in $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_$1_WH_Sys_noSoftb_forLimits-replaced-signal-mc.root --syst --simfit --index 1 --bins 3b,4b --json $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/samples$1.json --key haa_mcbased  --systpostfix _13TeV  --dropBckgBelow 0.015  ;
 
     cd ..
     count=${count}+1
