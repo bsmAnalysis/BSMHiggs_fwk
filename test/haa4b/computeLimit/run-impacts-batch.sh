@@ -55,11 +55,41 @@
 # fi
 
 
+  if [[ $cards_dir == *"Wh_all"* ]]; then 
+     printf "\n Found Wh_all\n\n"
+     rangeString="tt_norm_e_2016=0.1,4.0:tt_norm_mu_2016=0.1,4.0:w_norm_e_2016=0.1,4:w_norm_mu_2016=0.1,4:tt_norm_e_2017=0.1,4.0:tt_norm_mu_2017=0.1,4.0:w_norm_e_2017=0.1,4:w_norm_mu_2017=0.1,4:tt_norm_e_2018=0.1,4.0:tt_norm_mu_2018=0.1,4.0:w_norm_e_2018=0.1,4:w_norm_mu_2018=0.1,4"
+  elif [[ $cards_dir == *"Zh_all"* ]]; then
+     printf "\n Found Zh_all\n\n"
+     rangeString="z_norm_3b_e_2016=0.1,4.0:z_norm_3b_mu_2016=0.1,4.0:z_norm_4b_e_2016=0.1,4.0:z_norm_4b_mu_2016=0.1,4.0:tt_norm_e_2016=0.1,4.0:tt_norm_mu_2016=0.1,4.0:z_norm_3b_e_2017=0.1,4.0:z_norm_3b_mu_2017=0.1,4.0:z_norm_4b_e_2017=0.1,4.0:z_norm_4b_mu_2017=0.1,4.0:tt_norm_e_2017=0.1,4.0:tt_norm_mu_2017=0.1,4.0:z_norm_3b_e_2018=0.1,4.0:z_norm_3b_mu_2018=0.1,4.0:z_norm_4b_e_2018=0.1,4.0:z_norm_4b_mu_2018=0.1,4.0:tt_norm_e_2018=0.1,4.0:tt_norm_mu_2018=0.1,4.0"
+  elif [[ $cards_dir == *"Wh_"* ]]; then
+     printf "\n Found Wh_\n\n"
+     rangeString="tt_norm_e=0.1,4.0:tt_norm_mu=0.1,4.0:w_norm_e=0.1,4:w_norm_mu=0.1,4"
+  elif [[ $cards_dir == *"Zh_"* ]]; then
+     printf "\n Found Zh_\n\n"
+     rangeString="z_norm_3b_e=0.1,4.0:z_norm_3b_mu=0.1,4.0:z_norm_4b_e=0.1,4.0:z_norm_4b_mu=0.1,4.0:tt_norm_e=0.1,4.0:tt_norm_mu=0.1,4.0"
+  elif [[ $cards_dir == *"SM_2"* ]]; then
+     printf "\n Found SM_2\n\n"
+     rangeString="tt_norm_e=0.1,4.0:tt_norm_mu=0.1,4.0:w_norm_e=0.1,4:w_norm_mu=0.1,4:z_norm_3b_e=0.1,4.0:z_norm_3b_mu=0.1,4.0:z_norm_4b_e=0.1,4.0:z_norm_4b_mu=0.1,4.0"
+  elif [[ $cards_dir == *"SM_all"* ]]; then
+     printf "\n Found SM_all\n\n"
+     rangeString="tt_norm_e_2016=0.1,4.0:tt_norm_mu_2016=0.1,4.0:w_norm_e_2016=0.1,4:w_norm_mu_2016=0.1,4:z_norm_3b_e_2016=0.1,4.0:z_norm_3b_mu_2016=0.1,4.0:z_norm_4b_e_2016=0.1,4.0:z_norm_4b_mu_2016=0.1,4.0:tt_norm_e_2017=0.1,4.0:tt_norm_mu_2017=0.1,4.0:w_norm_e_2017=0.1,4:w_norm_mu_2017=0.1,4:z_norm_3b_e_2017=0.1,4.0:z_norm_3b_mu_2017=0.1,4.0:z_norm_4b_e_2017=0.1,4.0:z_norm_4b_mu_2017=0.1,4.0:tt_norm_e_2018=0.1,4.0:tt_norm_mu_2018=0.1,4.0:w_norm_e_2018=0.1,4:w_norm_mu_2018=0.1,4:z_norm_3b_e_2018=0.1,4.0:z_norm_3b_mu_2018=0.1,4.0:z_norm_4b_e_2018=0.1,4.0:z_norm_4b_mu_2018=0.1,4.0"
+  else
+     printf "\n\n *** can't figure out what kind of cards directory this is:  %s\n\n" $cards_dir
+     exit -1
+  fi
+
+  printf "\n\n rangeString = %s\n\n" $rangeString
+   
+
+
 
 
   mkdir -p $impacts_dir
 
   cd $impacts_dir
+
+  this_dir=`pwd`
+  printf "\n\n this directory: %s\n\n" $this_dir
 
   f_name=$impacts_dir
 
@@ -67,15 +97,14 @@
   if [ "$step" = "1" ]
   then
      printf "\n will run initial fit\n\n"
-     combineTool.py -M Impacts -d ../$cards_dir/0060/workspace.root -m 60 --doInitialFit --robustFit 1 --rMin -1.0  |& tee step1.log
+     combineTool.py -M Impacts -d ../$cards_dir/0060/workspace.root -m 60 --doInitialFit --robustFit 1 --rMin -1.0 --setParameterRanges $rangeString    |& tee step1.log
   fi
 
 
   if [ "$step" = "2" ]
   then
      printf "\n will submit condor jobs\n\n"
-#    combineTool.py -M Impacts -d ../$cards_dir/0060/workspace.root -m 60 --robustFit 1 --doFits --rMin -1.0 --job-mode condor --dry-run 
-     combineTool.py -M Impacts -d ../$cards_dir/0060/workspace.root -m 60 --robustFit 1 --doFits --rMin -1.0 --job-mode condor |& tee step2.log
+     combineTool.py -M Impacts -d ../$cards_dir/0060/workspace.root -m 60 --doFits       --robustFit 1 --rMin -1.0 --setParameterRanges $rangeString  --job-mode condor |& tee step2.log
   fi
 
 
