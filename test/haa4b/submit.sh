@@ -36,30 +36,30 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 # Global Variables
 #--------------------------------------------------
 
-#SUFFIX=_2018_10_29 #_2018_03_03
+YEAR=2016
+
+if [[ $YEAR == "2016" ]]; then SUFFIX=_2020_06_19 ;
+else SUFFIX=_2020_02_05 ; fi
 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
 
 # Json and python template for 2016
-#JSON=$MAINDIR/samples2016.json
-#NTPL_JSON=$MAINDIR/samples2016.json
-#FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg.py.templ
-#RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg.py.templ
-JSON=$MAINDIR/samples2016_legacy.json
-NTPL_JSON=$MAINDIR/samples2016_legacy.json
-FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_2016Legacy.py.templ
-RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_2016Legacy.py.templ  # to be added later
-
-# Json and python template for 2017
-#JSON=$MAINDIR/samples2017.json
-#NTPL_JSON=$MAINDIR/samples2017.json
-#FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_2017.py.templ
-#RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_2017.py.templ
-
+if [[ $YEAR == "2016" ]]; then
+    JSON=$MAINDIR/samples2016_legacy.json
+    NTPL_JSON=$MAINDIR/samples2016_legacy.json
+    FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_2016Legacy.py.templ
+    RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_2016Legacy.py.templ  # to be added later
+else
+    JSON=$MAINDIR/samples{$YEAR}.json
+    NTPL_JSON=$MAINDIR/samples${YEAR}.json
+    FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_${YEAR}.py.templ
+    RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_${YEAR}.py.templ
+fi
+    
 #SUFFIX=$(date +"_%Y_%m_%d") 
 GOLDENJSON=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/json/
 
-RESULTSDIR=$MAINDIR/results$SUFFIX
+RESULTSDIR=$MAINDIR/results$SUFFIX 
 
 if [[ $arguments == *"crab3"* ]]; then STORAGEDIR='';
 else STORAGEDIR=/eos/cms/store/user/georgia/results$SUFFIX ; fi
@@ -68,16 +68,21 @@ PLOTSDIR=$MAINDIR/plots${SUFFIX}
 PLOTTER=$MAINDIR/plotter${SUFFIX}
  
 ####################### Settings for Ntuple Analysis ##################
-NTPL_INPUT=results$SUFFIX
+if [[ $YEAR == "2016" ]]; then
+    NTPL_INPUT=/eos/cms/store/user/georgia/results$SUFFIX
+elif [[ $YEAR == "2017" ]]; then
+    NTPL_INPUT=/eos/cms/store/user/zhangyi/results$SUFFIX
+elif [[ $YEAR == "2018" ]]; then
+    NTPL_INPUT=/eos/cms/store/user/yuanc/results$SUFFIX 
+fi
 
 ZPtSF_OUT=$MAINDIR/ZPtSF$SUFFIX
-BTAG_NTPL_OUTDIR=$MAINDIR/btag_Ntpl$SUFFIX
-NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX
-#NTPL_OUTDIR=/eos/cms/store/user/georgia/results_Ntpl$SUFFIX #only for Data
+BTAG_NTPL_OUTDIR=$MAINDIR/btag_SFs/$YEAR/btag_Ntpl$SUFFIX
+NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX 
 RUNLOG=$NTPL_OUTDIR/LOGFILES/runSelection.log
 queue='workday'   
 
-TopSF_INPUT=$MAINDIR/computeLimit/PrefitPlots_2016WH_nottbarSF/TEST_ht
+TopSF_INPUT=$MAINDIR/computeLimit/PrefitPlots_2016ZH_nottbarSF/TEST_ht
 TopSF_OUT=$MAINDIR/TopPtSF
 vh_tag="wh" # wh or zh channel when computing Top Pt weights
 
@@ -157,7 +162,8 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        fi
 	# @btagSFMethod=1: Jet-by-jet updating of b-tagging status
 	# @btagSFMethod=2: Event reweighting using discriminator-dependent scale factors
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=False @runMVA=False @reweightDYZPt=False @reweightTopPt=True @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False @runZH=True @btagSFMethod=1" -s $queue # -t MC13TeV_TTTo  -r True
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=False @runMVA=False @reweightDYZPt=False @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False @runZH=True @btagSFMethod=1" -s $queue -t MC13TeV_TTTo
+# MC13TeV_TTTo  #-r True
    fi
 fi
 
@@ -242,9 +248,9 @@ if [[ $step > 2.999 && $step < 4 ]]; then
 #(ht|pfmet|ptw|mtw|higgsPt|higgsMass|dRave|dmmin|dphijmet|dphiWh|
     if [[ $step == 3 || $step == 3.1 ]]; then  # make plots and combine root files for mcbased study    
 	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "((e|mu|ee|mumu|emu)_(A|B|C|D)_(SR|CR|CR5j)_(3b|4b)_(pfmet|ht|mtw|ptw|dphiWh|dRave|dmmin|higgsMass|higgsPt|nbjets_raw|nbtags_raw|zmass_raw|dphijmet|dphijmet1|dphijmet12|(lead|)lep_(pt|eta)_raw|lep_reliso|bdt|(nvtx_raw|nvtxwgt_raw)))|(all|e|mu|ee|mumu|emu)_eventflow|all_(nvtx_raw|nvtxwgt_raw)|(e|mu|ee|mumu|emu|e_noniso|mu_noniso|mutrk|mutrk_noniso)_lep_reliso|(e|mu|ee|mumu|emu)(|_metmt|_nj2)_lep_(pt|eta)_raw|raw_dphijmet|raw_j1_dphijmet|raw_minj1j2_dphijmet|(e|mu|ee|mumu|emu)_nj_njets_raw|(e|mu|ee|mumu|emu)_jet_(b1|b2|b3|b4)_jet_(pt|eta)_raw|(e|mu|ee|mumu|emu)_nb_nbjets_raw|(e|mu|ee|mumu|emu)_DeepCSV_(b1|b2|b3|b4)_jet_(pt|eta)_raw|(e|mu|ee|mumu|emu)_nb_soft_nbjets_raw|(e|mu|ee|mumu|emu)_(softb_(b1|b2|b3|b4)_(softjet|jet)_(pt|eta)_raw)|(e|mu|ee|mumu|emu)_dRlj_raw|raw(e|mu|ee|mumu|emu)_(pfmet|mtw|ptw)|raw_softb_ntrk|raw_softb_dxy|raw_softb_dxyz_signif|raw_softb_cos|sv_b_dR_raw|(e|mu|ee|mumu|emu)_nb_(LOOSE|MEDIUM|TIGHT)_nbjets_raw|(e|mu|ee|mumu|emu)_(sel1|sel2)_evt_cat|(e|mu|ee|mumu|emu)_DeepCSV_(b1|b2|b3|b4)_b_discrim|all_musf(id|iso|trg)" $arguments 
-	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outDir $PLOTSDIR/mcbased/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --signalScale 100 $arguments 
+	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outDir $PLOTSDIR/mcbased/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --signalScale 10 $arguments 
 	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outDir $PLOTSDIR/mcbased_log/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ
-        runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outDir $PLOTSDIR/mcbased_blind/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --signalScale 100 --blind 0.1 --only "(e|mu|ee|mumu)_A_SR_(3b|4b)_bdt" $arguments
+        runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outDir $PLOTSDIR/mcbased_blind/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --signalScale 10 --blind 0.1 --only "(e|mu|ee|mumu)_A_SR_(3b|4b)_bdt" $arguments
     fi
 
     if [[ $step == 3 || $step == 3.2 ]]; then # make plots and combine root files for data-driven backgrounds 
