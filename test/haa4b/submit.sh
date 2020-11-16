@@ -37,6 +37,7 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 #--------------------------------------------------
 
 YEAR=2016
+CHANNEL=WH
 
 if [[ $YEAR == "2016" ]]; then SUFFIX=_2020_06_19 ;
 else SUFFIX=_2020_02_05 ; fi
@@ -50,10 +51,10 @@ if [[ $YEAR == "2016" ]]; then
     FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_2016Legacy.py.templ
     RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_2016Legacy.py.templ  # to be added later
 else
-    JSON=$MAINDIR/samples{$YEAR}.json
-    NTPL_JSON=$MAINDIR/samples${YEAR}.json
-    FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_${YEAR}.py.templ
-    RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_${YEAR}.py.templ
+    JSON=$MAINDIR/samples$YEAR.json
+    NTPL_JSON=$MAINDIR/samples$YEAR.json
+    FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_$YEAR.py.templ
+    RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_$YEAR.py.templ
 fi
     
 #SUFFIX=$(date +"_%Y_%m_%d") 
@@ -78,7 +79,8 @@ fi
 
 ZPtSF_OUT=$MAINDIR/ZPtSF$SUFFIX
 BTAG_NTPL_OUTDIR=$MAINDIR/btag_SFs/$YEAR/btag_Ntpl$SUFFIX
-NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX 
+NTPL_OUTDIR=$MAINDIR/results_Ntpl_${CHANNEL}_$YEAR$SUFFIX   
+#$MAINDIR/results_Ntpl$SUFFIX  
 RUNLOG=$NTPL_OUTDIR/LOGFILES/runSelection.log
 queue='workday'   
 
@@ -162,7 +164,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        fi
 	# @btagSFMethod=1: Jet-by-jet updating of b-tagging status
 	# @btagSFMethod=2: Event reweighting using discriminator-dependent scale factors
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=False @runMVA=False @reweightDYZPt=False @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False @runZH=True @btagSFMethod=1" -s $queue -t MC13TeV_TTTo
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=False @runMVA=False @reweightDYZPt=False @reweightTopPt=True @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False @runZH=True @btagSFMethod=1" -s $queue 
 # MC13TeV_TTTo  #-r True
    fi
 fi
