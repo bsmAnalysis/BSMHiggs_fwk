@@ -1239,51 +1239,49 @@ int main(int argc, char* argv[])
 	}
 
 	// Apply Top pt-reweighting
-	double top_wgt(1.0);    
+	double topptsf(1.0);    
 
-//	if(reweightTopPt && isMC_ttbar){
-//	  PhysicsObjectCollection &partons = phys.genpartons;
-//	  double SFtop(0.);
-//	  double SFantitop(0.);
-//
-//	  int itop(0);
-//	  for (auto & top : partons) {
-//	    if(verbose){
-//
-//	    printf("Parton : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, status=%d\n",
-//		   top.id,
-//		   top.mass(),
-//		   top.momid,
-//		   top.pt(),
-//		   top.status
-//		   );
-//	    }
-//	    if (top.id==6 && top.status==62) {
-//	      SFtop=exp(0.0615-0.0005*top.pt());
-//	      itop++;
-//
-//	      mon.fillHisto("toppt","top",top.pt(),weight);
-//	    }
-//	    if (top.id==-6 && top.status==62) {
-//	      SFantitop=exp(0.0615-0.0005*top.pt());
-//	      itop++;
-//
-//	      mon.fillHisto("toppt","antitop",top.pt(),weight);
-//	    }
-//	  }
-//  
-//	  if (itop<2) { 
-//	    printf("Did not found tt pair!!\n"); 
-//	  } else if (itop==2) {
-//	    top_wgt=sqrt(SFtop*SFantitop);
-//	  } else {
-//	    printf("More than 2 top particles found. Please check\n");
-//	  }
-//    
-//	  //printf("weight= %3f and top weight= %3f\n",weight,top_wgt);
-//	  weight *= top_wgt;
+	if(reweightTopPt && isMC_ttbar){
+	  PhysicsObjectCollection &partons = phys.genpartons;
+	  double SFtop(0.);
+	  double SFantitop(0.);
+
+	  int itop(0);
+	  for (auto & top : partons) {
+	    if(verbose){
+
+	    printf("Parton : ID=%6d, m=%5.1f, momID=%6d : pt=%6.1f, status=%d\n",
+		   top.id,
+		   top.mass(),
+		   top.momid,
+		   top.pt(),
+		   top.status
+		   );
+	    }
+	    if (top.id==6 && top.status==62) {
+	      SFtop=exp(0.0615-0.0005*top.pt());
+	      itop++;
+
+	      mon.fillHisto("toppt","top",top.pt(),weight);
+	    }
+	    if (top.id==-6 && top.status==62) {
+	      SFantitop=exp(0.0615-0.0005*top.pt());
+	      itop++;
+
+	      mon.fillHisto("toppt","antitop",top.pt(),weight);
+	    }
+	  }
+  
+	  if (itop<2) { 
+	    printf("Did not found tt pair!!\n"); 
+	  } else if (itop==2) {
+	    topptsf=sqrt(SFtop*SFantitop);
+	  } else {
+	    printf("More than 2 top particles found. Please check\n");
+	  }
+	  weight *= topptsf;
 //	  //printf("Final weight is : %3f\n\n",weight);
-//	}
+	}
 	
 	
 	// All: "Raw" (+Trigger)
@@ -2978,41 +2976,9 @@ int main(int argc, char* argv[])
 
 	  //##############################################################################
 	  //##############################################################################
-
+	  /*
 	  if(reweightTopPt && isMC_ttbar){
 	    double topptsf=1.0;
-	    /*
-	    if(is2016MC){ // formula for 2016
-	      if(!runZH){ // Wh
-		if(tag_subcat.Contains("3b")) topptsf = exp(0.04182-0.00095*wsum.pt());
-		else if(tag_subcat.Contains("4b")) topptsf = exp(0.02629-0.00098*wsum.pt());
-	      }
-	      else if(runZH){ // Zh
-		if(tag_subcat.Contains("3b")) topptsf = exp(0.02826-0.00102*wsum.pt());
-		else if(tag_subcat.Contains("4b")) topptsf = exp(-0.04341-0.00067*wsum.pt());
-	      }
-	    }
-	    else if(is2017MC){
-	      if(!runZH){ // Wh
-		if(tag_subcat.Contains("3b")) topptsf = exp(-0.07758-0.00175*wsum.pt());
-		else if(tag_subcat.Contains("4b")) topptsf = exp(-0.07055-0.00171*wsum.pt());
-	      }
-	      else if(runZH){ // Zh
-		if(tag_subcat.Contains("3b")) topptsf = exp(-0.10682-0.00098*wsum.pt());
-		else if(tag_subcat.Contains("4b")) topptsf = exp(0.03679-0.00143*wsum.pt());
-	      }
-	    }
-	    else if(is2018MC){
-	      if(!runZH){ // Wh
-		if(tag_subcat.Contains("3b")) topptsf = exp(0.07997+0.00001*wsum.pt());
-		else if(tag_subcat.Contains("4b")) topptsf = exp(0.00503-0.00036*wsum.pt());
-	      }
-	      else if(runZH){ // Zh
-		if(tag_subcat.Contains("3b")) topptsf = exp(-0.18502+0.00059*wsum.pt());
-		else if(tag_subcat.Contains("4b")) topptsf = exp(-0.23199+0.00076*wsum.pt());
-	      }
-	    }
-	    */
 	    if(is2016Legacy){ // for 2016 legacy
 	      if(!runZH){ // Wh
 		if(tag_subcat.Contains("3b")) topptsf = exp(0.00679-0.00064*ht);
@@ -3056,7 +3022,7 @@ int main(int argc, char* argv[])
 //	    std::cout << tag_subcat << ", ptw " << wsum.pt() << ", sf: " << topptsf << std::endl;
 	    weight *= topptsf;
 	  }
-
+	  */
 	  if (ivar==0) {
 
 	    // Reject QCD with Dphi(jet,MET) ?
