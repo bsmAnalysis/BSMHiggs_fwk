@@ -79,7 +79,6 @@ else:
     print(vh_tag)
     exit(-1)
 
-dirs = []
 
 dirs = ['t#bar{t} + light_filt1','t#bar{t} + b#bar{b}_filt5','t#bar{t} + c#bar{c}_filt4','data',
         'Other Bkgds','Z#rightarrow ll','W#rightarrow l#nu','QCD',
@@ -88,13 +87,11 @@ dirs = ['t#bar{t} + light_filt1','t#bar{t} + b#bar{b}_filt5','t#bar{t} + c#bar{c
 for dir in dirs:
     for histo in histos:
         hname=dir+"/"+histo+"_bdt"
-   ##     hname_idx=dir+"/"+histo+"_bdt_shapes"
+        hname_shapes=dir+"/"+histo+"_bdt_shapes"
 
-        if dir.__contains__("filt"):
+        if dir.__contains__("filt"): ## modify only for ttbar MC
             hcor = fcor.Get(hname)
             huncor = funcor.Get(hname)
-
-   ##         hcor_2d = fcor.Get(hname_idx)
             
             h_up=hcor.Clone(histo+"_bdt_topptup")
             h_up.Reset()
@@ -103,35 +100,46 @@ for dir in dirs:
 
             ## Create the up and down variations due to top pt reweighting unc.    
             makeUncHisto(hcor, huncor, h_up, h_down)
-            
-        else:
+
+            ## make the 2d versions BDT-vs-index and store as well:
+            hcor_shapes = fcor.Get(hname_shapes)
+            h_up_shapes=hcor_shapes.Clone(histo+"_bdt_shapes_topptup")
+            h_down_shapes=hcor_shapes.Clone(histo+"_bdt_shapes_topptdown")
+    
+            h_up_shapes.Reset()
+            h_down_shapes.Reset()
+        
+            n=35 ## That is 35 bins in BDT
+            for i in range(n):
+                for j in range(i,n):
+                    h_up_shapes.SetBinContent(i,j,h_up.GetBinContent(j))
+                    h_down_shapes.SetBinContent(i,j,h_down.GetBinContent(j))
+                    
+        else: 
             hcor = flimit.Get(hname)
-##            hcor_2d = flimit.Get(hname_idx)
+            hcor_shapes = flimit.Get(hname_shapes)
             if hcor==None:
                 print("Histo is Null for that process ", hname) 
                 continue
             else:   
                 h_up = hcor.Clone(histo+"_bdt_topptup")
                 h_down = hcor.Clone(histo+"_bdt_topptdown")
+
+            ## make the 2d versions BDT-vs-index and store as well:
+            h_up_shapes=hcor_shapes.Clone(histo+"_bdt_shapes_topptup")
+            h_down_shapes=hcor_shapes.Clone(histo+"_bdt_shapes_topptdown")
+    
                 
         ## Draw nominal BDT and up and down variations superimposed
         drawHist(dir+"_"+histo+"_bdt",hcor,h_up,h_down)
-
-        ## make the 2d versions BDT-vs-index and store as well:
-       
- ##       h_up_2d=hcor_2d.Clone(histo+"_bdt_shapes_topptup")
- ##       h_down_2d=hcor_2d.Clone(histo+"_bdt_shapes_topptdown")
-
- ##       h_up_2d.Reset()
- ##       h_down_2d.Reset()
-
+    
         ## STore up and down variations in original input file for limits:
         flimit.cd(dir)
         
         h_up.Write()
-#        h_up_2d.Write()
+        h_up_shapes.Write()
         h_down.Write()
-#        h_down_2d.Write()
+        h_down_shapes.Write()
 
 flimit.Close()
         
