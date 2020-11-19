@@ -622,8 +622,13 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, TFile* OutputF
       for(unsigned int j=0;j<Samples.size();j++){
          std::vector<string>& fileList = DSetFiles[(Samples[j])["dtag"].toString()+filtExt];
          if(!Process[i].getBoolFromKeyword(matchingKeyword, "isdata", false) && !Process[i].getBoolFromKeyword(matchingKeyword, "isdatadriven", false)){
-	   ////////Weight=iLumi/fileList.size();
-	   Weight=iLumi; // owen, Sept 19, 2020: Now the total number of events is in the previous step.  No need to divide by number of files.
+	   if(Process[i].getBoolFromKeyword(matchingKeyword, "issignal", true)) {
+	     Weight=iLumi;
+	   } else if ( ((Samples[j])["dtag"].toString().find("TTJets")==std::string::npos) || ((Samples[j])["dtag"].toString().find("TTTo")==std::string::npos)) { 
+	     Weight=iLumi;
+	   } else { Weight=iLumi/fileList.size(); }
+	   // owen, Sept 19, 2020: Now the total number of events is in the previous step.  No need to divide by number of files.
+	       
 	   // Overwrite weight for W+Nj and DY+Nj samples
 	   // comment the following line only when you use the WJets HTBinned samples
 //	   if (dirProc.find("W#rightarrow l#nu")!=std::string::npos  && (Samples[j])["dtag"].toString().find("amcNLO")==std::string::npos) Weight=iLumi;
