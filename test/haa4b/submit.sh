@@ -39,6 +39,9 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 YEAR=2016
 CHANNEL=WH
 
+if [[ $CHANNEL == "ZH" ]]; then doZH=True ; 
+else doZH=False ; fi
+
 if [[ $YEAR == "2016" ]]; then SUFFIX=_2020_06_19 ;
 else SUFFIX=_2020_02_05 ; fi
 
@@ -66,7 +69,7 @@ if [[ $arguments == *"crab3"* ]]; then STORAGEDIR='';
 else STORAGEDIR=/eos/cms/store/user/georgia/results$SUFFIX ; fi
 
 PLOTSDIR=$MAINDIR/plots${SUFFIX}
-PLOTTER=$MAINDIR/plotter${SUFFIX}
+PLOTTER=$MAINDIR/plotter_${CHANNEL}_${YEAR}${SUFFIX}
  
 ####################### Settings for Ntuple Analysis ##################
 if [[ $YEAR == "2016" ]]; then
@@ -80,7 +83,7 @@ fi
 ZPtSF_OUT=$MAINDIR/ZPtSF$SUFFIX
 BTAG_NTPL_OUTDIR=$MAINDIR/btag_SFs/$YEAR/btag_Ntpl$SUFFIX
 NTPL_OUTDIR=$MAINDIR/results_Ntpl_${CHANNEL}_$YEAR$SUFFIX   
-#$MAINDIR/results_Ntpl$SUFFIX  
+#NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX  
 RUNLOG=$NTPL_OUTDIR/LOGFILES/runSelection.log
 queue='workday'   
 
@@ -164,7 +167,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        fi
 	# @btagSFMethod=1: Jet-by-jet updating of b-tagging status
 	# @btagSFMethod=2: Event reweighting using discriminator-dependent scale factors
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=False @runMVA=False @reweightDYZPt=False @reweightTopPt=True @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False @runZH=True @btagSFMethod=1" -s $queue 
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=False @runMVA=False @reweightDYZPt=False @reweightTopPt=True @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=False @runZH=$doZH @btagSFMethod=1" -s $queue #-t MC13TeV_TTJets # -r true
 # MC13TeV_TTTo  #-r True
    fi
 fi
