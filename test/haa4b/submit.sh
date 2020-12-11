@@ -75,7 +75,7 @@ PLOTTER=$MAINDIR/plotter_${CHANNEL}_${YEAR}${SUFFIX}
 if [[ $YEAR == "2016" ]]; then
     NTPL_INPUT=/eos/cms/store/user/georgia/results$SUFFIX
 elif [[ $YEAR == "2017" ]]; then
-    NTPL_INPUT=/eos/cms/store/user/zhangyi/results$SUFFIX
+    NTPL_INPUT=/eos/cms/store/user/georgia/results_2017_$SUFFIX
 elif [[ $YEAR == "2018" ]]; then
     NTPL_INPUT=/eos/cms/store/user/yuanc/results$SUFFIX 
 fi
