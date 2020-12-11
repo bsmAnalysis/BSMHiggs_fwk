@@ -1167,11 +1167,13 @@ int main(int argc, char* argv[])
 	// VJets sample check: only use HT<70 events in the WJets inclusive samples, DYJets remain +NJets samples
 //	if( ((isMC_DY && !(isMC_DY_HTbin)) || (isMC_WJets && !(isMC_WJets_HTbin)) ) && !dtag.Contains("amcNLO")) {
 //	  if(is2017MC && dtag.Contains("10to50") && (ev.lheHt >= 100)) continue; // only exception: 2017 low mass DY HT samples start from 100 HT.
+/*
 	if(is2016Legacy || is2017MC || is2018MC){ // 2016 non Legacy samples don't fall into here
 	  if( (isMC_WJets && !(isMC_WJets_HTbin) ) && !dtag.Contains("amcNLO")) {
 	    if(ev.lheHt >= 70) continue;
 	  }
 	}
+*/
 	mon.fillHisto("ht","debug_lheHt",ev.lheHt,1.0); 
 	if(is2018data) afterRun319077 = (ev.run > 319077);
 
@@ -1763,6 +1765,8 @@ int main(int argc, char* argv[])
 	if (isMC_ttbar) { //split inclusive TTJets POWHEG sample into tt+bb, tt+cc and tt+light
 	//-------------------------------------------------------------------------------------
 	  
+	  //	  PhysicsObjectCollection &partons = phys.genpartons;
+
 	  if (verbose) {
 	    printf("\n\n");
 	    for (auto igen : phys.genparticles) {
