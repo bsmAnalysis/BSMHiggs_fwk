@@ -1537,7 +1537,6 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_mcbased",
 	        "haa_prod"
             ],
             "tag": "W#rightarrow l#nu"
@@ -1668,7 +1667,8 @@
             ],
             "isdata": false,
             "keys": [
-		"haa_prod"
+		"haa_prod",
+		"haa_mcbased"
             ],
             "tag": "W#rightarrow l#nu + NJets"
         },
