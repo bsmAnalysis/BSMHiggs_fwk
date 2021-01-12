@@ -1900,43 +1900,19 @@ int main(int argc, char* argv[])
 	}
 
         bool hasTrigger(false);
-	//	if(!isMC) {
-	/*
-	if (!runZH) { // Use only SingleEle and SingleMu in WH channel
-	  if(evcat!=fType && !isMC) continue; 
-	  
-	  if(evcat==E && !(hasEtrigger)) continue;
-	  if(evcat==MU && !(hasMtrigger)) continue;
-	    
-	  hasTrigger=true;
-	  
-	} else { // ZH channel
-	*/
+
 	if (!isMC) {
-	    
-	    //  if(evcat==EE && !(hasEEtrigger)) continue;
-	    /*
-	    if( is2017data && evcat==EE && !(hasEEtrigger||hasEEtrigger2) ) continue;
-	    if(!is2017data && evcat==EE && !hasEEtrigger) continue;
-	    if(evcat==MUMU && !(hasMMtrigger)) continue; //||hasMtrigger) ) continue;
-	    if(evcat==EMU && !hasEMtrigger ) continue;
-	    */
+
 	  if(isDoubleMuPD)    { hasTrigger = hasMMtrigger;}
 	  if(isSingleMuPD)    { hasTrigger = hasMtrigger  && !hasMMtrigger;}
 	  if(isDoubleElePD)   { hasTrigger = hasEEtrigger  && !hasMtrigger  && !hasMMtrigger;}
 	  if(isSingleElePD)   { hasTrigger = hasEtrigger  && !hasEEtrigger  && !hasMtrigger && !hasMMtrigger; }
 	  if(isMuonEGPD)      { hasTrigger = hasEMtrigger && !hasEtrigger   && !hasEEtrigger && !hasMtrigger && !hasMMtrigger; }
-	    
-	    //hasTrigger=true;
+
 	} else {
-	    /*
-	  if(evcat==E && hasEtrigger ) hasTrigger=true;   
-	  if(evcat==MU && hasMtrigger ) hasTrigger=true;   
-	  if(evcat==EE && hasEEtrigger ) hasTrigger=true; 
-	  if(evcat==MUMU && hasMMtrigger) hasTrigger=true; 
-	  if(evcat==EMU  && hasEMtrigger ) hasTrigger=true;  
-	    */
+
 	  hasTrigger=(hasEtrigger || hasMtrigger || hasEEtrigger || hasMMtrigger || hasEMtrigger);
+
 	}
 	
 	// Apply Trigger requirement:
@@ -2841,7 +2817,8 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("ptw","alljets",wpt,weight);   
 
 	      if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",wpt,weight);mon.fillHisto("ptw",tag_cat+"_3jets",wpt,weight);}  
-	      else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",wpt,weight);mon.fillHisto("ptw",tag_cat+"_4jets",wpt,weight);}                                                                                                               else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",wpt,weight);mon.fillHisto("ptw",tag_cat+"_5+jets",wpt,weight);}      
+	      else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",wpt,weight);mon.fillHisto("ptw",tag_cat+"_4jets",wpt,weight);} 
+	      else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",wpt,weight);mon.fillHisto("ptw",tag_cat+"_5+jets",wpt,weight);}      
 
 	    }
 	  }
