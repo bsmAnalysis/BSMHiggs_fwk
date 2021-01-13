@@ -20,7 +20,8 @@ iLumi=35866.932
 #iLumi=41529.152
 #iLumi=59740.565
 
-hists_dy = ['alljets','3jets','4jets','5+jets']
+#hists_dy = ['alljets','3jets','4jets','5+jets']
+hists = ['alljets','3jets','4jets','5+jets']   
 
 startbin = 1 
 
@@ -94,7 +95,7 @@ def ratioOnly(ratio_h, thred, name):
     ratio.GetYaxis().SetTitleOffset(1.1)
     ratio.GetYaxis().SetLabelFont(43)
     ratio.GetYaxis().SetLabelSize(30)
-    ratio.GetXaxis().SetTitle("Pt(Z)")
+    ratio.GetXaxis().SetTitle("Pt(V)")
     ratio.GetXaxis().SetTitleOffset(1.0)
     ratio.GetXaxis().SetTitleSize(35)
     ratio.GetXaxis().SetTitleFont(43)
@@ -149,7 +150,7 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
 
     thred = 500
     if '2jets' in name: thred = 150
-    elif '3jets' in name: thred = 150
+    elif '3jets' in name: thred = 200
     elif '4jets' in name: thred = 200
     elif '5+jets' in name: thred = 250
 #    ratio_h = weightedAverage(ratio_h,hNLO,thred)
@@ -188,8 +189,8 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     hLO.Draw("ehist")
     hNLO.Draw("ehistsame")
     leg = r.TLegend(0.65,0.7,0.9,0.85)
-    leg.AddEntry(hLO,"LO DY NJets","lp")
-    leg.AddEntry(hNLO,"NLO DY NJets","lp")
+    leg.AddEntry(hLO,"LO V+Jets","lp") 
+    leg.AddEntry(hNLO,"NLO V+Jets","lp")
     leg.Draw("same")
     SetOwnership( leg, 0 ) # 0 = release (not keep), 1 = keep
 
@@ -271,8 +272,8 @@ def produceZptSFs(inputLO, inputNLO, output_name):
 	    canvas.SaveAs(os.path.split(output_name)[0]+'/'+hist+'Multiplicity_NLO.pdf')
     
 #    for hist in ['alljets','3jets','4jets','5+jets','2b_3j_jets','2b_4j_jets','2b_geq5j_jets','3b_3j_jets','3b_4j_jets','3b_geq5j_jets','4b_4j_jets','4b_geq5j_jets','5b_geq5j_jets']:
-    if isDY: hists = hists_dy
-    else: hists = hists_wj
+#    if isDY: hists = hists_dy
+#    else: hists = hists_wj
     for hist in hists:
 	for ztype in ['']:
     	    histLO = inFileLO.Get(hist+ztype+"_ptw")
@@ -352,8 +353,8 @@ for proc in procList :
         mctruthmode=getByLabel(desc,'mctruthmode',0)
         tag = getByLabel(desc,'tag','')
 	# extract Z pt reweights only from LO and NLO DY samples
-#	if not (tag == "Z#rightarrow ll" or tag == "W#rightarrow l#nu"): continue 
-	if not (tag == "Z#rightarrow ll"): continue 
+	if not (tag == "Z#rightarrow ll" or tag == "W#rightarrow l#nu"): continue 
+#	if not (tag == "Z#rightarrow ll"): continue 
 	
         data = desc['data']
         for d in data :
@@ -371,9 +372,9 @@ for proc in procList :
                 continue
 	    if tag == "Z#rightarrow ll": 
 	        DYs.append(dtag)
-		hists = hists_dy
-#	    elif tag == "W#rightarrow l#nu": 
-#	        WJs.append(dtag)
+#		hists = hists_dy
+	    elif tag == "W#rightarrow l#nu": 
+	        WJs.append(dtag)
 #		hists = hists_wj
 	    if os.path.isfile(outfile): 
 		continue
@@ -386,16 +387,13 @@ for proc in procList :
             #commands.getstatusoutput('hadd -f '+outfile+' '+inputdir+'/'+dtag+'_*.root')
             commands.getstatusoutput('rm -rf '+outdir +'/'+ dtag + '_*' + '_zpt.root')
 	    
-#	    status, output = commands.getstatusoutput('find {} -name "{}*.root" | wc -l'.format(inputdir, dtag))
-#	    print(dtag+": "+str(iLumi/int(output)))
-#	    scaleinFile(outfile, iLumi/int(output), hists)
-	    if "amcNLO" in dtag: 
-		status, output = commands.getstatusoutput('find {} -name "{}*.root" | wc -l'.format(inputdir, dtag))
-		print(dtag+": "+str(iLumi/int(output)))
-		scaleinFile(outfile, iLumi/int(output), hists)
-	    else: 
-		print(dtag+": "+str(iLumi))
-		scaleinFile(outfile, iLumi, hists)
+#	    if "amcNLO" in dtag: 
+#		status, output = commands.getstatusoutput('find {} -name "{}*.root" | wc -l'.format(inputdir, dtag))
+#		print(dtag+": "+str(iLumi/int(output)))
+#		scaleinFile(outfile, iLumi/int(output), hists)
+#	    else: 
+            print(dtag+": "+str(iLumi))
+            scaleinFile(outfile, iLumi, hists)
 
 DY_LO_lowpt = ''
 DY_LO_highpt = ''
@@ -403,6 +401,7 @@ DY_NLO_lowpt = ''
 DY_NLO_highpt = ''
 WJ_LO = ''
 WJ_NLO = ''
+
 for dtag in DYs:
     root_file = outdir +'/'+ dtag + '_' + 'ZPt.root'
     if 'amcNLO' in dtag:
@@ -411,14 +410,21 @@ for dtag in DYs:
     else:
         if '10to50' in dtag: DY_LO_lowpt += (' ' + root_file)
         else: DY_LO_highpt += (' ' + root_file)
+
 for dtag in WJs:
     root_file = outdir +'/'+ dtag + '_' + 'ZPt.root'
     if 'amcNLO' in dtag: WJ_NLO += (' ' + root_file)
     else: WJ_LO += (' ' + root_file)
+
 if len(DY_LO_lowpt) > 0: commands.getstatusoutput('hadd -f '+outdir +'/LODY_lowPt.root'+' '+DY_LO_lowpt)
 if len(DY_LO_highpt) > 0: commands.getstatusoutput('hadd -f '+outdir +'/LODY_highPt.root'+' '+DY_LO_highpt)
 if len(DY_NLO_lowpt) > 0: commands.getstatusoutput('hadd -f '+outdir +'/NLODY_lowPt.root'+' '+DY_NLO_lowpt)
 if len(DY_NLO_highpt) > 0: commands.getstatusoutput('hadd -f '+outdir +'/NLODY_highPt.root'+' '+DY_NLO_highpt)
+
+if len(WJ_LO) > 0:commands.getstatusoutput('hadd -f '+outdir +'/LOWJet.root'+' '+WJ_LO) 
+if len(WJ_NLO) > 0:commands.getstatusoutput('hadd -f '+outdir +'/NLOWJet.root'+' '+WJ_NLO)  
+
+if os.path.isfile(outdir +'/LOWJet.root') and os.path.isfile(outdir +'/NLOWJet.root'): produceZptSFs(outdir+'/LOWJet.root',outdir+'/NLOWJet.root',outdir+'/WSF.root')
 
 if os.path.isfile(outdir +'/LODY_lowPt.root') and os.path.isfile(outdir +'/NLODY_lowPt.root'): produceZptSFs(outdir+'/LODY_lowPt.root',outdir+'/NLODY_lowPt.root',outdir+'/DYSF_lowPt.root')
 if os.path.isfile(outdir +'/LODY_highPt.root') and os.path.isfile(outdir +'/NLODY_highPt.root'): produceZptSFs(outdir+'/LODY_highPt.root',outdir+'/NLODY_highPt.root',outdir+'/DYSF_highPt.root')

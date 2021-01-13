@@ -1108,9 +1108,10 @@ int main(int argc, char* argv[])
       }
       if (isMC_WJets) {
 	TString wptfilename;  
-	if(is2016Legacy) wptfilename = zptDir + "/" +"WSF_2016Legacy.root";     
-	else if(is2017MC) wptfilename = zptDir + "/" +"WSF_2017.root"; 
-	else if(is2018MC) wptfilename = zptDir + "/" +"WSF_2018.root";  
+	//	if(is2016Legacy) 
+	wptfilename = zptDir + "/" +"WSF.root";     
+	//else if(is2017MC) wptfilename = zptDir + "/" +"WSF_2017.root"; 
+	//	else if(is2018MC) wptfilename = zptDir + "/" +"WSF_2018.root";  
 	
 	TFile *wptfile = TFile::Open(wptfilename);
 	if(wptfile->IsZombie() || !wptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< wptfilename<<std::endl;return -1;}    
