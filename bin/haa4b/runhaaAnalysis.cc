@@ -289,7 +289,7 @@ int main(int argc, char* argv[])
     bool isMC_QCD_MuEnr = isMC && (string(url.Data()).find("MuEnr")  != string::npos);
     bool isMC_QCD_EMEnr = isMC && (string(url.Data()).find("EMEnr")  != string::npos);
     
-    bool isSignal = (isMC_Wh || isMC_Zh || isMC_VBF );
+    bool isSignal = (isMC_Wh || isMC_Zh ); // || isMC_VBF );
 
     if (isSignal) printf("Signal url = %s\n",url.Data());
     /*
@@ -298,6 +298,56 @@ int main(int argc, char* argv[])
       //      if(isDoubleElePD || isDoubleMuPD || isMuonEGPD) return -1; 
     }   
     */
+
+    // NLO EWK corrections differential in Vpt on VH signal samples
+    TH1F *h_Wm = new TH1F(), *h_Wp = new TH1F(), *h_Wm_up = new TH1F(), *h_Wm_down = new TH1F(), *h_Wp_up = new TH1F(), *h_Wp_down = new TH1F();   
+    TH1F *h_Zll  = new TH1F(), *h_Zll_up = new TH1F(), *h_Zll_down = new TH1F();  
+
+    if(isMC_Wh) {
+      TString inputFileWm, inputFileWp;
+      inputFileWm = zptDir + "/" + "Wm_nloEWK_weight_unnormalized.root";
+      inputFileWp = zptDir + "/" + "Wp_nloEWK_weight_unnormalized.root";
+
+      TFile *wmptfile = TFile::Open(inputFileWm);                                                                                                                                                          
+      if(wmptfile->IsZombie() || !wmptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< inputFileWm<<std::endl;return -1;} 
+      
+      h_Wm = (TH1F *)wmptfile->Get("SignalWeight_nloEWK_rebin");
+      h_Wm->Scale(1./h_Wm->Integral()); h_Wm->SetDirectory(0); 
+      h_Wm_up = (TH1F *)wmptfile->Get("SignalWeight_nloEWK_up_rebin");
+      h_Wm_up->Scale(1./h_Wm_up->Integral()); h_Wm_up->SetDirectory(0);     
+      h_Wm_down = (TH1F *)wmptfile->Get("SignalWeight_nloEWK_down_rebin");
+      h_Wm_down->Scale(1./h_Wm_down->Integral()); h_Wm_down->SetDirectory(0);     
+      wmptfile->Close();
+
+      TFile *wpptfile = TFile::Open(inputFileWp);     
+      if(wpptfile->IsZombie() || !wpptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< inputFileWp<<std::endl;return -1;}        
+
+      h_Wp = (TH1F *)wpptfile->Get("SignalWeight_nloEWK_rebin");
+      h_Wp->Scale(1./h_Wp->Integral()); h_Wp->SetDirectory(0); 
+      h_Wp_up = (TH1F *)wpptfile->Get("SignalWeight_nloEWK_up_rebin");
+      h_Wp_up->Scale(1./h_Wp_up->Integral()); h_Wp_up->SetDirectory(0);      
+      h_Wp_down = (TH1F *)wpptfile->Get("SignalWeight_nloEWK_down_rebin");
+      h_Wp_down->Scale(1./h_Wp_down->Integral()); h_Wp_down->SetDirectory(0);      
+      wpptfile->Close();                                                  
+
+
+    } else if(isMC_Zh){
+      TString inputFileZll; 
+      inputFileZll = zptDir + "/" + "Zll_nloEWK_weight_unnormalized.root";
+
+      TFile *zptfile = TFile::Open(inputFileZll);
+      if(zptfile->IsZombie() || !zptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< inputFileZll<<std::endl;return -1;}   
+      
+      h_Zll = (TH1F *)zptfile->Get("SignalWeight_nloEWK_rebin");
+      h_Zll->Scale(1./h_Zll->Integral()); h_Zll->SetDirectory(0);           
+      h_Zll_up = (TH1F *)zptfile->Get("SignalWeight_nloEWK_up_rebin");
+      h_Zll_up->Scale(1./h_Zll_up->Integral()); h_Zll_up->SetDirectory(0);            
+      h_Zll_down = (TH1F *)zptfile->Get("SignalWeight_nloEWK_down_rebin");
+      h_Zll_down->Scale(1./h_Zll_down->Integral()); h_Zll_down->SetDirectory(0);   
+      zptfile->Close();       
+    }
+    
+
     //b-tagging: beff and leff must be derived from the MC sample using the discriminator vs flavor
     //the scale factors are taken as average numbers from the pT dependent curves see:
     //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagPOG#2012_Data_and_MC_EPS13_prescript
@@ -528,6 +578,9 @@ int main(int argc, char* argv[])
       varNames.push_back("_puup");  varNames.push_back("_pudown");      //pileup uncertainty 
       varNames.push_back("_pdfup"); varNames.push_back("_pdfdown");  
       
+      varNames.push_back("_nloEWK_up"); varNames.push_back("_nloEWK_down"); 
+      // NLO EWK corrections differential in Vpt on VH signal samples
+
       //	  varNames.push_back("_th_pdf");                                           //pdf
 	  //	  varNames.push_back("_th_alphas"); //alpha_s (QCD)
 
@@ -1106,6 +1159,7 @@ int main(int argc, char* argv[])
 	zptSF_5j = (TH1F *)zptfile->Get("5+jets_sf");zptSF_5j->SetDirectory(0);
 	zptfile->Close();
       }
+      /*
       if (isMC_WJets) {
 	TString wptfilename;  
 	//	if(is2016Legacy) 
@@ -1121,6 +1175,7 @@ int main(int argc, char* argv[])
 	wptfile->Close();      
 
       }
+      */
     }
 
 
@@ -1179,15 +1234,18 @@ int main(int argc, char* argv[])
             continue;
         }
 	// VJets sample check: only use HT<70 events in the WJets inclusive samples, DYJets remain +NJets samples
-//	if( ((isMC_DY && !(isMC_DY_HTbin)) || (isMC_WJets && !(isMC_WJets_HTbin)) ) && !dtag.Contains("amcNLO")) {
-//	  if(is2017MC && dtag.Contains("10to50") && (ev.lheHt >= 100)) continue; // only exception: 2017 low mass DY HT samples start from 100 HT.
-
+	/*
+	if( (isMC_DY && !(isMC_DY_HTbin)) && !dtag.Contains("amcNLO")) {
+	  if(is2017MC && dtag.Contains("10to50") && (ev.lheHt >= 100)) continue; // only exception: 2017 low mass DY HT samples start from 100 HT.
+	  else if(ev.lheHt >= 70) continue;   
+	}
+	*/
 	if(is2016Legacy || is2017MC || is2018MC){ // 2016 non Legacy samples don't fall into here
 	  if( (isMC_WJets && !(isMC_WJets_HTbin) ) && !dtag.Contains("amcNLO")) {
 	    if(ev.lheHt >= 70) continue;
 	  }
 	}
-
+	
 	mon.fillHisto("ht","debug_lheHt",ev.lheHt,1.0); 
 	if(is2018data) afterRun319077 = (ev.run > 319077);
 
@@ -1206,12 +1264,13 @@ int main(int argc, char* argv[])
         if(isMC) 
         {
           weight *= genWeight;
-//	  /*
+	  /*
           //Here is the tricky part.,... rewrite xsecWeight for WJets/WXJets and DYJets/DYXJets
 	  if( isMC_WJets && !dtag.Contains("amcNLO") ){ 
 	    if(!(is2016Legacy || is2017MC || is2018MC)) // only 2016 non legacy WJets samples need to use trick part
 	      xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(0, ev.lheNJets, is2016Legacy<<0|is2016MC<<1|is2017MC<<2|is2018MC<<3); 
 	  }
+	  */
 	  if( isMC_DY && !dtag.Contains("amcNLO") ) {
 	    if (string(url.Data()).find("10to50")  != string::npos)
 	      {
@@ -1220,12 +1279,78 @@ int main(int argc, char* argv[])
 	    else
 	      { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(2, ev.lheNJets, is2016Legacy<<0|is2016MC<<1|is2017MC<<2|is2018MC<<3); }
 	  }
-//	  */
+	  
 	  weight *= xsecWeight; 
         }
 
+	//QCD corrections that is equivalent to remapping the k-factor of madraph HT bins from 1.21(23) ro 1.58, 1.438, 1.494, 1.139 for HT_100-200, 200-400, 400_600, >600 bins 
+	/*
+	if (isMC_DY && !dtag.Contains("amcNLO")) { 
+	  double SF = 1.;
+          SF =   ( (ev.lheHt>100 && ev.lheHt<200)*1.588 *(1./1.21 ) + (ev.lheHt>200 && ev.lheHt<400)*1.438 * ( 1./1.21) + 
+		   (ev.lheHt>400 && ev.lheHt<600)*1.494 * (1./1.21 ) + (ev.lheHt>600)*1.139 * (1./ 1.21) ); 
+          weight *= SF; 
+        } 
+	*/   
+	if(isMC_WJets &&  !dtag.Contains("amcNLO")) {     
+	  double SF = 1.;
+	  SF =   ((ev.lheHt>100 && ev.lheHt<200)* 1.459 * ( 1/ (1.23 ) ) + (ev.lheHt>200 && ev.lheHt<400)* 1.434 * ( 1/ ( 1.23 )) + 
+		  (ev.lheHt>400 && ev.lheHt<600)*1.532 * (1 / (1.23 )) + (ev.lheHt>600)*1.004 * ( 1 / (1.23) ));
+	  weight *= SF; 
+	}
+
+	// V pt of VH signal samples
+	float zpt_VH = -1, wppt_VH = -1, wmpt_VH = -1;
+	
+	if (isMC_Wh) {
+	  PhysicsObjectCollection &genparticles = phys.genparticles;
+	  PhysicsObjectCollection zleps;   
+	  for (auto & genparticle : genparticles) {
+	    if(fabs(genparticle.id)>=11 && fabs(genparticle.id)<=18) zleps.push_back(genparticle); 
+	    if(genparticle.id==24){  // W+
+	      if(wppt_VH<0) {wppt_VH = genparticle.pt();}
+	      else { std::cout << "Found multiple W+ particles in event: " << iev << std::endl;}
+	    } else if (genparticle.id==-24) { // W-
+	      if(wmpt_VH<0) {wmpt_VH = genparticle.pt();}
+              else {std::cout << "Found multiple W- particles in event: " << iev << std::endl;}
+	    }
+	  }
+	  if(wppt_VH<=0) {
+	    if(zleps.size()>=2 && zleps[0].momid==24 && zleps[1].momid==24){       
+	      LorentzVector zll(zleps[0]+zleps[1]);   
+	      wppt_VH = zll.pt();
+	    }
+	  }  
+	  if(wmpt_VH<=0) {
+	    if(zleps.size()>=2 && zleps[0].momid==-24 && zleps[1].momid==-24){  
+	      LorentzVector zll(zleps[0]+zleps[1]);  
+	      wmpt_VH = zll.pt();  
+	    }
+	  }
+	  
+	} else if (isMC_Zh) {
+	  PhysicsObjectCollection &genparticles = phys.genparticles;
+	  PhysicsObjectCollection zleps;
+	  for (auto & genparticle : genparticles) {
+	    if(fabs(genparticle.id)>=11 && fabs(genparticle.id)<=18) zleps.push_back(genparticle);
+	    if(genparticle.id==23){   // Z
+	      if(zpt_VH<0) {zpt_VH = genparticle.pt();}
+	      else { std::cout << "Found multiple Z particles in event: " << iev << std::endl;}   
+	    }
+	  }
+	  if(zpt_VH<=0){ // didn't find a Z or zpt = 0
+	    if(zleps.size()>=2 && zleps[0].momid==23 && zleps[1].momid==23){
+	      LorentzVector zll(zleps[0]+zleps[1]);
+	      zpt_VH = zll.pt();
+	    }
+	  }
+	}
+	
+
 	// Extract Z pt reweights from LO and NLO DY samples
 	float zpt = -1, wpt = -1;
+	float zptSF(1.0); float wptSF(1.0);
+
 	if(isMC_DY){
 	  PhysicsObjectCollection &genparticles = phys.genparticles;
 	  PhysicsObjectCollection zleps;
@@ -1246,7 +1371,14 @@ int main(int argc, char* argv[])
 	      zpt = zll.pt();
 	    }
 	  }
+
+	  // Then also apply the NLO EWK corrections as in VH(bb):
+	  // https://twiki.cern.ch/twiki/bin/viewauth/CMS/VHiggsBBCodeUtils#QCD_and_EWK_corrections_to_Drell
+	  //	  /for Z options
+	  if (zpt > 0. && zpt < 3000) zptSF = -0.1808051+6.04146*(TMath::Power((zpt+759.098),-0.242556));
+	  weight *= zptSF;
 	}
+
 	if(isMC_WJets) {
 	  PhysicsObjectCollection &genparticles = phys.genparticles;  
 	  PhysicsObjectCollection zleps;   
@@ -1265,6 +1397,11 @@ int main(int argc, char* argv[])
 	      wpt = zll.pt();
 	    }
 	  }   
+
+	  // Then also apply the NLO EWK corrections as in VH(bb):        
+	  //for W options
+	  if (wpt > 0. && wpt < 3000) wptSF = -0.830041+7.93714*(TMath::Power((wpt+877.978),-0.213831));
+	  weight *= wptSF;
 	}
 
 	// Apply Top pt-reweighting
@@ -2226,6 +2363,32 @@ int main(int argc, char* argv[])
 	    vJets = variedJets[ivar];
 	  } 
 	  
+	  if (isSignal) {
+	    if(varNames[ivar]=="_nloEWK_up") {
+	      if(isMC_Wh) {
+		if(wppt_VH>0)  weight *= getSFfrom1DHist(wppt_VH, h_Wp_up);
+		else if(wmpt_VH>0) weight *= getSFfrom1DHist(wmpt_VH, h_Wm_up); 
+	      } else if(isMC_Zh){
+		if(zpt_VH>0) weight *= getSFfrom1DHist(zpt_VH, h_Zll_up);  
+	      }
+	    } else if(varNames[ivar]=="nloEWK_down") {
+	      if(isMC_Wh) { 
+		if(wppt_VH>0)  weight *= getSFfrom1DHist(wppt_VH, h_Wp_down);
+		else if(wmpt_VH>0) weight *= getSFfrom1DHist(wmpt_VH, h_Wm_down);
+	      } else if(isMC_Zh){   
+		if(zpt_VH>0) weight *= getSFfrom1DHist(zpt_VH, h_Zll_down);   
+	      }
+	    } else { // nominal
+	      if (isMC_Wh){
+		if(wppt_VH>0)  weight *= getSFfrom1DHist(wppt_VH, h_Wp);
+		else if(wmpt_VH>0) weight *= getSFfrom1DHist(wmpt_VH, h_Wm); 
+	      } else if(isMC_Zh){
+		if(zpt_VH>0) weight *= getSFfrom1DHist(zpt_VH, h_Zll);
+	      }
+	    } 
+
+	  } // isSignal
+
             //pileup
 	  if(varNames[ivar]=="_puup") weight *= ( TotalWeight_plus/puWeight ); //pu up
 	  if(varNames[ivar]=="_pudown") weight *= ( TotalWeight_minus/puWeight ); //pu down
@@ -2784,7 +2947,6 @@ int main(int argc, char* argv[])
 	  if(!passNJ2) continue;
 	
  	  if(!dtag.Contains("amcNLO") && reweightDYZPt){
-
 	    if (isMC_DY) {
 	      double ptsf=1.0;
 
@@ -2794,6 +2956,7 @@ int main(int argc, char* argv[])
 	      
 	      weight *= ptsf;
 	    }
+	    /*
 	    if(isMC_WJets) {
 	      double ptsf=1.0;  
 	      if(GoodIdJets.size()==3) {ptsf = getSFfrom1DHist(wpt, wptSF_3j);}   
@@ -2802,26 +2965,28 @@ int main(int argc, char* argv[])
 
 	      weight *= ptsf; 
 	    }
+	    */
 	  }
 	  if(ivar == 0 ){
 	    if(isMC_DY){
 	      mon.fillHisto("jetsMulti","alljets",GoodIdJets.size(),1);
 	      mon.fillHisto("ptw_full","debug",zpt,1); 
 	      mon.fillHisto("ptw","alljets",zpt,weight);
-	      if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,weight);}
-	      else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,weight);}
-	      else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,weight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,weight);}
+	      if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,xsecWeight*genWeight);}
+	      else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,xsecWeight*genWeight);}
+	      else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,xsecWeight*genWeight);}
 	    }
+	    
 	    if(isMC_WJets){
 	      mon.fillHisto("jetsMulti","alljets",GoodIdJets.size(),1); 
 	      mon.fillHisto("ptw_full","debug",wpt,1);
 	      mon.fillHisto("ptw","alljets",wpt,weight);   
 
-	      if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",wpt,weight);mon.fillHisto("ptw",tag_cat+"_3jets",wpt,weight);}  
-	      else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",wpt,weight);mon.fillHisto("ptw",tag_cat+"_4jets",wpt,weight);} 
-	      else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",wpt,weight);mon.fillHisto("ptw",tag_cat+"_5+jets",wpt,weight);}      
-
+	      if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",wpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",wpt,xsecWeight*genWeight);}  
+	      else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",wpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",wpt,xsecWeight*genWeight);} 
+	      else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",wpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",wpt,xsecWeight*genWeight);}      
 	    }
+	    
 	  }
 	  
 	  //#########################################################

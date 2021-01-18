@@ -156,7 +156,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        if [ ! -d "$ZPtSF_OUT" ]; then
 	   mkdir $ZPtSF_OUT
        fi
-        computeDYZPtSF.py -j $NTPL_JSON -d $NTPL_OUTDIR -o $ZPtSF_OUT
+        computeDYZPtSF.py -j $NTPL_JSON -d $NTPL_OUTDIR -o $ZPtSF_OUT -t MC13TeV_DY -f True
    fi
    
    if [[ $step == 1.03 ]]; then  # compute top Pt reweighting
