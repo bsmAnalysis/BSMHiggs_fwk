@@ -311,23 +311,17 @@ int main(int argc, char* argv[])
       TFile *wmptfile = TFile::Open(inputFileWm);                                                                                                                                                          
       if(wmptfile->IsZombie() || !wmptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< inputFileWm<<std::endl;return -1;} 
       
-      h_Wm = (TH1F *)wmptfile->Get("SignalWeight_nloEWK_rebin");
-      h_Wm->Scale(1./h_Wm->Integral()); h_Wm->SetDirectory(0); 
-      h_Wm_up = (TH1F *)wmptfile->Get("SignalWeight_nloEWK_up_rebin");
-      h_Wm_up->Scale(1./h_Wm_up->Integral()); h_Wm_up->SetDirectory(0);     
-      h_Wm_down = (TH1F *)wmptfile->Get("SignalWeight_nloEWK_down_rebin");
-      h_Wm_down->Scale(1./h_Wm_down->Integral()); h_Wm_down->SetDirectory(0);     
+      h_Wm = (TH1F *)wmptfile->Get("SignalWeight_nloEWK_rebin");h_Wm->SetDirectory(0); 
+      h_Wm_up = (TH1F *)wmptfile->Get("SignalWeight_nloEWK_up_rebin"); h_Wm_up->SetDirectory(0);     
+      h_Wm_down = (TH1F *)wmptfile->Get("SignalWeight_nloEWK_down_rebin"); h_Wm_down->SetDirectory(0);     
       wmptfile->Close();
 
       TFile *wpptfile = TFile::Open(inputFileWp);     
       if(wpptfile->IsZombie() || !wpptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< inputFileWp<<std::endl;return -1;}        
 
-      h_Wp = (TH1F *)wpptfile->Get("SignalWeight_nloEWK_rebin");
-      h_Wp->Scale(1./h_Wp->Integral()); h_Wp->SetDirectory(0); 
-      h_Wp_up = (TH1F *)wpptfile->Get("SignalWeight_nloEWK_up_rebin");
-      h_Wp_up->Scale(1./h_Wp_up->Integral()); h_Wp_up->SetDirectory(0);      
-      h_Wp_down = (TH1F *)wpptfile->Get("SignalWeight_nloEWK_down_rebin");
-      h_Wp_down->Scale(1./h_Wp_down->Integral()); h_Wp_down->SetDirectory(0);      
+      h_Wp = (TH1F *)wpptfile->Get("SignalWeight_nloEWK_rebin");h_Wp->SetDirectory(0); 
+      h_Wp_up = (TH1F *)wpptfile->Get("SignalWeight_nloEWK_up_rebin"); h_Wp_up->SetDirectory(0);      
+      h_Wp_down = (TH1F *)wpptfile->Get("SignalWeight_nloEWK_down_rebin"); h_Wp_down->SetDirectory(0);      
       wpptfile->Close();                                                  
 
 
@@ -338,12 +332,9 @@ int main(int argc, char* argv[])
       TFile *zptfile = TFile::Open(inputFileZll);
       if(zptfile->IsZombie() || !zptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< inputFileZll<<std::endl;return -1;}   
       
-      h_Zll = (TH1F *)zptfile->Get("SignalWeight_nloEWK_rebin");
-      h_Zll->Scale(1./h_Zll->Integral()); h_Zll->SetDirectory(0);           
-      h_Zll_up = (TH1F *)zptfile->Get("SignalWeight_nloEWK_up_rebin");
-      h_Zll_up->Scale(1./h_Zll_up->Integral()); h_Zll_up->SetDirectory(0);            
-      h_Zll_down = (TH1F *)zptfile->Get("SignalWeight_nloEWK_down_rebin");
-      h_Zll_down->Scale(1./h_Zll_down->Integral()); h_Zll_down->SetDirectory(0);   
+      h_Zll = (TH1F *)zptfile->Get("SignalWeight_nloEWK_rebin"); h_Zll->SetDirectory(0);           
+      h_Zll_up = (TH1F *)zptfile->Get("SignalWeight_nloEWK_up_rebin"); h_Zll_up->SetDirectory(0);            
+      h_Zll_down = (TH1F *)zptfile->Get("SignalWeight_nloEWK_down_rebin"); h_Zll_down->SetDirectory(0);   
       zptfile->Close();       
     }
     
