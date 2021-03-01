@@ -37,7 +37,7 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 #--------------------------------------------------
 
 YEAR=2016
-CHANNEL=WH
+CHANNEL=ZH
 
 do_syst=True # Always run with Systematics, unless its QCD mode
 
@@ -82,22 +82,22 @@ if [[ $YEAR == "2016" ]]; then
     NTPL_INPUT=/eos/cms/store/user/georgia/results$SUFFIX
 elif [[ $YEAR == "2017" ]]; then
     NTPL_INPUT=/eos/cms/store/user/georgia/results_2017$SUFFIX 
-#/eos/user/z/zhangyi/2017Analysis
-#/eos/cms/store/user/zhangyi/results$SUFFIX
+#    NTPL_INPUT=/eos/user/z/zhangyi/2017Analysis
+#    NTPL_INPUT=/eos/cms/store/user/zhangyi/results$SUFFIX
 elif [[ $YEAR == "2018" ]]; then
 #    NTPL_INPUT=/eos/user/y/yuanc/backup_2018Analysis/
     NTPL_INPUT=/eos/cms/store/user/yuanc/results$SUFFIX 
 fi
 
-ZPtSF_OUT=$MAINDIR/ZPtSF_${CHANNEL}_$YEAR$SUFFIX
+ZPtSF_OUT=$MAINDIR/VPtSF_${CHANNEL}_$YEAR$SUFFIX
 BTAG_NTPL_OUTDIR=$MAINDIR/btag_SFs/$YEAR/btag_Ntpl$SUFFIX
 NTPL_OUTDIR=$MAINDIR/results_Ntpl_${CHANNEL}_$YEAR$SUFFIX   
 #NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX  
 RUNLOG=$NTPL_OUTDIR/LOGFILES/runSelection.log
 queue='workday'   
 
-TopSF_INPUT=$MAINDIR/computeLimit/PrefitPlots_${YEAR}${CHANNEL}_noSoftb/TEST_ht
-TopSF_OUT=$MAINDIR/TopPtSF
+TopSF_INPUT=$MAINDIR/PrefitPlots_${YEAR}${CHANNEL}_noSoftb/TEST_ht
+TopSF_OUT=$MAINDIR/TopPtSF_$YEAR$CHANNEL
 if [[ $CHANNEL == "WH" ]] ; then
     vh_tag="wh" # wh or zh channel when computing Top Pt weights
 else vh_tag="zh" ; fi
@@ -146,17 +146,18 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        if [ ! -d "$BTAG_NTPL_OUTDIR" ]; then
 	   mkdir $BTAG_NTPL_OUTDIR
        fi
-       computeBTagRatio.py -j $NTPL_JSON -d $NTPL_INPUT -o $BTAG_NTPL_OUTDIR # -t MC13TeV_TTTo
+       computeBTagRatio.py -j $NTPL_JSON -d $NTPL_INPUT -o $BTAG_NTPL_OUTDIR -t MC13TeV_DY # -t MC13TeV_TTTo
    fi
    
    if [[ $step == 1.02 ]]; then  # compute Z pt SFs from LO and NLO DY samples
+#       NTPL_OUTDIR=results_Ntpl_ZH_2016_2020_06_19_DY_nozpt
        echo "Merge and Calculate Z pt SFs:"
        echo -e "Input: " $NTPL_OUTDIR "\n Output: " $ZPtSF_OUT
        ## if the output directory does not exist, create it:
        if [ ! -d "$ZPtSF_OUT" ]; then
 	   mkdir $ZPtSF_OUT
        fi
-        computeDYZPtSF.py -j $NTPL_JSON -d $NTPL_OUTDIR -o $ZPtSF_OUT -t MC13TeV_DY -f True
+       computeDYZPtSF.py -j $NTPL_JSON -d $NTPL_OUTDIR -o $ZPtSF_OUT -t MC13TeV_DY #-f True  
    fi
    
    if [[ $step == 1.03 ]]; then  # compute top Pt reweighting
@@ -178,7 +179,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        fi
 	# @btagSFMethod=1: Jet-by-jet updating of b-tagging status
 	# @btagSFMethod=2: Event reweighting using discriminator-dependent scale factors
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=$do_syst @runMVA=False @reweightDYZPt=False @reweightTopPt=True @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=$doQCD @runZH=$doZH @btagSFMethod=1" -s $queue #-t MC13TeV_TTJets #-r true
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=$do_syst @runMVA=False @reweightDYZPt=False @reweightDYdR16=False @reweightTopPt=True @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=$doQCD @runZH=$doZH @btagSFMethod=1" -s $queue -t MC13TeV_DY #-r true
    fi
 fi
 
@@ -251,7 +252,7 @@ if [[ $step > 2.999 && $step < 4 ]]; then
     if [[ $step == 3 || $step == 3.01 ]]; then  # make plots and combined root files for limits only
 	echo "MAKE SUMMARY ROOT FILE FOR LIMITS, BASED ON AN INTEGRATED LUMINOSITY OF $INTLUMI" 
 	echo "Input DIR = "$NTPL_OUTDIR  
-	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outFile ${PLOTTER}_forLimits.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "all_optim_systs|all_optim_cut|(e|mu|ee|mumu|emu)_(A|B|C|D)_(SR|CR|CR5j)_(3b|4b)_(bdt|higgsMass|higgsPt|ht|pfmet|ptw|mtw|dphiWh|dRave|dmmin|dphijmet|lep_pt_raw)(|_shapes)(|_umetup|_umetdown|_jerup|_jerdown|_(SubTotalPileUp|SubTotalRelative|SubTotalPt|SubTotalScale|SubTotalAbsolute|SubTotalMC|AbsoluteStat|AbsoluteScale|AbsoluteMPFBias|Fragmentation|SinglePionECAL|SinglePionHCAL|FlavorQCD|TimePtEta|RelativeJEREC1|RelativeJEREC2|RelativeJERHF|RelativePtBB|RelativePtEC1|RelativePtEC2|RelativePtHF|RelativeBal|RelativeSample|RelativeFSR|RelativeStatFSR|RelativeStatEC|RelativeStatHF|PileUpDataMC|PileUpPtRef|PileUpPtBB|PileUpPtEC1|PileUpPtEC2|PileUpPtHF)_jes(up|down)|_stat_eup|_stat_edown|_stat_eup|_stat_edown|_sys_eup|_sys_edown|_GS_eup|_GS_edown|_resRho_eup|_resRho_edown|_puup|_pudown|_pdfup|_pdfdown|_lesup|_lesdown|_softbup|_softbdown|_(b|c|l)tag(up|down))" $arguments
+	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outFile ${PLOTTER}_forLimits.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "all_optim_systs|all_optim_cut|(e|mu|ee|mumu|emu)_(A|B|C|D)_(SR|CR|CR5j)_(3b|4b)_(bdt|higgsMass|higgsPt|ht|pfmet|ptw|mtw|dphiWh|dRave|dmmin|dphijmet|dphilepmet|lep_pt_raw)(|_shapes)(|_umetup|_umetdown|_jerup|_jerdown|_(SubTotalPileUp|SubTotalRelative|SubTotalPt|SubTotalScale|SubTotalAbsolute|SubTotalMC|AbsoluteStat|AbsoluteScale|AbsoluteMPFBias|Fragmentation|SinglePionECAL|SinglePionHCAL|FlavorQCD|TimePtEta|RelativeJEREC1|RelativeJEREC2|RelativeJERHF|RelativePtBB|RelativePtEC1|RelativePtEC2|RelativePtHF|RelativeBal|RelativeSample|RelativeFSR|RelativeStatFSR|RelativeStatEC|RelativeStatHF|PileUpDataMC|PileUpPtRef|PileUpPtBB|PileUpPtEC1|PileUpPtEC2|PileUpPtHF)_jes(up|down)|_stat_eup|_stat_edown|_stat_eup|_stat_edown|_sys_eup|_sys_edown|_GS_eup|_GS_edown|_resRho_eup|_resRho_edown|_puup|_pudown|_pdfup|_pdfdown|_nloEWK_up|_nloEWK_down|_lesup|_lesdown|_softbup|_softbdown|_(b|c|l)tag(up|down))" $arguments
     fi
 
     if [[ $step == 3.02 ]]; then # make plots for data-driven QCD bkg

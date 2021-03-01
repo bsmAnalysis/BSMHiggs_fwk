@@ -178,7 +178,9 @@ int main(int argc, char* argv[])
 
     // will reweight the Z pt in DY+jets sample (optional)
     bool reweightDYZPt = runProcess.getParameter<bool>("reweightDYZPt");
-    
+    // will correct the DR(bb) of CR(3b) in 2016 DY MC (optional)
+    bool reweightDYdR16 = runProcess.getParameter<bool>("reweightDYdR16");
+
     // will produce the input root trees to BDT training (optional)
     bool runMVA = runProcess.getParameter<bool>("runMVA");
 
@@ -818,7 +820,10 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH1F( "ptw_full",       ";#it{p}_{T}^{V} [GeV];Events",310,-10,300.) );
     //MVA BDT
     mon.addHistogram( new TH1F( "bdt", ";BDT;Events", 35, -0.35,0.35) );
-    
+
+    mon.addHistogram( new TH1F( "etaw",       ";|#it{eta}|^{V} ;Events",10,0,5.0) );        
+    TH2F *hz_pt_eta = (TH2F *)mon.addHistogram( new TH2F("zpt_eta", ";Z p_{T} (GeV); Z |#eta|",30,0.,500.,10,0,5.0) );
+
     // Debugging SFs
     TH2F* musf_id =(TH2F*)mon.addHistogram(new TProfile2D("musfid", ";muon p_{T} (GeV); muon |#eta|",20,0.,400.,10,0,2.5) );    
     TH2F* musf_iso =(TH2F*)mon.addHistogram(new TProfile2D("musfiso", ";muon p_{T} (GeV); muon |#eta|",20,0.,400.,10,0,2.5) );   
@@ -912,22 +917,7 @@ int main(int argc, char* argv[])
       //xsecWeight=xsec/totalNumberofEvents;
       /////////////xsecWeight=xsec/cnorm; // effective luminosity}
       xsecWeight=xsec/nevts; // owen, Sept 19, 2020: use the total number of events for the dataset from the json file.
-      /*
-      std::map<std::string, int> xsec_map = mStat;
-      //std::string myproc = proc.Data();
-      //std::cout << "Runnin process " << myproc << std::endl;
-      std::map<std::string, int>::iterator it;
-      for ( it = xsec_map.begin(); it != xsec_map.end(); it++ ) {
-        if (it->first == proc.Data()) {
-          xsecWeight = (xsec/(float)it->second);
-          //totalNumberofEvents = it->second;
-          std::cout << "weight = " << (xsecWeight*35866.9) << std::endl;
-        }
-      }
-      */
-      //float pereventwgt=(xsecWeight*35866.9);
-      //printf("\n Running process with xSec = %f , and totalNumEvents = %d  . Per event weight is (L=35.9 fb-1): %f \n\n",
-      //xsec, totalNumberofEvents, pereventwgt );
+
     }
     //Hcutflow->SetBinContent(1,cnorm);
 
@@ -1129,10 +1119,8 @@ int main(int argc, char* argv[])
     //####################################################################################################################
     //###########################################           Z Pt SFs         ###########################################
     //####################################################################################################################
-    // TH1F *zptSF_allj = new TH1F();
+    TH1F *zptSF_allj = new TH1F();
     TH1F *zptSF_3j = new TH1F(), *zptSF_4j = new TH1F(), *zptSF_5j = new TH1F();
-    // TF1  *zfit_2j  = new TF1(), *zfit_3j  = new TF1(),  *zfit_4j  = new TF1(),  *zfit_5j  = new TF1();
-    TH1F *wptSF_3j = new TH1F(), *wptSF_4j = new TH1F(), *wptSF_5j = new TH1F();    
 
     if(reweightDYZPt && !dtag.Contains("amcNLO")){ // apply Z Pt weights on LO DY samples
       if (isMC_DY) {
@@ -1144,31 +1132,24 @@ int main(int argc, char* argv[])
 
 	TFile *zptfile = TFile::Open(zptfilename);
 	if(zptfile->IsZombie() || !zptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< zptfilename<<std::endl;return -1;}
-	//	zptSF_allj = (TH1F *)zptfile->Get("alljets_sf");zptSF_allj->SetDirectory(0);
+	zptSF_allj = (TH1F *)zptfile->Get("alljets_sf");zptSF_allj->SetDirectory(0);
 	zptSF_3j = (TH1F *)zptfile->Get("3jets_sf");zptSF_3j->SetDirectory(0);
 	zptSF_4j = (TH1F *)zptfile->Get("4jets_sf");zptSF_4j->SetDirectory(0);
 	zptSF_5j = (TH1F *)zptfile->Get("5+jets_sf");zptSF_5j->SetDirectory(0);
 	zptfile->Close();
       }
-      /*
-      if (isMC_WJets) {
-	TString wptfilename;  
-	//	if(is2016Legacy) 
-	wptfilename = zptDir + "/" +"WSF.root";     
-	//else if(is2017MC) wptfilename = zptDir + "/" +"WSF_2017.root"; 
-	//	else if(is2018MC) wptfilename = zptDir + "/" +"WSF_2018.root";  
-	
-	TFile *wptfile = TFile::Open(wptfilename);
-	if(wptfile->IsZombie() || !wptfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< wptfilename<<std::endl;return -1;}    
-	wptSF_3j = (TH1F *)wptfile->Get("3jets_sf");wptSF_3j->SetDirectory(0);  
-	wptSF_4j = (TH1F *)wptfile->Get("4jets_sf");wptSF_4j->SetDirectory(0); 
-	wptSF_5j = (TH1F *)wptfile->Get("5+jets_sf");wptSF_5j->SetDirectory(0);  
-	wptfile->Close();      
-
-      }
-      */
     }
 
+    TH1F *ee_drSF = new TH1F(), *mumu_drSF = new TH1F();
+
+    if(isMC_DY &&  !dtag.Contains("amcNLO") && is2016MC) {
+      TString drfilename;
+      drfilename = zptDir + "/"+"drSF_2016.root";
+      TFile *drfile = TFile::Open(drfilename);
+      if(drfile->IsZombie() || !drfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< drfilename<<std::endl;return -1;}  
+      ee_drSF = (TH1F*)drfile->Get("ee_A_CR_3b_sf"); ee_drSF->SetDirectory(0);
+      mumu_drSF = (TH1F*)drfile->Get("mumu_A_CR_3b_sf"); mumu_drSF->SetDirectory(0);  
+    }
 
     //####################################################################################################################
     //###########################################           MVAHandler         ###########################################
@@ -1339,7 +1320,7 @@ int main(int argc, char* argv[])
 	
 
 	// Extract Z pt reweights from LO and NLO DY samples
-	float zpt = -1, wpt = -1;
+	float zpt = -1, zeta = -1, wpt = -1;
 	float zptSF(1.0); float wptSF(1.0);
 
 	if(isMC_DY){
@@ -1349,9 +1330,10 @@ int main(int argc, char* argv[])
 
 	    if(fabs(genparticle.id)>=11 && fabs(genparticle.id)<=18) zleps.push_back(genparticle);
 	    if(genparticle.id==23){   
-	      if(zpt<0)
-	        zpt = genparticle.pt();
-	      else
+	      if(zpt<0) {
+	        zpt = genparticle.pt(); 
+		zeta=fabs(genparticle.eta());
+	      } else
 		std::cout << "Found multiple Z particles in event: " << iev << std::endl;
 	    }
 	  }
@@ -1359,7 +1341,7 @@ int main(int argc, char* argv[])
 	  if(zpt<=0){ // didn't find a Z or zpt = 0
 	    if(zleps.size()>=2 && zleps[0].momid==23 && zleps[1].momid==23){
 	      LorentzVector zll(zleps[0]+zleps[1]);
-	      zpt = zll.pt();
+	      zpt = zll.pt(); zeta=fabs(zll.eta());
 	    }
 	  }
 
@@ -1368,6 +1350,18 @@ int main(int argc, char* argv[])
 	  //	  /for Z options
 	  if (zpt > 0. && zpt < 3000) zptSF = -0.1808051+6.04146*(TMath::Power((zpt+759.098),-0.242556));
 	  weight *= zptSF;
+
+	  //	  mon.fillHisto("ptw","alljets",zpt,weight); 
+	  //	  mon.fillHisto("etaw","alljets",zeta,weight); 
+	  mon.fillHisto("zpt_eta","alljets",zpt,zeta,weight); 
+
+	  if(zeta<0.5) mon.fillHisto("ptw","eta1_",zpt,xsecWeight*genWeight); 
+	  else if(zeta>=0.5 && zeta <1.0) mon.fillHisto("ptw","eta2_",zpt,xsecWeight*genWeight); 
+	  else if(zeta>=1.0 && zeta <1.5) mon.fillHisto("ptw","eta3_",zpt,xsecWeight*genWeight); 
+	  else if(zeta>=1.5 && zeta <2.0) mon.fillHisto("ptw","eta4_",zpt,xsecWeight*genWeight); 
+	  else if(zeta>=2.0 && zeta <2.5) mon.fillHisto("ptw","eta5_",zpt,xsecWeight*genWeight); 
+	  else if(zeta>=2.5) mon.fillHisto("ptw","eta6_",zpt,xsecWeight*genWeight); 
+
 	}
 
 	if(isMC_WJets) {
@@ -2744,34 +2738,6 @@ int main(int argc, char* argv[])
 	  //--------------------------------------------------------------------------
 	  sort(CSVLoosebJets.begin(), CSVLoosebJets.end(), ptsort());
 
-	  // SVs cross-cleaned with AK4 + CSV jets
-	  /*
-	  PhysicsObjectSVCollection SVs;
-	  
-	  int isoft(0);
-	  for (auto & isv : SVs_raw) {
-	    // check overlap with any other jet
-	    bool hasOverlap(false);
-
-	     // plot minDR(SV,b)
-	    float dRmin_csv(999.);
-	    // for (auto & it : CSVLoosebJets) {
-	    for (auto & it : GoodIdJets) {
-	      double dR=deltaR(it, isv);
-	      if (dR<dRmin_csv) dRmin_csv=dR;
-	    }
-	    if(ivar==0) {mon.fillHisto("dR_raw","sv_b",dRmin_csv,weight); }
-	    
-	    //if (!runDBversion) { // use soft-b tags only if AK8 jets are not used
-	    hasOverlap=(dRmin_csv<0.4);
-	    if (!hasOverlap) {// continue;
-	      // Fill final soft-bs from SVs
-	      SVs.push_back(isv);  isoft++;      
-	    }
-	    if (isoft>=1) break; //only allow [0,1] SVs to enter    
-	  }
-	  */
-
 	  // JET KINEMATICS
 	  if(ivar==0){
 
@@ -2810,27 +2776,7 @@ int main(int argc, char* argv[])
 	      is++;
 	      if (is>3) break; // plot only up to 4 b-jets ?
 	    }
-	    
-	    //--------------------------------------------------------------------------
-	    // Soft-b tagging properties
-	    //--------------------------------------------------------------------------
-	    /*
-	    mon.fillHisto("nbtags_raw",tag_cat,SVs.size(),weight);
-	    
-	    is=0;
-	    for (auto & isv : SVs) {
-	      mon.fillHisto("softjet_pt_raw", tag_cat+"_"+"softb"+htag[is], isv.pt(),weight);
-	      mon.fillHisto("jet_eta_raw", tag_cat+"_"+"softb"+htag[is], isv.eta(),weight);
-	      is++;
-	      if (is>3) break;
-	    }
-	    
-	    // DR between 2 SVs
-	    if (SVs.size()>1) {
-	      double dR=deltaR(SVs[0], SVs[1]);
-	      mon.fillHisto("dR_raw",tag_cat+"_"+"svs",dR,weight);
-	    }
-	    */
+
 	    // dphi(jet,MET)
 	    mon.fillHisto("dphijmet",tag_cat+"_"+"raw",mindphijmet,weight);
 	    
@@ -2940,39 +2886,49 @@ int main(int argc, char* argv[])
  	  if(!dtag.Contains("amcNLO") && reweightDYZPt){
 	    if (isMC_DY) {
 	      double ptsf=1.0;
-
+	      //ptsf = getSFfrom1DHist(zpt, zptSF_allj);
+	      
 	      if(GoodIdJets.size()==3) {ptsf = getSFfrom1DHist(zpt, zptSF_3j);}
 	      else if(GoodIdJets.size()==4) {ptsf = getSFfrom1DHist(zpt, zptSF_4j);}
 	      else if(GoodIdJets.size()>=5) {ptsf = getSFfrom1DHist(zpt, zptSF_5j);}
-	      
+
 	      weight *= ptsf;
 	    }
-	    /*
-	    if(isMC_WJets) {
-	      double ptsf=1.0;  
-	      if(GoodIdJets.size()==3) {ptsf = getSFfrom1DHist(wpt, wptSF_3j);}   
-	      else if(GoodIdJets.size()==4) {ptsf = getSFfrom1DHist(wpt, wptSF_4j);} 
-	      else if(GoodIdJets.size()>=5) {ptsf = getSFfrom1DHist(wpt, wptSF_5j);}  
-
-	      weight *= ptsf; 
-	    }
-	    */
 	  }
+
 	  if(ivar == 0 ){
 	    if(isMC_DY){
-	      mon.fillHisto("jetsMulti","alljets",GoodIdJets.size(),1);
-	      mon.fillHisto("ptw_full","debug",zpt,1); 
+	      mon.fillHisto("jetsMulti","alljets",GoodIdJets.size(),xsecWeight*genWeight);
+	      //	      mon.fillHisto("ptw_full","debug",zpt,xsecWeight*genWeight); 
+	      mon.fillHisto("ptw","alljets",zpt,xsecWeight*genWeight);      
+	      mon.fillHisto("etaw","alljets",zeta,xsecWeight*genWeight);        
+	      /*
 	      mon.fillHisto("ptw","alljets",zpt,weight);
-	      if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,xsecWeight*genWeight);}
-	      else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,xsecWeight*genWeight);}
-	      else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,xsecWeight*genWeight);}
+	      mon.fillHisto("etaw","alljets",zeta,weight);
+	      mon.fillHisto("zpt_eta","alljets",zpt,zeta,weight);
+	      */
+	      if(GoodIdJets.size()==3) {
+		mon.fillHisto("ptw","3jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",zpt,xsecWeight*genWeight);
+		mon.fillHisto("etaw","3jets",zeta,xsecWeight*genWeight);mon.fillHisto("etaw",tag_cat+"_3jets",zeta,xsecWeight*genWeight);     
+		mon.fillHisto("zpt_eta","3jets",zpt,zeta,xsecWeight*genWeight);
+	      }
+	      else if(GoodIdJets.size()==4) {
+		mon.fillHisto("ptw","4jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",zpt,xsecWeight*genWeight);
+		mon.fillHisto("etaw","4jets",zeta,xsecWeight*genWeight);mon.fillHisto("etaw",tag_cat+"_4jets",zeta,xsecWeight*genWeight);  
+		mon.fillHisto("zpt_eta","4jets",zpt,zeta,xsecWeight*genWeight);     
+	      }
+	      else if(GoodIdJets.size()>=5) {
+		mon.fillHisto("ptw","5+jets",zpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",zpt,xsecWeight*genWeight);
+		mon.fillHisto("etaw","5jets",zeta,xsecWeight*genWeight);mon.fillHisto("etaw",tag_cat+"_5jets",zeta,xsecWeight*genWeight);  
+		mon.fillHisto("zpt_eta","5jets",zpt,zeta,xsecWeight*genWeight);     
+	      }
 	    }
 	    
 	    if(isMC_WJets){
 	      mon.fillHisto("jetsMulti","alljets",GoodIdJets.size(),1); 
 	      mon.fillHisto("ptw_full","debug",wpt,1);
 	      mon.fillHisto("ptw","alljets",wpt,weight);   
-
+	      
 	      if(GoodIdJets.size()==3) {mon.fillHisto("ptw","3jets",wpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_3jets",wpt,xsecWeight*genWeight);}  
 	      else if(GoodIdJets.size()==4) {mon.fillHisto("ptw","4jets",wpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_4jets",wpt,xsecWeight*genWeight);} 
 	      else if(GoodIdJets.size()>=5) {mon.fillHisto("ptw","5+jets",wpt,xsecWeight*genWeight);mon.fillHisto("ptw",tag_cat+"_5+jets",wpt,xsecWeight*genWeight);}      
@@ -2988,18 +2944,6 @@ int main(int argc, char* argv[])
 	  int evtCatPlot = eventCategoryPlot.Get(phys,&GoodIdbJets, &pseudoGoodIdbJets);
 	  //	  if (evtCatPlot<3) continue;
 
-	  // soft b-tag SF and uncertainty: 1.05 +/- 0.16
-	  /*
-	  if (isMC) {
-	    for (auto & i : SVs) {  
-//	      weight *= 1.05;
-	      if (varNames[ivar]=="_softbup") { weight *= 1.21; }
-	      else if (varNames[ivar]=="_softbdown") { weight *= 0.89; }
-	      else {weight *= 1.05;}
-	      //else { weight *= 1.05; }
-	    }
-	  }
-	  */
 	  if (ivar==0) mon.fillHisto("evt_cat",tag_cat+"_"+"sel1", evtCatPlot,weight);
 	  
 	  // //Define ABCD regions
@@ -3119,7 +3063,19 @@ int main(int argc, char* argv[])
 	  //	  float mjj=(GoodIdbJets[0]+GoodIdbJets[1]).mass();
 	  //	  float ptjj=(GoodIdbJets[0]+GoodIdbJets[1]).pt();
 	  //	  float dRll=deltaR(GoodIdbJets[0],SelLeptons[1]);
-	  
+
+	  // correct the DRave distribution in 2016 DY MC:
+	  if(runZH && isMC_DY && !dtag.Contains("amcNLO") && reweightDYdR16){ 
+            if (is2016MC) {
+              double drsf=1.0; 
+	      if(tag_subcat.Contains("CR_3b")) {
+		if(tag_cat=="ee") drsf = getSFfrom1DHist(dRave_,ee_drSF); 
+		if(tag_cat=="mumu") drsf = getSFfrom1DHist(dRave_,mumu_drSF);
+	      }
+              weight *= drsf; 
+            }
+          }
+
 	  //##############################################################################
 	  //############ MVA Reader #####################################################
 	  //##############################################################################
