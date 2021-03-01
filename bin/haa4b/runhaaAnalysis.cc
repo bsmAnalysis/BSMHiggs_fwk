@@ -1149,6 +1149,7 @@ int main(int argc, char* argv[])
       if(drfile->IsZombie() || !drfile->IsOpen()) {std::cout<<"Error, cannot open file: "<< drfilename<<std::endl;return -1;}  
       ee_drSF = (TH1F*)drfile->Get("ee_A_CR_3b_sf"); ee_drSF->SetDirectory(0);
       mumu_drSF = (TH1F*)drfile->Get("mumu_A_CR_3b_sf"); mumu_drSF->SetDirectory(0);  
+      drfile->Close();
     }
 
     //####################################################################################################################
