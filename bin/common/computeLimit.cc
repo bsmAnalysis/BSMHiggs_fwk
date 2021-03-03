@@ -4039,7 +4039,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           
 	  if (ivar<=syst->GetNbinsX()) {
 	    varName   = syst->GetXaxis()->GetBinLabel(ivar);
-	    histoName = ch+"_"+shapeName+(isSignal?signalSufix:"")+varName ;
 	  } else {
 	    if(addsyst) { // additional systematics if added externally
 	      varName=systName[ivarplus]; ivarplus++;
