@@ -85,9 +85,9 @@ for dir in dirs:
             if hcor==None: continue
             if huncor==None: continue    
             
-            h_up=hcor.Clone(histo+"_bdt_dydRUp")
+            h_up=hcor.Clone(histo+"_bdt_dydRup")
             h_up.Reset()
-            h_down=hcor.Clone(histo+"_bdt_dydRDown")
+            h_down=hcor.Clone(histo+"_bdt_dydRdown")
             h_down.Reset()
             
             ## Create the up and down variations due to DRave modeling unc.    
@@ -95,8 +95,8 @@ for dir in dirs:
             
             ## make the 2d versions BDT-vs-index and store as well:
             hcor_shapes = fcor.Get(hname_shapes)
-            h_up_shapes=hcor_shapes.Clone(histo+"_bdt_shapes_dydRUp")
-            h_down_shapes=hcor_shapes.Clone(histo+"_bdt_shapes_dydRDown")
+            h_up_shapes=hcor_shapes.Clone(histo+"_bdt_shapes_dydRup")
+            h_down_shapes=hcor_shapes.Clone(histo+"_bdt_shapes_dydRdown")
             
             h_up_shapes.Reset()
             h_down_shapes.Reset()
@@ -114,8 +114,8 @@ for dir in dirs:
                 print("Histo is Null for that process ", hname) 
                 continue
             else:   
-                h_up = hcor.Clone(histo+"_bdt_dydRUp")
-                h_down = hcor.Clone(histo+"_bdt_dydRDown")
+                h_up = hcor.Clone(histo+"_bdt_dydRup")
+                h_down = hcor.Clone(histo+"_bdt_dydRdown")
 
             ## make the 2d versions BDT-vs-index and store as well:
             h_up_shapes=hcor_shapes.Clone(histo+"_bdt_shapes_dydRup")
