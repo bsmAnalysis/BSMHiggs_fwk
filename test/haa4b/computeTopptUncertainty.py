@@ -80,7 +80,7 @@ else:
     exit(-1)
 
 
-dirs = ['t#bar{t} + light_filt1','t#bar{t} + b#bar{b}_filt5','t#bar{t} + c#bar{c}_filt4','data',
+dirs = ['t#bar{t} + light_filt1','t#bar{t} + b#bar{b}_filt5','t#bar{t} + c#bar{c}_filt4',
         'Other Bkgds','Z#rightarrow ll','W#rightarrow l#nu','QCD',
         'Wh (12)','Wh (15)','Wh (20)','Wh (25)','Wh (30)','Wh (40)','Wh (50)','Wh (60)']
 
