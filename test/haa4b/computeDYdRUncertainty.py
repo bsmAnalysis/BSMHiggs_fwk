@@ -56,9 +56,9 @@ def makeUncHisto(hcor, huncor, h_up, h_down):
         deltah=abs(hcor.GetBinContent(i)-huncor.GetBinContent(i))
         err=math.sqrt(hcor.GetBinError(i)*hcor.GetBinError(i) +
                       huncor.GetBinError(i)*huncor.GetBinError(i))
-        h_up.SetBinContent(i,huncor.GetBinContent(i)+deltah)
+        h_up.SetBinContent(i,hcor.GetBinContent(i)+deltah)
         h_up.SetBinError(i,err)
-        h_down.SetBinContent(i,huncor.GetBinContent(i)-deltah)
+        h_down.SetBinContent(i,hcor.GetBinContent(i)-deltah)
         h_down.SetBinError(i,err)
 
     return h_up,h_down
@@ -85,16 +85,16 @@ for dir in dirs:
             if hcor==None: continue
             if huncor==None: continue    
             
-            h_up=huncor.Clone(histo+"_bdt_dydRup")
+            h_up=hcor.Clone(histo+"_bdt_dydRup")
             h_up.Reset()
-            h_down=huncor.Clone(histo+"_bdt_dydRdown")
+            h_down=hcor.Clone(histo+"_bdt_dydRdown")
             h_down.Reset()
             
             ## Create the up and down variations due to DRave modeling unc.    
             makeUncHisto(hcor, huncor, h_up, h_down)
             
             ## make the 2d versions BDT-vs-index and store as well:
-            hcor_shapes = funcor.Get(hname_shapes)
+            hcor_shapes = fcor.Get(hname_shapes)
             h_up_shapes=hcor_shapes.Clone(histo+"_bdt_shapes_dydRup")
             h_down_shapes=hcor_shapes.Clone(histo+"_bdt_shapes_dydRdown")
             
@@ -108,9 +108,9 @@ for dir in dirs:
                     h_down_shapes.SetBinContent(i,j,h_down.GetBinContent(j))
 
         else: 
-            hcor = funcor.Get(hname)
-            huncor = funcor.Get(hname)
-            hcor_shapes = funcor.Get(hname_shapes)
+            hcor = fcor.Get(hname)
+            huncor = fcor.Get(hname)
+            hcor_shapes = fcor.Get(hname_shapes)
             if hcor==None:
                 print("Histo is Null for that process ", hname) 
                 continue
