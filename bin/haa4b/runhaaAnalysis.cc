@@ -573,7 +573,8 @@ int main(int argc, char* argv[])
       
       varNames.push_back("_nloEWK_up"); varNames.push_back("_nloEWK_down"); 
       // NLO EWK corrections differential in Vpt on VH signal samples
-      varNames.push_back("_dydRup"); varNames.push_back("dydRdown");
+
+      varNames.push_back("_dydRup"); varNames.push_back("_dydRdown");
       varNames.push_back("_topptup"); varNames.push_back("_topptdown");
       //	  varNames.push_back("_th_pdf");                                           //pdf
 	  //	  varNames.push_back("_th_alphas"); //alpha_s (QCD)
