@@ -61,15 +61,10 @@ double SignalRescale = 1.0;
 
 double datadriven_qcd_Syst = 0.50;    
 
-// Add externally produced systematic shape variations 
+// Add externally produced systematic shape variations: 
 bool addsyst=false;
-
+// Use postfit normalizations in W/DY/Top bkg components:
 bool postfit=false;
-//double norm_top=0.89;
-//double enorm_3b_w=1.37;
-//double enorm_4b_w=1.29;
-//double munorm_3b_w=1.37;
-//double munorm_4b_w=1.44;
 
 double rfr_tt_norm_e ;
 double rfr_tt_norm_mu ;
@@ -539,37 +534,35 @@ class ShapeData_t
            for(std::map<string, TH1*>::iterator var = uncShape.begin(); var!=uncShape.end(); var++){
               TString systName = var->first.c_str();
 
-              if(var->first=="")continue; //Skip Nominal shape
-	      //	      if(!systName.Contains(upORdown))continue; //only look for syst up or down at a time (upORdown should be either "Up" or "Down"
+              if(var->first=="") continue; //Skip Nominal shape
+	      //if(!systName.Contains(upORdown))continue; //only look for syst up or down at a time (upORdown should be either "Up" or "Down"
 	      if(!systName.EndsWith(upORdown.c_str()))continue; //only look for syst up or down at a time (upORdown should be either "Up" or "Down"
-
 
         //--owen: aug 15, 2020:  Why are the histograms cloned?  This is super slow.  Is it necessary???  Are they ever used later???
         //                       Looks safe to not clone, so removing this.  Speeds it up a lot.
        
             //--- with cloning
-	      //TH1* hvar = (TH1*)(var->second->Clone((name+var->first).c_str()));
-	      // double varYield = hvar->GetBinContent(bin);
-	      //TH1* h = (TH1*)(this->histo()->Clone((name+"Nominal").c_str()));
-	      //double yield = h->GetBinContent(bin);
+	      //	      TH1* hvar = (TH1*)(var->second->Clone((name+var->first).c_str()));
+	      //	      double varYield = hvar->GetBinContent(bin);
+	      //	      TH1* h = (TH1*)(this->histo()->Clone((name+"Nominal").c_str()));
+	      //	      double yield = h->GetBinContent(bin);
 
             //--- no cloning
-              double varYield = var->second->GetBinContent(bin);
-              double yield = this->histo()->GetBinContent(bin);
+	      double varYield = var->second->GetBinContent(bin);
+	      double yield = this->histo()->GetBinContent(bin);
 
 	      if ( verbose ) {
-		printf(" --- verbose : getBinShapeUncertainty : name = %s , bin = %d , upORdown = %s , hvar clone name = %s , h clone name = %s, varYield = %.1f, yield = %.1f, diff = %.1f\n",
+		printf("\n\n --- verbose : getBinShapeUncertainty : name = %s , bin = %d , upORdown = %s , hvar clone name = %s , h clone name = %s, varYield = %.1f, yield = %.1f, diff = %.1f \n",
 		       name.c_str(), bin, upORdown.c_str(),
-		     (name+var->first).c_str(),
+		       (name+var->first).c_str(),
 		       (name+"Nominal").c_str(),
 		       varYield, yield, (varYield-yield)
-		       ) ;
-		fflush(stdout) ;
+		       );
+	       	fflush(stdout) ;
 	      }
-
-              Total+=pow(varYield-yield,2); //the total shape unc is the sqrt of the quadratical sum of the difference between the nominal and the variated yields.
-
-           } // var     
+              Total+=pow(varYield-yield,2); 
+	      //the total shape unc is the sqrt of the quadratical sum of the difference between the nominal and the variated yields.
+           } // var loop     
            return Total>0?sqrt(Total):-1;
         } // getBinShapeUncertainty
 
@@ -1006,8 +999,6 @@ int main(int argc, char* argv[])
 
 
   ///////////////////////////////////////////////
-
-
   //init the json wrapper
   JSONWrapper::Object Root(jsonFile.Data(), true);
 
@@ -1408,8 +1399,8 @@ int main(int argc, char* argv[])
   if ( verbose && runSystematics ) { printf("\n  --- verbose : main :    calling allInfo.showUncertainty(selCh,histo,\"plot\"); \n") ; fflush(stdout) ; }
 
   //produce a plot
-  if(runSystematics) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  
-  //  if(runSystematics && !(simfit)) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  
+  //if(runSystematics) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  
+  if(runSystematics && !(simfit)) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  
   // georgia : now run reporting systematics only if simfit=false 
   // owen: temporarily turn this off.  Slows it down.
   
@@ -1504,6 +1495,7 @@ void AllInfo_t::addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool compute
         if(shapesInfoSrc[sh->first].uncShape.find("")==shapesInfoSrc[sh->first].uncShape.end()) continue;
         if(addDiffProcs){ // add different procs
           //1. Copy the nominal shape
+	  //	  printf(" ***** addChannels:::: shapeName = %s has integral %f\n",uncS->first.c_str(),uncS->second->Integral() );
           shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) shapesInfoDest[sh->first].uncShape[""]->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
           //2. we remove the nominal value of the process we are running on
           shapesInfoDest[sh->first].uncShape[uncS->first]->Add(shapesInfoSrc[sh->first].uncShape[""], -1);
@@ -2121,11 +2113,6 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
 
 
 
-
-
-
-
-
 //
 // Sum up all background processes and add this as a total process
 //
@@ -2386,28 +2373,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
   }
 
 
-                //           //All Channels
-                //           fprintf(pFile,"\\begin{sidewaystable}[htp]\n\\begin{center}\n\\caption{Event yields expected for background and signal processes and observed in data.}\n\\label{tab:table}\n");
-                //           fprintf(pFile, "%s}\\\\\n", rows_header.c_str());
-                //           fprintf(pFile, "%s\\\\\n", rows_title .c_str());
-                //           for(std::map<string, string>::iterator row = rows.begin(); row!= rows.end(); row++){
-                //              fprintf(pFile, "%s\\\\\n", row->second.c_str());
-                //           }
-                //           fprintf(pFile,"\\hline\n");
-                //           fprintf(pFile,"\\end{tabular}\n\\end{center}\n\\end{sidewaystable}\n");
-
-                //           //All Bins
-                //           fprintf(pFileInc,"\\begin{sidewaystable}[htp]\n\\begin{center}\n\\caption{Event yields expected for background and signal processes and observed in data.}\n\\label{tab:table}\n");
-                //           fprintf(pFileInc, "%s}\\\\\n", rows_header.c_str());
-                //           fprintf(pFileInc, "%s\\\\\n", rows_title .c_str());
-                //           for(std::map<string, string>::iterator row = rowsBin.begin(); row!= rowsBin.end(); row++){
-                //              fprintf(pFileInc, "%s\\\\\n", row->second.c_str());
-                //           }
-                //           fprintf(pFileInc,"\\hline\n");
-                //           fprintf(pFileInc,"\\end{tabular}\n\\end{center}\n\\end{sidewaystable}\n");
-
-
-
     //All Channels
   fprintf(pFile,"\\documentclass{article}\n\\usepackage{graphicx}\n\\usepackage{geometry}\n\\geometry{\n\tleft=10mm,\n\tright=10mm,\n\ttop=10mm,\n\tbottom=10mm\n}\n\\usepackage[utf8]{inputenc}\n\\usepackage{rotating}\n\\begin{document}\n\\begin{sidewaystable}[htp]\n\\begin{center}\n\\caption{Event yields expected for background and signal processes and observed in data.}\n\\label{tab:table}\n\\resizebox{\\textwidth}{!}{\n ");
   fprintf(pFile, "\\begin{tabular}{|c|"); for(auto ch = MapChannel.begin(); ch!=MapChannel.end();ch++){ fprintf(pFile, "c|"); } fprintf(pFile, "}\\hline\n");
@@ -2630,7 +2595,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if ( verbose ) { printf(" --- verbose : AllInfo_t::showShape :  proc = %s , chan = %s, hist = %s\n", process.Data(), ch->first.c_str(), h->GetName() ) ; fflush(stdout) ; }
         //if(process.Contains("SOnly_S") ) h->Scale(10);  
         if(it->first=="total"){
-          //double Uncertainty = std::max(0.0, ch->second.shapes[histoName.Data()].getScaleUncertainty() / h->Integral() );;
 
           double syst_scale = std::max(0.0, ch->second.shapes[histoName.Data()].getScaleUncertainty());
 	  //          double syst_shape = std::max(0.0, ch->second.shapes[histoName.Data()].getBinShapeUncertainty((it->first+ch->first).c_str()));
@@ -2657,7 +2621,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             double syst_binDown = sqrt(pow(Uncertainty_scale*h->GetBinContent(ibin), 2) + pow(syst_shape_binDown,2));
             double Uncertainty_binUp = syst_binUp / h->GetBinContent(ibin);
             double Uncertainty_binDown = syst_binDown / h->GetBinContent(ibin);
-
 
             //errors->SetPointError(icutg,h->GetXaxis()->GetBinWidth(ibin)/2.0, sqrt(pow(h->GetBinContent(ibin)*Uncertainty_bin,2) + pow(h->GetBinError(ibin),2) ) );
             errors->SetPointError(icutg,h->GetXaxis()->GetBinWidth(ibin)/2.0,h->GetXaxis()->GetBinWidth(ibin)/2.0, sqrt(pow(h->GetBinContent(ibin)*Uncertainty_binDown,2) + pow(h->GetBinError(ibin),2) ), sqrt(pow(h->GetBinContent(ibin)*Uncertainty_binUp,2) + pow(h->GetBinError(ibin),2) ) );
@@ -2900,56 +2863,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       gPad->RedrawAxis();
 
-    //print legend
-    // c1->cd(0);
-      //      legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);  legA->SetBorderSize(0); legA->SetHeader(LabelText);
-      //      legA->SetNColumns((NLegEntry/2) + 1);
       legA->Draw("same");    legA->SetTextFont(42);
-      
-    //print canvas header
-                /*
-       t2->cd(0);
-                //           TPaveText* T = new TPaveText(0.1,0.995,0.84,0.95, "NDC");
-    TPaveText* T = new TPaveText(0.1,0.7,0.9,1.0, "NDC");
-    T->SetFillColor(0);  T->SetFillStyle(0);  T->SetLineColor(0); T->SetBorderSize(0);  T->SetTextAlign(22);
-    if(systpostfix.Contains('3'))      { T->AddText("CMS preliminary, #sqrt{s}=13.0 TeV");
-    }else if(systpostfix.Contains('8')){ T->AddText("CMS preliminary, #sqrt{s}=8.0 TeV");
-    }else{                               T->AddText("CMS preliminary, #sqrt{s}=7.0 TeV");
-    }T->Draw();
 
-*/
-
-    // c1->cd(0);
-      /*   
-      double L=0.03, R=0.03, T=0.02, B=0.0;
-      char LumiText[1024];
-      if(systpostfix.Contains('3'))      { double iLumi= 35914;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 13.0);
-      }else if(systpostfix.Contains('8')){ double iLumi=20000;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 8.0);
-      }else{                               double iLumi= 5000;sprintf(LumiText, "%.1f %s^{-1} (%.0f TeV)", iLumi>100?iLumi/1000:iLumi, iLumi>100?"fb":"pb", 7.0); 
-      }
-      */
       double iLumi=35.9;
       double iEcm=13;
       if(lumi > 0) iLumi = lumi;
-      /*
-      TPaveText* T1 = new TPaveText(1.0-R-0.50, 1.0-T-0.05, 1.02-R, 1.0-T-0.005, "NDC");
-      T1->SetTextFont(43); T1->SetTextSize(22);   T1->SetTextAlign(31);
-      T1->SetFillColor(0); T1->SetFillStyle(0);   T1->SetBorderSize(0);
-      T1->AddText(LumiText);  T1->Draw();
-      
-      //TOP LEFT IN-FRAME
-      TPaveText* T2 = new TPaveText(L+0.005, 1.0-T-0.05, L+0.20, 1.0-T-0.005, "NDC");
-      T2->SetTextFont(63); T2->SetTextSize(22);   T2->SetTextAlign(11);
-      T2->SetFillColor(0); T2->SetFillStyle(0);   T2->SetBorderSize(0);
-      T2->AddText("CMS"); T2->Draw();
-      
-      if(true){ //Right to CMS
-        TPaveText* T3 = new TPaveText(L+0.095, 1.0-T-0.05, L+0.50, 1.0-T-0.005, "NDC");
-        T3->SetTextFont(53); T3->SetTextSize(22);   T3->SetTextAlign(11);
-        T3->SetFillColor(0); T3->SetFillStyle(0);   T3->SetBorderSize(0);
-        T3->AddText("Preliminary"); T3->Draw();
-      }
-      */
    
       c[I]->cd();
       
@@ -3478,15 +3396,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         } // tpi
 
 
-
-
-
-        //                 shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), it->second.isSign );//add stat uncertainty to the uncertainty map;
+        //shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), it->second.isSign );//add stat uncertainty to the uncertainty map;
         //shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );//add stat uncertainty to the uncertainty map;
-
         //////if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  TH1 name : %s\n", h -> GetName() ) ; fflush(stdout) ; }
 
-        //Li Fix
+        //Fix
         if((it->second.shortName).find("ggH")!=std::string::npos)shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_ggH")).Data(),systpostfix.Data(), false, h_total );// attention
         else if((it->second.shortName).find("qqH")!=std::string::npos)shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_qqH")).Data(),systpostfix.Data(), false, h_total );
         else shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false, h_total );
@@ -3501,7 +3415,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           TH1*    hshape = unc->second;
           hshape->SetDirectory(0);
 
-          ///if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  syst = %s, hshape name = %s\n", syst.Data, hshape->GetName() ) ; fflush(stdout) ; }
+	  //	  if (it->first=="total" && chbin.Contains("CR_3b") && syst.Contains("dydR")) 
+	  //  { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  syst = %s, hshape name = %s , integral = %f\n", syst.Data(), hshape->GetName(),hshape->Integral() ) ; fflush(stdout) ; }
           
           //      printf("Shape= %s\n",unc->first.c_str());
 
@@ -3530,7 +3445,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             //write variation to file
             hshape->SetName(proc+syst);
 
-            //////if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  hshape name just before Write = %s, Write argument = %s\n", hshape->GetName(), (proc+postfix+syst).Data() ) ; fflush(stdout) ; }
+            ///if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  hshape name just before Write = %s, Write argument = %s\n", hshape->GetName(), (proc+postfix+syst).Data() ) ; fflush(stdout) ; }
 
             hshape->Write(proc+postfix+syst);
           }else if(runSystematics && proc!="data"){
@@ -3896,12 +3811,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       string matchingKeyword="";
       if(!utils::root::getMatchingKeyword(Process[i], keywords, matchingKeyword))continue; //only consider samples passing key filtering
 
-
       TString procCtr(""); procCtr+=i;
       TString proc=Process[i].getString("tag", "noTagFound");
 
-      printf("Process (get shape from file) = %s\n",proc.Data());
-      printf("1:channelsANdShapes size= %d\n",(int)channelsAndShapes.size());    
+      //      printf("\n\nProcess (get shape from file) = %s\n",proc.Data());
+      //      printf("1:channelsANdShapes size= %d\n",(int)channelsAndShapes.size());    
 
       string dirName = proc.Data(); 
             //std::<TString> keys = Process[i].getString("keys", "noKeysFound");
@@ -4029,24 +3943,16 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         channelInfo.channel    = chName.Data();
         ShapeData_t& shapeInfo = channelInfo.shapes[shapeName.Data()];
 
-        //   printf("%s SYST SIZE=%i\n", (ch+"_"+shapeName).Data(), syst->GetNbinsX() );
-	TString varName, histoName;
-	TString systName[2]={"_dydRup","_dydRdown"};
+	//	printf("%s SYST SIZE=%i\n", (ch+"_"+shapeName).Data(), syst->GetNbinsX());
 
-	int ivarplus(0);
         for(int ivar = 1; ivar<=syst->GetNbinsX()+2;ivar++){                
           TH1D* hshape   = NULL;
-          
-	  if (ivar<=syst->GetNbinsX()) {
-	    varName   = syst->GetXaxis()->GetBinLabel(ivar);
-	  } else {
-	    if(addsyst) { // additional systematics if added externally
-	      varName=systName[ivarplus]; ivarplus++;
-	    } else { continue; }
-	  }
-	  histoName = ch+"_"+shapeName+(isSignal?signalSufix:"")+varName ; 
+
+	  TString varName   = syst->GetXaxis()->GetBinLabel(ivar);
+	  TString histoName = ch+"_"+shapeName+(isSignal?signalSufix:"")+varName ; 
           //if(isSignal && ivar==1)printf("Syst %i = %s\n", ivar, varName.Data()); 
-	  //	  printf("Histo %s  for syst:%s\n", histoName.Data(), varName.Data());          
+	  //	  if(ivar>syst->GetNbinsX()) 
+	  //printf("Histo %s  for syst:%s has Integral:%f\n", histoName.Data(), varName.Data(),);          
 
           TH2* hshape2D = (TH2*)pdir->Get(histoName ); 
           //      else {hshape = (TH1D*)pdir->Get(histoName ); }
@@ -4072,6 +3978,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
           histoName.ReplaceAll(ch,ch+"_proj"+procCtr);
           hshape   = hshape2D->ProjectionY(histoName,cutBinUsed,cutBinUsed);
+
+	  //	  if(ivar>syst->GetNbinsX()) 
+	  //	    printf("proc = %s . Histo %s  for syst:%s has Integral:%f\n", proc.Data(), histoName.Data(), varName.Data(),hshape->Integral()); 
+
           //  else {hshape = hshape2D; }
           filterBinContent(hshape);
 
@@ -4093,6 +4003,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             hshape->GetYaxis()->SetTitle("Entries");// (/25GeV)");
           }
           hshape->Scale(MCRescale);
+	  /*
           if ( verbose ) {
              printf(" --- verbose : AllInfo_t::getShapeFromFile : " ) ;
              printf(" proc = %s ", proc.Data() ) ;
@@ -4106,6 +4017,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
              printf("\n") ;
              fflush(stdout) ;
           }
+	  */
           if (postfit) {
             ///if(!(ch.Contains("_A_"))) {
               ///printf("W/Top NORMALIZATIONs: Process = %s and channel = %s\n\n",proc.Data(),ch.Data());
