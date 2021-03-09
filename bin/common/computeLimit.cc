@@ -62,7 +62,7 @@ double SignalRescale = 1.0;
 double datadriven_qcd_Syst = 0.50;    
 
 // Add externally produced systematic shape variations: 
-bool addsyst=false;
+//bool addsyst=false;
 // Use postfit normalizations in W/DY/Top bkg components:
 bool postfit=false;
 
@@ -268,10 +268,7 @@ class ShapeData_t
 
 
       //----------------------------------------------------------------------------------
-
-
-
-        void makeStatUnc(string prefix="", string suffix="", string suffix2="", bool noBinByBin=false, TH1* total_hist = 0x0 ){
+       void makeStatUnc(string prefix="", string suffix="", string suffix2="", bool noBinByBin=false, TH1* total_hist = 0x0 ){
 
           if ( verbose ) { printf("\n --- verbose : makeStatUnc : begin.  prefix = %s, suffix = %s, suffix2 = %s\n", prefix.c_str(), suffix.c_str(), suffix2.c_str() ) ; fflush(stdout) ; }
 
@@ -339,8 +336,7 @@ class ShapeData_t
               uncShape[prefix+"stat"+suffix+"Up"  ] = statU;
               uncShape[prefix+"stat"+suffix+"Down"] = statD;
             }   
-            
-            //f_InstrMET_gammaStats->Close();
+
             delete h; //all done with this copy
             
           }
@@ -361,8 +357,6 @@ class ShapeData_t
             
             //bin by bin stat uncertainty
             if(statBinByBin>0 && shape==true && !noBinByBin){
-
-
 
               int BIN=0;
               for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++){           
@@ -529,18 +523,18 @@ class ShapeData_t
       //------------------------------------
 
         double getBinShapeUncertainty(string name, int bin, string upORdown){
-           double Total=0;
-        //this = ch->second.shapes[histoName.Data()]
-           for(std::map<string, TH1*>::iterator var = uncShape.begin(); var!=uncShape.end(); var++){
-              TString systName = var->first.c_str();
-
-              if(var->first=="") continue; //Skip Nominal shape
-	      //if(!systName.Contains(upORdown))continue; //only look for syst up or down at a time (upORdown should be either "Up" or "Down"
-	      if(!systName.EndsWith(upORdown.c_str()))continue; //only look for syst up or down at a time (upORdown should be either "Up" or "Down"
-
-        //--owen: aug 15, 2020:  Why are the histograms cloned?  This is super slow.  Is it necessary???  Are they ever used later???
-        //                       Looks safe to not clone, so removing this.  Speeds it up a lot.
-       
+	  double Total=0;
+	  //this = ch->second.shapes[histoName.Data()]
+	  for(std::map<string, TH1*>::iterator var = uncShape.begin(); var!=uncShape.end(); var++){
+	    TString systName = var->first.c_str();
+	    
+	    if(var->first=="") continue; //Skip Nominal shape
+	    //if(!systName.Contains(upORdown))continue; //only look for syst up or down at a time (upORdown should be either "Up" or "Down"
+	    if(!systName.EndsWith(upORdown.c_str()))continue; //only look for syst up or down at a time (upORdown should be either "Up" or "Down"
+	    
+	    //--owen: aug 15, 2020:  Why are the histograms cloned?  This is super slow.  Is it necessary???  Are they ever used later???
+	    //                       Looks safe to not clone, so removing this.  Speeds it up a lot.
+	    
             //--- with cloning
 	      //	      TH1* hvar = (TH1*)(var->second->Clone((name+var->first).c_str()));
 	      //	      double varYield = hvar->GetBinContent(bin);
@@ -548,24 +542,25 @@ class ShapeData_t
 	      //	      double yield = h->GetBinContent(bin);
 
             //--- no cloning
-	      double varYield = var->second->GetBinContent(bin);
-	      double yield = this->histo()->GetBinContent(bin);
-
-	      if ( verbose ) {
-		printf("\n\n --- verbose : getBinShapeUncertainty : name = %s , bin = %d , upORdown = %s , hvar clone name = %s , h clone name = %s, varYield = %.1f, yield = %.1f, diff = %.1f \n",
-		       name.c_str(), bin, upORdown.c_str(),
-		       (name+var->first).c_str(),
-		       (name+"Nominal").c_str(),
-		       varYield, yield, (varYield-yield)
-		       );
-	       	fflush(stdout) ;
-	      }
-              Total+=pow(varYield-yield,2); 
-	      //the total shape unc is the sqrt of the quadratical sum of the difference between the nominal and the variated yields.
-           } // var loop     
-           return Total>0?sqrt(Total):-1;
+	    double varYield = var->second->GetBinContent(bin);
+	    double yield = this->histo()->GetBinContent(bin);
+	    
+	    //	      if(systName.Contains("dydR") && name.find("ee_A_CR_3b")) {
+	    if ( verbose ) {
+	      printf("--- verbose : getBinShapeUncertainty : name = %s , bin = %d , upORdown = %s , hvar clone name = %s , h clone name = %s, varYield = %.1f, yield = %.1f, diff = %.1f \n",
+		     name.c_str(), bin, upORdown.c_str(),
+		     (name+var->first).c_str(),
+		     (name+"Nominal").c_str(),
+		     varYield, yield, (varYield-yield)
+		     );
+	      fflush(stdout) ;
+	    }
+	    Total+=pow(varYield-yield,2); 
+	    //the total shape unc is the sqrt of the quadratical sum of the difference between the nominal and the variated yields.
+	  } // var loop     
+	  return Total>0?sqrt(Total):-1;
         } // getBinShapeUncertainty
-
+  
       //------------------------------------
 
         void rescaleScaleUncertainties(double StartIntegral, double EndIntegral){
@@ -652,10 +647,7 @@ class ProcessInfo_t
                     printf(" *** no histogram ***" ) ;
                  }
                  printf("\n") ;
-
               } // is
-
-
            } // ic
 
         } // printProcess
@@ -782,7 +774,7 @@ void printHelp()
   printf("--systpostfix    --> use this to specify a syst postfix that will be added to the process names)\n");
   printf("--MCRescale    --> use this to rescale the cross-section of all MC processes by a given factor)\n");
   printf("--postfit  ---> use this to apply postfit Normalization values for W and Top processes in the Signal + Control regions \n");
-  printf("--addsyst ---> add more systematics than what was entered in syst with runhaaAnalysis, produced externally \n");
+  //  printf("--addsyst ---> add more systematics than what was entered in syst with runhaaAnalysis, produced externally \n");
   printf("--signalRescale    --> use this to rescale signal cross-section by a given factor)\n");
   printf("--interf     --> use this to rescale xsection according to WW interferences)\n");
   printf("--minSignalYield   --> use this to specify the minimum Signal yield you want in each channel)\n");
@@ -889,7 +881,7 @@ int main(int argc, char* argv[])
     if(arg.find("--runZh") !=string::npos) { runZh=true; printf("runZh = True\n");}
     if(arg.find("--modeDD") !=string::npos) { modeDD=true; printf("modeDD = True\n");} 
     if(arg.find("--postfit")  !=string::npos) { postfit=true; printf("postfit = True\n");}   
-    if(arg.find("--addsyst")  !=string::npos) { addsyst=true; printf("addsyst = True\n");}      
+    //    if(arg.find("--addsyst")  !=string::npos) { addsyst=true; printf("addsyst = True\n");}      
   }
   if ( autoMCStats ) {
      if ( statBinByBin > 0 ) {
@@ -1308,7 +1300,6 @@ int main(int argc, char* argv[])
 
 
 
-
   if ( verbose ) { printf("\n  --- verbose : main :  calling allInfo.dropSmallBckgProc(selCh, histo.Data(), dropBckgBelow) , \n") ; fflush(stdout) ; }
 
   //drop backgrounds with rate<1%
@@ -1321,7 +1312,6 @@ int main(int argc, char* argv[])
 
   //drop control channels
   allInfo.dropCtrlChannels(selCh);
-
 
 
 
@@ -1399,7 +1389,7 @@ int main(int argc, char* argv[])
   if ( verbose && runSystematics ) { printf("\n  --- verbose : main :    calling allInfo.showUncertainty(selCh,histo,\"plot\"); \n") ; fflush(stdout) ; }
 
   //produce a plot
-  //if(runSystematics) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  
+  //  if(runSystematics) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  
   if(runSystematics && !(simfit)) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  
   // georgia : now run reporting systematics only if simfit=false 
   // owen: temporarily turn this off.  Slows it down.
@@ -1494,13 +1484,11 @@ void AllInfo_t::addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool compute
         if(uncS->first=="" || uncS->second == NULL) continue; //We only take systematic (i.e non-nominal) shapes
         if(shapesInfoSrc[sh->first].uncShape.find("")==shapesInfoSrc[sh->first].uncShape.end()) continue;
         if(addDiffProcs){ // add different procs
-          //1. Copy the nominal shape
-	  //	  printf(" ***** addChannels:::: shapeName = %s has integral %f\n",uncS->first.c_str(),uncS->second->Integral() );
-          shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) shapesInfoDest[sh->first].uncShape[""]->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
+	    //1. Copy the nominal shape    
+	  shapesInfoDest[sh->first].uncShape[uncS->first] = (TH1*) shapesInfoDest[sh->first].uncShape[""]->Clone(TString(uncS->second->GetName() + dest.channel + dest.bin ) );
           //2. we remove the nominal value of the process we are running on
-          shapesInfoDest[sh->first].uncShape[uncS->first]->Add(shapesInfoSrc[sh->first].uncShape[""], -1);
+	  shapesInfoDest[sh->first].uncShape[uncS->first]->Add(shapesInfoSrc[sh->first].uncShape[""], -1);
           //3. and add the variation up/down
-          /////shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second); 
           shapesInfoDest[sh->first].uncShape[uncS->first]->Add(uncS->second, scale_factor ); 
         }else{ // add same proc in different channels
           if(shapesInfoDest[sh->first].uncShape.find(uncS->first)==shapesInfoDest[sh->first].uncShape.end()){
@@ -1512,7 +1500,7 @@ void AllInfo_t::addChannel(ChannelInfo_t& dest, ChannelInfo_t& src, bool compute
         }
       }
     }
-  }
+  } // if (computeSyst)
 
 }
 
@@ -1537,6 +1525,7 @@ void AllInfo_t::addProc(ProcessInfo_t& dest, ProcessInfo_t& src, bool computeSys
     } else {
        addChannel(dest.channels[ch->first], ch->second, computeSyst, true, 1.0 );
     }
+
   }
 }
 
@@ -2137,7 +2126,8 @@ void AllInfo_t::computeTotalBackground(){
   //Compute total background systematics
   for(std::map<string, ProcessInfo_t>::iterator it=procs.begin(); it!=procs.end();it++){
     if(it->first=="total" || it->second.isBckg!=true)continue;
-    if ( verbose ) { printf("    --- verbose: computeTotalBackground :  calling addProc( procInfo_Bckgs, it->second, true)  it->first = %s\n", (it->first).c_str() ) ; fflush(stdout) ; }
+    if ( verbose ) { 
+      printf("    --- verbose: computeTotalBackground :  calling addProc( procInfo_Bckgs, it->second, true)  it->first = %s\n", (it->first).c_str() ) ; fflush(stdout) ; }
     addProc(procInfo_Bckgs, it->second, true);
   }
   if ( verbose ) { printf(" ---  verbose: computeTotalBackground : end.\n\n" ) ; fflush(stdout) ; }
@@ -2458,7 +2448,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       std::map<string, ProcessInfo_t>::iterator it=procs.find(procName);
       if(it==procs.end())continue;
       for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
-        if(std::find(selCh.begin(), selCh.end(), ch->second.channel)==selCh.end()){it->second.channels.erase(ch); ch=it->second.channels.begin();}
+        if(std::find(selCh.begin(), selCh.end(), ch->second.channel)==selCh.end()){
+	  printf(" --- dropCtrlChannels::: process = %s, channel dropped : %s\n",procName.c_str(),ch->first.c_str());
+	  it->second.channels.erase(ch); ch=it->second.channels.begin();}
       }
     }
   }
@@ -2588,7 +2580,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if(std::find(selCh.begin(), selCh.end(), ch->second.channel)==selCh.end())continue;
 
         if(ch->second.shapes.find(histoName.Data())==(ch->second.shapes).end())continue;
-        if(ch->first.find("_A_")==std::string::npos) continue; //  only consider region A
+        if(modeDD && ch->first.find("_A_")==std::string::npos) continue; //  only consider region A
 
         TH1* h = ch->second.shapes[histoName.Data()].histo();
         if (!h) continue;
@@ -2598,7 +2590,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
           double syst_scale = std::max(0.0, ch->second.shapes[histoName.Data()].getScaleUncertainty());
 	  //          double syst_shape = std::max(0.0, ch->second.shapes[histoName.Data()].getBinShapeUncertainty((it->first+ch->first).c_str()));
-	  //          double syst = sqrt(pow(syst_scale,2)+pow(syst_shape,2)); //On perd de l'info ici car on considere l'ecart constant au lieu d'y aller bin par bin
+	  //          double syst = sqrt(pow(syst_scale,2)+pow(syst_shape,2)); 
 	  //          double Uncertainty_scale = syst / h->Integral();
 	  double Uncertainty_scale=syst_scale / h->Integral();
 
@@ -2614,6 +2606,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++){
             if(h->GetBinContent(ibin)>0)
               errors->SetPoint(icutg,h->GetXaxis()->GetBinCenter(ibin), h->GetBinContent(ibin));
+
             //This is the part where we define which errors will be shown on the shape plot
             double syst_shape_binUp = std::max(0.0, ch->second.shapes[histoName.Data()].getBinShapeUncertainty((it->first+ch->first).c_str(), ibin, "Up"));
             double syst_shape_binDown = std::max(0.0, ch->second.shapes[histoName.Data()].getBinShapeUncertainty((it->first+ch->first).c_str(), ibin, "Down"));
@@ -3081,7 +3074,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
         //-- Look for the total BG process.  If found, find the corresponding total background histogram.
         //     Will pass it to makeStatUnc so that it can decide whether to include BinByBin stat uncertainty based on err_i / sqrt( N(total)_i ) for each bin i.
-
+	
         TH1* h_total(0x0) ;
         std::map<string, ProcessInfo_t>::iterator tpi = procs.find("total") ;
         if ( tpi != procs.end() ) {
@@ -3096,7 +3089,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
               } // tsi
            } // tci
         } // tpi
-
+	
 
         //add the stat uncertainty is there;
         //ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );//add stat uncertainty to the uncertainty map;
@@ -3228,7 +3221,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
           if(yield>0){
             if(mapYieldPerBin[systName.Data()].find(ch->first)==mapYieldPerBin[systName.Data()].end()){
-              mapYieldPerBin[systName.Data()][ch->first] =  ( 1 - (varYield/yield)); // fabs( 1 - (varYield/yield));
+              mapYieldPerBin[systName.Data()][ch->first] = ( 1 - (varYield/yield)); // fabs( 1 - (varYield/yield));
               mapUncType[systName.Data()] = true;                        
             }else{
               mapYieldPerBin[systName.Data()][ch->first] = std::max(fabs( 1 - (varYield/yield) ), mapYieldPerBin[systName.Data()][ch->first]);
@@ -3414,11 +3407,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           TString syst   = unc->first.c_str();
           TH1*    hshape = unc->second;
           hshape->SetDirectory(0);
-
-	  //	  if (it->first=="total" && chbin.Contains("CR_3b") && syst.Contains("dydR")) 
-	  //  { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  syst = %s, hshape name = %s , integral = %f\n", syst.Data(), hshape->GetName(),hshape->Integral() ) ; fflush(stdout) ; }
-          
-          //      printf("Shape= %s\n",unc->first.c_str());
 
           if(syst==""){
             //central shape (for data call it data_obs)
@@ -3945,7 +3933,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 	//	printf("%s SYST SIZE=%i\n", (ch+"_"+shapeName).Data(), syst->GetNbinsX());
 
-        for(int ivar = 1; ivar<=syst->GetNbinsX()+2;ivar++){                
+        for(int ivar = 1; ivar<=syst->GetNbinsX();ivar++){                
           TH1D* hshape   = NULL;
 
 	  TString varName   = syst->GetXaxis()->GetBinLabel(ivar);
@@ -4226,7 +4214,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         //if(procName!="FakeLep")continue; //only do this for the FakeLepbackground right now
         std::map<string, ProcessInfo_t>::iterator it=procs.find(procName);
         if(it==procs.end())continue;
-        if(it->second.isData && procName!="Instr. MET")continue; //only do this for MC or InstrMET (which also contains MC and negative bins)
+	if(it->second.isData)continue; //only do this for MC
+	//        if(it->second.isData && procName!="Instr. MET")continue; //only do this for MC or InstrMET (which also contains MC and negative bins)
         for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
           ShapeData_t& shapeInfo = ch->second.shapes[histoName];
           TH1* histo = (TH1*)shapeInfo.histo();
