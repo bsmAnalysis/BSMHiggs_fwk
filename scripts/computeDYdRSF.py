@@ -108,7 +108,7 @@ def ratioOnly(ratio_h, thred, name):
 #    fitf.SetLineColor(r.kBlack)
     fitf.SetLineWidth(2)
 #    res = ratio.Fit(fitf, "R S")
-#    ratio.GetYaxis().SetRangeUser(0, 2)
+    ratio.GetYaxis().SetRangeUser(0, 2)
     ratio.Draw("E0")
 
     leg = r.TLegend(0.6,0.79,0.89,0.89)
@@ -133,7 +133,7 @@ def ratioOnly(ratio_h, thred, name):
 
 def ratioPlot(hLO,hNLO,ratio_h,name):
 
-    thred = 3.5
+    thred = 3.8
 #    ratio_h = weightedAverage(ratio_h,hNLO,thred)
     
     # Define the Canvas
@@ -227,7 +227,7 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
 	    ratio.SetBinError(i,err_fit)
 
 #    ratio.GetXaxis().SetRangeUser(0,5)
-#    ratio.GetYaxis().SetRangeUser(0.4,1.6)
+    ratio.GetYaxis().SetRangeUser(0.4,1.6)
     ratio.Draw("E0")
     r.gPad.Update()
     line = r.TLine(r.gPad.GetUxmin(), 1, r.gPad.GetUxmax(), 1)
@@ -253,8 +253,8 @@ def produceDRSFs(input16, input17, output_name):
     	    if not (hist16 and hist17): 
                 print("Could not find DRave histos.. exiting ")
                 exit
-            hist16.Rebin(4)
-            hist17.Rebin(4)
+            hist16.Rebin(2)
+            hist17.Rebin(2)
     	    hist16.Scale(1./abs(hist16.Integral(startbin, hist16.GetNbinsX())))
     	    hist17.Scale(1./abs(hist17.Integral(startbin, hist17.GetNbinsX())))
             hist16.SetDirectory(0)   

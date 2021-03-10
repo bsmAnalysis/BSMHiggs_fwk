@@ -2324,6 +2324,10 @@ int main(int argc, char* argv[])
 	  if(!isMC && ivar>0 ) continue; //loop on variation only for MC samples
 	  if(isQCD && ivar>0) continue; // skip systematics from MC QCD since data-driven will follow
 
+	  //skip external shape uncertainties
+	  if( (varNames[ivar]=="_dydRup") || (varNames[ivar]=="_dydRdown") ) continue;
+	  if( (varNames[ivar]=="_topptup") || (varNames[ivar]=="_topptdown") ) continue; 
+
 	  if ( verbose ) { std::cout << "\n\n Running variation: " << varNames[ivar] << " with ivar == " << ivar << std::endl; }
 	  
 	  std::vector<TString> tags(1,"all");
