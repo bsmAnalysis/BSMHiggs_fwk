@@ -37,7 +37,7 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 #--------------------------------------------------
 
 YEAR=2016
-CHANNEL=ZH
+CHANNEL=WH_QCD
 
 do_syst=True # Always run with Systematics, unless its QCD mode
 
@@ -74,7 +74,7 @@ RESULTSDIR=$MAINDIR/results$SUFFIX
 if [[ $arguments == *"crab3"* ]]; then STORAGEDIR='';
 else STORAGEDIR=/eos/cms/store/user/georgia/results$SUFFIX ; fi
 
-PLOTSDIR=$MAINDIR/plots${SUFFIX}
+PLOTSDIR=$MAINDIR/plots_${CHANNEL}_${YEAR}${SUFFIX}
 PLOTTER=$MAINDIR/plotter_${CHANNEL}_${YEAR}${SUFFIX}
  
 ####################### Settings for Ntuple Analysis ##################
@@ -179,7 +179,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        fi
 	# @btagSFMethod=1: Jet-by-jet updating of b-tagging status
 	# @btagSFMethod=2: Event reweighting using discriminator-dependent scale factors
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=$do_syst @runMVA=False @reweightDYZPt=False @reweightDYdR16=False @reweightTopPt=True @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=$doQCD @runZH=$doZH @btagSFMethod=1" -s $queue -t MC13TeV_DY #-r true
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=$do_syst @runMVA=False @reweightDYZPt=False @reweightDYdR16=False @reweightTopPt=True @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=$doQCD @runZH=$doZH @btagSFMethod=1" -s $queue #-t MC13TeV_ #-r true
    fi
 fi
 
@@ -263,7 +263,7 @@ if [[ $step > 2.999 && $step < 4 ]]; then
 
 #(ht|pfmet|ptw|mtw|higgsPt|higgsMass|dRave|dmmin|dphijmet|dphiWh|
     if [[ $step == 3 || $step == 3.1 ]]; then  # make plots and combine root files for mcbased study    
-	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "((e|mu|ee|mumu|emu)_(A|B|C|D)_(SR|CR|CR5j)_(3b|4b)_(pfmet|ht|mtw|ptw|dphiWh|dRave|dmmin|higgsMass|higgsPt|nbjets_raw|nbtags_raw|zmass_raw|dphijmet|dphijmet1|dphijmet12|(lead|)lep_(pt|eta)_raw|lep_reliso|bdt|(nvtx_raw|nvtxwgt_raw)))|(all|e|mu|ee|mumu|emu)_eventflow|all_(nvtx_raw|nvtxwgt_raw)|(e|mu|ee|mumu|emu|e_noniso|mu_noniso|mutrk|mutrk_noniso)_lep_reliso|(e|mu|ee|mumu|emu)(|_metmt|_nj2)_lep_(pt|eta)_raw|raw_dphijmet|raw_j1_dphijmet|raw_minj1j2_dphijmet|(e|mu|ee|mumu|emu)_nj_njets_raw|(e|mu|ee|mumu|emu)_jet_(b1|b2|b3|b4)_jet_(pt|eta)_raw|(e|mu|ee|mumu|emu)_nb_nbjets_raw|(e|mu|ee|mumu|emu)_DeepCSV_(b1|b2|b3|b4)_jet_(pt|eta)_raw|(e|mu|ee|mumu|emu)_nb_soft_nbjets_raw|(e|mu|ee|mumu|emu)_(softb_(b1|b2|b3|b4)_(softjet|jet)_(pt|eta)_raw)|(e|mu|ee|mumu|emu)_dRlj_raw|raw(e|mu|ee|mumu|emu)_(pfmet|mtw|ptw)|raw_softb_ntrk|raw_softb_dxy|raw_softb_dxyz_signif|raw_softb_cos|sv_b_dR_raw|(e|mu|ee|mumu|emu)_nb_(LOOSE|MEDIUM|TIGHT)_nbjets_raw|(e|mu|ee|mumu|emu)_(sel1|sel2)_evt_cat|(e|mu|ee|mumu|emu)_DeepCSV_(b1|b2|b3|b4)_b_discrim|all_musf(id|iso|trg)" $arguments 
+#	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "((e|mu|ee|mumu|emu)_(A|B|C|D)_(SR|CR|CR5j)_(3b|4b)_(pfmet|ht|mtw|ptw|dphiWh|dRave|dmmin|higgsMass|higgsPt|nbjets_raw|nbtags_raw|zmass_raw|dphijmet|dphijmet1|dphijmet12|(lead|)lep_(pt|eta)_raw|lep_reliso|bdt|(nvtx_raw|nvtxwgt_raw)))|(all|e|mu|ee|mumu|emu)_eventflow|all_(nvtx_raw|nvtxwgt_raw)|(e|mu|ee|mumu|emu|e_noniso|mu_noniso|mutrk|mutrk_noniso)_lep_reliso|(e|mu|ee|mumu|emu)(|_metmt|_nj2)_lep_(pt|eta)_raw|raw_dphijmet|raw_j1_dphijmet|raw_minj1j2_dphijmet|(e|mu|ee|mumu|emu)_nj_njets_raw|(e|mu|ee|mumu|emu)_jet_(b1|b2|b3|b4)_jet_(pt|eta)_raw|(e|mu|ee|mumu|emu)_nb_nbjets_raw|(e|mu|ee|mumu|emu)_DeepCSV_(b1|b2|b3|b4)_jet_(pt|eta)_raw|(e|mu|ee|mumu|emu)_nb_soft_nbjets_raw|(e|mu|ee|mumu|emu)_(softb_(b1|b2|b3|b4)_(softjet|jet)_(pt|eta)_raw)|(e|mu|ee|mumu|emu)_dRlj_raw|raw(e|mu|ee|mumu|emu)_(pfmet|mtw|ptw)|raw_softb_ntrk|raw_softb_dxy|raw_softb_dxyz_signif|raw_softb_cos|sv_b_dR_raw|(e|mu|ee|mumu|emu)_nb_(LOOSE|MEDIUM|TIGHT)_nbjets_raw|(e|mu|ee|mumu|emu)_(sel1|sel2)_evt_cat|(e|mu|ee|mumu|emu)_DeepCSV_(b1|b2|b3|b4)_b_discrim|all_musf(id|iso|trg)" $arguments 
 	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outDir $PLOTSDIR/mcbased/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --signalScale 10 $arguments 
 	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outDir $PLOTSDIR/mcbased_log/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ
         runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outDir $PLOTSDIR/mcbased_blind/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --signalScale 10 --blind 0.1 --only "(e|mu|ee|mumu)_A_SR_(3b|4b)_bdt" $arguments
