@@ -1,5 +1,5 @@
 import ROOT as rt
-import tdrstyle
+#import tdrstyle
 import array
 import os
 import sys
@@ -8,20 +8,20 @@ import math
 from ROOT import gROOT, gBenchmark, gRandom, gSystem, Double
 
 #set the tdr style
-tdrstyle.setTDRStyle()
+#tdrstyle.setTDRStyle()
 
 year="2016"
 
 vh_tag="WH"
 ## Input file with top pt corrections:
-fcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_ttbar_2020_06_19_forLimits.root","READ")
+fcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits_cor.root","READ")
 
 ## Input file without top pt corrections:
-funcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_ttbar_2020_06_19_v0_forLimits.root","READ")
+funcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits_uncor.root","READ")
 
 
-## Target ROOT file to store up and down templates in BDT
-flimit = rt.TFile("plotter_"+year+"_"+vh_tag+"_Sys_noSoftb_forLimits-replaced-signal-mc.root","UPDATE")
+## Target ROOT file to store up and down templates in BDT (same as _cor):
+flimit = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits.root","UPDATE")
 
 def drawHist(cname, hcor, h_up, h_down):
 
@@ -80,11 +80,35 @@ else:
     exit(-1)
 
 
-dirs = ['t#bar{t} + light_filt1','t#bar{t} + b#bar{b}_filt5','t#bar{t} + c#bar{c}_filt4',
+dirs = ['data','t#bar{t} + light_filt1','t#bar{t} + b#bar{b}_filt5','t#bar{t} + c#bar{c}_filt4',
         'Other Bkgds','Z#rightarrow ll','W#rightarrow l#nu','QCD',
         'Wh (12)','Wh (15)','Wh (20)','Wh (25)','Wh (30)','Wh (40)','Wh (50)','Wh (60)']
 
 for dir in dirs:
+     # Update the all_optim_systs histo in each directory: 
+    syst = flimit.Get(dir+"/"+"all_optim_systs") 
+
+    if syst==None: 
+        syst=rt.TH1F(dir+"all_optim_systs","all_optim_systs",1,0,1) 
+        syst.GetXaxis().SetBinLabel(1,"") 
+
+    nvarsToInclude=syst.GetNbinsX() 
+    hsyst=rt.TH1F(dir+"optim_systs",";syst;;",nvarsToInclude+2,0,nvarsToInclude+2) 
+
+    for ivar in range(nvarsToInclude):
+        hsyst.GetXaxis().SetBinLabel(ivar+1,syst.GetXaxis().GetBinLabel(ivar+1)) 
+    
+    hsyst.GetXaxis().SetBinLabel(nvarsToInclude,"_topptup") 
+    hsyst.GetXaxis().SetBinLabel(nvarsToInclude+1,"_topptdown") 
+    
+    flimit.cd(dir) 
+    rt.gDirectory.Delete("all_optim_systs;1") 
+    
+    hsyst_save = hsyst.Clone("all_optim_systs") 
+    hsyst_save.Write()   
+
+    if dir.__contains__("data"): continue
+
     for histo in histos:
         hname=dir+"/"+histo+"_bdt"
         hname_shapes=dir+"/"+histo+"_bdt_shapes"
@@ -116,8 +140,8 @@ for dir in dirs:
                     h_down_shapes.SetBinContent(i,j,h_down.GetBinContent(j))
                     
         else: 
-            hcor = flimit.Get(hname)
-            hcor_shapes = flimit.Get(hname_shapes)
+            hcor = fcor.Get(hname)
+            hcor_shapes = fcor.Get(hname_shapes)
             if hcor==None:
                 print("Histo is Null for that process ", hname) 
                 continue
