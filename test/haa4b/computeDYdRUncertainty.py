@@ -18,7 +18,7 @@ funcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits_v1.root","RE
 ## Input file with DY DR corrections:      
 fcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits_v2.root","READ")       
 
-## Target ROOT file to store up and down templates in BDT (must be similar to v1, ie. w/o corrections)
+## Target ROOT file to store up and down templates in BDT (must be similar to v2):
 flimit = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits.root","UPDATE")
 
 def drawHist(cname, hcor, h_up, h_down):
@@ -69,11 +69,36 @@ def makeUncHisto(hcor, huncor, h_up, h_down):
 histos = ['emu_A_CR_3b','emu_A_SR_3b','ee_A_CR_3b','mumu_A_CR_3b','ee_A_SR_3b','mumu_A_SR_3b',
           'emu_A_CR_4b','emu_A_SR_4b','ee_A_CR_4b','mumu_A_CR_4b','ee_A_SR_4b','mumu_A_SR_4b']
 
-dirs = ['t#bar{t} + light_filt1','t#bar{t} + b#bar{b}_filt5','t#bar{t} + c#bar{c}_filt4',
+dirs = ['data','t#bar{t} + light_filt1','t#bar{t} + b#bar{b}_filt5','t#bar{t} + c#bar{c}_filt4',
         'Other Bkgds','Z#rightarrow ll','W#rightarrow l#nu','QCD',
         'Wh (12)','Wh (15)','Wh (20)','Wh (25)','Wh (30)','Wh (40)','Wh (50)','Wh (60)']
 
 for dir in dirs:
+    
+    # Update the all_optim_systs histo in each directory: 
+    syst = flimit.Get(dir+"/"+"all_optim_systs") 
+
+    if syst==None: 
+        syst=rt.TH1F(dir+"all_optim_systs","all_optim_systs",1,0,1)
+        syst.GetXaxis().SetBinLabel(1,"")
+
+    nvarsToInclude=syst.GetNbinsX()   
+    hsyst=rt.TH1F(dir+"optim_systs",";syst;;",nvarsToInclude+2,0,nvarsToInclude+2) 
+    
+    for ivar in range(nvarsToInclude):
+        hsyst.GetXaxis().SetBinLabel(ivar+1,syst.GetXaxis().GetBinLabel(ivar+1)) 
+
+    hsyst.GetXaxis().SetBinLabel(nvarsToInclude,"_dydRup")
+    hsyst.GetXaxis().SetBinLabel(nvarsToInclude+1,"_dydRdown") 
+
+    flimit.cd(dir)    
+    rt.gDirectory.Delete("all_optim_systs;1") 
+
+    hsyst_save = hsyst.Clone("all_optim_systs")   
+    hsyst_save.Write()  
+
+    if dir.__contains__("data"): continue 
+    
     for histo in histos:
         hname=dir+"/"+histo+"_bdt"
         hname_shapes=dir+"/"+histo+"_bdt_shapes"
@@ -109,7 +134,7 @@ for dir in dirs:
 
         else: 
             hcor = fcor.Get(hname)
-            huncor = fcor.Get(hname)
+            huncor = funcor.Get(hname)
             hcor_shapes = fcor.Get(hname_shapes)
             if hcor==None:
                 print("Histo is Null for that process ", hname) 
@@ -124,7 +149,7 @@ for dir in dirs:
     
                 
         ## Draw nominal BDT and up and down variations superimposed
-        drawHist(dir+"_"+histo+"_bdt",huncor,h_up,h_down)
+        drawHist(dir+"_"+histo+"_bdt",hcor,h_up,h_down)
     
         ## STore up and down variations in original input file for limits:
         flimit.cd(dir)

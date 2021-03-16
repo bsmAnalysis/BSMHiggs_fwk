@@ -37,7 +37,7 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 #--------------------------------------------------
 
 YEAR=2016
-CHANNEL=ZH
+CHANNEL=WH
 
 do_syst=True # Always run with Systematics, unless its QCD mode
 
@@ -74,7 +74,7 @@ RESULTSDIR=$MAINDIR/results$SUFFIX
 if [[ $arguments == *"crab3"* ]]; then STORAGEDIR='';
 else STORAGEDIR=/eos/cms/store/user/georgia/results$SUFFIX ; fi
 
-PLOTSDIR=$MAINDIR/plots${SUFFIX}
+PLOTSDIR=$MAINDIR/plots_${CHANNEL}_${YEAR}${SUFFIX}
 PLOTTER=$MAINDIR/plotter_${CHANNEL}_${YEAR}${SUFFIX}
  
 ####################### Settings for Ntuple Analysis ##################
@@ -179,7 +179,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        fi
 	# @btagSFMethod=1: Jet-by-jet updating of b-tagging status
 	# @btagSFMethod=2: Event reweighting using discriminator-dependent scale factors
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=$do_syst @runMVA=False @reweightDYZPt=False @reweightDYdR16=False @reweightTopPt=True @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=$doQCD @runZH=$doZH @btagSFMethod=1" -s $queue -t MC13TeV_DY #-r true
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=$do_syst @runMVA=False @reweightDYZPt=False @reweightDYdR16=False @reweightTopPt=True @usemetNoHF=False @verbose=False @useDeepCSV=True @runQCD=$doQCD @runZH=$doZH @btagSFMethod=1" -s $queue #-t MC13TeV_ #-r true
    fi
 fi
 

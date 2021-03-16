@@ -294,12 +294,12 @@ int main(int argc, char* argv[])
     bool isSignal = (isMC_Wh || isMC_Zh ); // || isMC_VBF );
 
     if (isSignal) printf("Signal url = %s\n",url.Data());
-    /*
+    
     if (!runZH) {
-      if(isMuonEGPD) return -1;
-      //      if(isDoubleElePD || isDoubleMuPD || isMuonEGPD) return -1; 
+      //if(isMuonEGPD) return -1;
+      if(isDoubleElePD || isDoubleMuPD || isMuonEGPD) return -1; 
     }   
-    */
+   
 
     // NLO EWK corrections differential in Vpt on VH signal samples
     TH1F *h_Wm = new TH1F(), *h_Wp = new TH1F(), *h_Wm_up = new TH1F(), *h_Wm_down = new TH1F(), *h_Wp_up = new TH1F(), *h_Wp_down = new TH1F();   
@@ -574,8 +574,8 @@ int main(int argc, char* argv[])
       varNames.push_back("_nloEWK_up"); varNames.push_back("_nloEWK_down"); 
       // NLO EWK corrections differential in Vpt on VH signal samples
 
-      varNames.push_back("_dydRup"); varNames.push_back("_dydRdown");
-      varNames.push_back("_topptup"); varNames.push_back("_topptdown");
+      //varNames.push_back("_dydRup"); varNames.push_back("_dydRdown");
+      // varNames.push_back("_topptup"); varNames.push_back("_topptdown");
       //	  varNames.push_back("_th_pdf");                                           //pdf
 	  //	  varNames.push_back("_th_alphas"); //alpha_s (QCD)
 
@@ -1379,13 +1379,14 @@ int main(int argc, char* argv[])
 		std::cout << "Found multiple W particles in event: " << iev << std::endl;            
 	    }
 	  }
+	  /*
 	  if(wpt<=0) {
 	    if(zleps.size()>=2 && fabs(zleps[0].momid)==24 && fabs(zleps[1].momid)==24){       
 	      LorentzVector zll(zleps[0]+zleps[1]);   
 	      wpt = zll.pt();
 	    }
 	  }   
-
+	  */
 	  // Then also apply the NLO EWK corrections as in VH(bb):        
 	  //for W options
 	  if (wpt > 0. && wpt < 3000) wptSF = -0.830041+7.93714*(TMath::Power((wpt+877.978),-0.213831));
@@ -2027,18 +2028,26 @@ int main(int argc, char* argv[])
 
         bool hasTrigger(false);
 
-	if (!isMC) {
+	if (!isMC) { // data:
+	  if(runZH) {
+	    if(isDoubleMuPD)    { hasTrigger = hasMMtrigger;}
+	    if(isSingleMuPD)    { hasTrigger = hasMtrigger  && !hasMMtrigger;}
+	    if(isDoubleElePD)   { hasTrigger = hasEEtrigger  && !hasMtrigger  && !hasMMtrigger;}
+	    if(isSingleElePD)   { hasTrigger = hasEtrigger  && !hasEEtrigger  && !hasMtrigger && !hasMMtrigger; }
+	    if(isMuonEGPD)      { hasTrigger = hasEMtrigger && !hasEtrigger   && !hasEEtrigger && !hasMtrigger && !hasMMtrigger; }
+	  } else {
+	    if(isSingleMuPD)    { hasTrigger = hasMtrigger;}
+	    if(isSingleElePD)   { hasTrigger = hasEtrigger && !hasMtrigger; }
+	  }
 
-	  if(isDoubleMuPD)    { hasTrigger = hasMMtrigger;}
-	  if(isSingleMuPD)    { hasTrigger = hasMtrigger  && !hasMMtrigger;}
-	  if(isDoubleElePD)   { hasTrigger = hasEEtrigger  && !hasMtrigger  && !hasMMtrigger;}
-	  if(isSingleElePD)   { hasTrigger = hasEtrigger  && !hasEEtrigger  && !hasMtrigger && !hasMMtrigger; }
-	  if(isMuonEGPD)      { hasTrigger = hasEMtrigger && !hasEtrigger   && !hasEEtrigger && !hasMtrigger && !hasMMtrigger; }
+	} else { // MC tirgger:
 
-	} else {
-
-	  hasTrigger=(hasEtrigger || hasMtrigger || hasEEtrigger || hasMMtrigger || hasEMtrigger);
-
+	  if(runZH) {
+	    hasTrigger=(hasEtrigger || hasMtrigger || hasEEtrigger || hasMMtrigger || hasEMtrigger);
+	  } else {
+	    hasTrigger=(hasEtrigger || hasMtrigger);
+	  }
+ 
 	}
 	
 	// Apply Trigger requirement:
@@ -2325,8 +2334,8 @@ int main(int argc, char* argv[])
 	  if(isQCD && ivar>0) continue; // skip systematics from MC QCD since data-driven will follow
 
 	  //skip external shape uncertainties
-	  if( (varNames[ivar]=="_dydRup") || (varNames[ivar]=="_dydRdown") ) continue;
-	  if( (varNames[ivar]=="_topptup") || (varNames[ivar]=="_topptdown") ) continue; 
+	  //	  if( (varNames[ivar]=="_dydRup") || (varNames[ivar]=="_dydRdown") ) continue;
+	  //	  if( (varNames[ivar]=="_topptup") || (varNames[ivar]=="_topptdown") ) continue; 
 
 	  if ( verbose ) { std::cout << "\n\n Running variation: " << varNames[ivar] << " with ivar == " << ivar << std::endl; }
 	  
