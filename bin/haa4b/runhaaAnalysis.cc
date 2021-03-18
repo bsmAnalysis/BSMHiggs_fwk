@@ -207,13 +207,10 @@ int main(int argc, char* argv[])
       // 2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
         CSVLooseWP = 0.5803; CSVMediumWP = 0.8838; CSVTightWP = 0.9693;
         DeepCSVLooseWP = 0.1522; DeepCSVMediumWP = 0.4941; DeepCSVTightWP = 0.8001;
-	//        mu_threshold_=30.;
-	//        ele_threshold_=35.;
     }
 
     if(is2018data || is2018MC){ // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
       DeepCSVLooseWP = 0.1241; DeepCSVMediumWP = 0.4184; DeepCSVTightWP = 0.7527;
-  //    ele_threshold_=35.; mu_threshold_=25.;
     }
 
     if(is2016Signal || is2016Legacy){//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
@@ -574,8 +571,6 @@ int main(int argc, char* argv[])
       varNames.push_back("_nloEWK_up"); varNames.push_back("_nloEWK_down"); 
       // NLO EWK corrections differential in Vpt on VH signal samples
 
-      //varNames.push_back("_dydRup"); varNames.push_back("_dydRdown");
-      // varNames.push_back("_topptup"); varNames.push_back("_topptdown");
       //	  varNames.push_back("_th_pdf");                                           //pdf
 	  //	  varNames.push_back("_th_alphas"); //alpha_s (QCD)
 
@@ -2028,28 +2023,29 @@ int main(int argc, char* argv[])
 
         bool hasTrigger(false);
 
-	if (!isMC) { // data:
-	  if(runZH) {
+	if (!runZH) { // Use only SingleEle and SingleMu in WH channel
+	  if(evcat!=fType && !isMC) continue; 
+	    
+	  if(evcat==E && !(hasEtrigger)) continue;
+	  if(evcat==MU && !(hasMtrigger)) continue;
+	      
+	  hasTrigger=true;
+	    
+	} else { // ZH channel
+
+	  if (!isMC) { // data:
+
 	    if(isDoubleMuPD)    { hasTrigger = hasMMtrigger;}
 	    if(isSingleMuPD)    { hasTrigger = hasMtrigger  && !hasMMtrigger;}
 	    if(isDoubleElePD)   { hasTrigger = hasEEtrigger  && !hasMtrigger  && !hasMMtrigger;}
 	    if(isSingleElePD)   { hasTrigger = hasEtrigger  && !hasEEtrigger  && !hasMtrigger && !hasMMtrigger; }
 	    if(isMuonEGPD)      { hasTrigger = hasEMtrigger && !hasEtrigger   && !hasEEtrigger && !hasMtrigger && !hasMMtrigger; }
-	  } else {
-	    if(isSingleMuPD)    { hasTrigger = hasMtrigger;}
-	    if(isSingleElePD)   { hasTrigger = hasEtrigger && !hasMtrigger; }
-	  }
 
-	} else { // MC tirgger:
-
-	  if(runZH) {
+	  } else { // MC tirgger:
 	    hasTrigger=(hasEtrigger || hasMtrigger || hasEEtrigger || hasMMtrigger || hasEMtrigger);
-	  } else {
-	    hasTrigger=(hasEtrigger || hasMtrigger);
-	  }
- 
+ 	  }
+
 	}
-	
 	// Apply Trigger requirement:
 	if(!hasTrigger) continue;
 	
