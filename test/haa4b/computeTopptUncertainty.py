@@ -10,18 +10,25 @@ from ROOT import gROOT, gBenchmark, gRandom, gSystem, Double
 #set the tdr style
 #tdrstyle.setTDRStyle()
 
-year="2016"
-
+year="2017"
 vh_tag="WH"
+
+PLOTTER=vh_tag+"_"+year+"_2020_02_05_forLimits"
+
+if year == "2016":
+    PLOTTER=vh_tag+"_"+year+"_2020_06_19_forLimits"
+
 ## Input file with top pt corrections:
-fcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits_cor.root","READ")
+#fcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits_cor.root","READ")
+fcor = rt.TFile("plotter_"+PLOTTER+"_cor.root","READ")
 
 ## Input file without top pt corrections:
-funcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits_uncor.root","READ")
-
+#funcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits_uncor.root","READ")
+funcor = rt.TFile("plotter_"+PLOTTER+"_uncor.root","READ")
 
 ## Target ROOT file to store up and down templates in BDT (same as _cor):
-flimit = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits.root","UPDATE")
+#flimit = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits.root","UPDATE")
+flimit = rt.TFile("plotter_"+PLOTTER+".root","UPDATE")      
 
 def drawHist(cname, hcor, h_up, h_down):
 
@@ -98,8 +105,8 @@ for dir in dirs:
     for ivar in range(nvarsToInclude):
         hsyst.GetXaxis().SetBinLabel(ivar+1,syst.GetXaxis().GetBinLabel(ivar+1)) 
     
-    hsyst.GetXaxis().SetBinLabel(nvarsToInclude,"_topptup") 
-    hsyst.GetXaxis().SetBinLabel(nvarsToInclude+1,"_topptdown") 
+    hsyst.GetXaxis().SetBinLabel(nvarsToInclude+1,"_topptup") 
+    hsyst.GetXaxis().SetBinLabel(nvarsToInclude+2,"_topptdown") 
     
     flimit.cd(dir) 
     rt.gDirectory.Delete("all_optim_systs;1") 
