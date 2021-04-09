@@ -2029,13 +2029,25 @@ int main(int argc, char* argv[])
         bool hasTrigger(false);
 
 	if (!runZH) { // Use only SingleEle and SingleMu in WH channel
-	  if(evcat!=fType && !isMC) continue; 
+	  if (!isMC) { // data:
+	    if(evcat!=fType) continue; 
 	    
-	  if(evcat==E && !(hasEtrigger)) continue;
-	  if(evcat==MU && !(hasMtrigger)) continue;
+	    if(evcat==E && !(hasEtrigger)) continue;
+	    if(evcat==MU && !(hasMtrigger)) continue;
 	      
-	  hasTrigger=true;
+	    if(isSingleMuPD) {
+	      if(!hasMtrigger) continue;
+	      if(hasMtrigger && hasMMtrigger) continue;
+	    }
+	    if(isSingleElePD) {
+	      if(!hasEtrigger) continue;
+	    }
+	    hasTrigger=true;
 	    
+	  } else { // MC trigger:
+	    if(evcat==E && hasEtrigger ) hasTrigger=true;   
+	    if(evcat==MU && hasMtrigger ) hasTrigger=true;   
+	  }
 	} else { // ZH channel
 
 	  if (!isMC) { // data:
