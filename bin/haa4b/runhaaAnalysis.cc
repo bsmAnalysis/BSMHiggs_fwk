@@ -2037,7 +2037,7 @@ int main(int argc, char* argv[])
 	      
 	    if(isSingleMuPD) {
 	      if(!hasMtrigger) continue;
-	      if(hasMtrigger && hasMMtrigger) continue;
+	      //	      if(hasMtrigger && hasMMtrigger) continue;
 	    }
 	    if(isSingleElePD) {
 	      if(!hasEtrigger) continue;
