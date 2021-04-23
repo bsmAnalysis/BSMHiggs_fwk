@@ -908,7 +908,7 @@
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_2018",
                     "nevts": 1,
-                    "xsec": "50960*1.23"
+                    "xsec": "50960*1.21"
                 },
                 {
                     "br": [
@@ -920,7 +920,7 @@
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT70to100_2018",
                     "nevts": 28060302,
-                    "xsec": "1292*1.23"
+                    "xsec": "1292*1.21"
                 },
                 {
                     "br": [
@@ -932,7 +932,7 @@
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT100to200_2018",
                     "nevts": 29488310,
-                    "xsec": "1395*1.23"
+                    "xsec": "1395*1.21"
                 },
                 {
                     "br": [
@@ -944,7 +944,7 @@
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT200to400_2018",
                     "nevts": 25423155,
-                    "xsec": "407.9*1.23"
+                    "xsec": "407.9*1.21"
                 },
                 {
                     "br": [
@@ -956,7 +956,7 @@
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT400to600_2018",
                     "nevts": 5915969,
-                    "xsec": "57.48*1.23"
+                    "xsec": "57.48*1.21"
                 },
                 {
                     "br": [
@@ -968,7 +968,7 @@
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT600to800_2018",
                     "nevts": 19699782,
-                    "xsec": "12.87*1.23"
+                    "xsec": "12.87*1.21"
                 },
                 {
                     "br": [
@@ -980,7 +980,7 @@
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT800to1200_2018",
                     "nevts": 8362227,
-                    "xsec": "5.366*1.23"
+                    "xsec": "5.366*1.21"
                 },
                 {
                     "br": [
@@ -992,7 +992,7 @@
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT1200to2500_2018",
                     "nevts": 7571583,
-                    "xsec": "1.074*1.23"
+                    "xsec": "1.074*1.21"
                 },
                 {
                     "br": [
@@ -1004,7 +1004,7 @@
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_HT2500toInf_2018",
                     "nevts": 3191612,
-                    "xsec": "0.008001*1.23"
+                    "xsec": "0.008001*1.21"
                 }
             ],
             "isdata": false,
