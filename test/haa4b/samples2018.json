@@ -673,7 +673,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_10to50_2018",
-                    "nevts": 1,
+                    "nevts": 39360792,
                     "xsec": "18610*1.23"
                 },
                 {
@@ -683,7 +683,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_4to50_HT70to100_2018",
-                    "nevts": 1,
+                    "nevts": 8981469,
                     "xsec": "145.5*1.23"
                 },
                 {
@@ -693,7 +693,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_4to50_HT100to200_2018",
-                    "nevts": 1,
+                    "nevts": 6785284,
                     "xsec": "204*1.23"
                 },
                 {
@@ -703,7 +703,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_4to50_HT200to400_2018",
-                    "nevts": 1,
+                    "nevts": 1934298,
                     "xsec": "54.4*1.23"
                 },
                 {
@@ -713,7 +713,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_4to50_HT400to600_2018",
-                    "nevts": 1,
+                    "nevts": 2001751,
                     "xsec": "5.7*1.23"
                 },
                 {
@@ -723,7 +723,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_4to50_HT600toInf_2018",
-                    "nevts": 1,
+                    "nevts": 1965382,
                     "xsec": "1.85*1.23"
                 },
                 {
@@ -733,7 +733,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_2018",
-                    "nevts": 1,
+                    "nevts": 100114403,
                     "xsec": "4895*1.23"
                 },
                 {
@@ -743,7 +743,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT70to100_2018",
-                    "nevts": 1,
+                    "nevts": 9396163,
                     "xsec": "146.9*1.23"
                 },
                 {
@@ -753,7 +753,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT100to200_2018",
-                    "nevts": 1,
+                    "nevts": 11203174,
                     "xsec": "161.1*1.23"
                 },
                 {
@@ -763,7 +763,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT200to400_2018",
-                    "nevts": 1,
+                    "nevts": 11206441,
                     "xsec": "48.66*1.23"
                 },
                 {
@@ -773,7 +773,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT400to600_2018",
-                    "nevts": 1,
+                    "nevts": 9669964,
                     "xsec": "6.97*1.23"
                 },
                 {
@@ -783,7 +783,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT600to800_2018",
-                    "nevts": 1,
+                    "nevts": 8828622,
                     "xsec": "1.743*1.23"
                 },
                 {
@@ -793,7 +793,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT800to1200_2018",
-                    "nevts": 1,
+                    "nevts": 3121975,
                     "xsec": "0.805*1.23"
                 },
                 {
@@ -803,7 +803,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT1200to2500_2018",
-                    "nevts": 1,
+                    "nevts": 531762,
                     "xsec": "0.193*1.23"
                 },
                 {
@@ -813,7 +813,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_HT2500toInf_2018",
-                    "nevts": 1,
+                    "nevts": 415713,
                     "xsec": "0.00347*1.23"
                 }
             ],
@@ -834,7 +834,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_10to50_2018",
-                    "nevts": 1,
+                    "nevts": 39360792,
                     "xsec": 18610
                 },
                 {
@@ -844,7 +844,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DYJetsToLL_M50_2018",
-                    "nevts": 1,
+                    "nevts": 100114403,
                     "xsec": 4895
                 },
                 {
@@ -854,7 +854,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DY1JetsToLL_M50_2018",
-                    "nevts": 1,
+                    "nevts": 68852433,
                     "xsec": 1016
                 },
                 {
@@ -864,7 +864,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DY2JetsToLL_M50_2018",
-                    "nevts": 1,
+                    "nevts": 20441071,
                     "xsec": 331.4
                 },
                 {
@@ -874,7 +874,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DY3JetsToLL_M50_2018",
-                    "nevts": 1,
+                    "nevts": 5646595,
                     "xsec": 96.36
                 },
                 {
@@ -884,7 +884,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_DY4JetsToLL_M50_2018",
-                    "nevts": 1,
+                    "nevts": 2812482,
                     "xsec": 51.4
                 }
             ],
@@ -907,7 +907,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_2018",
-                    "nevts": 1,
+                    "nevts": 70966439,
                     "xsec": "50960*1.21"
                 },
                 {
@@ -1026,7 +1026,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WJets_2018",
-                    "nevts": 1,
+                    "nevts": 70966439,
                     "xsec": 50960
                 },
                 {
@@ -1038,7 +1038,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_W1Jets_2018",
-                    "nevts": 1,
+                    "nevts": 51047866,
                     "xsec": 9493
                 },
                 {
@@ -1050,7 +1050,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_W2Jets_2018",
-                    "nevts": 1,
+                    "nevts": 23272818,
                     "xsec": 3120
                 },
                 {
@@ -1062,7 +1062,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_W3Jets_2018",
-                    "nevts": 1,
+                    "nevts": 14492897,
                     "xsec": 942.3
                 },
                 {
@@ -1074,7 +1074,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_W4Jets_2018",
-                    "nevts": 1,
+                    "nevts": 10062333,
                     "xsec": 524.2
                 }
             ],
