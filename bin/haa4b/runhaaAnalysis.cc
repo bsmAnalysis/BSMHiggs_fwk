@@ -207,10 +207,13 @@ int main(int argc, char* argv[])
       // 2017 Btag Recommendation: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
         CSVLooseWP = 0.5803; CSVMediumWP = 0.8838; CSVTightWP = 0.9693;
         DeepCSVLooseWP = 0.1522; DeepCSVMediumWP = 0.4941; DeepCSVTightWP = 0.8001;
+	//        mu_threshold_=30.;
+	//        ele_threshold_=35.;
     }
 
     if(is2018data || is2018MC){ // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
       DeepCSVLooseWP = 0.1241; DeepCSVMediumWP = 0.4184; DeepCSVTightWP = 0.7527;
+  //    ele_threshold_=35.; mu_threshold_=25.;
     }
 
     if(is2016Signal || is2016Legacy){//https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
@@ -571,6 +574,8 @@ int main(int argc, char* argv[])
       varNames.push_back("_nloEWK_up"); varNames.push_back("_nloEWK_down"); 
       // NLO EWK corrections differential in Vpt on VH signal samples
 
+      //varNames.push_back("_dydRup"); varNames.push_back("_dydRdown");
+      // varNames.push_back("_topptup"); varNames.push_back("_topptdown");
       //	  varNames.push_back("_th_pdf");                                           //pdf
 	  //	  varNames.push_back("_th_alphas"); //alpha_s (QCD)
 
@@ -1261,14 +1266,14 @@ int main(int argc, char* argv[])
 		   (ev.lheHt>400 && ev.lheHt<600)*1.494 * (1./1.21 ) + (ev.lheHt>600)*1.139 * (1./ 1.21) ); 
           weight *= SF; 
         } 
-	*/   
+	   
 	if(isMC_WJets &&  !dtag.Contains("amcNLO")) {     
 	  double SF = 1.;
 	  SF =   ((ev.lheHt>100 && ev.lheHt<200)* 1.459 * ( 1/ (1.23 ) ) + (ev.lheHt>200 && ev.lheHt<400)* 1.434 * ( 1/ ( 1.23 )) + 
 		  (ev.lheHt>400 && ev.lheHt<600)*1.532 * (1 / (1.23 )) + (ev.lheHt>600)*1.004 * ( 1 / (1.23) ));
 	  weight *= SF; 
 	}
-
+	*/
 	// V pt of VH signal samples
 	float zpt_VH = -1, wppt_VH = -1, wmpt_VH = -1;
 	
@@ -2024,13 +2029,27 @@ int main(int argc, char* argv[])
         bool hasTrigger(false);
 
 	if (!runZH) { // Use only SingleEle and SingleMu in WH channel
-	  if(evcat!=fType && !isMC) continue; 
+	  if (!isMC) { // data:
+	    if(evcat!=fType) continue; 
 	    
-	  if(evcat==E && !(hasEtrigger)) continue;
-	  if(evcat==MU && !(hasMtrigger)) continue;
+	    if(evcat==E && !(hasEtrigger)) continue;
+	    if(evcat==MU && !(hasMtrigger)) continue;
 	      
-	  hasTrigger=true;
+	    if(isSingleMuPD) {
+	      if(!hasMtrigger) continue;
+	      //  if(hasMtrigger && hasMMtrigger) continue;
+	    }
+	    if(isSingleElePD) {
+	      if(!hasEtrigger) continue;
+	      //	      if( is2017data && hasEtrigger && (hasEEtrigger||hasEEtrigger2) ) continue;
+	      // if(hasEtrigger && hasEEtrigger) continue; 
+	    }
+	    hasTrigger=true;
 	    
+	  } else { // MC trigger:
+	    if(evcat==E && hasEtrigger ) hasTrigger=true;   
+	    if(evcat==MU && hasMtrigger ) hasTrigger=true;   
+	  }
 	} else { // ZH channel
 
 	  if (!isMC) { // data:
