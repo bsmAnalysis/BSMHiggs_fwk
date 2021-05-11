@@ -642,7 +642,7 @@
 		    ],
 		    "gtag": "102X_upgrade2018_realistic_v19",
 		    "dtag": "MC13TeV_DYJetsToLL_M50_amcNLO_2018",
-                    "nevts": 1,
+                    "nevts": 676319,
 		    "xsec": 5765.4
 		},
 		{
@@ -652,7 +652,7 @@
 		    ],
 		    "gtag": "102X_upgrade2018_realistic_v19",
 		    "dtag": "MC13TeV_DYJetsToLL_M50_amcNLO_ext2_2018",
-                    "nevts": 1,
+                    "nevts": 130939668,
 		    "xsec": 5765.4
 		}
             ],
