@@ -919,7 +919,7 @@ int main(int argc, char* argv[])
       //xsecWeight=xsec/totalNumberofEvents;
       /////////////xsecWeight=xsec/cnorm; // effective luminosity}
       xsecWeight=xsec/nevts; // owen, Sept 19, 2020: use the total number of events for the dataset from the json file.
-
+      if(xsecWeight<1E-6)xsecWeight=0.;
     }
     //Hcutflow->SetBinContent(1,cnorm);
 
@@ -1215,12 +1215,13 @@ int main(int argc, char* argv[])
 	  else if(ev.lheHt >= 70) continue;   
 	}
 	*/
+	/*
 	if(is2016Legacy || is2017MC || is2018MC){ // 2016 non Legacy samples don't fall into here
 	  if( (isMC_WJets && !(isMC_WJets_HTbin) ) && !dtag.Contains("amcNLO")) {
 	    if(ev.lheHt >= 70) continue;
 	  }
 	}
-	
+	*/
 	mon.fillHisto("ht","debug_lheHt",ev.lheHt,1.0); 
 	if(is2018data) afterRun319077 = (ev.run > 319077);
 
@@ -1239,13 +1240,13 @@ int main(int argc, char* argv[])
         if(isMC) 
         {
           weight *= genWeight;
-	  /*
+	  
           //Here is the tricky part.,... rewrite xsecWeight for WJets/WXJets and DYJets/DYXJets
 	  if( isMC_WJets && !dtag.Contains("amcNLO") ){ 
-	    if(!(is2016Legacy || is2017MC || is2018MC)) // only 2016 non legacy WJets samples need to use trick part
-	      xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(0, ev.lheNJets, is2016Legacy<<0|is2016MC<<1|is2017MC<<2|is2018MC<<3); 
+	    //  if(!(is2016Legacy || is2017MC || is2018MC)) // only 2016 non legacy WJets samples need to use trick part
+	    xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(0, ev.lheNJets, is2016Legacy<<0|is2016MC<<1|is2017MC<<2|is2018MC<<3); 
 	  }
-	  */
+	  
 	  if( isMC_DY && !dtag.Contains("amcNLO") ) {
 	    if (string(url.Data()).find("10to50")  != string::npos)
 	      {
@@ -1254,7 +1255,6 @@ int main(int argc, char* argv[])
 	    else
 	      { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(2, ev.lheNJets, is2016Legacy<<0|is2016MC<<1|is2017MC<<2|is2018MC<<3); }
 	  }
-	  
 	  weight *= xsecWeight; 
         }
 
@@ -2034,21 +2034,30 @@ int main(int argc, char* argv[])
 	    
 	    if(evcat==E && !(hasEtrigger)) continue;
 	    if(evcat==MU && !(hasMtrigger)) continue;
-	      
+	    /*
+	    if(evcat==EE && !hasEEtrigger) continue;
+	    if(evcat==MUMU && !(hasMMtrigger)) continue; //||hasMtrigger) ) continue;
+	    if(evcat==EMU && !hasEMtrigger ) continue;
+	    */
 	    if(isSingleMuPD) {
 	      if(!hasMtrigger) continue;
-	      //  if(hasMtrigger && hasMMtrigger) continue;
+	      //	      if(hasMtrigger && hasMMtrigger) continue;
 	    }
 	    if(isSingleElePD) {
 	      if(!hasEtrigger) continue;
 	      //	      if( is2017data && hasEtrigger && (hasEEtrigger||hasEEtrigger2) ) continue;
-	      // if(hasEtrigger && hasEEtrigger) continue; 
+	      //	      if(hasEtrigger && hasEEtrigger) continue; 
 	    }
 	    hasTrigger=true;
 	    
 	  } else { // MC trigger:
 	    if(evcat==E && hasEtrigger ) hasTrigger=true;   
 	    if(evcat==MU && hasMtrigger ) hasTrigger=true;   
+	    /*
+	    if(evcat==EE && hasEEtrigger) hasTrigger=true; 
+	    if(evcat==MUMU && hasMMtrigger) hasTrigger=true; 
+	    if(evcat==EMU  && hasEMtrigger ) hasTrigger=true;  
+	    */
 	  }
 	} else { // ZH channel
 
@@ -3008,7 +3017,7 @@ int main(int argc, char* argv[])
 	  //	  if (fabs(mindphijmet)>0.5) tags.push_back(tag_cat+tag_qcd+"passDPHI_"+tag_subcat);
 	  
 	  bool isSignalRegion(false);
-	  if (tag_subcat.Contains("CR") || evcat==EMU) { // ||  tag_subcat.Contains("CR_nonTT")) {
+	  if (tag_subcat.Contains("CR") || evcat==EMU) { 
 	    // contains (2b,3j) and (2b, 4j)
 	    GoodIdbJets.clear();
 	    for (auto & i : GoodIdJets) { GoodIdbJets.push_back(i);}
@@ -3017,6 +3026,11 @@ int main(int argc, char* argv[])
 	    isSignalRegion=true;
 	  } else {
 	    printf("UNDEFINED event category; please check!!\n");
+	  }
+
+	  // Remove W event with abnormally high weight in e_SR_4b
+	  if(!runZH && isMC_WJets) {
+	    if(evcat==E && tag_subcat==("SR_4b")) continue; // skip event
 	  }
 
 	  if (ivar==0) {
