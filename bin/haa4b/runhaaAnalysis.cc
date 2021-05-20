@@ -919,7 +919,7 @@ int main(int argc, char* argv[])
       //xsecWeight=xsec/totalNumberofEvents;
       /////////////xsecWeight=xsec/cnorm; // effective luminosity}
       xsecWeight=xsec/nevts; // owen, Sept 19, 2020: use the total number of events for the dataset from the json file.
-      if(xsecWeight<1E-6)xsecWeight=0.;
+      //      if(xsecWeight<1E-6)xsecWeight=0.;
     }
     //Hcutflow->SetBinContent(1,cnorm);
 

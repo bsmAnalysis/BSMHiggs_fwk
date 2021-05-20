@@ -32,8 +32,8 @@ const std::map<std::string, std::pair <int, float> > mStat =
     { "MC13TeV_TTJets_dl_2016"       , std::make_pair(30444678, 88.2877) }, //0.104012*0.2002 },
     { "MC13TeV_TTJets_dl_ext1_2016"  , std::make_pair(30444678, 88.2877) }, // 0.104012*0.7998 },
     //WJets 2016 Legacy
-    { "MC13TeV_WJets_Legacy2016"     , std::make_pair(86916455, 50690) },//86731806  //61526.7) }, //280929804 }, //30.7868*0.3425 },
-    { "MC13TeV_WJets_ext2_Legacy2016", std::make_pair(86916455, 50690) },//86731806  //61526.7) }, //280929804 }, // 30.7868*0.6575 },
+    { "MC13TeV_WJets_Legacy2016"     , std::make_pair(170241637, 50690) },//86731806  //61526.7) }, //280929804 }, //30.7868*0.3425 },
+    { "MC13TeV_WJets_ext2_Legacy2016", std::make_pair(170241637, 50690) },//86731806  //61526.7) }, //280929804 }, // 30.7868*0.6575 },
     { "MC13TeV_W1Jets_Legacy2016"     , std::make_pair(45283121, 9493) },//45367044
     { "MC13TeV_W2Jets_Legacy2016"     , std::make_pair(60438768, 3120) },//60197766
     { "MC13TeV_W2Jets_ext1_Legacy2016", std::make_pair(60438768, 3120) },//60197766
