@@ -753,7 +753,7 @@
 		    ],
 		    "gtag": "94X_mc2017_realistic_v14",
 		    "dtag": "MC13TeV_DYJetsToLL_M50_amcNLO_2017",
-                    "nevts": 1,
+                    "nevts": 18656609,
 		    "xsec": 5765.4 
 		},
 		{
@@ -763,7 +763,7 @@
 		    ],
 		    "gtag": "94X_mc2017_realistic_v14",
 		    "dtag": "MC13TeV_DYJetsToLL_M50_amcNLO_ext1_2017",
-                    "nevts": 1,
+                    "nevts": 123485957,
 		    "xsec": 5765.4
 		}
             ],
@@ -1004,7 +1004,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DY1JetsToLL_M50_2017",
-                    "nevts": 1,
+                    "nevts": 42299237,
                     "xsec": 1016
                 },
                 {
@@ -1014,7 +1014,7 @@
                     ],                                                                                                                                                                                      
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DY1JetsToLL_M50_ext1_2017",
-                    "nevts": 1,
+                    "nevts": 33643695,
                     "xsec": 1016
                 },
                 {
@@ -1024,7 +1024,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DY2JetsToLL_M50_2017",
-                    "nevts": 1,
+                    "nevts": 88795,
                     "xsec": 331.4
                 },
                 {
@@ -1034,7 +1034,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DY2JetsToLL_M50_ext1_2017",
-                    "nevts": 1,
+                    "nevts": 10027319,
                     "xsec": 331.4
                 },
                 {
@@ -1044,7 +1044,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DY3JetsToLL_M50_2017",
-                    "nevts": 1,
+                    "nevts": 5740168,
                     "xsec": 96.36
                 },
                 {
@@ -1054,7 +1054,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DY3JetsToLL_M50_ext1_2017",
-                    "nevts": 1,
+                    "nevts": 1147725,
                     "xsec": 96.36
                 },
                 {
@@ -1064,7 +1064,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_DY4JetsToLL_M50_2017",
-                    "nevts": 1,
+                    "nevts": 4317756,
                     "xsec": 51.4
                 }
             ],
@@ -1242,7 +1242,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_W1Jets_2017",
-                    "nevts": 1,
+                    "nevts": 54106926,
                     "xsec": 9493
                 },
                 {
@@ -1254,7 +1254,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_W2Jets_2017",
-                    "nevts": 1,
+                    "nevts": 38903855,
                     "xsec": 3120
                 },
                 {
@@ -1266,7 +1266,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_W3Jets_2017",
-                    "nevts": 1,
+                    "nevts": 19669693,
                     "xsec": 942.3
                 },
                 {
@@ -1278,7 +1278,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v14",
                     "dtag": "MC13TeV_W4Jets_2017",
-                    "nevts": 1,
+                    "nevts": 11074019,
                     "xsec": 524.2
                 }
             ],
