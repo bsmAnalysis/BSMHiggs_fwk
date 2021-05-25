@@ -66,8 +66,8 @@ const std::map<std::string, std::pair <int, float> > mStat =
     { "MC13TeV_WJets_ext10_2016", std::make_pair(280929804, 61526.7) },
     */
     //WJets 2017
-    { "MC13TeV_WJets_2017"     , std::make_pair(77700506, 50690) },
-    { "MC13TeV_WJets_ext1_2017", std::make_pair(77700506, 50690) },
+    { "MC13TeV_WJets_2017"     , std::make_pair(77680630, 50690) },
+    { "MC13TeV_WJets_ext1_2017", std::make_pair(77680630, 50690) },
     { "MC13TeV_W1Jets_2017"    , std::make_pair(54147812, 9493) },
     { "MC13TeV_W2Jets_2017"    , std::make_pair(6577492, 3120) },
     { "MC13TeV_W3Jets_2017"    , std::make_pair(19700377, 942.3) },
