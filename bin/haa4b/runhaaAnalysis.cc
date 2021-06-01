@@ -164,9 +164,9 @@ int main(int argc, char* argv[])
     bool is2018data = (!isMC && dtag.Contains("2018"));
     bool is2018MC = (isMC && dtag.Contains("2018"));
     bool is2017BCdata = (is2017data && (dtag.Contains("2017B") || dtag.Contains("2017C")));
-    bool afterRun319077 = false;
-    bool jetinHEM = false;
-    bool eleinHEM = false;
+    //    bool afterRun319077 = false;
+    //bool jetinHEM = false;
+    //bool eleinHEM = false;
     bool is2017_2018 = (is2017MC || is2017data || is2018MC || is2018data);
 
     bool verbose = runProcess.getParameter<bool>("verbose");
@@ -1223,7 +1223,9 @@ int main(int argc, char* argv[])
 	}
 	*/
 	mon.fillHisto("ht","debug_lheHt",ev.lheHt,1.0); 
-	if(is2018data) afterRun319077 = (ev.run > 319077);
+
+	bool afterRun319077(false);
+	if(is2018data) afterRun319077 = (ev.run >= 319077);
 
         // add PhysicsEvent_t class, get all tree to physics objects
         PhysicsEvent_t phys=getPhysicsEventFrom(ev); 
@@ -1532,7 +1534,8 @@ int main(int argc, char* argv[])
 	float lep_threshold(10.);
 	float eta_threshold=2.5;
 
-	eleinHEM = false;
+	bool eleinHEM(false); // to use for HEM veto in 2018
+
 	for (auto &ilep : leps) {
 
 	  int lepid = ilep.id;
@@ -1560,9 +1563,11 @@ int main(int argc, char* argv[])
 	  if ( hasTightIdandIso && (ilep.pt()>lep_threshold) ) {
 
 	    if(abs(lepid)==11) { // ele scale corrections
-	      if( !eleinHEM && ilep.pt()>25 && 
+
+	      if( !eleinHEM && ilep.pt()>30. && 
 		  -1.57<ilep.phi() && ilep.phi()<-0.87 &&
 		  -3.0<ilep.eta() && ilep.eta()<-1.4) eleinHEM = true;
+
 	      double et = ilep.en_cor_en / cosh(fabs(ilep.en_EtaSC));
 	      //double et = ilep.en_en / cosh(fabs(ilep.en_EtaSC));
 
@@ -1899,20 +1904,24 @@ int main(int argc, char* argv[])
 	//------------------------------------------------------------------------------------
 	// HEM Veto for 2018
 	//------------------------------------------------------------------------------------
-	jetinHEM = false;
+	bool jetinHEM(false);
+
 	for(size_t ijet=0; ijet<corrJets.size(); ijet++) {
-	  if(corrJets[ijet].pt()>jet_threshold_ && 
+
+	  //	  double dphijmet=fabs(deltaPhi(corrJets[ijet].phi(),metP4.phi()));
+
+	  if(corrJets[ijet].pt()>25. && 
 	     (corrJets[ijet].eta()>-3.2 && corrJets[ijet].eta()<-1.2) &&
-	     (corrJets[ijet].phi()>-1.77 && corrJets[ijet].phi()<-0.67)
-	    ) {
+	     (corrJets[ijet].phi()>-1.77 && corrJets[ijet].phi()<-0.67) //&& (dphijmet<0.5)
+	     ) {
 	    jetinHEM = true;
 	    break;
 	  }
 	}
 	if(is2018data && afterRun319077 && (jetinHEM || eleinHEM) ) continue;
-	if(is2018MC && (jetinHEM || eleinHEM)) {
-	  weight *= 0.35;
-	}
+	if(is2018MC && (jetinHEM || eleinHEM)) continue; //{ veto the event also in MC
+	  //	  weight *= 0.35;
+	//	}
 	//-------------------------------------------------------------------------------------
 	//-------------------------------------------------------------------------------------
 	if (isMC_ttbar) { //split inclusive TTJets POWHEG sample into tt+bb, tt+cc and tt+light
