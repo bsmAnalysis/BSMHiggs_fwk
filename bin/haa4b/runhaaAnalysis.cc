@@ -1905,13 +1905,14 @@ int main(int argc, char* argv[])
 	// HEM Veto for 2018
 	//------------------------------------------------------------------------------------
 	bool jetinHEM(false);
+
 	for(size_t ijet=0; ijet<corrJets.size(); ijet++) {
 
-	  double dphijmet=fabs(deltaPhi(corrJets[ijet].phi(),metP4.phi()));
+	  //	  double dphijmet=fabs(deltaPhi(corrJets[ijet].phi(),metP4.phi()));
 
-	  if(corrJets[ijet].pt()>30. && 
+	  if(corrJets[ijet].pt()>25. && 
 	     (corrJets[ijet].eta()>-3.2 && corrJets[ijet].eta()<-1.2) &&
-	     (corrJets[ijet].phi()>-1.77 && corrJets[ijet].phi()<-0.67) && (dphijmet<0.5)
+	     (corrJets[ijet].phi()>-1.77 && corrJets[ijet].phi()<-0.67) //&& (dphijmet<0.5)
 	     ) {
 	    jetinHEM = true;
 	    break;
