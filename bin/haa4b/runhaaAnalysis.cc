@@ -1905,7 +1905,7 @@ int main(int argc, char* argv[])
 	bool jetinHEM(false);
 
 	for(size_t ijet=0; ijet<corrJets.size(); ijet++) {
-	  if(corrJets[ijet].pt()>25. && 
+	  if(corrJets[ijet].pt()>20. && 
 	     (corrJets[ijet].eta()>-3.2 && corrJets[ijet].eta()<-1.2) &&
 	     (corrJets[ijet].phi()>-1.77 && corrJets[ijet].phi()<-0.67) ) {
 	    jetinHEM = true; break;
@@ -2043,12 +2043,12 @@ int main(int argc, char* argv[])
 	    */
 	    if(isSingleMuPD) {
 	      if(!hasMtrigger) continue;
-	      //	      if(hasMtrigger && hasMMtrigger) continue;
+	      if(is2018data && hasMtrigger && hasMMtrigger) continue;
 	    }
 	    if(isSingleElePD) {
 	      if(!hasEtrigger) continue;
 	      //	      if( is2017data && hasEtrigger && (hasEEtrigger||hasEEtrigger2) ) continue;
-	      //	      if(hasEtrigger && hasEEtrigger) continue; 
+	      if(is2018data && hasEtrigger && hasEEtrigger) continue; 
 	    }
 	    hasTrigger=true;
 	    
