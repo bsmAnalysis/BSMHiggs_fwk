@@ -30,23 +30,23 @@ scram b -j 4
 
 # Installation for 102X (2018) 
 ```bash
-export SCRAM_ARCH=slc6_amd64_gcc700
-#or
-setenv  SCRAM_ARCH slc6_amd64_gcc700
-cmsrel CMSSW_10_2_10
-cd CMSSW_10_2_10/src
+setenv SCRAM_ARCH slc7_amd64_gcc700
+cmsrel CMSSW_10_2_15
+cd CMSSW_10_2_15/src
 cmsenv
 git cms-init
 
-# checkout Gamma Preliminary Energy Corrections
-# https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPostRecoRecipes
-git cms-merge-topic cms-egamma:EgammaPostRecoTools #just adds in an extra file to have a setup function to make things easier
-git cms-merge-topic cms-egamma:PhotonIDValueMapSpeedup1029 #optional but speeds up the photon ID value module so things fun faster
-git cms-merge-topic cms-egamma:slava77-btvDictFix_10210 #fixes the Run2018D dictionary issue, see https://github.com/cms-sw/cmssw/issues/26182
-#now to add the scale and smearing for 2018 (eventually this will not be necessary in later releases but is harmless to do regardless)
-git cms-addpkg EgammaAnalysis/ElectronTools
-rm EgammaAnalysis/ElectronTools/data -rf
-git clone git@github.com:cms-data/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data
+# https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPostRecoRecipes#102X
+git cms-merge-topic cms-egamma:PhotonIDValueMapSpeedup1029 #optional but speeds up the photon ID value module so things run faster
+#now build everything
+scram b -j 8
+#now add in E/gamma Post reco tools
+git clone git@github.com:cms-egamma/EgammaPostRecoTools.git  EgammaUser/EgammaPostRecoTools
+cd  EgammaUser/EgammaPostRecoTools
+git checkout master
+cd -
+echo $CMSSW_BASE
+cd $CMSSW_BASE/src
 scram b -j 8
 
 # get code to run ecalBadCalibReducedMINIAODFilter on MiniAOD
