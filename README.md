@@ -37,6 +37,8 @@ cmsenv
 git cms-init
 
 # https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPostRecoRecipes#102X
+git cms-merge-topic cms-egamma:EgammaPostRecoTools
+# OR:
 git cms-merge-topic cms-egamma:PhotonIDValueMapSpeedup1029 #optional but speeds up the photon ID value module so things run faster
 #now build everything
 scram b -j 8
