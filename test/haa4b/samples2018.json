@@ -10,7 +10,7 @@
                     "dset": [
                         "/MuonEG/Run2018A-17Sep2018-v1/MINIAOD"
                     ],
-                    "gtag": "102X_dataRun2_v11",
+                    "gtag": "102X_dataRun2_v14",
                     "dtag": "Data13TeV_MuEG2018A_17Sep2018_v1",
                     "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
@@ -23,7 +23,7 @@
                     "dset": [
                         "/MuonEG/Run2018B-17Sep2018-v1/MINIAOD"
                     ],
-                    "gtag": "102X_dataRun2_v11",
+                    "gtag": "102X_dataRun2_v14",
                     "dtag": "Data13TeV_MuEG2018B_17Sep2018_v1",
                     "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
@@ -36,7 +36,7 @@
                     "dset": [
                         "/MuonEG/Run2018C-17Sep2018-v1/MINIAOD"
                     ],
-                    "gtag": "102X_dataRun2_v11",
+                    "gtag": "102X_dataRun2_v14",
                     "dtag": "Data13TeV_MuEG2018C_17Sep2018_v1",
                     "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
@@ -62,7 +62,7 @@
                     "dset": [
                         "/EGamma/Run2018A-17Sep2018-v2/MINIAOD"
                     ],
-                    "gtag": "102X_dataRun2_v11",
+                    "gtag": "102X_dataRun2_v14",
                     "dtag": "Data13TeV_EGamma2018A_17Sep2018_v2",
                     "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
@@ -75,7 +75,7 @@
                     "dset": [
                         "/EGamma/Run2018B-17Sep2018-v1/MINIAOD"
                     ],
-                    "gtag": "102X_dataRun2_v11",
+                    "gtag": "102X_dataRun2_v14",
                     "dtag": "Data13TeV_EGamma2018B_17Sep2018_v1",
                     "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
@@ -88,7 +88,7 @@
                     "dset": [
                         "/EGamma/Run2018C-17Sep2018-v1/MINIAOD"
                     ],
-                    "gtag": "102X_dataRun2_v11",
+                    "gtag": "102X_dataRun2_v14",
                     "dtag": "Data13TeV_EGamma2018C_17Sep2018_v1",
                     "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
@@ -114,7 +114,7 @@
                     "dset": [
                         "/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"
                     ],
-                    "gtag": "102X_dataRun2_v11",
+                    "gtag": "102X_dataRun2_v14",
                     "dtag": "Data13TeV_SingleMuon2018A_17Sep2018_v2",
                     "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
@@ -127,7 +127,7 @@
                     "dset": [
                         "/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"
                     ],
-                    "gtag": "102X_dataRun2_v11",
+                    "gtag": "102X_dataRun2_v14",
                     "dtag": "Data13TeV_SingleMuon2018B_17Sep2018_v1",
                     "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
@@ -140,7 +140,7 @@
                     "dset": [
                         "/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"
                     ],
-                    "gtag": "102X_dataRun2_v11",
+                    "gtag": "102X_dataRun2_v14",
                     "dtag": "Data13TeV_SingleMuon2018C_17Sep2018_v1",
                     "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
@@ -166,7 +166,7 @@
                     "dset": [
                         "/DoubleMuon/Run2018A-17Sep2018-v2/MINIAOD"
                     ],
-                    "gtag": "102X_dataRun2_v11",
+                    "gtag": "102X_dataRun2_v14",
                     "dtag": "Data13TeV_DoubleMuon2018A_17Sep2018_v2",
                     "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
@@ -179,7 +179,7 @@
                     "dset": [
                         "/DoubleMuon/Run2018B-17Sep2018-v1/MINIAOD"
                     ],
-                    "gtag": "102X_dataRun2_v11",
+                    "gtag": "102X_dataRun2_v14",
                     "dtag": "Data13TeV_DoubleMuon2018B_17Sep2018_v1",
                     "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
@@ -192,7 +192,7 @@
                     "dset": [
                         "/DoubleMuon/Run2018C-17Sep2018-v1/MINIAOD"
                     ],
-                    "gtag": "102X_dataRun2_v11",
+                    "gtag": "102X_dataRun2_v14",
                     "dtag": "Data13TeV_DoubleMuon2018C_17Sep2018_v1",
                     "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
