@@ -15,7 +15,7 @@
 //         Created:  Sun, 17 Sep 2017 08:27:19 GMT
 //
 //
-//#define YEAR_2017
+#define YEAR_2017
 // system include files
 #include <memory>
 
@@ -830,15 +830,18 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
    if(is2018){
       //https://twiki.cern.ch/twiki/bin/view/CMS/MuonHLT2018 
       mumuTrigger        = utils::passTriggerPatterns(tr,"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*");
+      mumuTrigger2        = utils::passTriggerPatterns(tr,"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*");    
       muTrigger          = utils::passTriggerPatterns(tr,"HLT_IsoMu24_v*");
+      muTrigger2         = utils::passTriggerPatterns(tr, "HLT_Mu50_v*");    
       //https://twiki.cern.ch/twiki/bin/view/CMS/EgHLTRunIISummary 
       eeTrigger          = utils::passTriggerPatterns(tr,"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_DoubleEle25_CaloIdL_MW_v*");
       eTrigger           = utils::passTriggerPatterns(tr,"HLT_Ele32_WPTight_Gsf_v*");
+      eTrigger2          = utils::passTriggerPatterns(tr,"HLT Ele35 WPTight Gsf v*");
       //emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
-      emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
+      emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
    }else if(is2017){
       //https://indico.cern.ch/event/682891/contributions/2810364/attachments/1570825/2820752/20171206_CMSWeek_MuonHLTReport_KPLee_v3_4.pdf
-      mumuTrigger        = utils::passTriggerPatterns(tr,"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*");
+     mumuTrigger        = utils::passTriggerPatterns(tr,"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
       mumuTrigger2	 = utils::passTriggerPatterns(tr,"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*");
       muTrigger          = utils::passTriggerPatterns(tr,"HLT_IsoMu27_v*");
       muTrigger2	 = utils::passTriggerPatterns(tr,"HLT_IsoMu24_eta2p1_v*","HLT_IsoMu24_v*");
@@ -847,18 +850,19 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
       eeTrigger2         = utils::passTriggerPatterns(tr,"HLT_DoubleEle33_CaloIdL_MW_v*"); // non isolation version
       // 2017 RunB and C single electron trigger needs special treatment, see below
       eTrigger           = utils::passTriggerPatterns(tr,"HLT_Ele32_WPTight_Gsf_v*"); //"HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*";
-      //eTrigger2          = utils::passTriggerPatterns(tr,"HLT_Ele35_WPTight_Gsf_v*");
-      emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+      eTrigger2          = utils::passTriggerPatterns(tr,"HLT_Ele35_WPTight_Gsf_v*");
+      emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
       emuTrigger2	 = utils::passTriggerPatterns(tr,"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*");
    } else{
       mumuTrigger        = utils::passTriggerPatterns(tr, "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*" , "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
       //   muTrigger          = utils::passTriggerPatterns(tr, "HLT_IsoMu22_v*","HLT_IsoTkMu22_v*", "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*");
       muTrigger          = utils::passTriggerPatterns(tr, "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*");
       muTrigger2         = utils::passTriggerPatterns(tr, "HLT_Mu50_v*", "HLT_TkMu50_v*");
-      eeTrigger          = utils::passTriggerPatterns(tr, "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_v*");
+      eeTrigger          = utils::passTriggerPatterns(tr, "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+      //,"HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_DoubleEle33_CaloIdL_v*");
       //   highPTeeTrigger    = utils::passTriggerPatterns(tr, "HLT_Ele115_CaloIdVT_GsfTrkIdT_v*"); //"HLT_ECALHT800_v*");
       highPTeTrigger    = utils::passTriggerPatterns(tr, "HLT_Ele115_CaloIdVT_GsfTrkIdT_v*");
-      eTrigger           = utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*") ;
+      eTrigger           = utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*","HLT_Ele25_eta2p1_WPTight_Gsf_v*") ;
       emuTrigger         = utils::passTriggerPatterns(tr, "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*" , "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
    }
    // special treatment for 2017 single electron triggers in RunB and C

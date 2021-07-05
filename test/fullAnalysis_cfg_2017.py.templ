@@ -21,7 +21,7 @@ process.load('RecoMET.METFilters.ecalBadCalibFilter_cfi')
 #------ Declare the correct global tag ------#
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 #process.GlobalTag.globaltag = '94X_dataRun2_v6'
-process.GlobalTag.globaltag = '94X_mc2017_realistic_v14'
+#process.GlobalTag.globaltag = '94X_mc2017_realistic_v14'
 process.GlobalTag.globaltag = '@gtag'
 
 process.options   = cms.untracked.PSet(
@@ -84,7 +84,7 @@ else:
 process.mainNtuplizer.isMC = cms.bool(@isMC)
 process.mainNtuplizer.dtag = cms.string("@dtag")
 process.mainNtuplizer.xsec = cms.double(@xsec)
-process.mainNtuplizer.nevts = cms.double(@nevts)
+#process.mainNtuplizer.nevts = cms.double(@nevts)
 process.mainNtuplizer.mctruthmode = cms.int32(@mctruthmode)
 process.mainNtuplizer.verbose = cms.bool(@verbose)
 process.mainNtuplizer.metFilterBitsTag = cms.InputTag('TriggerResults','','HLT')
