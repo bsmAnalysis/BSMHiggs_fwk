@@ -287,6 +287,4 @@ runLocalAnalysisOverSamples.py -e my_exe -j data/my_samples.json -d my_input_dir
 - 2017 DATA  and  MC Samples: ```/eos/cms/store/user/georgia/results_2017_2020_02_05```
   
   2017 DY NJets and W NJets samples: in ```/eos/user/z/zhangyi/2017Analysis```
-- 2018 DATA  and  MC Samples: ```/eos/cms/store/user/georgia/results_2020_02_05```
-  
-  2018 DY samples, W inclusive and NJets samples: ```/eos/cms/store/user/georgia/backup_2018Analysis```
+- 2018 DATA  and  MC Samples: ```/eos/user/g/georgia/results_2020_02_05```
