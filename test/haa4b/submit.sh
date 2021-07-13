@@ -83,8 +83,7 @@ if [[ $YEAR == "2016" ]]; then
 elif [[ $YEAR == "2017" ]]; then
     NTPL_INPUT=/eos/cms/store/user/georgia/results_2017$SUFFIX 
 elif [[ $YEAR == "2018" ]]; then
-    NTPL_INPUT=/eos/cms/store/user/georgia/results_2018$SUFFIX   
-#    NTPL_INPUT=/eos/cms/store/user/georgia/backup_2018Analysis
+    NTPL_INPUT=/eos/user/g/georgia/results$SUFFIX   
 fi
 
 ZPtSF_OUT=$MAINDIR/VPtSF_${CHANNEL}_$YEAR$SUFFIX
