@@ -1904,7 +1904,7 @@ int main(int argc, char* argv[])
 	bool jetinHEM(false);
 
 	for(size_t ijet=0; ijet<corrJets.size(); ijet++) {
-	  if(corrJets[ijet].pt()>20. && 
+	  if(corrJets[ijet].pt()>25. && 
 	     (corrJets[ijet].eta()>-3.2 && corrJets[ijet].eta()<-1.2) &&
 	     (corrJets[ijet].phi()>-1.77 && corrJets[ijet].phi()<-0.67) ) {
 	    jetinHEM = true; break;
