@@ -235,7 +235,7 @@
                     ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_WW_2018",
-                    "nevts": 7850000,
+                    "nevts": 7570000,
                     "xsec": 118.7
                 },
                 {
@@ -502,7 +502,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTTo2L2Nu_powheg_2018",
-                    "nevts": 63791484,
+                    "nevts": 63459208.0,
                     "xsec": 88.29
                 },
                 {
@@ -514,7 +514,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTToSemiLeptonic_powheg_2018",
-                    "nevts": 100728756,
+                    "nevts": 100074068.0,
                     "xsec": 365.34
                 },
                 {
@@ -526,7 +526,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTToHadronic_powheg_2018",
-                    "nevts": 132725582,
+                    "nevts": 132344582.0,
                     "xsec": 377.96
                 }
             ],
@@ -549,7 +549,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTTo2L2Nu_powheg_2018",
-                    "nevts": 63791484,
+                    "nevts": 63459208.0,
                     "xsec": 88.29
                 },
                 {
@@ -561,7 +561,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTToSemiLeptonic_powheg_2018",
-                    "nevts": 100728756,
+                    "nevts": 100074068.0,
                     "xsec": 365.34
                 },
                 {
@@ -573,7 +573,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTToHadronic_powheg_2018",
-                    "nevts": 132725582,
+                    "nevts": 132344582.0,
                     "xsec": 377.96
                 }
             ],
@@ -596,7 +596,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTTo2L2Nu_powheg_2018",
-                    "nevts": 63791484,
+                    "nevts": 63459208.0,
                     "xsec": 88.29
                 },
                 {
@@ -608,7 +608,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTToSemiLeptonic_powheg_2018",
-                    "nevts": 100728756,
+                    "nevts": 100074068.0,
                     "xsec": 365.34
                 },
                 {
@@ -620,7 +620,7 @@
                      ],
                     "gtag": "102X_upgrade2018_realistic_v19",
                     "dtag": "MC13TeV_TTToHadronic_powheg_2018",
-                    "nevts": 132725582,
+                    "nevts": 132344582.0,
                     "xsec": 377.96
                 }
             ],
