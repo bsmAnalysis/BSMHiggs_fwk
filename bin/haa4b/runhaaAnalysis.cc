@@ -2043,10 +2043,8 @@ int main(int argc, char* argv[])
 
 	    if(isSingleMuPD) {
 	      if(!hasMtrigger) continue;
-	      //hasTrigger = (hasMtrigger);
 	    }
 	    if(isSingleElePD) {
-	      //  hasTrigger = (hasEtrigger && !hasMtrigger);
 	      if(!hasEtrigger) continue;
 	      if(hasEtrigger && hasMtrigger) continue;
 	    }
@@ -2086,9 +2084,9 @@ int main(int argc, char* argv[])
 	  } else if(is2017MC && !isQCD){//2017 ele TRG scale factor: https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#E/gamma%20Trigger%20Recomendations
 	    weight*=0.991;
 	  } else if(is2018MC && !isQCD){ // https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations
-      weight*=1.0;
-    }
-	    //	    weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
+	    weight*=1.0;
+	  }
+	  //	    weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	  //weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h2);
 	  mon.fillHisto("leadlep_pt_raw",tag_cat,selLeptons[0].pt(),weight);   
 	  mon.fillHisto("leadlep_eta_raw",tag_cat,selLeptons[0].eta(),weight);     
