@@ -186,6 +186,8 @@ int main(int argc, char* argv[])
     bool use_DeepCSV = runProcess.getParameter<bool>("useDeepCSV");
     bool runQCD = runProcess.getParameter<bool>("runQCD");
     
+    bool useWNJet = runProcess.getParameter<bool>("useWNJet");
+
     bool usemetNoHF = runProcess.getParameter<bool>("usemetNoHF");
     
     // choose which method to use to apply btagging efficiency scale factors
@@ -297,7 +299,7 @@ int main(int argc, char* argv[])
       //if(isMuonEGPD) return -1;
       if(isDoubleElePD || isDoubleMuPD || isMuonEGPD) return -1; 
     }   
-    
+   
 
     // NLO EWK corrections differential in Vpt on VH signal samples
     TH1F *h_Wm = new TH1F(), *h_Wp = new TH1F(), *h_Wm_up = new TH1F(), *h_Wm_down = new TH1F(), *h_Wp_up = new TH1F(), *h_Wp_down = new TH1F();   
@@ -463,7 +465,11 @@ int main(int argc, char* argv[])
         if(isMC) {jecDir+="102X/Autumn18_V8_MC/Autumn18_V8_";}
 //        jecDir += "102X/Regrouped_Autumn18_V19_MC_UncertaintySources_AK4PFchs.txt";
 	year = "2018";
-	jer_sf_file += "Autumn18_V7b_MC_SF_AK4PFchs.txt";
+	if (isMC) {
+	  jer_sf_file += "Autumn18_V7b_MC_SF_AK4PFchs.txt";
+	} else {
+	  jer_sf_file += "Autumn18_V7b_DATA_SF_AK4PFchs.txt";   
+	}
     }
     else if(is2017MC || is2017data){
         if     (dtag.Contains("2017B")) jecDir+="94X/Fall17_17Nov2017B_V32_DATA/Fall17_17Nov2017B_V32_";
@@ -1213,13 +1219,13 @@ int main(int argc, char* argv[])
 	  else if(ev.lheHt >= 70) continue;   
 	}
 	*/
-	/*
+	
 	if(is2016Legacy || is2017MC || is2018MC){ // 2016 non Legacy samples don't fall into here
-	  if( (isMC_WJets && !(isMC_WJets_HTbin) ) && !dtag.Contains("amcNLO")) {
+	  if( (!useWNJet) && (isMC_WJets && !(isMC_WJets_HTbin) ) && !dtag.Contains("amcNLO")) {
 	    if(ev.lheHt >= 70) continue;
 	  }
 	}
-	*/
+	
 	mon.fillHisto("ht","debug_lheHt",ev.lheHt,1.0); 
 
 	bool afterRun319077(false);
@@ -1242,7 +1248,7 @@ int main(int argc, char* argv[])
           weight *= genWeight;
 	  
           //Here is the tricky part.,... rewrite xsecWeight for WJets/WXJets and DYJets/DYXJets
-	  if( isMC_WJets && !dtag.Contains("amcNLO") ){ 
+	  if( isMC_WJets && !dtag.Contains("amcNLO") && useWNJet ){ 
 	    //  if(!(is2016Legacy || is2017MC || is2018MC)) // only 2016 non legacy WJets samples need to use trick part
 	    xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(0, ev.lheNJets, is2016Legacy<<0|is2016MC<<1|is2017MC<<2|is2018MC<<3); 
 	  }
@@ -1259,7 +1265,7 @@ int main(int argc, char* argv[])
         }
 
 	//QCD corrections that is equivalent to remapping the k-factor of madraph HT bins from 1.21(23) ro 1.58, 1.438, 1.494, 1.139 for HT_100-200, 200-400, 400_600, >600 bins 
-	/*
+	
 	if (isMC_DY && !dtag.Contains("amcNLO")) { 
 	  double SF = 1.;
           SF =   ( (ev.lheHt>100 && ev.lheHt<200)*1.588 *(1./1.21 ) + (ev.lheHt>200 && ev.lheHt<400)*1.438 * ( 1./1.21) + 
@@ -1269,11 +1275,11 @@ int main(int argc, char* argv[])
 	   
 	if(isMC_WJets &&  !dtag.Contains("amcNLO")) {     
 	  double SF = 1.;
-	  SF =   ((ev.lheHt>100 && ev.lheHt<200)* 1.459 * ( 1/ (1.23 ) ) + (ev.lheHt>200 && ev.lheHt<400)* 1.434 * ( 1/ ( 1.23 )) + 
-		  (ev.lheHt>400 && ev.lheHt<600)*1.532 * (1 / (1.23 )) + (ev.lheHt>600)*1.004 * ( 1 / (1.23) ));
+	  SF =   ((ev.lheHt>100 && ev.lheHt<200)* 1.459 * ( 1/ (1.21 ) ) + (ev.lheHt>200 && ev.lheHt<400)* 1.434 * ( 1/ ( 1.21 )) + 
+		  (ev.lheHt>400 && ev.lheHt<600)*1.532 * (1 / (1.21 )) + (ev.lheHt>600)*1.004 * ( 1 / (1.21) ));
 	  weight *= SF; 
 	}
-	*/
+	
 	// V pt of VH signal samples
 	float zpt_VH = -1, wppt_VH = -1, wmpt_VH = -1;
 	
@@ -1496,6 +1502,7 @@ int main(int argc, char* argv[])
         //#########################################################################
         //#####################      Objects Selection       ######################
         //######################################################################### 
+
         //
         // MET ANALYSIS
         //
@@ -2019,7 +2026,7 @@ int main(int argc, char* argv[])
 	// 1-lepton
         mon.fillHisto("eventflow",tag_cat,1,weight); 
 
-	
+
 	if(is2017MC || is2017data){
 	  hasEMtrigger = (hasEMtrigger || hasEMtrigger2);
 	  hasMMtrigger = (hasMMtrigger || hasMMtrigger2);
@@ -2046,7 +2053,6 @@ int main(int argc, char* argv[])
 	    }
 	    if(isSingleElePD) {
 	      if(!hasEtrigger) continue;
-	      if(hasEtrigger && hasMtrigger) continue;
 	    }
 	    hasTrigger=true;
 	    
@@ -2054,7 +2060,6 @@ int main(int argc, char* argv[])
 	    if(evcat==E && hasEtrigger ) hasTrigger=true;   
 	    if(evcat==MU && hasMtrigger ) hasTrigger=true;   
 	  }
-
 	} else { // ZH channel
 
 	  if (!isMC) { // data:
@@ -2086,7 +2091,7 @@ int main(int argc, char* argv[])
 	  } else if(is2018MC && !isQCD){ // https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations
 	    weight*=1.0;
 	  }
-	  //	    weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
+	    //	    weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	  //weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h2);
 	  mon.fillHisto("leadlep_pt_raw",tag_cat,selLeptons[0].pt(),weight);   
 	  mon.fillHisto("leadlep_eta_raw",tag_cat,selLeptons[0].eta(),weight);     
@@ -3025,7 +3030,7 @@ int main(int argc, char* argv[])
 	  }
 
 	  // Remove W event with abnormally high weight in e_SR_4b
-	  if(!runZH && isMC_WJets) {
+	  if(!runZH && isMC_WJets && is2016MC) {
 	    if(evcat==E && tag_subcat==("SR_4b")) continue; // skip event
 	  }
 
