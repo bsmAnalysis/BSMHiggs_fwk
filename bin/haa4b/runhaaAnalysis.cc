@@ -275,7 +275,7 @@ int main(int argc, char* argv[])
     bool isMCBkg_runPDFQCDscale = (isMC_ZZ || isMC_WZ || isMC_VVV);
 
     bool isMC_ttbar = isMC && (string(url.Data()).find("TeV_TTJets")  != string::npos);
-    if(is2017MC || is2018MC) isMC_ttbar = isMC && (string(url.Data()).find("TeV_TTTo")  != string::npos);
+    if(is2017data || is2017MC || is2018data || is2018MC) isMC_ttbar = isMC && (string(url.Data()).find("TeV_TTTo")  != string::npos);
     bool isMC_stop  = isMC && (string(url.Data()).find("TeV_SingleT")  != string::npos);
 
     bool isMC_WJets = isMC && ( (string(url.Data()).find("MC13TeV_WJets")  != string::npos) || (string(url.Data()).find("MC13TeV_W1Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W2Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W3Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W4Jets")  != string::npos) );
@@ -1921,6 +1921,7 @@ int main(int argc, char* argv[])
 	if(is2018MC && (jetinHEM || eleinHEM)) { //continue; //{ veto the event also in MC
 	  weight *= 0.35;
 	}
+
 	//-------------------------------------------------------------------------------------
 	//-------------------------------------------------------------------------------------
 	if (isMC_ttbar) { //split inclusive TTJets POWHEG sample into tt+bb, tt+cc and tt+light
@@ -1943,8 +1944,10 @@ int main(int argc, char* argv[])
 	    if(fabs(corrJets[ijet].eta())>2.5) continue;
 
 	    //jet ID
-	    if(!corrJets[ijet].isPFLoose) continue;
-	    
+	    if((corrJets[ijet].pt()<50.) && !corrJets[ijet].isPFLoose) continue;
+
+	    if(!corrJets[ijet].isPFTight) continue;
+
 	     // //check overlaps with selected leptons
 	    bool hasOverlap(false);
 	    for(size_t ilep=0; ilep<selLeptons.size(); ilep++) {
@@ -2047,18 +2050,30 @@ int main(int argc, char* argv[])
 	    
 	    if(evcat==E && !(hasEtrigger)) continue;
 	    if(evcat==MU && !(hasMtrigger)) continue;
-
+	    /*
+	    if(evcat==EE && !hasEEtrigger) continue;
+	    if(evcat==MUMU && !(hasMMtrigger)) continue; //||hasMtrigger) ) continue;
+	    if(evcat==EMU && !hasEMtrigger ) continue;
+	    */
 	    if(isSingleMuPD) {
 	      if(!hasMtrigger) continue;
+	      //	      if(hasMtrigger && hasMMtrigger) continue;
 	    }
 	    if(isSingleElePD) {
 	      if(!hasEtrigger) continue;
+	      //	      if( is2017data && hasEtrigger && (hasEEtrigger||hasEEtrigger2) ) continue;
+	      //	      if(hasEtrigger && hasEEtrigger) continue; 
 	    }
 	    hasTrigger=true;
 	    
 	  } else { // MC trigger:
 	    if(evcat==E && hasEtrigger ) hasTrigger=true;   
 	    if(evcat==MU && hasMtrigger ) hasTrigger=true;   
+	    /*
+	    if(evcat==EE && hasEEtrigger) hasTrigger=true; 
+	    if(evcat==MUMU && hasMMtrigger) hasTrigger=true; 
+	    if(evcat==EMU  && hasEMtrigger ) hasTrigger=true;  
+	    */
 	  }
 	} else { // ZH channel
 
@@ -2089,8 +2104,8 @@ int main(int argc, char* argv[])
 	  } else if(is2017MC && !isQCD){//2017 ele TRG scale factor: https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#E/gamma%20Trigger%20Recomendations
 	    weight*=0.991;
 	  } else if(is2018MC && !isQCD){ // https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations
-	    weight*=1.0;
-	  }
+      weight*=1.0;
+    }
 	    //	    weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	  //weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h2);
 	  mon.fillHisto("leadlep_pt_raw",tag_cat,selLeptons[0].pt(),weight);   
@@ -2149,7 +2164,8 @@ int main(int argc, char* argv[])
 	  if(fabs(corrJets[ijet].eta())>2.5) continue;
 	      
 	  //jet ID
-	  if(!corrJets[ijet].isPFLoose) continue;
+	  if(corrJets[ijet].pt()<50. && !corrJets[ijet].isPFLoose) continue;
+	  if(!corrJets[ijet].isPFTight) continue;     
 	  //if(corrJets[ijet].pumva<0.5) continue;
 	      
 	  // //check overlaps with selected leptons
@@ -2175,12 +2191,28 @@ int main(int argc, char* argv[])
 
 	}
 
+
+	//------------------------------------------------------------------------------------
+	// HEM Veto for 2018
+	//------------------------------------------------------------------------------------
+	/*
+	bool jetinHEM(false);
+
+	for(size_t ijet=0; ijet<GoodIdJets_orig.size(); ijet++) {
+	  if(GoodIdJets_orig[ijet].pt()>25. && 
+	     (GoodIdJets_orig[ijet].eta()>-3.2 && GoodIdJets_orig[ijet].eta()<-1.2) &&
+	     (GoodIdJets_orig[ijet].phi()>-1.77 && GoodIdJets_orig[ijet].phi()<-0.67) ) {
+	    jetinHEM = true; break;
+	  }
+	}
+	if(is2018data && afterRun319077 && (jetinHEM || eleinHEM) ) continue;
+	if(is2018MC && (jetinHEM || eleinHEM)) { //continue; //{ veto the event also in MC
+	  weight *= 0.35;
+	}
+	*/
 	std::vector< std::vector<double> > variedJECSFs;
 
 	//note this also propagates to all MET uncertainties
-	//	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1));
-	// decorrelate JES uncertainties
-	//	METUtils::computeVariation(phys.jets, selLeptons, metP4, variedJets, variedMET, totalJESUnc, ( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1)); // totalJESUnc -> vector of 27
 	//METUtils::computeJetVariation(phys.jets, selLeptons,variedJets,totalJESUnc,( (is2017data||is2017data) << 0 ) | ( (is2018data||is2018data) << 1)); // totalJESUnc -> vector of 6
 	//METUtils::computeJetVariation(jer_sf, GoodIdJets_orig, selLeptons,variedJets,totalJESUnc,( (is2017data||is2017MC) << 0 ) | ( (is2018data||is2018MC) << 1)); // totalJESUnc -> vector of 6
 	METUtils::computeJetVariation(jer_sf, GoodIdJets_orig, selLeptons,variedJets,variedJECSFs,totalJESUnc,( (is2017data||is2017MC) << 0 ) | ( (is2018data||is2018MC) << 1)); // totalJESUnc -> vector of 6
@@ -2189,131 +2221,6 @@ int main(int argc, char* argv[])
 	//	for (int isrc = 0; isrc < nsrc; isrc++) {
 	//	  delete totalJESUnc[isrc]; 
 	//	} 
-
-	//###########################################################
-	// The AK8 fat jets configuration
-	//###########################################################
-	/*
-	//AK8 + double-b tagger fat-jet collection
-	PhysicsObjectFatJetCollection DBfatJets; // collection of AK8 fat jets
-
-	int ifjet(0);
-	for (auto & ijet : fatJets ) {
-
-	  if(ijet.pt()<jet_threshold_) continue;
-	  if(fabs(ijet.eta())>2.4) continue;
-
-	  double dR = deltaR( ijet, selLeptons[0] );
-	  mon.fillHisto("dRlj_raw","all_fjet",dR,weight);
-    
-	  if (dR<0.4) continue;
-  
-	  ifjet++;
-
-	  int count_sbj(0);
-	    // Examine soft drop subjets in AK8 jet:
-	  count_sbj = ijet.subjets.size(); // count subjets above 20 GeV only
-  
-	  if ( verbose ) printf("\n\n Print info for subjets in AK8 %3d : ", ifjet);
-
-	  if ( verbose ) {
-	    // loop over subjets of AK8 jet
-	    for (auto & it : ijet.subjets ) {
-	      printf("\n subjet in Ntuple has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f",   
-		     it.pt(),
-		     it.eta(),
-		     it.Phi(),
-		     it.M()
-		     );
-	    }
-	    printf("\n\n");
-	  } // verbose
-  
-	  mon.fillHisto("db_discrim","fjet",ijet.btag0,weight);
-	  mon.fillHisto("nsubjets_raw","fjet",count_sbj,weight);
-	  mon.fillHisto("sd_mass","fjet",ijet.softdropM,weight);
-	  mon.fillHisto("pruned_mass","fjet",ijet.prunedM,weight);
-
-	  if (ijet.softdropM<=40.) {
-	    if (ijet.softdropM>=7.)  {
-	      mon.fillHisto("db_discrim","fjet_lowm",ijet.btag0,weight);
-	    }
-	  } else {
-	    mon.fillHisto("db_discrim","fjet_highm",ijet.btag0,weight);
-	  }
-
-	  bool hasDBtag(ijet.btag0>DBMediumWP);
-  
-	  if (ijet.softdropM>=7. && ijet.softdropM<=40. && count_sbj>0) {
-	    if (hasDBtag) DBfatJets.push_back(ijet);
-	  }
-	  
-	} // AK8 fatJets loop
-
-	//--------------------------------------------------------------------------
-	// AK8 + double-b jets
-	sort(DBfatJets.begin(), DBfatJets.end(), ptsort());
-
-	mon.fillHisto("nbjets_raw","nfatJet", DBfatJets.size(),weight);
-
-  	int is(0);
-	for (auto & jet : DBfatJets) {
-	   mon.fillHisto("jet_pt_raw", "fat"+htag[is], jet.pt(),weight);
-	   mon.fillHisto("jet_eta_raw", "fat"+htag[is], jet.eta(),weight);
-	   is++;
-	   if (is>3) break; // plot only up to 4 b-jets ?
-	}
-	*/
-	//--------------------------------------------------------------------------
-
-	//###########################################################
-	// Soft b-jets from SVs configuration
-	//###########################################################
-	
-	// SVs collection
-	//PhysicsObjectSVCollection SVs;
-	/*
-	PhysicsObjectSVCollection SVs_raw; // non-cross-cleaned secondary vertices
-	  
-	for (auto & isv : secVs) {
-	  
-	  if (isv.pt()>=jet_threshold_) continue; // SV pT>20 GeV
-	    
-	  mon.fillHisto("softb_ntrk","raw",isv.ntrk,weight);
-	  if (isv.ntrk<3) continue; // nTrks associated to SV >= 3
-	  
-	  if ( verbose ) {
-	    
-	    printf("\n SV has : pt=%6.1f, ntrk=%3d, dxy=%7.3f, dxyz_signif=%7.3f, isv.cos_dxyz_p=%7.3f",
-		   isv.pt(),   
-		   isv.ntrk,
-		   isv.dxy,
-		   isv.dxyz_signif,
-		   isv.cos_dxyz_p
-		   );
-	    
-	  } // verbose 
-	  
-	    // check overlap with any other jet
-	  // bool hasOverlap(false);
-	  mon.fillHisto("softb_dxy","raw",isv.dxy,weight);
-	  //	  if (isv.sv_mc_mcbh_ind>0)mon.fillHisto("softb_dxy","raw_true",isv.dxy,weight);
-	  mon.fillHisto("softb_dxyz_signif","raw",isv.dxyz_signif,weight);
-	  //	  if (isv.sv_mc_mcbh_ind>0) mon.fillHisto("softb_dxyz_signif","raw_true",isv.dxyz_signif,weight);
-	  mon.fillHisto("softb_cos","raw",isv.cos_dxyz_p,weight);
-	  //	  if (isv.sv_mc_mcbh_ind>0) mon.fillHisto("softb_cos","raw_true",isv.cos_dxyz_p,weight);
-
-	  if (isv.dxy>3.) continue;
-	  if (isv.dxyz_signif<4.) continue;
-	  if (isv.cos_dxyz_p<0.98) continue;
-	  
-	  SVs_raw.push_back(isv);
-	  
-	}
-	    
-	// 	sort(SVs.begin(), SVs.end(), ptsort());
-	sort(SVs_raw.begin(), SVs_raw.end(), ptsort());
-	*/
 	
 	//##############################################################################
         //### 	// LOOP ON SYSTEMATIC VARIATION FOR THE STATISTICAL ANALYSIS
@@ -2857,10 +2764,6 @@ int main(int argc, char* argv[])
 	  double dphilepmet(-999.);
           if(runZH){ dphilepmet=fabs( deltaPhi( (selLeptons[0]+selLeptons[1]).pt(),imet.pt() ) ); } 
           else { dphilepmet=fabs(deltaPhi( selLeptons[0].pt(),imet.pt() )); } 
-	  /*
-	  bool passDphi(dphilepmet>0.5);
-	  if(!passDphi) continue;
-	  */
 
 	  //MET>25 GeV 
 	  bool passMet25(imet.pt()>25);
@@ -2976,7 +2879,7 @@ int main(int argc, char* argv[])
 	    }
 	    
 	  }
-	  
+
 	  //#########################################################
 	  //####  RUN PRESELECTION AND CONTROL REGION PLOTS  ########
 	  //#########################################################
@@ -3153,15 +3056,12 @@ int main(int argc, char* argv[])
 	  //##############################################################################
 	  //##############################################################################
 
-	  if (ivar==0) {
-
-	    // Reject QCD with Dphi(jet,MET) ?
-	    float dphij1met=fabs(deltaPhi(GoodIdJets[0].phi(),imet.phi()));       
-	    float dphij2met=fabs(deltaPhi(GoodIdJets[1].phi(),imet.phi()));
-	    float min_dphijmet=min(dphij1met,dphij2met);
-	    //mon.fillHisto("dphijmet12","raw_minj1j2",min_dphijmet,weight);
-	    
+	  if(ivar==0) {
 	    // dphi(jet,MET)
+	    float dphij1met=fabs(deltaPhi(GoodIdJets[0].phi(),imet.phi())); 
+	    float dphij2met=fabs(deltaPhi(GoodIdJets[1].phi(),imet.phi())); 
+	    float min_dphijmet=min(dphij1met,dphij2met); 
+
 	    mon.fillHisto("dphijmet",tags,mindphijmet,weight);
 	    mon.fillHisto("dphijmet12",tags,min_dphijmet,weight); 
 	    mon.fillHisto("dphijmet1",tags,dphij1met,weight); 

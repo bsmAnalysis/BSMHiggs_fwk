@@ -42,7 +42,7 @@ double response(LorentzVector &Z, LorentzVector &MET)
 //Jet energy resoltuion, 13TeV scale factors, updated on 30/08/2018
 PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, Int_t yearBits, int mode)
 {
-  if (mode==0) return origJet;
+  //  if (mode==0) return origJet;
 
     if(genJetPt<=0) return origJet;
 
@@ -242,8 +242,7 @@ PhysicsObject_Jet smearedJet(const PhysicsObject_Jet &origJet, double genJetPt, 
 //Jet energy resoltuion, 13TeV scale factors, updated on 30/08/2018
 PhysicsObject_Jet smearedJet(JME::JetResolutionScaleFactor& jer_sf, const PhysicsObject_Jet &origJet, double genJetPt, Int_t yearBits, int mode)
 {
-  if (mode==0) return origJet;
-
+  //  if (mode==0) return origJet;
     if(genJetPt<=0) return origJet;
 
     bool is2017 = yearBits & 0x01;
