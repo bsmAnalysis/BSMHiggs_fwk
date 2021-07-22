@@ -275,7 +275,7 @@ int main(int argc, char* argv[])
     bool isMCBkg_runPDFQCDscale = (isMC_ZZ || isMC_WZ || isMC_VVV);
 
     bool isMC_ttbar = isMC && (string(url.Data()).find("TeV_TTJets")  != string::npos);
-    if(is2017data || is2017MC || is2018data || is2018MC) isMC_ttbar = isMC && (string(url.Data()).find("TeV_TTTo")  != string::npos);
+    if(is2017MC || is2018MC) isMC_ttbar = isMC && (string(url.Data()).find("TeV_TTTo")  != string::npos);
     bool isMC_stop  = isMC && (string(url.Data()).find("TeV_SingleT")  != string::npos);
 
     bool isMC_WJets = isMC && ( (string(url.Data()).find("MC13TeV_WJets")  != string::npos) || (string(url.Data()).find("MC13TeV_W1Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W2Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W3Jets")  != string::npos) || (string(url.Data()).find("MC13TeV_W4Jets")  != string::npos) );
@@ -2050,30 +2050,20 @@ int main(int argc, char* argv[])
 	    
 	    if(evcat==E && !(hasEtrigger)) continue;
 	    if(evcat==MU && !(hasMtrigger)) continue;
-	    /*
-	    if(evcat==EE && !hasEEtrigger) continue;
-	    if(evcat==MUMU && !(hasMMtrigger)) continue; //||hasMtrigger) ) continue;
-	    if(evcat==EMU && !hasEMtrigger ) continue;
-	    */
+
 	    if(isSingleMuPD) {
 	      if(!hasMtrigger) continue;
-	      //	      if(hasMtrigger && hasMMtrigger) continue;
 	    }
 	    if(isSingleElePD) {
 	      if(!hasEtrigger) continue;
-	      //	      if( is2017data && hasEtrigger && (hasEEtrigger||hasEEtrigger2) ) continue;
-	      //	      if(hasEtrigger && hasEEtrigger) continue; 
 	    }
 	    hasTrigger=true;
 	    
 	  } else { // MC trigger:
+
 	    if(evcat==E && hasEtrigger ) hasTrigger=true;   
 	    if(evcat==MU && hasMtrigger ) hasTrigger=true;   
-	    /*
-	    if(evcat==EE && hasEEtrigger) hasTrigger=true; 
-	    if(evcat==MUMU && hasMMtrigger) hasTrigger=true; 
-	    if(evcat==EMU  && hasEMtrigger ) hasTrigger=true;  
-	    */
+
 	  }
 	} else { // ZH channel
 
@@ -2104,8 +2094,8 @@ int main(int argc, char* argv[])
 	  } else if(is2017MC && !isQCD){//2017 ele TRG scale factor: https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#E/gamma%20Trigger%20Recomendations
 	    weight*=0.991;
 	  } else if(is2018MC && !isQCD){ // https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations
-      weight*=1.0;
-    }
+	    weight*=1.0;
+	  }
 	    //	    weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	  //weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h2);
 	  mon.fillHisto("leadlep_pt_raw",tag_cat,selLeptons[0].pt(),weight);   
@@ -2191,25 +2181,6 @@ int main(int argc, char* argv[])
 
 	}
 
-
-	//------------------------------------------------------------------------------------
-	// HEM Veto for 2018
-	//------------------------------------------------------------------------------------
-	/*
-	bool jetinHEM(false);
-
-	for(size_t ijet=0; ijet<GoodIdJets_orig.size(); ijet++) {
-	  if(GoodIdJets_orig[ijet].pt()>25. && 
-	     (GoodIdJets_orig[ijet].eta()>-3.2 && GoodIdJets_orig[ijet].eta()<-1.2) &&
-	     (GoodIdJets_orig[ijet].phi()>-1.77 && GoodIdJets_orig[ijet].phi()<-0.67) ) {
-	    jetinHEM = true; break;
-	  }
-	}
-	if(is2018data && afterRun319077 && (jetinHEM || eleinHEM) ) continue;
-	if(is2018MC && (jetinHEM || eleinHEM)) { //continue; //{ veto the event also in MC
-	  weight *= 0.35;
-	}
-	*/
 	std::vector< std::vector<double> > variedJECSFs;
 
 	//note this also propagates to all MET uncertainties
