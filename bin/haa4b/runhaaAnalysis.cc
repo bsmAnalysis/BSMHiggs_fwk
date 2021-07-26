@@ -906,11 +906,9 @@ int main(int argc, char* argv[])
     }
 
     //MC normalization (to 1/pb)
-    double xsecWeight = 1.0;
+    float xsecWeight = 1.0;
     float cnorm=1.0;
     if (isMC) {
-      //xsecWeight = 0.; //disable MC sample if not present in the map
-      
       double totalNumberofEvents(0.);
       
       TH1F* nevtH = (TH1F *) file->Get("mainNtuplizer/nevents");
@@ -919,11 +917,11 @@ int main(int argc, char* argv[])
       TH1F* negH = (TH1F *) file->Get("mainNtuplizer/n_negevents");
       if(posH && negH) cnorm = posH->GetBinContent(1) - negH->GetBinContent(1);
       if(rescaleFactor>0) cnorm /= rescaleFactor;
-      printf("cnorm = %f and totalNumberOfEvents= %f\n", cnorm, totalNumberofEvents);
+      printf("cnorm = %f and totalNumberOfEvents= %f\n", cnorm, nevts); //totalNumberofEvents);
       //xsecWeight=xsec/totalNumberofEvents;
-      /////////////xsecWeight=xsec/cnorm; // effective luminosity}
+      //xsecWeight=xsec/cnorm; // effective luminosity}
       xsecWeight=xsec/nevts; // owen, Sept 19, 2020: use the total number of events for the dataset from the json file.
-      //      if(xsecWeight<1E-6)xsecWeight=0.;
+      //if(xsecWeight<1E-6)xsecWeight=0.;
     }
     //Hcutflow->SetBinContent(1,cnorm);
 
@@ -1219,6 +1217,23 @@ int main(int argc, char* argv[])
 	  else if(ev.lheHt >= 70) continue;   
 	}
 	*/
+
+	double weight(1.0);
+	//only take up and down from pileup effect        
+        double TotalWeight_plus = 1.0;
+        double TotalWeight_minus = 1.0;
+
+        if(isMC) mon.fillHisto("pileup", "raw", ev.ngenTruepu, 1.0);
+        
+        float puWeight(1.0);
+        if(isMC) {
+          puWeight = getSFfrom1DHist(ev.ngenTruepu+1, PU_weight) ;
+          if ( verbose ) printf("pu = %3d has weight = %7.3f \n",ev.ngenTruepu,puWeight);
+          weight *= puWeight;
+          TotalWeight_plus  *= getSFfrom1DHist(ev.ngenTruepu+1, PU_weight_Up);
+          TotalWeight_minus *= getSFfrom1DHist(ev.ngenTruepu+1, PU_weight_Down);
+        }
+
 	
 	if(is2016Legacy || is2017MC || is2018MC){ // 2016 non Legacy samples don't fall into here
 	  if( (!useWNJet) && (isMC_WJets && !(isMC_WJets_HTbin) ) && !dtag.Contains("amcNLO")) {
@@ -1242,9 +1257,8 @@ int main(int argc, char* argv[])
           if(ev.genWeight<0) { genWeight = -1.0; }
         }
         //systematical weight
-        float weight = 1.0; //xsecWeight;
-        if(isMC) 
-        {
+	//        double weight = 1.0; //xsecWeight;
+        if(isMC) { 
           weight *= genWeight;
 	  
           //Here is the tricky part.,... rewrite xsecWeight for WJets/WXJets and DYJets/DYXJets
@@ -1261,6 +1275,7 @@ int main(int argc, char* argv[])
 	    else
 	      { xsecWeight = xsecWeightCalculator::xsecWeightCalcLHEJets(2, ev.lheNJets, is2016Legacy<<0|is2016MC<<1|is2017MC<<2|is2018MC<<3); }
 	  }
+
 	  weight *= xsecWeight; 
         }
 
@@ -1272,14 +1287,18 @@ int main(int argc, char* argv[])
 		   (ev.lheHt>400 && ev.lheHt<600)*1.494 * (1./1.21 ) + (ev.lheHt>600)*1.139 * (1./ 1.21) ); 
           weight *= SF; 
         } 
-	   
+	
 	if(isMC_WJets &&  !dtag.Contains("amcNLO")) {     
 	  double SF = 1.;
-	  SF =   ((ev.lheHt>100 && ev.lheHt<200)* 1.459 * ( 1/ (1.21 ) ) + (ev.lheHt>200 && ev.lheHt<400)* 1.434 * ( 1/ ( 1.21 )) + 
-		  (ev.lheHt>400 && ev.lheHt<600)*1.532 * (1 / (1.21 )) + (ev.lheHt>600)*1.004 * ( 1 / (1.21) ));
+	  if(ev.lheHt>100 && ev.lheHt<200) SF = 1.459 * ( 1/ (1.21 ) ) ;
+	  if(ev.lheHt>200 && ev.lheHt<400) SF = 1.434 * ( 1/ ( 1.21 )) ;
+	  if(ev.lheHt>400 && ev.lheHt<600) SF = 1.532 * (1 / (1.21 )) ;
+	  if (ev.lheHt>600) SF = 1.004 * ( 1 / (1.21) );
 	  weight *= SF; 
+	  if( verbose ) std::cout << " W SF= " << SF << " and weight after QCD NLO cor= " << weight*SF << std::endl;       
 	}
 	
+
 	// V pt of VH signal samples
 	float zpt_VH = -1, wppt_VH = -1, wmpt_VH = -1;
 	
@@ -1395,8 +1414,8 @@ int main(int argc, char* argv[])
 	  */
 	  // Then also apply the NLO EWK corrections as in VH(bb):        
 	  //for W options
-	  if (wpt > 0. && wpt < 3000) wptSF = -0.830041+7.93714*(TMath::Power((wpt+877.978),-0.213831));
-	  weight *= wptSF;
+	  //	  if (wpt > 0. && wpt < 3000) wptSF = -0.830041+7.93714*(TMath::Power((wpt+877.978),-0.213831));
+	  //	  weight *= wptSF;
 	}
 
 	// Apply Top pt-reweighting
@@ -1443,29 +1462,6 @@ int main(int argc, char* argv[])
 	  weight *= topptsf;
 //	  //printf("Final weight is : %3f\n\n",weight);
 	}
-	
-	
-	// All: "Raw" (+Trigger)
-	mon.fillHisto("eventflow","e",0,weight); 
-	mon.fillHisto("eventflow","mu",0,weight); 
-	mon.fillHisto("eventflow","ee",0,weight);  
-	mon.fillHisto("eventflow","mumu",0,weight); 
-	mon.fillHisto("eventflow","emu",0,weight);   
-
-        //only take up and down from pileup effect
-        double TotalWeight_plus = 1.0;
-        double TotalWeight_minus = 1.0;
-
-        if(isMC) mon.fillHisto("pileup", "raw", ev.ngenTruepu, 1.0);
-        
-        float puWeight(1.0);
-        if(isMC) {
-          puWeight = getSFfrom1DHist(ev.ngenTruepu+1, PU_weight) ;
-          if ( verbose ) printf("pu = %3d has weight = %7.3f \n",ev.ngenTruepu,puWeight);
-          weight *= puWeight;
-          TotalWeight_plus  *= getSFfrom1DHist(ev.ngenTruepu+1, PU_weight_Up);
-          TotalWeight_minus *= getSFfrom1DHist(ev.ngenTruepu+1, PU_weight_Down);
-        }
         
         Hcutflow->Fill(1,genWeight);
         Hcutflow->Fill(2,xsecWeight);
@@ -1854,8 +1850,14 @@ int main(int argc, char* argv[])
 	  }
 	}
 
+	// All: "Raw" (+Trigger) 
+        mon.fillHisto("eventflow","e",0,weight); 
+        mon.fillHisto("eventflow","mu",0,weight); 
+        mon.fillHisto("eventflow","ee",0,weight); 
+        mon.fillHisto("eventflow","mumu",0,weight); 
+        mon.fillHisto("eventflow","emu",0,weight); 
 
-  // Exactly 1 good lepton
+	// Exactly 1 good lepton
 	bool passOneLepton(selLeptons.size()==1);
 	bool passDiLepton(selLeptons.size()==2); // && ( abs(selLeptons[0].id)==abs(selLeptons[1].id) ) );
 	
@@ -1877,15 +1879,17 @@ int main(int argc, char* argv[])
 	}
 
        	// lepton ID + ISO scale factors 
+	float id_sf=1.0, iso_sf=1.0, trg_sf=1.0;       
+
 	if(isMC && !isQCD) {
 	  if (abs(selLeptons[0].id)==11) {
 	      // ID + ISO
-	    weight *= getSFfrom2DHist(selLeptons[0].en_EtaSC, selLeptons[0].pt(), E_RECO_SF_h );
+	    id_sf = getSFfrom2DHist(selLeptons[0].en_EtaSC, selLeptons[0].pt(), E_RECO_SF_h );
 	    //lepEff.getRecoEfficiency( selLeptons[0].en_EtaSC, 11).first;
-	    weight *= getSFfrom2DHist(selLeptons[0].en_EtaSC, selLeptons[0].pt(), E_TIGHTID_SF_h);
+	    id_sf *= getSFfrom2DHist(selLeptons[0].en_EtaSC, selLeptons[0].pt(), E_TIGHTID_SF_h);
 	  } else if (abs(selLeptons[0].id)==13) {
 	    // ID + ISO
-	    float id_sf=1.0, iso_sf=1.0, trg_sf=1.0;
+	    //	    float id_sf=1.0, iso_sf=1.0, trg_sf=1.0;
 	    if(is2016Legacy || is2016MC){
 	      id_sf = 0.55*getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ID_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ID_SF_h2 );
 	      iso_sf = 0.55*getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ISO_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].eta(), selLeptons[0].pt(), MU_ISO_SF_h2);
@@ -1899,11 +1903,12 @@ int main(int argc, char* argv[])
 	    musf_id->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), id_sf);
 	    musf_iso->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), iso_sf); 
 	    musf_trg->Fill(selLeptons[0].pt(), fabs(selLeptons[0].eta()), trg_sf);
-	     
-	    weight *= id_sf;
-	    weight *= iso_sf;
+
 	  }
 	}
+	// Apply lepton id + iso SFs:
+	weight *= id_sf;
+	weight *= iso_sf;
 
 	//------------------------------------------------------------------------------------
 	// HEM Veto for 2018
@@ -1921,7 +1926,6 @@ int main(int argc, char* argv[])
 	if(is2018MC && (jetinHEM || eleinHEM)) { //continue; //{ veto the event also in MC
 	  weight *= 0.35;
 	}
-
 	//-------------------------------------------------------------------------------------
 	//-------------------------------------------------------------------------------------
 	if (isMC_ttbar) { //split inclusive TTJets POWHEG sample into tt+bb, tt+cc and tt+light
@@ -2090,11 +2094,11 @@ int main(int argc, char* argv[])
 	if (abs(selLeptons[0].id)==11) {
 	  // TRG
 	  if(is2016MC && !isQCD) {
-	    weight*=getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
+	    trg_sf=getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	  } else if(is2017MC && !isQCD){//2017 ele TRG scale factor: https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#E/gamma%20Trigger%20Recomendations
-	    weight*=0.991;
+	    trg_sf=0.991;
 	  } else if(is2018MC && !isQCD){ // https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations
-	    weight*=1.0;
+	    trg_sf=1.0;
 	  }
 	    //	    weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	  //weight *= getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h2);
@@ -2107,11 +2111,13 @@ int main(int argc, char* argv[])
 	} else if (abs(selLeptons[0].id)==13) {
 	    // TRG
 	  if(isMC && !isQCD) {
-	    float trg_sf = 1.0;
-	    if(is2016Legacy || is2016MC) trg_sf = 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h2);
-	    else if (is2018MC) trg_sf = 0.15*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h) + 0.85*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h2);
-	    else trg_sf = getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h );
-	    weight *= trg_sf;
+	    //	    float trg_sf = 1.0;
+	    if(is2016Legacy || is2016MC) 
+	      trg_sf = 0.55*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h) + 0.45*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h2);
+	    else if (is2018MC) 
+	      trg_sf = 0.15*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h) + 0.85*getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h2);
+	    else 
+	      trg_sf = getSFfrom2DHist(selLeptons[0].pt(), fabs(selLeptons[0].eta()), MU_TRG_SF_h );
 	  }
 	 
 	  mon.fillHisto("leadlep_pt_raw",tag_cat,selLeptons[0].pt(),weight);
@@ -2122,7 +2128,13 @@ int main(int argc, char* argv[])
 	  myrelIso=selLeptons[0].mn_relIso;
 	  //	  mytrkrelIso=selLeptons[0].mn_trkrelIso;
 	}
+	weight *= trg_sf; // Apply Trigger SFs
 	
+	if ( verbose ) { 
+	  //printf("\n raw wgt=%2.1f, id_sf=%2.1f, iso_sf=%2.1f, trg_sf=%2.1f\n",xsecWeight*genWeight,id_sf,iso_sf,trg_sf); }
+	  std::cout << " raw wgt=" << xsecWeight*genWeight << ", id_sf= " << id_sf << ", iso_sf= " << iso_sf << ", trg_sf= " << trg_sf << std::endl;
+	  std::cout << " and weight= " << weight << std::endl;
+	}
 	    
 	    // Trigger
 	mon.fillHisto("eventflow",tag_cat,2,weight);
