@@ -213,10 +213,10 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
   TH1F * h_pileup, * h_pileuptrue;
   TH1F * h_sumWeights, * h_sumScaleWeights , * h_sumPdfWeights ,* h_sumAlphasWeights; 
   TH1F * h_metFilter;
-
+  /*
   TH1F * h_corrjet, *h_uncorrjet, *h_newcorrjet;
   TH1F * h_corrjeteta, *h_uncorrjeteta, *h_newcorrjeteta;     
-
+  */
   TH2F *h2_BTaggingEff_Denom_b, *h2_BTaggingEff_Denom_c, *h2_BTaggingEff_Denom_udsg;
   TH2F *h2_LooseBTaggingEff_Num_b, *h2_LooseBTaggingEff_Num_c, *h2_LooseBTaggingEff_Num_udsg;
   TH2F *h2_MediumBTaggingEff_Num_b, *h2_MediumBTaggingEff_Num_c, *h2_MediumBTaggingEff_Num_udsg;
@@ -347,7 +347,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   //mon_.addHistogram(new TH1F("integlumi", ";Integrated luminosity ; Events",100,0,1e5);
   //mon_.addHistogram(new TH1F("instlumi", ";Max average inst. luminosity; Events",100,0,1e5);
   h_pileuptrue = fs->make< TH1F>("pileuptrue", ";True pileup; Events",100,-0.5,99.5);
-
+  /*
   h_corrjet = fs->make<TH1F>("corrjet",";def jet #it{p}_{T} [GeV]; nevents",50,0.,500.);
   h_uncorrjet = fs->make<TH1F>("uncorrjet",";raw jet #it{p}_{T} [GeV]; nevents",50,0.,500.);   
   h_newcorrjet = fs->make<TH1F>("newcorrjet",";updated jet #it{p}_{T} [GeV]; nevents",50,0.,500.);   
@@ -355,7 +355,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   h_corrjeteta = fs->make<TH1F>("corrjeteta",";def jet #eta; nevents",70,-3,3); 
   h_uncorrjeteta = fs->make<TH1F>("uncorrjeteta",";raw jet #eta; nevents",70,-3,3); 
   h_newcorrjeteta = fs->make<TH1F>("newcorrjeteta",";updated jet #eta; nevents",70,-3,3);
-
+  */
   h_sumWeights = fs->make< TH1F>("sumWeights",";;sumWeights;",1,-0.5,0.5);
   h_sumScaleWeights = fs->make< TH1F>("sumScaleWeights",";;sumScaleWeights;",9,-0.5,8.5);
   h_sumPdfWeights = fs->make< TH1F>("sumPdfWeights",";;sumPdfWeights;",100,-0.5,99.5);
@@ -1232,12 +1232,12 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        int ijet(0), ijet2(0);
        int nCSVLtags(0);
        for (pat::Jet &j : jets) {
-
+	 /*
 	 if (j.pt()>20 && fabs(j.eta())<2.5) {
 	   h_corrjet->Fill(j.pt());
 	   h_corrjeteta->Fill(j.eta());   
 	 }
-
+	 */
 	 // Check JEC in MINIAOD...
          //correct JES 
          LorentzVector rawJet = j.correctedP4("Uncorrected"); 
@@ -1251,16 +1251,15 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
          jesCor->setNPV(vtx.size()); 
 	 
          j.setP4(rawJet*jesCor->getCorrection()); 
-	 
 	 //j.setP4(rawJet*corrector->correction(j));
-
+	 /*
 	 if (rawJet.pt()>20 && fabs(rawJet.eta())<2.5) {
 	   h_uncorrjet->Fill(rawJet.pt()); 
 	   h_uncorrjeteta->Fill(rawJet.eta()); 
 	 }
-
+	 */
 	 if(j.pt() < 20 || fabs(j.eta())>2.5) continue;
-	 h_newcorrjet->Fill(j.pt()); h_newcorrjeteta->Fill(j.eta()); 
+	 //	 h_newcorrjet->Fill(j.pt()); h_newcorrjeteta->Fill(j.eta()); 
 	 
 	 //jet id
 	 //	 hasLooseId.set(false);
