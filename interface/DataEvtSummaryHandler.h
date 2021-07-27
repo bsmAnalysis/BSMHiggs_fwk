@@ -3,7 +3,7 @@
 
 #if !defined(__CINT__) || defined(__MAKECINT__)
 
-//#define YEAR_2017
+#define YEAR_2017
 
 #include <string.h>
 #include <iomanip>
@@ -141,7 +141,7 @@ struct DataEvtSummary_t {
     Int_t jet_partonFlavour[MAXPARTICLES], jet_hadronFlavour[MAXPARTICLES], jet_mother_id[MAXPARTICLES];
     Float_t jet_parton_px[MAXPARTICLES], jet_parton_py[MAXPARTICLES], jet_parton_pz[MAXPARTICLES], jet_parton_en[MAXPARTICLES];
 
-
+  /*
     //sv : Inclusive Secondary Vertices from slimmedSecondaryVertices
     Int_t sv ;
     Float_t sv_px[MAXPARTICLES], sv_py[MAXPARTICLES], sv_pz[MAXPARTICLES], sv_en[MAXPARTICLES] ;
@@ -152,7 +152,7 @@ struct DataEvtSummary_t {
     Int_t   sv_mc_nbh_moms[MAXPARTICLES] ;
     Int_t   sv_mc_nbh_daus[MAXPARTICLES] ;
     Int_t   sv_mc_mcbh_ind[MAXPARTICLES] ;
-
+  */
     /*
     //jet (slimmedJetsPuppi)
     Int_t pjet;
