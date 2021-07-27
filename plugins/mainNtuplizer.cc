@@ -52,6 +52,7 @@
 #include "DataFormats/Common/interface/ValueMap.h"
 
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
+//#include "JetMETCorrections/JetCorrector/interface/JetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 
@@ -159,7 +160,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
     edm::EDGetTokenT<edm::TriggerResults> metFilterBitsTag_;
     edm::EDGetTokenT< bool > ecalBadCalibFilterUpdate_token;
 
-    edm::EDGetTokenT<reco::VertexCompositePtrCandidateCollection> svTag_;
+  //    edm::EDGetTokenT<reco::VertexCompositePtrCandidateCollection> svTag_;
   
     edm::EDGetTokenT<edm::View<reco::GenParticle> > prunedGenTag_;
     edm::EDGetTokenT<std::vector<PileupSummaryInfo> > puInfoTag_;
@@ -169,6 +170,8 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
   edm::InputTag lheRunInfoTag_;
   edm::EDGetTokenT<LHERunInfoProduct> lheRunInfoToken_;
     edm::EDGetTokenT<double> rhoFastjetAllTag_;
+
+  //edm::EDGetTokenT<reco::JetCorrector> mJetCorrector;
 
   //  EnergyScaleCorrection_class eScaler_;     
   edm::EDGetTokenT<EcalRecHitCollection> reducedEBRecHitCollectionToken_;
@@ -210,7 +213,10 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
   TH1F * h_pileup, * h_pileuptrue;
   TH1F * h_sumWeights, * h_sumScaleWeights , * h_sumPdfWeights ,* h_sumAlphasWeights; 
   TH1F * h_metFilter;
-  
+
+  TH1F * h_corrjet, *h_uncorrjet, *h_newcorrjet;
+  TH1F * h_corrjeteta, *h_uncorrjeteta, *h_newcorrjeteta;     
+
   TH2F *h2_BTaggingEff_Denom_b, *h2_BTaggingEff_Denom_c, *h2_BTaggingEff_Denom_udsg;
   TH2F *h2_LooseBTaggingEff_Num_b, *h2_LooseBTaggingEff_Num_c, *h2_LooseBTaggingEff_Num_udsg;
   TH2F *h2_MediumBTaggingEff_Num_b, *h2_MediumBTaggingEff_Num_c, *h2_MediumBTaggingEff_Num_udsg;
@@ -273,7 +279,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
     metPuppiTag_(       consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metsPuppiTag"))               ),
     metFilterBitsTag_(	consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("metFilterBitsTag"))		),
     ecalBadCalibFilterUpdate_token(consumes< bool >(edm::InputTag("ecalBadCalibReducedMINIAODFilter"))			),
-    svTag_(		consumes<reco::VertexCompositePtrCandidateCollection>(iConfig.getParameter<edm::InputTag>("svTag"))			),
+//    svTag_(		consumes<reco::VertexCompositePtrCandidateCollection>(iConfig.getParameter<edm::InputTag>("svTag"))			),
     prunedGenTag_(	consumes<edm::View<reco::GenParticle> >(iConfig.getParameter<edm::InputTag>("prunedTag"))	),
     puInfoTag_(         consumes<std::vector<PileupSummaryInfo> >(iConfig.getParameter<edm::InputTag>("puInfoTag"))     ),
     genInfoTag_(        consumes<GenEventInfoProduct>(iConfig.getParameter<edm::InputTag>("genInfoTag"))                ),
@@ -282,6 +288,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   lheRunInfoTag_(     iConfig.getParameter<edm::InputTag>("lheInfo")                                                  ),
   lheRunInfoToken_(   consumes<LHERunInfoProduct,edm::InRun>(lheRunInfoTag_)						),
     rhoFastjetAllTag_(  	consumes<double>(iConfig.getParameter<edm::InputTag>("rhoFastjetAll")) 			),
+//  mJetCorrector( consumes<reco::JetCorrector>(edm::InputTag("ak4PFCHSL1FastL2L3ResidualCorrector")) ),
   //  eScaler_(iConfig.getParameter<std::string>("correctionFile") ),
 	   reducedEBRecHitCollectionToken_(     consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>("reducedEcalRecHitsEB")) ),
 	   reducedEERecHitCollectionToken_(     consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>("reducedEcalRecHitsEE"))  ),
@@ -340,7 +347,15 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   //mon_.addHistogram(new TH1F("integlumi", ";Integrated luminosity ; Events",100,0,1e5);
   //mon_.addHistogram(new TH1F("instlumi", ";Max average inst. luminosity; Events",100,0,1e5);
   h_pileuptrue = fs->make< TH1F>("pileuptrue", ";True pileup; Events",100,-0.5,99.5);
-  
+
+  h_corrjet = fs->make<TH1F>("corrjet",";def jet #it{p}_{T} [GeV]; nevents",50,0.,500.);
+  h_uncorrjet = fs->make<TH1F>("uncorrjet",";raw jet #it{p}_{T} [GeV]; nevents",50,0.,500.);   
+  h_newcorrjet = fs->make<TH1F>("newcorrjet",";updated jet #it{p}_{T} [GeV]; nevents",50,0.,500.);   
+
+  h_corrjeteta = fs->make<TH1F>("corrjeteta",";def jet #eta; nevents",70,-3,3); 
+  h_uncorrjeteta = fs->make<TH1F>("uncorrjeteta",";raw jet #eta; nevents",70,-3,3); 
+  h_newcorrjeteta = fs->make<TH1F>("newcorrjeteta",";updated jet #eta; nevents",70,-3,3);
+
   h_sumWeights = fs->make< TH1F>("sumWeights",";;sumWeights;",1,-0.5,0.5);
   h_sumScaleWeights = fs->make< TH1F>("sumScaleWeights",";;sumScaleWeights;",9,-0.5,8.5);
   h_sumPdfWeights = fs->make< TH1F>("sumPdfWeights",";;sumPdfWeights;",100,-0.5,99.5);
@@ -1184,13 +1199,69 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        //       pat::strbitset hasTightId = tightJetIdSelector.getBitTemplate();
 
        if ( verbose_ ) printf("\n\n ----- Reconstructed jets : %lu\n", jets.size() ) ;
+       
+       string jecDir = std::string(std::getenv("CMSSW_BASE")) + "/src/UserCode/bsmhiggs_fwk/data/jec/25ns/";
 
+       if(is2018){
+	 if     ((string(proc_.c_str()).find("2018A") != string::npos)) jecDir+="102X/Autumn18_V8_RunA/Autumn18_RunA_V8_";
+	 else if((string(proc_.c_str()).find("2018B") != string::npos)) jecDir+="102X/Autumn18_V8_RunB/Autumn18_RunB_V8_";
+	 else if((string(proc_.c_str()).find("2018C") != string::npos)) jecDir+="102X/Autumn18_V8_RunC/Autumn18_RunC_V8_";
+	 else if((string(proc_.c_str()).find("2018D") != string::npos)) jecDir+="102X/Autumn18_V8_RunD/Autumn18_RunD_V8_";
+	 if(isMC_) {
+	   jecDir+="102X/Autumn18_V8_MC/Autumn18_V8_";}
+       } else if (is2017) {
+	 if     ((string(proc_.c_str()).find("2017B") != string::npos)) jecDir+="94X/Fall17_17Nov2017B_V32_DATA/Fall17_17Nov2017B_V32_";
+	 else if((string(proc_.c_str()).find("2017C") != string::npos)) jecDir+="94X/Fall17_17Nov2017C_V32_DATA/Fall17_17Nov2017C_V32_";
+	 else if((string(proc_.c_str()).find("2017D") != string::npos) || (string(proc_.c_str()).find("2017E") != string::npos)) jecDir+="94X/Fall17_17Nov2017DE_V32_DATA/Fall17_17Nov2017DE_V32_";
+	 else if((string(proc_.c_str()).find("2017F") != string::npos)) jecDir+="94X/Fall17_17Nov2017F_V32_DATA/Fall17_17Nov2017F_V32_";
+	 if(isMC_) {jecDir+="94X/Fall17_17Nov2017_V32_MC/Fall17_17Nov2017_V32_";}
+       } else {
+	 if     ((string(proc_.c_str()).find("2016B") != string::npos) || (string(proc_.c_str()).find("2016C") != string::npos) || (string(proc_.c_str()).find("2016D") != string::npos)) jecDir+="Summer16_94X/Summer16_07Aug2017BCD_V11_DATA/Summer16_07Aug2017BCD_V11_";
+	 else if((string(proc_.c_str()).find("2016E") != string::npos) || (string(proc_.c_str()).find("2016F") != string::npos) ) jecDir+="Summer16_94X/Summer16_07Aug2017EF_V11_DATA/Summer16_07Aug2017EF_V11_";
+	 else if((string(proc_.c_str()).find("2016G") != string::npos) || (string(proc_.c_str()).find("2016H") != string::npos) ) jecDir+="Summer16_94X/Summer16_07Aug2017GH_V11_DATA/Summer16_07Aug2017GH_V11_";
+	 if(isMC_) {jecDir+="Summer16_94X/Summer16_07Aug2017_V11_MC/Summer16_07Aug2017_V11_";}
+       }
+
+       FactorizedJetCorrector *jesCor = NULL;
+       jesCor = utils::cmssw::getJetCorrector(jecDir,isMC_);
+       
+       //       edm::Handle<reco::JetCorrector> corrector;
+       //       event.getByToken(mJetCorrector, corrector);
+       
        //for (std::vector<pat::Jet >::const_iterator j = jets.begin(); j!=jets.end(); j++) 
        int ijet(0), ijet2(0);
        int nCSVLtags(0);
        for (pat::Jet &j : jets) {
-	 if(j.pt() < 20 || fabs(j.eta())>2.5) continue;
 
+	 if (j.pt()>20 && fabs(j.eta())<2.5) {
+	   h_corrjet->Fill(j.pt());
+	   h_corrjeteta->Fill(j.eta());   
+	 }
+
+	 // Check JEC in MINIAOD...
+         //correct JES 
+         LorentzVector rawJet = j.correctedP4("Uncorrected"); 
+         //double toRawSF=jet.correctedJet("Uncorrected").pt()/jet.pt(); 
+         //LorentzVector rawJet(jet*toRawSF); 
+	 
+         jesCor->setJetEta(rawJet.eta()); 
+         jesCor->setJetPt(rawJet.pt()); 
+         jesCor->setJetA(j.jetArea()); 
+         jesCor->setRho(rho); 
+         jesCor->setNPV(vtx.size()); 
+	 
+         j.setP4(rawJet*jesCor->getCorrection()); 
+	 
+	 //j.setP4(rawJet*corrector->correction(j));
+
+	 if (rawJet.pt()>20 && fabs(rawJet.eta())<2.5) {
+	   h_uncorrjet->Fill(rawJet.pt()); 
+	   h_uncorrjeteta->Fill(rawJet.eta()); 
+	 }
+
+	 if(j.pt() < 20 || fabs(j.eta())>2.5) continue;
+	 h_newcorrjet->Fill(j.pt()); h_newcorrjeteta->Fill(j.eta()); 
+	 
 	 //jet id
 	 //	 hasLooseId.set(false);
 	 //hasTightId.set(false);
@@ -1242,7 +1313,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
 	 ev.jet_pu[ev.jet] = j.pileup();
 	 ev.jet_puId[ev.jet] = j.userFloat("pileupJetId:fullDiscriminant");
 
-         if ( verbose_ ) {
+	 if ( verbose_ ) {
             printf("    %2d : pt=%6.1f, eta=%7.3f, phi=%7.3f : ID=%s%s, bCSV=%7.3f, PUID=%7.3f\n",
                 ijet, j.pt(), j.eta(), j.phi(),
                 (patUtils::passPFJetID("Loose", j, (is2017 << 0) | (is2018 << 1))?"L":" "),
@@ -1250,6 +1321,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
                 j.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags"),
                 j.userFloat("pileupJetId:fullDiscriminant")
              ) ;
+
+	    printf("Uncorrected pt=%6.1f\n",rawJet.pt()); // Uncorrected pt
          }
 	 if(patUtils::passPFJetID("Loose", j, (is2017 << 0) | (is2018 << 1)))  ijet2++;
 
@@ -1508,7 +1581,7 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        */
 
        //-- Inclusive Secondary Vertices
-
+       /*
        reco::VertexCompositePtrCandidateCollection sec_vert ;
        edm::Handle< reco::VertexCompositePtrCandidateCollection > svHandle ;
        event.getByToken(svTag_, svHandle);
@@ -1706,13 +1779,10 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
              }
 
           } // MC?
-
-
-
           if ( verbose_ ) printf("\n") ;
 
        } // isv
-
+       */
         // Fill Tree
        summaryHandler_.fillTree();
  

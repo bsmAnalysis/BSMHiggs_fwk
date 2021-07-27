@@ -5,7 +5,7 @@
 #ifndef ____BSMPhysicsEvent__
 #define ____BSMPhysicsEvent__
 
-//#define YEAR_2017
+#define YEAR_2017
 
 #include <stdio.h>
 #include <vector>
@@ -255,6 +255,7 @@ class PhysicsObject_FatJet : public LorentzVector {
 };
 */
 
+/*
 class PhysicsObject_SV : public LorentzVector {
  public:
  PhysicsObject_SV(LorentzVector vec, Float_t chi2_, Float_t ndof_) :
@@ -285,13 +286,13 @@ class PhysicsObject_SV : public LorentzVector {
   Int_t sv_mc_nbh_moms, sv_mc_nbh_daus, sv_mc_mcbh_ind;
 
 };
-
+*/
 
 typedef std::vector<PhysicsObject>        PhysicsObjectCollection;
 typedef std::vector<PhysicsObject_Lepton> PhysicsObjectLeptonCollection;
 typedef std::vector<PhysicsObject_Jet>    PhysicsObjectJetCollection;
 //typedef std::vector<PhysicsObject_FatJet> PhysicsObjectFatJetCollection;
-typedef std::vector<PhysicsObject_SV>     PhysicsObjectSVCollection;
+//typedef std::vector<PhysicsObject_SV>     PhysicsObjectSVCollection;
 
 
 //
@@ -302,7 +303,7 @@ struct PhysicsEvent_t {
   PhysicsObjectLeptonCollection leptons;
   PhysicsObjectJetCollection jets;
   //  PhysicsObjectFatJetCollection fatjets;
-  PhysicsObjectSVCollection svs;
+  //  PhysicsObjectSVCollection svs;
   LorentzVector met, metNoHF;
   LorentzVector imet[11];
   LorentzVectorCollection variedMet;
