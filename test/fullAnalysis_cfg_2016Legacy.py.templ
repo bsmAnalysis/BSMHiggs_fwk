@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from UserCode.bsmhiggs_fwk.mainNtuplizer_cfi import *
 
 #from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
-
+from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection 
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -28,6 +28,15 @@ process.options   = cms.untracked.PSet(
    allowUnscheduled = cms.untracked.bool(True)
 )
 
+                                                                                                                                                                                                                               
+updateJetCollection(
+   process, 
+   jetSource = cms.InputTag('slimmedJets'), 
+   labelName = 'UpdatedJEC', 
+   jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None') 
+# Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
+)  
+
 runOnMC=@isMC  
 if runOnMC:
    runMetCorAndUncFromMiniAOD(process,  
@@ -41,11 +50,12 @@ else:
 process.mainNtuplizer.isMC = cms.bool(@isMC)
 process.mainNtuplizer.dtag = cms.string("@dtag")
 process.mainNtuplizer.xsec = cms.double(@xsec)
-#process.mainNtuplizer.nevts = cms.double(@nevts)
+process.mainNtuplizer.nevts = cms.double(@nevts)
 process.mainNtuplizer.mctruthmode = cms.int32(@mctruthmode)
 process.mainNtuplizer.verbose = cms.bool(@verbose)
 process.mainNtuplizer.metFilterBitsTag = cms.InputTag('TriggerResults','','HLT')
 process.mainNtuplizer.Legacy2016 = cms.bool(True)
+process.mainNtuplizer.jetsTag = cms.InputTag('updatedPatJetsUpdatedJEC')       
 #process.mainNtuplizer.jetsTag = cms.InputTag('selectedUpdatedPatJets')
 #process.mainNtuplizer.fatjetsTag = cms.InputTag('packedPatJetsAK8PFCHSSoftDrop')
 
@@ -63,5 +73,5 @@ process.TFileService = cms.Service("TFileService",
 			fileName = cms.string("analysis.root")
 )
                      		 				             
-process.p = cms.Path( process.fullPatMetSequence * process.mainNtuplizer )	
+process.p = cms.Path( process.patJetCorrFactorsUpdatedJEC * process.updatedPatJetsUpdatedJEC * process.fullPatMetSequence * process.mainNtuplizer )	
 
