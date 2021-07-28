@@ -3,6 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from UserCode.bsmhiggs_fwk.mainNtuplizer_cfi import *
 
 from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection  
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -27,6 +28,13 @@ process.GlobalTag.globaltag = '@gtag'
 process.options   = cms.untracked.PSet(
    allowUnscheduled = cms.untracked.bool(True)
 )
+
+updateJetCollection(                                                                                                                                                                              
+   process,                                                                                                                                                                                       
+   jetSource = cms.InputTag('slimmedJets'),                                                                                                                                                       
+   labelName = 'UpdatedJEC',                                                                                                                                                                      
+   jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')  # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual orrections (always set to 1)
+)     
 
 #declare producer for ecalBadCalibReducedMINIAODFilter
 #https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2
@@ -72,6 +80,7 @@ process.mainNtuplizer.xsec = cms.double(@xsec)
 #process.mainNtuplizer.nevts = cms.double(@nevts)
 process.mainNtuplizer.mctruthmode = cms.int32(@mctruthmode)
 process.mainNtuplizer.verbose = cms.bool(@verbose)
+process.mainNtuplizer.jetsTag = cms.InputTag('updatedPatJetsUpdatedJEC')
 process.mainNtuplizer.metFilterBitsTag = cms.InputTag('TriggerResults','','HLT')
 process.mainNtuplizer.Legacy2016 = cms.bool(False)
 
@@ -88,6 +97,8 @@ process.TFileService = cms.Service("TFileService",
 )
 
 process.p = cms.Path(
+	  process.patJetCorrFactorsUpdatedJEC *  
+	  process.updatedPatJetsUpdatedJEC * 
     process.ecalBadCalibReducedMINIAODFilter *
     process.fullPatMetSequence *
     process.egammaPostRecoSeq *
