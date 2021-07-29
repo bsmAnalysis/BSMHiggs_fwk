@@ -270,7 +270,7 @@
                     "dset": [
                         "/SingleMuon/Run2016H-17Jul2018-v1/MINIAOD" 
                     ],
-                    "gtag": "80X_dataRun2_Prompt_v16",
+                    "gtag": "94X_dataRun2_v10",
                     "dtag": "Data13TeV_SingleMuon2016H",
                     "nevts": 1,
                     "lumiMask": "/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt",
