@@ -69,7 +69,7 @@ fi
 #SUFFIX=$(date +"_%Y_%m_%d") 
 GOLDENJSON=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/json/
 
-RESULTSDIR=$MAINDIR/results$SUFFIX 
+RESULTSDIR=$MAINDIR/results_$YEAR$SUFFIX 
 
 if [[ $arguments == *"crab3"* ]]; then STORAGEDIR='';
 else STORAGEDIR=/eos/cms/store/user/georgia/results$SUFFIX ; fi
@@ -131,7 +131,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "JOB SUBMISSION for Ntuplization using full CMSSW fwk"
        echo -e "Input: " $JSON "\nOutput: " $RESULTSDIR
        #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -s crab 
-       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $FULLANALYSISCFG -l results$SUFFIX -p "@verbose=False" --key haa_prod -s crab
+       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $FULLANALYSISCFG -l results_$YEAR$SUFFIX -p "@verbose=False" --key haa_prod -s crab
        # Ntuplize 2016 signal samples under 94X:
        #runAnalysisOverSamples.py -j $MAINDIR/samples2016.json -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg_2016Signal.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_signal  -s crab
    fi    
