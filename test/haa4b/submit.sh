@@ -79,7 +79,7 @@ PLOTTER=$MAINDIR/plotter_${CHANNEL}_${YEAR}${SUFFIX}
  
 ####################### Settings for Ntuple Analysis ##################
 if [[ $YEAR == "2016" ]]; then
-    NTPL_INPUT=/eos/cms/store/user/georgia/results$SUFFIX
+    NTPL_INPUT=/eos/user/g/georgia/results_2016$SUFFIX
 elif [[ $YEAR == "2017" ]]; then
     NTPL_INPUT=/eos/cms/store/user/georgia/results_2017$SUFFIX 
 elif [[ $YEAR == "2018" ]]; then
