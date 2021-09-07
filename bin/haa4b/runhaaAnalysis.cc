@@ -2048,42 +2048,72 @@ int main(int argc, char* argv[])
 
         bool hasTrigger(false);
 
-	if (!runZH) { // Use only SingleEle and SingleMu in WH channel
-	  if (!isMC) { // data:
-	    if(evcat!=fType) continue; 
+	//	if (!runZH) { // Use only SingleEle and SingleMu in WH channel
+	if (!isMC) { // data:
+	  if(evcat!=fType) continue; 
 	    
-	    if(evcat==E && !(hasEtrigger)) continue;
-	    if(evcat==MU && !(hasMtrigger)) continue;
+	  if(evcat==E && !(hasEtrigger)) continue;
+	  if(evcat==MU && !(hasMtrigger)) continue;
+	  if(evcat==EE && !(hasEEtrigger)) continue;
+	  if(evcat==MUMU && !(hasMMtrigger)) continue; 
+	  if(evcat==EMU && !hasEMtrigger ) continue;
 
-	    if(isSingleMuPD) {
-	      if(!hasMtrigger) continue;
-	    }
-	    if(isSingleElePD) {
-	      if(!hasEtrigger) continue;
-	    }
-	    hasTrigger=true;
-	    
-	  } else { // MC trigger:
-
-	    if(evcat==E && hasEtrigger ) hasTrigger=true;   
-	    if(evcat==MU && hasMtrigger ) hasTrigger=true;   
-
+	  if(isSingleMuPD) {
+	    if(!hasMtrigger) continue;
 	  }
+	  if(isSingleElePD) {
+	    if(!hasEtrigger) continue;
+	  }
+	  if(isDoubleElePD) {
+	    if(!hasEEtrigger) continue;  
+	  }
+	  if(isDoubleMuPD) {
+	    if(!hasMMtrigger) continue;
+	  }
+
+	  hasTrigger=true;
+	    
+	} else { // MC trigger:
+
+	  if(evcat==E && hasEtrigger ) hasTrigger=true;   
+	  if(evcat==MU && hasMtrigger ) hasTrigger=true;   
+	  if(evcat==EE && hasEEtrigger) hasTrigger=true; 
+	  if(evcat==MUMU && hasMMtrigger) hasTrigger=true; 
+	  if(evcat==EMU  && hasEMtrigger ) hasTrigger=true;  
+
+	}
+	/*
 	} else { // ZH channel
 
 	  if (!isMC) { // data:
 
-	    if(isDoubleMuPD)    { hasTrigger = hasMMtrigger;}
-	    if(isSingleMuPD)    { hasTrigger = hasMtrigger  && !hasMMtrigger;}
-	    if(isDoubleElePD)   { hasTrigger = hasEEtrigger  && !hasMtrigger  && !hasMMtrigger;}
-	    if(isSingleElePD)   { hasTrigger = hasEtrigger  && !hasEEtrigger  && !hasMtrigger && !hasMMtrigger; }
-	    if(isMuonEGPD)      { hasTrigger = hasEMtrigger && !hasEtrigger   && !hasEEtrigger && !hasMtrigger && !hasMMtrigger; }
+	    //	    if(evcat!=fType) continue; 
+	    if(evcat==EMU) { 
+              if(evcat!=fType) continue; 
+              if(isMuonEGPD && !(hasEMtrigger)) continue; 
+              hasTrigger=true; 
+            }    else {
+	      if(isDoubleMuPD)    { hasTrigger = hasMMtrigger;}
+	      if(isSingleMuPD)    { hasTrigger = hasMtrigger  && !hasMMtrigger;}
+	      if(isDoubleElePD)   { hasTrigger = hasEEtrigger && !hasMtrigger  && !hasMMtrigger;}
+	      if(isSingleElePD)   { hasTrigger = hasEtrigger  && !hasEEtrigger  && !hasMtrigger && !hasMMtrigger; }
+	    }
+	    //	    if(isMuonEGPD)      { hasTrigger = hasEMtrigger; } // && !hasEtrigger   && !hasEEtrigger && !hasMtrigger && !hasMMtrigger; }
 
 	  } else { // MC tirgger:
-	    hasTrigger=(hasEtrigger || hasMtrigger || hasEEtrigger || hasMMtrigger || hasEMtrigger);
- 	  }
+	    //	    if(evcat==E && hasEtrigger ) hasTrigger=true;   
+	    //	    if(evcat==MU && hasMtrigger ) hasTrigger=true;   
+	    //	    if(evcat==EE && hasEEtrigger) hasTrigger=true; 
+	    //	    if(evcat==MUMU && hasMMtrigger) hasTrigger=true; 
+	    if(evcat==EMU) {
+	      if( hasEMtrigger ) hasTrigger=true;  
+	    } else {
+	      hasTrigger=(hasEtrigger || hasMtrigger || hasEEtrigger || hasMMtrigger); // || hasEMtrigger);
+	    }
+	  }
 
 	}
+	*/
 	// Apply Trigger requirement:
 	if(!hasTrigger) continue;
 	
