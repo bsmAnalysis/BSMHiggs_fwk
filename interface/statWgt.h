@@ -86,10 +86,10 @@ const std::map<std::string, std::pair <int, float> > mStat =
     { "MC13TeV_DY3JetsToLL_10to50_Legacy2016" , std::make_pair(4964197, 96.47) }, //4964197
     { "MC13TeV_DY4JetsToLL_10to50_Legacy2016" , std::make_pair(2087849, 34.84) }, //2087849
 
-    { "MC13TeV_DYJetsToLL_50toInf_ext1_Legacy2016", std::make_pair(292560790, 4895) }, //146280395, 4895) },//145803217  //5765.4) }, //81781064 }, //2.52854 },
-    { "MC13TeV_DYJetsToLL_50toInf_ext2_Legacy2016", std::make_pair(292560790, 4895) },//145803217 5765.4) },
+    { "MC13TeV_DYJetsToLL_50toInf_ext1_Legacy2016", std::make_pair(146280395, 4895) }, //49748967.0, 4895) }, //146280395, 4895) },//145803217  //5765.4) }, //81781064 }, //2.52854 },
+    { "MC13TeV_DYJetsToLL_50toInf_ext2_Legacy2016", std::make_pair(146280395, 4895) }, //96531428.0, 4895) },//145803217 5765.4) },
     { "MC13TeV_DY1JetsToLL_50toInf_Legacy2016" , std::make_pair(63730337, 1016) }, //62627174
-    { "MC13TeV_DY2JetsToLL_50toInf_Legacy2016" , std::make_pair(19212384, 331.3) }, //19970551
+    { "MC13TeV_DY2JetsToLL_50toInf_Legacy2016" , std::make_pair(19154526.0, 331.3) }, //19970551
     { "MC13TeV_DY3JetsToLL_50toInf_Legacy2016" , std::make_pair(5857441, 96.6) }, //5856110
     { "MC13TeV_DY4JetsToLL_50toInf_Legacy2016" , std::make_pair(4197868, 51.4) }, //4197868
     //DY 2016
