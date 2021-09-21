@@ -734,76 +734,6 @@
             ],
             "tag": "Z#rightarrow ll"
         },
-	 {
-            "color": 622,
-            "data": [
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                      "/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"
-                    ],
-                    "gtag": "102X_upgrade2018_realistic_v19",
-                    "dtag": "MC13TeV_WJets_2018",
-                    "nevts": 70966439,
-                    "xsec": 50960
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                      "/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"
-                    ],
-                    "gtag": "102X_upgrade2018_realistic_v19",
-                    "dtag": "MC13TeV_W1Jets_2018",
-                    "nevts": 51047866,
-                    "xsec": 9493
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                      "/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"
-                    ],
-                    "gtag": "102X_upgrade2018_realistic_v19",
-                    "dtag": "MC13TeV_W2Jets_2018",
-                    "nevts": 23272818,
-                    "xsec": 3120
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                      "/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"
-                    ],
-                    "gtag": "102X_upgrade2018_realistic_v19",
-                    "dtag": "MC13TeV_W3Jets_2018",
-                    "nevts": 14492897,
-                    "xsec": 942.3
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                      "/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"
-                    ],
-                    "gtag": "102X_upgrade2018_realistic_v19",
-                    "dtag": "MC13TeV_W4Jets_2018",
-                    "nevts": 10062333,
-                    "xsec": 524.2
-                }
-            ],
-            "isdata": false,
-            "keys": [
-		"haa_prod",
-            ],
-            "tag": "W#rightarrow l#nu"
-         },
 	{                                 
             "color": 622, 
             "data": [
@@ -891,7 +821,7 @@
                     "nevts": 8362227,                                                                                                                                                                                             
                     "xsec": "5.366*1.21"                                                                                                                                                                                          
                 },                    
- {                                                                                                                                                                                                               
+		{                                                                                                                                                                                                               
                     "br": [                                                                                                                                                                                                       
                         1.0                                                                                                                                                                                                       
                     ],                                                                                                                                                                                                            
