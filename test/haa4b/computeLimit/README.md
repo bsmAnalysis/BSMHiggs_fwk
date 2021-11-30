@@ -174,32 +174,32 @@ Note:  If your fits take longer than the time limit for the default queue in con
 in the CONDOR_TEMPLATE section right after the line that sets log.  If step3 fails for you and you don't get the pdf file, this is probably the reason.
 
 ```
-sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2016_noSoftb/0060/ 1
-sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2017_noSoftb/0060/ 1
-sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2018_noSoftb/0060/ 1
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2016_noSoftb 1
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2017_noSoftb 1
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2018_noSoftb 1
 
-sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2016_noSoftb/0060/ 1
-sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2017_noSoftb/0060/ 1
-sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2018_noSoftb/0060/ 1
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2016_noSoftb 1
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2017_noSoftb 1
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2018_noSoftb 1
 
 
-sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2016_noSoftb/0060/ 2
-sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2017_noSoftb/0060/ 2
-sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2018_noSoftb/0060/ 2
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2016_noSoftb 2
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2017_noSoftb 2
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2018_noSoftb 2
 
-sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2016_noSoftb/0060/ 2
-sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2017_noSoftb/0060/ 2
-sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2018_noSoftb/0060/ 2
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2016_noSoftb 2
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2017_noSoftb 2
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2018_noSoftb 2
 
 #-- wait until all condor jobs finish before running step 3
 
-sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2016_noSoftb/0060/ 3
-sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2017_noSoftb/0060/ 3
-sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2018_noSoftb/0060/ 3
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2016_noSoftb 3
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2017_noSoftb 3
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2018_noSoftb 3
 
-sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2016_noSoftb/0060/ 3
-sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2017_noSoftb/0060/ 3
-sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2018_noSoftb/0060/ 3
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2016_noSoftb 3
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2017_noSoftb 3
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2018_noSoftb 3
 ```
 
 
