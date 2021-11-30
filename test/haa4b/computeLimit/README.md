@@ -10,9 +10,12 @@ The most significant digit is:
  * 5 = Run limits for all of Run II combined (first argument is all)
  * 6 = Run limits for Wh and Zh combined for an individual year.
  * 7 = Run limits for Wh and Zh combined for all of Run II.
+The least significant digit is:
+ * 0 = Run limit for Wh channel
+ * 1 = Run limit for Zh channel
+ * 2 = Run limit for Wh+Zh channels combined
 
 ```
-
   python optimize_haa.py 2016 4.0
   python optimize_haa.py 2016 4.1
   python optimize_haa.py 2016 4.2
@@ -30,11 +33,6 @@ The most significant digit is:
   python optimize_haa.py all  5.0
   python optimize_haa.py all  5.1
   python optimize_haa.py all  5.2
-
-  python optimize_haa.py all  7.0
-  python optimize_haa.py all  7.1
-  python optimize_haa.py all  7.2
-
 ```
 
 where :
