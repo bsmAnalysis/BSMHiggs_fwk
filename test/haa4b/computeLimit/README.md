@@ -101,5 +101,33 @@ python postfitShapes2.py wh cards_SB13TeV_SM_Wh_2018_noSoftb/0060/ --do_linzoom
 
 ```
 
+### Make the Brazilian flag limit plots
+
+```
+python optimize_haa.py 2016 6.0
+python optimize_haa.py 2016 6.1
+python optimize_haa.py 2016 6.2
+
+python optimize_haa.py 2017 6.0
+python optimize_haa.py 2017 6.1
+python optimize_haa.py 2017 6.2
+
+python optimize_haa.py 2018 6.0
+python optimize_haa.py 2018 6.1
+python optimize_haa.py 2018 6.2
+
+python optimize_haa.py all 7.0
+python optimize_haa.py all 7.1
+python optimize_haa.py all 7.2
+
+```
+
+
+
+
+
+
+
+
 
 
