@@ -2,6 +2,32 @@
 
 Updated 2021-11-30
 
+### Set up your release directory, check out code, and compile
+
+Here's a sketch of what I do.
+```
+cd <your scratch area>
+mkdir limits-combine-v8.1.0
+cd limits-combine-v8.1.0
+setenv SCRAM_ARCH slc7_amd64_gcc700
+cmsrel CMSSW_10_2_13
+cd CMSSW_10_2_13/src/
+cmsenv
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+cd HiggsAnalysis/CombinedLimit
+git fetch origin
+git checkout v8.1.0
+scramv1 b | & tee build-try1a.log
+cd ../..
+git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
+cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
+cd test/haa4b
+sh converter.sh
+cd $CMSSW_BASE/src
+git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
+scram b -j 4 | & tee build-try2a.log
+```
+
 ### Run the Combine limit jobs in condor
 
 The first argument is the year (2016, 2017, 2018, or all) and the second argument is which type of limit to run.
