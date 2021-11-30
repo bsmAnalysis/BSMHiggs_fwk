@@ -165,6 +165,7 @@ python optimize_haa.py all 7.2
 
 ### Make the summary tables
 
+This part isn't working yet (at cern).  I wrote the code using python 3 on my laptop.  After cmsenv at CERN, it sets things up to use python 2.
 ```
 python yieldTableBDTcut3.py cards_SB13TeV_SM_Wh_2016_noSoftb
 python yieldTableBDTcut3.py cards_SB13TeV_SM_Wh_2017_noSoftb
