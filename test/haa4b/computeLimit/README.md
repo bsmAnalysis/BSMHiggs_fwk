@@ -162,6 +162,20 @@ python optimize_haa.py all 7.1
 python optimize_haa.py all 7.2
 ```
 
+
+### Make the summary tables
+
+```
+python yieldTableBDTcut3.py cards_SB13TeV_SM_Wh_2016_noSoftb
+python yieldTableBDTcut3.py cards_SB13TeV_SM_Wh_2017_noSoftb
+python yieldTableBDTcut3.py cards_SB13TeV_SM_Wh_2018_noSoftb
+
+python yieldTableBDTcut3.py cards_SB13TeV_SM_Zh_2016_noSoftb
+python yieldTableBDTcut3.py cards_SB13TeV_SM_Zh_2017_noSoftb
+python yieldTableBDTcut3.py cards_SB13TeV_SM_Zh_2018_noSoftb
+```
+
+
 ### Run the impacts in the condor batch system
 
 The first argument is the Combine job output directory for the 60 GeV mass point.  The second argument is the step, where
