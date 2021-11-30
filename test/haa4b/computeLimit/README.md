@@ -40,6 +40,7 @@ The least significant digit is:
 
 ### Make the pre and post fit plots.
 
+The first argument is the channel (wh or zh) and the second argument is the path to the 60 GeV mass point limit output directory.
 ```
 python prefitShapes.py zh cards_SB13TeV_SM_Zh_2016_noSoftb/0060/
 python prefitShapes.py zh cards_SB13TeV_SM_Zh_2016_noSoftb/0060/ --do_liny
