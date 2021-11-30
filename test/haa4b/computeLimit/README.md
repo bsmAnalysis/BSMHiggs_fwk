@@ -28,6 +28,12 @@ cd $CMSSW_BASE/src
 git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
 scram b -j 4 | & tee build-try2a.log
 ```
+Copy the plotter root files to the ```src/UserCode/bsmhiggs_fwk/test/haa4b``` directory and run hadd on the Wh files (needed for the DDQCD).
+```
+cp <where-your-plotter-files-are>/plotter*.root $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
+cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
+hadd all_plotter_forLimits.root plotter_WH*.root
+```
 
 ### Run the Combine limit jobs in condor
 
