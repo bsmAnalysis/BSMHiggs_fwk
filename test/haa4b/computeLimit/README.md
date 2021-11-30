@@ -80,6 +80,7 @@ The least significant digit is:
 
 The first argument is the channel (wh or zh) and the second argument is the path to the 60 GeV mass point limit output directory.
 The optional ```--do_liny``` and ```--do_linzoom``` arguments run plots with a linear y scale and a linear y scale zoomed in to show the region where the signal is (low numbers).
+The output files will go into a directory that's made by the python script (e.g. **prefit-plots-wh-2016**).
 ```
 python prefitShapes.py zh cards_SB13TeV_SM_Zh_2016_noSoftb/0060/
 python prefitShapes.py zh cards_SB13TeV_SM_Zh_2016_noSoftb/0060/ --do_liny
@@ -110,6 +111,8 @@ python prefitShapes.py wh cards_SB13TeV_SM_Wh_2018_noSoftb/0060/ --do_linzoom
 
 ### Make the postfit plots
 
+The arguments are similar to the prefit plot script, as described above.
+The output files will go into a directory that's made by the python script (e.g. **postfit-plots-wh-2016**).
 ```
 python postfitShapes2.py zh cards_SB13TeV_SM_Zh_2016_noSoftb/0060/
 python postfitShapes2.py zh cards_SB13TeV_SM_Zh_2016_noSoftb/0060/ --do_liny
