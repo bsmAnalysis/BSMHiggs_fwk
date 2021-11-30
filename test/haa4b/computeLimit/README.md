@@ -5,11 +5,13 @@ Updated 2021-11-30
 ### Run the Combine limit jobs in condor
 
 The first argument is the year (2016, 2017, 2018, or all) and the second argument is which type of limit to run.
+
 The most significant digit is:
  * 4 = Run limits for an individual year specified by the first argument (2016, 2017, or 2018)
  * 5 = Run limits for all of Run II combined (first argument is all)
  * 6 = Run limits for Wh and Zh combined for an individual year.
  * 7 = Run limits for Wh and Zh combined for all of Run II.
+
 The least significant digit is:
  * 0 = Run limit for Wh channel
  * 1 = Run limit for Zh channel
