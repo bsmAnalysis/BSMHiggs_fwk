@@ -43,10 +43,10 @@ output file is named **fitDiagnostics.root**.  In more recent versions of Combin
 If you update to a more recent version of Combine, you will need to make that change inside **optimize_haa.py**.
 
 The most significant digit is:
- * 4 = Run limits for an individual year specified by the first argument (2016, 2017, or 2018)
- * 5 = Run limits for all of Run II combined (first argument is all)
- * 6 = Run limits for Wh and Zh combined for an individual year.
- * 7 = Run limits for Wh and Zh combined for all of Run II.
+ * 4 = Run limits jobs for an individual year specified by the first argument (2016, 2017, or 2018)
+ * 5 = Run limits jobs for all of Run II combined (first argument is all)
+ * 6 = Make Brazilian flag limit plots for Wh and Zh combined for an individual year.
+ * 7 = Make Brazilian flag limit plots for Wh and Zh combined for all of Run II.
 
 The least significant digit is:
  * 0 = Run limit for Wh channel
