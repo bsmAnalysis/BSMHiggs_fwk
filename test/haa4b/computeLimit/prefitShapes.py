@@ -9,7 +9,7 @@ import argparse
 
 
 #########from ROOT import gROOT, gBenchmark, gRandom, gSystem, Double # owen
-from ROOT import gROOT, gBenchmark, gRandom, gSystem, gStyle
+from ROOT import gROOT, gBenchmark, gRandom, gSystem, gStyle, Double
 
 import ROOT
 
@@ -49,10 +49,29 @@ dir1="shapes_prefit"
 #wz = "zh"
 #wz = "wh"
 
+
 wz = args.prodmode
 if ( not (wz == "wh" or wz == "zh" )):
    print("\n\n *** set prodmode to wh or zh.  ", wz, " is not allowed.\n\n")
    quit()
+
+
+outdir = ""
+if ( wz == "zh" ) :
+   outdir = "prefit-plots-zh"
+   if ( "2016" in limit_dir ): outdir = "prefit-plots-zh-2016"
+   if ( "2017" in limit_dir ): outdir = "prefit-plots-zh-2017"
+   if ( "2018" in limit_dir ): outdir = "prefit-plots-zh-2018"
+if ( wz == "wh" ) :
+   outdir = "prefit-plots-wh"
+   if ( "2016" in limit_dir ): outdir = "prefit-plots-wh-2016"
+   if ( "2017" in limit_dir ): outdir = "prefit-plots-wh-2017"
+   if ( "2018" in limit_dir ): outdir = "prefit-plots-wh-2018"
+
+try:
+        os.mkdir( outdir )
+except:
+        print("\n\n problem making %s" % outdir ) ;
 
 
 
@@ -353,17 +372,18 @@ for ch in e_mu:
     
     htotal=total.Clone()
     
-    ########px, py = Double(), Double() # owen
-    ########pyerr = Double() # owen
-    px = ctypes.c_double()
-    py = ctypes.c_double()
-    pyerr = ctypes.c_double()
+    px, py = Double(), Double() # owen
+    pyerr = Double() # owen
+
+    #px = ctypes.c_double()
+    #py = ctypes.c_double()
+    #pyerr = ctypes.c_double()
     
     nPoints=data.GetN()
     for i in range(0,nPoints):
         data.GetPoint(i,px,py)
         pyerr=data.GetErrorY(i)
-        #hdata.Fill(px,py)
+        hdata.Fill(px,py)
         hdata.SetBinContent(i+1,py)
         hdata.SetBinError(i+1,pyerr)
     
@@ -586,7 +606,8 @@ for ch in e_mu:
     #frame = canvas.GetFrame()
     #frame.Draw()
 
-    pdf_file = "{}_{}".format(dir1,dir2)
+    #pdf_file = "{}_{}".format(dir1,dir2)
+    pdf_file = "%s/%s_%s" % (outdir, dir1, dir2)
     if ( do_linzoom ):
        pdf_file = pdf_file + "-linzoom"
     elif ( do_liny ):

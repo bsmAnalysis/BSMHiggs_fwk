@@ -8,7 +8,7 @@ import ctypes
 import argparse
 
 
-from ROOT import gROOT, gBenchmark, gRandom, gSystem, gStyle
+from ROOT import gROOT, gBenchmark, gRandom, gSystem, gStyle, Double
 
 import ROOT
 
@@ -47,6 +47,23 @@ if ( not (wz == "wh" or wz == "zh" )):
    print("\n\n *** set prodmode to wh or zh.  ", wz, " is not allowed.\n\n")
    quit()
 
+
+outdir = ""
+if ( wz == "zh" ) :
+   outdir = "postfit-plots-zh"
+   if ( "2016" in limit_dir ): outdir = "postfit-plots-zh-2016"
+   if ( "2017" in limit_dir ): outdir = "postfit-plots-zh-2017"
+   if ( "2018" in limit_dir ): outdir = "postfit-plots-zh-2018"
+if ( wz == "wh" ) :
+   outdir = "postfit-plots-wh"
+   if ( "2016" in limit_dir ): outdir = "postfit-plots-wh-2016"
+   if ( "2017" in limit_dir ): outdir = "postfit-plots-wh-2017"
+   if ( "2018" in limit_dir ): outdir = "postfit-plots-wh-2018"
+
+try:
+        os.mkdir( outdir )
+except:
+        print("\n\n problem making %s" % outdir ) ;
 
 
 if wz=="wh":
@@ -105,11 +122,11 @@ def printEvtYields(hist, name):
   for ibin in range(1, hist.GetXaxis().GetNbins()+1):
 #    content = hist.GetBinContent(ibin)
 #    error = hist.GetBinError(ibin)
-    #error = Double() # owen
-    error = ctypes.c_double()
+    error = Double() # owen
+    #error = ctypes.c_double()
     content = hist.IntegralAndError(ibin, ibin, error)
-    ##########yields = "{0:10.2f}".format(content) +" +- " + "{0:<10.2f}".format(error)
-    yields = "{0:10.2f}".format(content) +" +- " + "{0:<10.2f}".format(error.value)
+    yields = "{0:10.2f}".format(content) +" +- " + "{0:<10.2f}".format(error)
+    #yields = "{0:10.2f}".format(content) +" +- " + "{0:<10.2f}".format(error.value)
     #yields = " fixme "
     printout.append(yields)
 #  error = Double()
@@ -352,11 +369,11 @@ for ch in e_mu:
     
     htotal=total.Clone()
     
-    ########px, py = Double(), Double() # owen
-    ########pyerr = Double() # owen
-    px = ctypes.c_double()
-    py = ctypes.c_double()
-    pyerr = ctypes.c_double()
+    px, py = Double(), Double() # owen
+    pyerr = Double() # owen
+    #px = ctypes.c_double()
+    #py = ctypes.c_double()
+    #pyerr = ctypes.c_double()
     
     nPoints=data.GetN()
     for i in range(0,nPoints):
@@ -585,7 +602,8 @@ for ch in e_mu:
     #frame = canvas.GetFrame()
     #frame.Draw()
 
-    pdf_file = "{}_{}".format(dir1,dir2)
+    #pdf_file = "{}_{}".format(dir1,dir2)
+    pdf_file = "%s/%s_%s" % (outdir, dir1, dir2)
     if ( do_linzoom ):
        pdf_file = pdf_file + "-linzoom"
     elif ( do_liny ):
