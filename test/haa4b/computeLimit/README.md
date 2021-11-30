@@ -119,7 +119,42 @@ python optimize_haa.py 2018 6.2
 python optimize_haa.py all 7.0
 python optimize_haa.py all 7.1
 python optimize_haa.py all 7.2
+```
 
+### Run the impacts in the condor batch system
+
+The first argument is the Combine job output directory for the 60 GeV mass point.  The second argument is the step, where
+ * 1 = do initial fit
+ * 2 = submit batch jobs to condor
+ * 3 = make the plots pdf file (run after all condor jobs finish from step 2)
+
+```
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2016_noSoftb/0060/ 1
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2017_noSoftb/0060/ 1
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2018_noSoftb/0060/ 1
+
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2016_noSoftb/0060/ 1
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2017_noSoftb/0060/ 1
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2018_noSoftb/0060/ 1
+
+
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2016_noSoftb/0060/ 2
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2017_noSoftb/0060/ 2
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2018_noSoftb/0060/ 2
+
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2016_noSoftb/0060/ 2
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2017_noSoftb/0060/ 2
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2018_noSoftb/0060/ 2
+
+#-- wait until all condor jobs finish before running step 3
+
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2016_noSoftb/0060/ 3
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2017_noSoftb/0060/ 3
+sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2018_noSoftb/0060/ 3
+
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2016_noSoftb/0060/ 3
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2017_noSoftb/0060/ 3
+sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2018_noSoftb/0060/ 3
 ```
 
 
