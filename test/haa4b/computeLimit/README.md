@@ -1,6 +1,6 @@
 ## Instructions for running limits and making plots and tables
 
-Updated 2021-11-30
+Updated 2021-11-30, Owen Long
 
 ### Set up your release directory, check out code, and compile
 
@@ -30,7 +30,7 @@ scram b -j 4 | & tee build-try2a.log
 ```
 Copy the plotter root files to the ```src/UserCode/bsmhiggs_fwk/test/haa4b``` directory and run hadd on the Wh files (needed for the DDQCD).
 ```
-cp <where-your-plotter-files-are>/plotter*.root $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
+cp -p <where-your-plotter-files-are>/plotter*.root $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
 cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
 hadd all_plotter_forLimits.root plotter_WH*.root
 ```
@@ -38,6 +38,9 @@ hadd all_plotter_forLimits.root plotter_WH*.root
 ### Run the Combine limit jobs in condor
 
 The first argument is the year (2016, 2017, 2018, or all) and the second argument is which type of limit to run.
+Note that the setup above uses Combine v8.1.0, which gives good results for us.  In that version, the FitDiagnostics
+output file is named **fitDiagnostics.root**.  In more recent versions of Combine, it may be named **fitDiagnosticsTest.root**.
+If you update to a more recent version of Combine, you will need to make that change inside **optimize_haa.py**.
 
 The most significant digit is:
  * 4 = Run limits for an individual year specified by the first argument (2016, 2017, or 2018)
