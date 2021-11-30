@@ -2,6 +2,37 @@
 
 Updated 2021-11-30
 
+### Run the Combine limit jobs in condor
+
+```
+
+  python optimize_haa.py 2016 4.0
+  python optimize_haa.py 2016 4.1
+  python optimize_haa.py 2016 4.2
+
+  python optimize_haa.py 2017 4.0
+  python optimize_haa.py 2017 4.1
+  python optimize_haa.py 2017 4.2
+
+  python optimize_haa.py 2018 4.0
+  python optimize_haa.py 2018 4.1
+  python optimize_haa.py 2018 4.2
+
+#-- all of the above jobs need to finish before running the "all" jobs below
+
+  python optimize_haa.py all  5.0
+  python optimize_haa.py all  5.1
+  python optimize_haa.py all  5.2
+
+  python optimize_haa.py all  6.0
+  python optimize_haa.py all  6.1
+  python optimize_haa.py all  6.2
+
+  python optimize_haa.py all  7.0
+  python optimize_haa.py all  7.1
+  python optimize_haa.py all  7.2
+
+```
 
 where :
 * m = A mass point
