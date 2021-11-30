@@ -51,6 +51,8 @@ The least significant digit is:
  * 2 = Run limit for Wh+Zh channels combined
 
 ```
+  cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit
+
   python optimize_haa.py 2016 4.0
   python optimize_haa.py 2016 4.1
   python optimize_haa.py 2016 4.2
