@@ -38,7 +38,7 @@ The least significant digit is:
   python optimize_haa.py all  5.2
 ```
 
-### Make the pre and post fit plots.
+### Make the prefit plots
 
 The first argument is the channel (wh or zh) and the second argument is the path to the 60 GeV mass point limit output directory.
 The optional ```--do_liny``` and ```--do_linzoom``` arguments run plots with a linear y scale and a linear y scale zoomed in to show the region where the signal is (low numbers).
@@ -69,4 +69,37 @@ python prefitShapes.py wh cards_SB13TeV_SM_Wh_2018_noSoftb/0060/
 python prefitShapes.py wh cards_SB13TeV_SM_Wh_2018_noSoftb/0060/ --do_liny
 python prefitShapes.py wh cards_SB13TeV_SM_Wh_2018_noSoftb/0060/ --do_linzoom
 ```
+
+### Make the postfit plots
+
+```
+python postfitShapes2.py zh cards_SB13TeV_SM_Zh_2016_noSoftb/0060/
+python postfitShapes2.py zh cards_SB13TeV_SM_Zh_2016_noSoftb/0060/ --do_liny
+python postfitShapes2.py zh cards_SB13TeV_SM_Zh_2016_noSoftb/0060/ --do_linzoom
+
+python postfitShapes2.py zh cards_SB13TeV_SM_Zh_2017_noSoftb/0060/
+python postfitShapes2.py zh cards_SB13TeV_SM_Zh_2017_noSoftb/0060/ --do_liny
+python postfitShapes2.py zh cards_SB13TeV_SM_Zh_2017_noSoftb/0060/ --do_linzoom
+
+python postfitShapes2.py zh cards_SB13TeV_SM_Zh_2018_noSoftb/0060/
+python postfitShapes2.py zh cards_SB13TeV_SM_Zh_2018_noSoftb/0060/ --do_liny
+python postfitShapes2.py zh cards_SB13TeV_SM_Zh_2018_noSoftb/0060/ --do_linzoom
+
+
+
+python postfitShapes2.py wh cards_SB13TeV_SM_Wh_2016_noSoftb/0060/
+python postfitShapes2.py wh cards_SB13TeV_SM_Wh_2016_noSoftb/0060/ --do_liny
+python postfitShapes2.py wh cards_SB13TeV_SM_Wh_2016_noSoftb/0060/ --do_linzoom
+
+python postfitShapes2.py wh cards_SB13TeV_SM_Wh_2017_noSoftb/0060/
+python postfitShapes2.py wh cards_SB13TeV_SM_Wh_2017_noSoftb/0060/ --do_liny
+python postfitShapes2.py wh cards_SB13TeV_SM_Wh_2017_noSoftb/0060/ --do_linzoom
+
+python postfitShapes2.py wh cards_SB13TeV_SM_Wh_2018_noSoftb/0060/
+python postfitShapes2.py wh cards_SB13TeV_SM_Wh_2018_noSoftb/0060/ --do_liny
+python postfitShapes2.py wh cards_SB13TeV_SM_Wh_2018_noSoftb/0060/ --do_linzoom
+
+```
+
+
 
