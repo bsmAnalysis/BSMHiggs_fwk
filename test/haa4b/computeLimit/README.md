@@ -30,7 +30,8 @@ The least significant digit is:
   python optimize_haa.py 2018 4.1
   python optimize_haa.py 2018 4.2
 
-#-- all of the above jobs need to finish before running the "all" jobs below
+#-- All of the above jobs need to finish before running the "all" jobs below.
+#   This is because the script needs to extract the scale factors from the completed jobs above.
 
   python optimize_haa.py all  5.0
   python optimize_haa.py all  5.1
