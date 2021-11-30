@@ -22,6 +22,7 @@ cd ../..
 git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
 cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
 cd test/haa4b
+#-- type 1 when prompted by converter.sh below
 sh converter.sh
 cd $CMSSW_BASE/src
 git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
