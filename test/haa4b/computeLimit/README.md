@@ -1,5 +1,7 @@
-## Test limit for one A mass point
-> source TestLimit.sh
+## Instructions for running limits and making plots and tables
+
+Updated 2021-11-30
+
 
 where :
 * m = A mass point
