@@ -128,6 +128,13 @@ The first argument is the Combine job output directory for the 60 GeV mass point
  * 2 = submit batch jobs to condor
  * 3 = make the plots pdf file (run after all condor jobs finish from step 2)
 
+Note:  If your fits take longer than the time limit for the default queue in condor, you may need to set the queue to workday.  To do that, edit this file
+     ```CombineHarvester/CombineTools/python/combine/CombineToolBase.py``` and add the following line
+```
++JobFlavour = "workday"
+```
+in the CONDOR_TEMPLATE section right after the line that sets log.  If step3 fails for you and you don't get the pdf file, this is probably the reason.
+
 ```
 sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2016_noSoftb/0060/ 1
 sh run-impacts-batch.sh cards_SB13TeV_SM_Wh_2017_noSoftb/0060/ 1
