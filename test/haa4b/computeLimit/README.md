@@ -4,6 +4,13 @@ Updated 2021-11-30
 
 ### Run the Combine limit jobs in condor
 
+The first argument is the year (2016, 2017, 2018, or all) and the second argument is which type of limit to run.
+The most significant digit is:
+ * 4 = Run limits for an individual year specified by the first argument (2016, 2017, or 2018)
+ * 5 = Run limits for all of Run II combined (first argument is all)
+ * 6 = Run limits for Wh and Zh combined for an individual year.
+ * 7 = Run limits for Wh and Zh combined for all of Run II.
+
 ```
 
   python optimize_haa.py 2016 4.0
@@ -23,10 +30,6 @@ Updated 2021-11-30
   python optimize_haa.py all  5.0
   python optimize_haa.py all  5.1
   python optimize_haa.py all  5.2
-
-  python optimize_haa.py all  6.0
-  python optimize_haa.py all  6.1
-  python optimize_haa.py all  6.2
 
   python optimize_haa.py all  7.0
   python optimize_haa.py all  7.1
