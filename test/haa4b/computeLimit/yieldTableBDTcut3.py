@@ -11,7 +11,7 @@ import argparse
 #verbose = True
 verbose = False
 
-from ROOT import gROOT, gBenchmark, gRandom, gSystem, gStyle
+from ROOT import gROOT, gBenchmark, gRandom, gSystem, gStyle, TGraphAsymmErrors, Double
 
 import ROOT
 
@@ -119,17 +119,20 @@ for chan in chans:
 
    print("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
    tex_file.write("\\hline\n")
-   print(" Process             : ", end="")
+   #print(" Process             : ", end="")  # for python 3
+   print " Process             : ",   # for python 2
    tex_file.write(" Process ")
    for lf in lf_list:
       for bin_group in bin_group_list:
-         print("             {:4}[{},{}]     ".format(lf,bin_group["first"],bin_group["last"]),end="")
+         #print("             {:4}[{},{}]     ".format(lf,bin_group["first"],bin_group["last"]),end="")  # for python 3
+         print "             {:4}[{},{}]     ".format(lf,bin_group["first"],bin_group["last"]),  # for python 2
          if bin_group_list.index(bin_group) == (len(bin_group_list)-1):
             tex_file.write(" & \\multicolumn{{2}}{{c||}}{{ {:4} [{},{}] }} ".format(lf_tex[lf],bin_group["first"],bin_group["last"]))
          else:
             tex_file.write(" & \\multicolumn{{2}}{{c|}}{{ {:4} [{},{}] }} ".format(lf_tex[lf],bin_group["first"],bin_group["last"]))
 
-      print("|", end="")
+      #print("|", end="")  # for python 3
+      print "|",  # for python 2
    print()
    tex_file.write(" \\\\ \n")
    print("-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
@@ -163,7 +166,8 @@ for chan in chans:
          root_file = rt.TFile( file_name,"READ")
 
          hist_name = "{}/{}".format( chan_dir, proc )
-         if ( verbose ): print("{} {}, {}, {}  hist_name = {}".format( indent, chan, proc, lf, hist_name ), end="" )
+         #if ( verbose ): print("{} {}, {}, {}  hist_name = {}".format( indent, chan, proc, lf, hist_name ), end="" )  # for python 3
+         if ( verbose ): print "{} {}, {}, {}  hist_name = {}".format( indent, chan, proc, lf, hist_name ), # for python 2
 
          hist = root_file.Get( hist_name )
          if ( verbose ) :
@@ -191,13 +195,18 @@ for chan in chans:
 
                      if ( verbose ) : print( "   unblind   ")
 
+                     val = -1
                      if bin_group["first"] == bin_group["last"] :
                         val = hist.GetPointY( bin_group["first"]-1 )
                      else :
                         val = 0
                         i = bin_group["first"]
                         while ( i <= bin_group["last"]) :
-                           val += hist.GetPointY( i-1 )
+                           ##############################val += hist.GetPointY( i-1 )   # NFG in python 2
+                           px = Double()
+                           py = Double()
+                           hist.GetPoint( i-1, px, py )
+                           val += py
                            i += 1
 
                      printline += "  {:10,.0f}         ".format( val )
@@ -221,17 +230,20 @@ for chan in chans:
 
                for bin_group in bin_group_list:
 
-                  if ( verbose ) : print( " bin group [{},{}] ".format(bin_group["first"],bin_group["last"]), end="")
+                  #if ( verbose ) : print( " bin group [{},{}] ".format(bin_group["first"],bin_group["last"]), end="")  # for python 3
+                  if ( verbose ) : print  " bin group [{},{}] ".format(bin_group["first"],bin_group["last"]),  # for python 2
 
                   if bin_group["first"] == bin_group["last"] :
 
-                     if ( verbose ) : print( " first and last same ", end="" )
+                     #if ( verbose ) : print( " first and last same ", end="" )  # for python 3
+                     if ( verbose ) : print  " first and last same ",   # for python 2
                      val = hist.GetBinContent( bin_group["first"] )
                      err = hist.GetBinError( bin_group["first"] )
 
                   else:
 
-                     if ( verbose ) : print( " first and last NOT same ", end="" )
+                     #if ( verbose ) : print( " first and last NOT same ", end="" )  # for python 3
+                     if ( verbose ) : print  " first and last NOT same ",   # for python 2
 
                      val = 0.
                      i = bin_group["first"]
@@ -317,17 +329,20 @@ for chan in chans:
 
          for bin_group in bin_group_list:
 
-            if ( verbose ) : print( " bin group [{},{}] ".format(bin_group["first"],bin_group["last"]), end="")
+            #if ( verbose ) : print( " bin group [{},{}] ".format(bin_group["first"],bin_group["last"]), end="")  # for python 3
+            if ( verbose ) : print  " bin group [{},{}] ".format(bin_group["first"],bin_group["last"]),   # for python 2
 
             if bin_group["first"] == bin_group["last"] :
 
-               if ( verbose ) : print( " first and last same ", end="" )
+               #if ( verbose ) : print( " first and last same ", end="" )  # for python 3
+               if ( verbose ) : print " first and last same ",   # for python 2
                val = hist.GetBinContent( bin_group["first"] )
                err = hist.GetBinError( bin_group["first"] )
 
             else:
 
-               if ( verbose ) : print( " first and last NOT same ", end="" )
+               #if ( verbose ) : print( " first and last NOT same ", end="" )  # for python 3
+               if ( verbose ) : print " first and last NOT same ",   # for python 2
 
                val = 0.
                err2 = 0.
