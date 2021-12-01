@@ -181,6 +181,8 @@ sh make-all-tables.sh
 ```
 The output files will be in the cards directories.  To see them all, do this ```ls -l cards*/yield-table*.tex```
 
+To look at the tables, try doing ```pdflatex yield-tables.tex```
+
 
 ### Run the impacts in the condor batch system
 
