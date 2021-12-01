@@ -179,6 +179,7 @@ The **make-all-tables.sh** shell script does this and also renames the output fi
 ```
 sh make-all-tables.sh
 ```
+The output files will be in the cards directories.  To see them all, do this ```ls -l cards*/yield-table*.tex```
 
 
 ### Run the impacts in the condor batch system
