@@ -165,7 +165,7 @@ python optimize_haa.py all 7.2
 
 ### Make the summary tables
 
-This part isn't working yet (at cern).  I wrote the code using python 3 on my laptop.  After cmsenv at CERN, it sets things up to use python 2.
+This is done with the **yieldTableBDTcut3.py** python script.  Here's an example.
 ```
 python yieldTableBDTcut3.py cards_SB13TeV_SM_Wh_2016_noSoftb
 python yieldTableBDTcut3.py cards_SB13TeV_SM_Wh_2017_noSoftb
@@ -174,6 +174,10 @@ python yieldTableBDTcut3.py cards_SB13TeV_SM_Wh_2018_noSoftb
 python yieldTableBDTcut3.py cards_SB13TeV_SM_Zh_2016_noSoftb
 python yieldTableBDTcut3.py cards_SB13TeV_SM_Zh_2017_noSoftb
 python yieldTableBDTcut3.py cards_SB13TeV_SM_Zh_2018_noSoftb
+```
+The **make-all-tables.sh** shell script does this and also renames the output files to have unique names.  To use that, do this
+```
+sh make-all-tables.sh
 ```
 
 
