@@ -103,12 +103,13 @@ for dir in dirs:
         hname=dir+"/"+histo+"_bdt"
         hname_shapes=dir+"/"+histo+"_bdt_shapes"
 
-        if dir.__contains__("Z#rightarrow ll") and histo.__contains__("CR_3b"):
+        if dir.__contains__("Z#rightarrow ll") and ( histo.__contains__("ee_A_CR_3b") or histo.__contains__("mumu_A_CR_3b") ):
+
             hcor = fcor.Get(hname)
             huncor = funcor.Get(hname)
             
-            if hcor==None: continue
-            if huncor==None: continue    
+            #if hcor==None: continue
+            #if huncor==None: continue    
             
             h_up=hcor.Clone(histo+"_bdt_dydRup")
             h_up.Reset()
