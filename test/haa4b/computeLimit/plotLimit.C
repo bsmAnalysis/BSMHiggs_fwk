@@ -42,7 +42,7 @@ TGraph* getLimitGraph(TTree* tree, float Quantil){
      if(TquantExp==Quantil){
         //printf("Quantil = %f - mH=%f --> %f\n",TquantExp,Tmh,Tlimit);
         //
-        if(Tmh<20) continue;
+        if(Tmh<15) continue;
         toReturn->SetPoint(i, Tmh, Tlimit);
         i++;
      }
@@ -150,10 +150,10 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   //make TH Cross-sections
    string suffix = outputDir;
 
-//   Double_t mA[8]={12.,15.,20.,25.,30.,40.,50.,60.};
-   Double_t mA[8]={20.,25.,30.,40.,50.,60.};
+   Double_t mA[7]={15.,20.,25.,30.,40.,50.,60.};
+//   Double_t mA[8]={20.,25.,30.,40.,50.,60.};
 
-   TGraph* THXSec = new TGraph(999); int N=8;
+   TGraph* THXSec = new TGraph(999); int N=7;
    for (int i=0; i<N; i++) {
      THXSec->SetPoint(i,mA[i],1.37);
    }
@@ -201,7 +201,7 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   c->SetGridx();
   c->SetGridy();
 //  TH1F* framework = new TH1F(inputs.Data(),"Graph",1,12,60); //3000);
-  TH1F* framework = new TH1F(inputs.Data(),"Graph",1,20,60); //3000);
+  TH1F* framework = new TH1F(inputs.Data(),"Graph",1,15,60); //3000);
   framework->SetStats(false);
   framework->SetTitle("");
   framework->GetXaxis()->SetTitle("M_{a} [GeV]");
