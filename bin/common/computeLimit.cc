@@ -931,7 +931,7 @@ int main(int argc, char* argv[])
       } else {
         if(runZh){ // Zh
           Channels.push_back("ee_A_CR");Channels.push_back("mumu_A_CR"); // DY CR
-          Channels.push_back("emu_A_SR");Channels.push_back("emu_A_CR"); // Top CR     
+          Channels.push_back("emu_A_SR");//Channels.push_back("emu_A_CR"); // Top CR     
         }else{ // Wh
           Channels.push_back("e_A_CR");Channels.push_back("mu_A_CR"); // Top/W CR
           //Channels.push_back("e_A_CR5j");Channels.push_back("mu_A_CR5j"); // tt+bb CR   
@@ -1022,7 +1022,7 @@ int main(int argc, char* argv[])
       ch.push_back("ee_A_SR"); ch.push_back("mumu_A_SR");     
       if (simfit) {
         ch.push_back("ee_A_CR"); ch.push_back("mumu_A_CR");   
-        ch.push_back("emu_A_SR"); ch.push_back("emu_A_CR");       
+        ch.push_back("emu_A_SR"); //ch.push_back("emu_A_CR");       
       }
 
     } else { // Wh
