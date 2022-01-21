@@ -90,7 +90,7 @@ JobName        = "computeLimits"
 CWD=os.getcwd()
 #phase=-1
 
-autoMCstats = False
+autoMCstats = True
 # https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1425/1.html
 #thredMCstat = 0.001
 thredMCstat = 0
@@ -162,7 +162,7 @@ SUBMASS = [12, 15, 20, 25, 30, 40, 50, 60]
 
 #-- owen, july 24: replace --statBinByBin with --autoMCStats to use Combine implementation of bin-by-bin MC stat errs.
 LandSArgCommonOptions=" --dropBckgBelow 0.01  --autoMCStats  "
-LandSArgCommonOptions_2016wh=" --dropBckgBelow 0.015  --autoMCStats   "
+LandSArgCommonOptions_2016wh=" --dropBckgBelow 0.015  --autoMCStats  "
 
 #--- these were the last ones from Yuan
 #LandSArgCommonOptions=" --dropBckgBelow 0.01 --statBinByBin 0.001 " #--BackExtrapol " #--statBinByBin 0.00001 "

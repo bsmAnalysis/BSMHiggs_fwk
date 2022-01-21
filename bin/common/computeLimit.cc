@@ -1643,8 +1643,12 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     if(it->second.isData)continue;
     TString procName = it->first.c_str();
     //if(!(procName.Contains("Single Top") || procName.Contains("t#bar{t}+#gammaZW") || procName.Contains("Z#rightarrow") || procName.Contains("VV") || procName.Contains("Vh") || procName.Contains("t#bar{t}") || procName.Contains("W#rightarrow")))continue;
-    if(!(procName.Contains("Other Bkgds") || procName.Contains("Z#rightarrow") || procName.Contains("t#bar{t}") || procName.Contains("W#rightarrow")))continue;
-        printf("Subtracting nonQCD process from data: %s, long name %s \n", it->second.shortName.c_str(), procName.Data() ); 
+
+    if(!(procName.Contains("Other Bkgds") || procName.Contains("Z#rightarrow") || procName.Contains("t#bar{t}") )) continue; 
+    // || procName.Contains("W#rightarrow")))continue;
+    
+    printf("Subtracting nonQCD process from data: %s, long name %s \n", it->second.shortName.c_str(), procName.Data() ); 
+
     if ( fdInputFile.Length() > 0 ) {
        if ( strcmp( it->second.shortName.c_str(), "wlnu" ) == 0 ) {
           if ( verbose ) { printf("  applying w_norm_e and w_norm_mu\n") ; }
@@ -1740,8 +1744,6 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
 
 
 
-
-
   for(std::map<string, ChannelInfo_t>::iterator chData = dataProcIt->second.channels.begin(); chData!=dataProcIt->second.channels.end(); chData++){
     if(std::find(selCh.begin(), selCh.end(), chData->second.channel)==selCh.end())continue;
 
@@ -1816,7 +1818,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
    //-- For every bin in B, C, and D, check if it's negative.  If it is, set error to sqrt( err^2 + val^2 ) and value to 1 event.
     resetNegativeBinsAndErrors( hChan_SB, 1. ) ; // C
     resetNegativeBinsAndErrors( hCtrl_SB, 1. ) ; // D
-    resetNegativeBinsAndErrors( hCtrl_SI, 0. ) ; // B
+    resetNegativeBinsAndErrors( hCtrl_SI, 0. ) ; // B 
 
  
     if(hCtrl_SB->Integral()>0){
@@ -3757,7 +3759,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       
       fprintf(pFile, "-------------------------------\n");  
       if ( autoMCStats ) {
-         fprintf( pFile, "* autoMCStats 5\n") ;
+         fprintf( pFile, "* autoMCStats 0\n") ;
          fprintf(pFile, "-------------------------------\n");  
       }
       fclose(pFile);
@@ -4128,7 +4130,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
               ///double xbins[] = {-0.31, -0.25, -0.07, 0.12, 0.19, 0.35};   // july 21, new trial bins
               ///if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.00;xbins[3]=0.09; xbins[4]=0.17;xbins[5]=0.35;}  // july 21, new trial bins
              //-----------------
-              double xbins[] = {-0.31, -0.12,  0.00, 0.12, 0.19, 0.35};   // july 22, new trial bins
+	      double xbins[] = {-0.31, -0.12,  0.00, 0.12, 0.19, 0.35};   // july 22, new trial bins
               if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.00;xbins[3]=0.09; xbins[4]=0.17;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins
              //-----------------
 
