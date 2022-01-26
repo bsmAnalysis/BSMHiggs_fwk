@@ -10,12 +10,13 @@
    //     cards_SB13TeV_SM_Wh_2018_noSoftb
    //
 
-   void draw_ddqcd_closure( bool pause = false, const char* jobs_dir = "new-results-2020-10-01" ) {
+   void draw_ddqcd_closure( bool pause = false, const char* jobs_dir = "" ) {
 
       gStyle -> SetPadBottomMargin(0.25) ;
       gStyle -> SetPadTopMargin(0.05) ;
       gStyle -> SetOptTitle(0) ;
       gStyle -> SetPadLeftMargin(0.20) ;
+      //      gStyle -> SetStats(0) ;
 
       vector<string> sel ;
       vector<string> lep ;
@@ -79,11 +80,11 @@
 
                       char infile[10000] ;
 
-                      sprintf( infile, "%s/cards_SB13TeV_SM_Wh_%s_noSoftb/0040/haa4b_40_13TeV_wh.root", jobs_dir, year[yi].c_str() ) ;
+                      sprintf( infile, "%scards_SB13TeV_SM_Wh_%s_noSoftb/0040/haa4b_40_13TeV_wh.root", jobs_dir, year[yi].c_str() ) ;
                       TFile tf( infile, "READ" ) ;
                       if ( !tf.IsOpen() ) { printf("\n\n *** problem opening %s\n\n", infile ) ; gSystem -> Exit(-1) ; }
 
-                      sprintf( infile, "%s/cards_SB13TeV_SM_Wh_%s_noSoftb/0040/fitDiagnostics-first.root", jobs_dir, year[yi].c_str() ) ;
+                      sprintf( infile, "%scards_SB13TeV_SM_Wh_%s_noSoftb/0040/fitDiagnostics-first.root", jobs_dir, year[yi].c_str() ) ;
                       TFile tf_fd( infile, "READ" ) ;
                       if ( !tf_fd.IsOpen() ) { printf("\n\n *** problem opening %s\n\n", infile ) ; gSystem -> Exit(-1) ; }
 
@@ -317,6 +318,8 @@
       legend -> AddEntry( h_data_minus_nonqcd_vs_channel_total_error, "Data - non QCD" ) ;
       legend -> AddEntry( h_pred_vs_channel_total_error, "DD QCD prediction" ) ;
 
+      h_data_minus_nonqcd_vs_channel_total_error -> SetStats(0) ;
+
       h_data_minus_nonqcd_vs_channel_total_error -> Draw("e2" ) ;
       h_data_minus_nonqcd_vs_channel -> Draw("same" ) ;
       h_pred_vs_channel_total_error -> Draw("e2 same" ) ;
@@ -336,7 +339,7 @@
 
 
 
-      can -> SaveAs( "output-dir/ddqcd-closure.pdf" ) ;
+      can -> SaveAs( "ddqcd-closure.pdf" ) ;
 
 
  //   float ymin = -10. ;

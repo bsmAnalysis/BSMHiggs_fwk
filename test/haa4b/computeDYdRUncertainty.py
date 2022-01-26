@@ -7,19 +7,25 @@ import math
 
 from ROOT import gROOT, gBenchmark, gRandom, gSystem, Double
 
-
-year="2016" #to use only in 2016 DY MC
-
+#to use only in 2016 DY MC  
+year="2016" 
 vh_tag="ZH"
 
+PLOTTER=vh_tag+"_"+year+"_2020_02_05_forLimits"   
+if year == "2016":   
+    PLOTTER=vh_tag+"_"+year+"_2020_06_19_forLimits" 
+
 ## Input file without DY DR  corrections:
-funcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits_v1.root","READ")
+#funcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits_v1.root","READ")
+funcor = rt.TFile("plotter_"+PLOTTER+"_v1.root","READ")    
 
 ## Input file with DY DR corrections:      
-fcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits_v2.root","READ")       
+#fcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits_v2.root","READ")       
+fcor = rt.TFile("plotter_"+PLOTTER+"_v2.root","READ")  
 
 ## Target ROOT file to store up and down templates in BDT (must be similar to v2):
-flimit = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits.root","UPDATE")
+#flimit = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits.root","UPDATE")
+flimit = rt.TFile("plotter_"+PLOTTER+".root","UPDATE")        
 
 def drawHist(cname, hcor, h_up, h_down):
 
@@ -88,8 +94,8 @@ for dir in dirs:
     for ivar in range(nvarsToInclude):
         hsyst.GetXaxis().SetBinLabel(ivar+1,syst.GetXaxis().GetBinLabel(ivar+1)) 
 
-    hsyst.GetXaxis().SetBinLabel(nvarsToInclude,"_dydRup")
-    hsyst.GetXaxis().SetBinLabel(nvarsToInclude+1,"_dydRdown") 
+    hsyst.GetXaxis().SetBinLabel(nvarsToInclude+1,"_dydRup")
+    hsyst.GetXaxis().SetBinLabel(nvarsToInclude+2,"_dydRdown") 
 
     flimit.cd(dir)    
     rt.gDirectory.Delete("all_optim_systs;1") 
@@ -103,13 +109,10 @@ for dir in dirs:
         hname=dir+"/"+histo+"_bdt"
         hname_shapes=dir+"/"+histo+"_bdt_shapes"
 
-        if dir.__contains__("Z#rightarrow ll") and ( histo.__contains__("ee_A_CR_3b") or histo.__contains__("mumu_A_CR_3b") ):
+        if ( year == "2016" ) and dir.__contains__("Z#rightarrow ll") and ( histo.__contains__("ee_A_CR_3b") or histo.__contains__("mumu_A_CR_3b") ):
 
             hcor = fcor.Get(hname)
             huncor = funcor.Get(hname)
-            
-            #if hcor==None: continue
-            #if huncor==None: continue    
             
             h_up=hcor.Clone(histo+"_bdt_dydRup")
             h_up.Reset()
@@ -135,7 +138,7 @@ for dir in dirs:
 
         else: 
             hcor = fcor.Get(hname)
-            huncor = funcor.Get(hname)
+#            huncor = funcor.Get(hname)
             hcor_shapes = fcor.Get(hname_shapes)
             if hcor==None:
                 print("Histo is Null for that process ", hname) 
