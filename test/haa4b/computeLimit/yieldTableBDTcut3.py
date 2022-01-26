@@ -93,8 +93,8 @@ for chan in chans:
    print("\n\n Opening output tex file: {}\n".format(tex_file_name) )
    tex_file = open( tex_file_name, "w" )
 
-   tex_file.write("\\begin{table}\n")
-   tex_file.write("\\begin{center}\n")
+#   tex_file.write("\\begin{table}\n")
+#   tex_file.write("\\begin{center}\n")
    #tex_file.write("\\resizebox{\\textwidth}{!}{\n")
    tex_file.write("\\small\n")
    tex_file.write("\\begin{tabular}{||l||")
@@ -370,8 +370,8 @@ for chan in chans:
 
    tex_file.write("\\end{tabular}\n")
    #tex_file.write("}\n")
-   tex_file.write("\\end{center}\n")
-   tex_file.write("\\end{table}\n")
+#   tex_file.write("\\end{center}\n")
+#   tex_file.write("\\end{table}\n")
 
 
 exit()

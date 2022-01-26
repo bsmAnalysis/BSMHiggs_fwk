@@ -202,8 +202,19 @@ void resetNegativeBinsAndErrors( TH1* hp, double val_for_reset = 1., double min_
             printf("  resetNegativeBinsAndErrors : hist %s, bin %d, val = %.1f, reset val to %.1f and err to %.1f.\n",
              hp->GetName(), hbi, val, val_for_reset, sqrt( pow( err, 2. ) + pow( val, 2. ) ) ) ;
          }
-         hp -> SetBinContent( hbi, val_for_reset ) ;
-         hp -> SetBinError( hbi, sqrt( pow( err, 2. ) + pow( val, 2. ) ) ) ;
+	 double max_error=0.5*fabs(val);
+
+	 hp -> SetBinContent( hbi, val_for_reset ) ;
+	 hp -> SetBinError( hbi, sqrt( pow( err, 2. ) + pow( val, 2. ) ) ) ;
+
+	 if(val_for_reset==0.) { // for region B (QCD template) reset errors if weights too large
+	   if ( (fabs(val)>=1) && (err > max_error) ) {   
+	     printf(" REL ERR > 1: resetNegativeBinsAndErrors : hist %s, bin %d, val = %.1f, reset val to %.1f and err to %.1f.\n", 
+		    hp->GetName(), hbi, val, val_for_reset, 1.0 ); //max_error );  
+	     hp -> SetBinError( hbi, 1.0 ) ; 
+	   }
+	 }
+
       }
    } // hbi
 
@@ -1642,11 +1653,13 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
   for(std::map<string, ProcessInfo_t>::iterator it=procs.begin(); it!=procs.end();it++){
     if(it->second.isData)continue;
     TString procName = it->first.c_str();
-    //if(!(procName.Contains("Single Top") || procName.Contains("t#bar{t}+#gammaZW") || procName.Contains("Z#rightarrow") || procName.Contains("VV") || procName.Contains("Vh") || procName.Contains("t#bar{t}") || procName.Contains("W#rightarrow")))continue;
 
-    if(!(procName.Contains("Other Bkgds") || procName.Contains("Z#rightarrow") || procName.Contains("t#bar{t}") )) continue; 
-    // || procName.Contains("W#rightarrow")))continue;
-    
+    if(!(procName.Contains("Other Bkgds") || procName.Contains("Z#rightarrow") || procName.Contains("t#bar{t}") || procName.Contains("W#rightarrow")))continue;
+    /*
+    if(inFileUrl.Contains("2018")){
+      if(procName.Contains("W#rightarrow"))continue; // in regions B,D, skip W sample from non-QCD processes  
+    }
+    */
     printf("Subtracting nonQCD process from data: %s, long name %s \n", it->second.shortName.c_str(), procName.Data() ); 
 
     if ( fdInputFile.Length() > 0 ) {
@@ -1744,6 +1757,8 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
 
 
 
+
+
   for(std::map<string, ChannelInfo_t>::iterator chData = dataProcIt->second.channels.begin(); chData!=dataProcIt->second.channels.end(); chData++){
     if(std::find(selCh.begin(), selCh.end(), chData->second.channel)==selCh.end())continue;
 
@@ -1818,7 +1833,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
    //-- For every bin in B, C, and D, check if it's negative.  If it is, set error to sqrt( err^2 + val^2 ) and value to 1 event.
     resetNegativeBinsAndErrors( hChan_SB, 1. ) ; // C
     resetNegativeBinsAndErrors( hCtrl_SB, 1. ) ; // D
-    resetNegativeBinsAndErrors( hCtrl_SI, 0. ) ; // B 
+    resetNegativeBinsAndErrors( hCtrl_SI, 0. ) ; // B // georgia changed from: resetNegativeBinsAndErrors( hCtrl_SI, 0. ) ;
 
  
     if(hCtrl_SB->Integral()>0){
@@ -2860,7 +2875,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       legA->Draw("same");    legA->SetTextFont(42);
 
-      double iLumi=35.9;
+      double iLumi=36.3;
       double iEcm=13;
       if(lumi > 0) iLumi = lumi;
    
@@ -4131,6 +4146,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
               ///if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.00;xbins[3]=0.09; xbins[4]=0.17;xbins[5]=0.35;}  // july 21, new trial bins
              //-----------------
 	      double xbins[] = {-0.31, -0.12,  0.00, 0.12, 0.19, 0.35};   // july 22, new trial bins
+	      //double xbins[] = {-0.31, -0.12,  0.00, 0.12, 0.18, 0.35};  // january 20, 2022, new trial bins
               if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.00;xbins[3]=0.09; xbins[4]=0.17;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins
              //-----------------
 

@@ -568,8 +568,8 @@ for ch in e_mu:
     #hratio.Draw("same 2 0")
     
     
-    hratio.SetMinimum(0.6);
-    hratio.SetMaximum(1.4);
+    hratio.SetMinimum(0.2);
+    hratio.SetMaximum(1.8);
     
     hratio.SetLineColor(1)
     hratio.SetFillStyle(3005)
@@ -588,7 +588,7 @@ for ch in e_mu:
     
     if(blind>0):
 #        blinding_box2 = rt.TPave(hdata.GetBinLowEdge(hdata.FindBin(blind)), 0.4, hdata.GetXaxis().GetXmax(), 1.6, 0, "NB" )  
-        blinding_box2 = rt.TPave(hdata.GetBinLowEdge(blind), 0.4, hdata.GetXaxis().GetXmax(), 1.6, 0, "NB" )  
+        blinding_box2 = rt.TPave(hdata.GetBinLowEdge(blind), 0.2, hdata.GetXaxis().GetXmax(), 1.8, 0, "NB" )  
         blinding_box2.SetFillColor(15)
         blinding_box2.SetFillStyle(3013)
         blinding_box2.Draw("same F");
