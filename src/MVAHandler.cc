@@ -81,6 +81,23 @@ bool MVAHandler::initTree(TString mvaout)
   MVAofile = TFile::Open( mvaout, "recreate");
   to3b = new TTree("TribMVA","TribMVA");
   to4b = new TTree("QuabMVA","QuabMVA");
+  toSignal = new TTree("H4bMVA","H4bMVA");
+
+
+  toSignal->Branch("WpT",  &evSummary_.WpT,  "WpT/F"); 
+  toSignal->Branch("Hmass",  &evSummary_.Hmass,  "Hmass/F");   
+  toSignal->Branch("HpT",  &evSummary_.HpT,  "HpT/F");      
+  toSignal->Branch("bbdRAve",  &evSummary_.bbdRAve,  "bbdRAve/F"); 
+  toSignal->Branch("bbdMMin",  &evSummary_.bbdMMin,  "bbdMMin/F");  
+  toSignal->Branch("HHt",  &evSummary_.HHt,  "HHt/F");
+  toSignal->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F"); 
+  toSignal->Branch("lepPt", &evSummary_.lepPt, "lepPt/F");
+  toSignal->Branch("pfMET", &evSummary_.pfMET, "pfMET/F"); 
+  toSignal->Branch("MTw", &evSummary_.MTw, "MTw/F");
+  toSignal->Branch("ljDR", &evSummary_.ljDR, "ljDR/F"); 
+  toSignal->Branch("weight",  &evSummary_.weight,  "weight/F");
+  toSignal->Branch("lheNJets",  &evSummary_.lheNJets,  "lheNJets/I"); 
+
 
   to3b->Branch("WpT",  &evSummary_.WpT,  "WpT/F");
   to3b->Branch("Hmass",  &evSummary_.Hmass,  "Hmass/F");
@@ -117,6 +134,13 @@ bool MVAHandler::initTree(TString mvaout)
 //
 void MVAHandler::fillTree()
 {
+
+  if ( evSummary_.is3b || evSummary_.is4b )
+    {
+      if ( toSignal ) toSignal->Fill(); 
+    }
+
+  // Fill MVA separately for 3b and 4b
   if ( evSummary_.is3b && evSummary_.is4b )
   {
     std::cout << "One event can not be both in 3 and 4 b cat! Please check!" << std::endl;
@@ -139,6 +163,7 @@ void MVAHandler::fillTree()
 void MVAHandler::writeTree()
 {
   //TFile *MVAofile=TFile::Open( outURL, "recreate");  
+  toSignal->Write();
   to3b->Write();
   to4b->Write();
   MVAofile->Close();

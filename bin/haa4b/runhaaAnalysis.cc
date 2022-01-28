@@ -94,7 +94,7 @@ struct ptsort: public std::binary_function<LorentzVector, LorentzVector, bool>
 struct btagsort: public std::binary_function<PhysicsObject_Jet, PhysicsObject_Jet, float> 
 {
   bool operator () (const PhysicsObject_Jet & x, PhysicsObject_Jet & y) 
-  { return  ( x.btag0 > y.btag0 ) ; }
+  { return  ( x.btag1 > y.btag1 ) ; }
 }; 
 
 //bool runDBversion = false;
@@ -2703,6 +2703,7 @@ int main(int argc, char* argv[])
 	  // 	  // AK4 jets:
 	  //--------------------------------------------------------------------------
 	  sort(GoodIdJets.begin(), GoodIdJets.end(), ptsort());
+	  //sort(GoodIdJets.begin(), GoodIdJets.end(), btagsort());    
 
 	  //--------------------------------------------------------------------------
 	  // Secondary vertices (soft-b collection)
@@ -2806,9 +2807,39 @@ int main(int argc, char* argv[])
 	  for (auto & i : CSVLoosebJets) { GoodIdbJets.push_back(i);}
 	  //	  for (auto & i : SVs) {  GoodIdbJets.push_back(i); }
 
+	  // sort GoodIdJets in btag 
+	  //	  sort(GoodIdJets.begin(), GoodIdJets.end(), btagsort());  
+
+	  // pseudo-bjets are the goodid-jets sorted in btag
 	  vector<LorentzVector> pseudoGoodIdbJets;
-	  for (auto & i : GoodIdJets) { pseudoGoodIdbJets.push_back(i);}
-	  //	  for (auto & i : SVs) {  pseudoGoodIdbJets.push_back(i); } // have you x-cleaned jets and SVs?
+	  //	  for (auto & i : GoodIdJets) { pseudoGoodIdbJets.push_back(i);}
+	  PhysicsObjectJetCollection vJets_cut4;
+
+	  int countv(0);
+	  for(size_t ijet=0; ijet<vJets.size(); ijet++) {  
+	    if(fabs(vJets[ijet].eta())>2.5) continue;   
+
+	    PhysicsObject_Jet vJets_i(vJets[ijet]);
+
+	    vJets_cut4.push_back(vJets_i);
+	    countv++; if (countv>3) break;
+	  }
+
+	  sort(vJets_cut4.begin(), vJets_cut4.end(), btagsort()); 
+
+          for(size_t ijet=0; ijet<vJets_cut4.size(); ijet++) { 
+             pseudoGoodIdbJets.push_back(vJets_cut4[ijet]); 
+
+	     if ( verbose) {
+	       printf("AK4-Jet (sorted in btag) has : pt=%6.1f, eta=%7.3f, phi=%7.3f, mass=%7.3f, btag=%7.3f\n",     
+		      vJets_cut4[ijet].pt(),    
+		      vJets_cut4[ijet].eta(),  
+		      vJets_cut4[ijet].phi(),
+		      vJets_cut4[ijet].M(),
+		      vJets_cut4[ijet].btag1
+		      );
+	     }
+          }
 	  
 	  //At least 2 jets && 2 b-tags  
 	  //	  bool passNJ2(GoodIdJets.size()>=3 && GoodIdbJets.size()>=2);     
@@ -2903,6 +2934,8 @@ int main(int argc, char* argv[])
 	    
 	  }
 
+
+
 	  //#########################################################
 	  //####  RUN PRESELECTION AND CONTROL REGION PLOTS  ########
 	  //#########################################################
@@ -2946,9 +2979,11 @@ int main(int argc, char* argv[])
 	  bool isSignalRegion(false);
 	  if (tag_subcat.Contains("CR") || evcat==EMU) { 
 	    // contains (2b,3j) and (2b, 4j)
+
 	    GoodIdbJets.clear();
-	    for (auto & i : GoodIdJets) { GoodIdbJets.push_back(i);}
-	    //	    for (auto & i : SVs) {  GoodIdbJets.push_back(i); }
+	    //	    for (auto & i : GoodIdJets) { GoodIdbJets.push_back(i);}
+	    for (auto & i : pseudoGoodIdbJets) { GoodIdbJets.push_back(i);}
+
 	  } else if(tag_subcat.Contains("SR")) {  
 	    isSignalRegion=true;
 	  } else {
