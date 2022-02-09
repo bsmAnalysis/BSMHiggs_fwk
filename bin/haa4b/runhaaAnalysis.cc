@@ -1173,12 +1173,12 @@ int main(int argc, char* argv[])
 
     TMVAReader myTribTMVAReader;
     myTribTMVAReader.InitTMVAReader();
-    std::string TribMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/mva_all/"+chpath+"Haa4bSBClassificationTribMVA_BDT.weights.xml"; // ---> use a signle BDT
+    std::string TribMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"Haa4bSBClassificationTribMVA_BDT.weights.xml"; // ---> use a signle BDT
     myTribTMVAReader.SetupMVAReader( "Haa4bSBClassificationTribMVA", TribMVA_xml_path );
 
     TMVAReader myQuabTMVAReader;
     myQuabTMVAReader.InitTMVAReader();
-    std::string QuabMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/mva_all/"+chpath+"Haa4bSBClassificationQuabMVA_BDT.weights.xml"; 
+    std::string QuabMVA_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"Haa4bSBClassificationQuabMVA_BDT.weights.xml"; 
     myQuabTMVAReader.SetupMVAReader( "Haa4bSBClassificationQuabMVA", QuabMVA_xml_path );
     
     //####################################################################################################################
@@ -1210,6 +1210,8 @@ int main(int argc, char* argv[])
             cout << "nDuplicates: " << nDuplicates << endl;
             continue;
         }
+
+	//       	if ( verbose ) printf("\n\n Event info %3d, event number %3u: \n",iev, ev.event);        
 	// VJets sample check: only use HT<70 events in the WJets inclusive samples, DYJets remain +NJets samples
 	/*
 	if( (isMC_DY && !(isMC_DY_HTbin)) && !dtag.Contains("amcNLO")) {
@@ -2822,7 +2824,7 @@ int main(int argc, char* argv[])
 	    PhysicsObject_Jet vJets_i(vJets[ijet]);
 
 	    vJets_cut4.push_back(vJets_i);
-	    countv++; if (countv>3) break;
+	    //	    countv++; if (countv>3) break;
 	  }
 
 	  sort(vJets_cut4.begin(), vJets_cut4.end(), btagsort()); 
@@ -3100,7 +3102,6 @@ int main(int argc, char* argv[])
 		 );
 	    }
 	  else if (tag_subcat.Contains("4b")) 
-	    //(GoodIdbJets.size() >= 4)
 	    {
 	      mvaBDT = myQuabTMVAReader.GenReMVAReader
 		(
@@ -3168,8 +3169,13 @@ int main(int argc, char* argv[])
 	    mon.fillHisto("dRave",tags,dRave_,weight);
 	    mon.fillHisto("dmmin",tags,dm, weight);
 	    // BDT
-	    mon.fillHisto("bdt", tags, mvaBDT, weight);
-	      
+	    if(isMC && isSignalRegion) {
+	      // only use the test events in the MC templates in the Signal region
+	      weight*=2.0;
+	      if (!(iev % 2 == 0)) mon.fillHisto("bdt", tags, mvaBDT, weight);
+	    } else {
+	      mon.fillHisto("bdt", tags, mvaBDT, weight);  
+	    }
 	    
 	    //##############################################################################
 	    //############ MVA Handler ####################################################
@@ -3177,7 +3183,7 @@ int main(int argc, char* argv[])
 	    
 	    if (runMVA) {
 	      
-	      float mvaweight = 1.0;
+	      float mvaweight = 1.0; // weight; //xsecWeight; //1.0;
 	      genWeight > 0 ? mvaweight = weight/xsecWeight : mvaweight = -weight / xsecWeight; // Include all weights except for the xsecWeight
 	      if ( isSignalRegion && GoodIdbJets.size() >= 3) 
 		{
@@ -3185,13 +3191,14 @@ int main(int argc, char* argv[])
 		    myMVAHandler_.getEntry
 		      (
 		       //	       GoodIdbJets.size() == 3, GoodIdbJets.size() >= 4, // 3b cat, 4b cat
+		       (iev % 2 == 0),
 		       tag_subcat == "SR_3b", tag_subcat == "SR_4b" , 
 		       wsum.pt(), //W only, w pt
 		       allHadronic.mass(), allHadronic.pt(), dRave_, dm, ht, //Higgs only, higgs mass, higgs pt, bbdr average, bb dm min, sum pt from all bs
 		       dphi_Wh, //W and H, dr 
 		       selLeptons[0].pt(),
 		       imet.pt(), sqrt(tMass), mindphijmet,
-		       mvaweight, //note, since weight is not the weight we want, we store all others except xSec weigh
+		       mvaweight, xsecWeight, //note, since weight is not the weight we want, we store all others except xSec weigh
 		       ev.lheNJets //AUX variable for weight calculation
 		       );
 		    myMVAHandler_.fillTree();
