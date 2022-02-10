@@ -25,6 +25,7 @@
 struct MVAEvtContainer
 {
   //catagory type
+  bool isEven = false;
   bool is3b = false, is4b = false; 
   //W boson related only related var
   float WpT = -1.0;
@@ -38,7 +39,7 @@ struct MVAEvtContainer
   float pfMET = -1.0; float MTw = -1.0;
   float ljDR = -1.0;
   //weight
-  float weight = -1.0;
+  float weight = -1.0; float xsecWeight = 1.0;
   //AUX
   int lheNJets = -1;
 };
@@ -57,20 +58,22 @@ class MVAHandler
   //read mode, from calculated var
   void resetStruct();
   void getEntry(
+		bool isEven, 
                 bool is3b, bool is4b,
                 float Wpt, //W only
                 float Hmass, float HpT, float bbdRAve, float bbdMMin, float HHt, //Higgs only
                 float WHdR, //W and H
 		float lepPt, float pfMET, float MTw,
 		float ljDR,
-                float weight,
+                float weight, float xsecWeight,
                 int lheNJets
                );
 
   //write mode, to mva tree
   TFile* MVAofile;
   //the tree, 2 for 3b 4b separately
-  TTree *to3b, *to4b, *toSignal;
+  TTree *to3b_e, *to4b_e, *toSignal_e;
+  TTree *to3b_o, *to4b_o, *toSignal_o;
   bool initTree(TString mvaout);
   void fillTree();
   void writeTree();
