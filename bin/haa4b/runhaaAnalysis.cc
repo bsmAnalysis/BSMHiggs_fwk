@@ -3168,14 +3168,6 @@ int main(int argc, char* argv[])
 	    // DRave, DMmin
 	    mon.fillHisto("dRave",tags,dRave_,weight);
 	    mon.fillHisto("dmmin",tags,dm, weight);
-	    // BDT
-	    if(isMC && isSignalRegion) {
-	      // only use the test events in the MC templates in the Signal region
-	      weight*=2.0;
-	      if (!(iev % 2 == 0)) mon.fillHisto("bdt", tags, mvaBDT, weight);
-	    } else {
-	      mon.fillHisto("bdt", tags, mvaBDT, weight);  
-	    }
 	    
 	    //##############################################################################
 	    //############ MVA Handler ####################################################
@@ -3206,42 +3198,52 @@ int main(int argc, char* argv[])
 		}
 	    } // runMVA
 	    
-	  }// ivar==0
+	    //	  }// ivar==0
 	  
 	  //##############################################################################
 	  //### HISTOS FOR STATISTICAL ANALYSIS (include systematic variations)
 	  //##############################################################################
 
-	  //	  if(passMet25 && passMt && passNJ2) {
-	  //	  if (passZmass && passNJ2) {
-	  
+	    //	  if(ivar==0) {
+	    // BDT
+	    if(isMC && isSignalRegion) { 
+	      // only use the test events in the MC templates in the Signal region 
+	      if (!(iev % 2 == 0)) mon.fillHisto("bdt", tags, mvaBDT, 2.*weight); 
+	    } else { 
+	      mon.fillHisto("bdt", tags, mvaBDT, weight); 
+	    }    
+
+	  } //end if(ivar==0)
+
 	    //scan the BDT cut and fill the shapes
-	    if( (string(varNames[ivar].Data()).find("_jesup") != string::npos) || (string(varNames[ivar].Data()).find("_jesdown") != string::npos) ){
-	      for (auto sf : variedJECSFs[ivar-3]){
-	        mon.fillHisto(TString("jecSF_bdt")+varNames[ivar],"all",mvaBDT,sf,weight);
+	  if( (string(varNames[ivar].Data()).find("_jesup") != string::npos) || (string(varNames[ivar].Data()).find("_jesdown") != string::npos) ){
+	    for (auto sf : variedJECSFs[ivar-3]){
+	      mon.fillHisto(TString("jecSF_bdt")+varNames[ivar],"all",mvaBDT,sf,weight);
+	    }
+	  }
+	  for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){
+	    if(mvaBDT>optim_Cuts1_bdt[index]){
+	      if(isSignalRegion) { 
+		if (!(iev % 2 == 0)) mon.fillHisto(TString("bdt_shapes")+varNames[ivar],tags,index, mvaBDT,2.*weight);
+	      } else {
+		mon.fillHisto(TString("bdt_shapes")+varNames[ivar],tags,index, mvaBDT,weight);    
 	      }
-	    }
-	    for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){
-	      if(mvaBDT>optim_Cuts1_bdt[index]){
-		mon.fillHisto(TString("bdt_shapes")+varNames[ivar],tags,index, mvaBDT,weight);
-		if (ivar==0) {
-		  mon.fillHisto(TString("higgsMass_shapes")+varNames[ivar],tags,index, allHadronic.mass(),weight);  
-		  mon.fillHisto(TString("higgsPt_shapes")+varNames[ivar],tags,index, allHadronic.pt(),weight);        
-		  mon.fillHisto(TString("ht_shapes")+varNames[ivar],tags,index, ht,weight);       
-		  mon.fillHisto(TString("pfmet_shapes")+varNames[ivar],tags,index, imet.pt(),weight);       
-		  mon.fillHisto(TString("ptw_shapes")+varNames[ivar],tags,index, wsum.pt(),weight);       
-		  mon.fillHisto(TString("mtw_shapes")+varNames[ivar],tags,index, sqrt(tMass),weight);
-		  mon.fillHisto(TString("dphiWh_shapes")+varNames[ivar],tags,index, dphi_Wh,weight);         
-		  mon.fillHisto(TString("dRave_shapes")+varNames[ivar],tags,index, dRave_,weight);
-		  mon.fillHisto(TString("dmmin_shapes")+varNames[ivar],tags,index, dm,weight);             
-		  mon.fillHisto(TString("dphilepmet_shapes")+varNames[ivar],tags,index,dphilepmet,weight);
-		  mon.fillHisto(TString("dphijmet_shapes")+varNames[ivar],tags,index,mindphijmet,weight);
-		  mon.fillHisto(TString("lep_pt_raw_shapes")+varNames[ivar],tags,index,selLeptons[0].pt(),weight);
-		}
-	      } // run slimmed analysis
-	    }
-	    
-	    //	  } // END SELECTION
+	      if (ivar==0) {
+		mon.fillHisto(TString("higgsMass_shapes")+varNames[ivar],tags,index, allHadronic.mass(),weight);  
+		mon.fillHisto(TString("higgsPt_shapes")+varNames[ivar],tags,index, allHadronic.pt(),weight);        
+		mon.fillHisto(TString("ht_shapes")+varNames[ivar],tags,index, ht,weight);       
+		mon.fillHisto(TString("pfmet_shapes")+varNames[ivar],tags,index, imet.pt(),weight);       
+		mon.fillHisto(TString("ptw_shapes")+varNames[ivar],tags,index, wsum.pt(),weight);       
+		mon.fillHisto(TString("mtw_shapes")+varNames[ivar],tags,index, sqrt(tMass),weight);
+		mon.fillHisto(TString("dphiWh_shapes")+varNames[ivar],tags,index, dphi_Wh,weight);         
+		mon.fillHisto(TString("dRave_shapes")+varNames[ivar],tags,index, dRave_,weight);
+		mon.fillHisto(TString("dmmin_shapes")+varNames[ivar],tags,index, dm,weight);             
+		mon.fillHisto(TString("dphilepmet_shapes")+varNames[ivar],tags,index,dphilepmet,weight);
+		mon.fillHisto(TString("dphijmet_shapes")+varNames[ivar],tags,index,mindphijmet,weight);
+		mon.fillHisto(TString("lep_pt_raw_shapes")+varNames[ivar],tags,index,selLeptons[0].pt(),weight);
+	      }
+	    } // run slimmed analysis
+	  }
 	  
 	} // Systematic variation END
 	
