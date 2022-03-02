@@ -3197,18 +3197,19 @@ int main(int argc, char* argv[])
 		  }
 		}
 	    } // runMVA
-	    
-	    //	  }// ivar==0
 	  
 	  //##############################################################################
 	  //### HISTOS FOR STATISTICAL ANALYSIS (include systematic variations)
 	  //##############################################################################
 
-	    //	  if(ivar==0) {
 	    // BDT
 	    if(isMC && isSignalRegion) { 
-	      // only use the test events in the MC templates in the Signal region 
-	      if (!(iev % 2 == 0)) mon.fillHisto("bdt", tags, mvaBDT, 2.*weight); 
+	      // only use the test events in the MC templates in the Signal region
+	      if(tag_qcd.Contains("A")) {
+		if (!(iev % 2 == 0)) mon.fillHisto("bdt", tags, mvaBDT, 2.*weight); 
+	      } else { 
+		mon.fillHisto("bdt", tags, mvaBDT, weight); 
+	      }
 	    } else { 
 	      mon.fillHisto("bdt", tags, mvaBDT, weight); 
 	    }    
@@ -3224,7 +3225,11 @@ int main(int argc, char* argv[])
 	  for(unsigned int index=0;index<optim_Cuts1_bdt.size();index++){
 	    if(mvaBDT>optim_Cuts1_bdt[index]){
 	      if(isSignalRegion) { 
-		if (!(iev % 2 == 0)) mon.fillHisto(TString("bdt_shapes")+varNames[ivar],tags,index, mvaBDT,2.*weight);
+		if(tag_qcd.Contains("A")) {
+		    if (!(iev % 2 == 0)) mon.fillHisto(TString("bdt_shapes")+varNames[ivar],tags,index, mvaBDT,2.*weight);
+		  } else {
+		    mon.fillHisto(TString("bdt_shapes")+varNames[ivar],tags,index, mvaBDT,weight);     
+		  }
 	      } else {
 		mon.fillHisto(TString("bdt_shapes")+varNames[ivar],tags,index, mvaBDT,weight);    
 	      }
