@@ -230,9 +230,38 @@ sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2018_noSoftb 3
 ```
 
 
+### Redoing the BDT binning optimization
 
+Merge the plotter root files for the data taking years into one root file each for WH and ZH.
 
+```
+  hadd all-WH.root plotter_WH_2016_2020_06_19_forLimits.root plotter_WH_2017_2020_02_05_forLimits.root plotter_WH_2018_2020_02_05_forLimits.root
+  hadd all-ZH.root plotter_ZH_2016_2020_06_19_forLimits.root plotter_ZH_2017_2020_02_05_forLimits.root plotter_ZH_2018_2020_02_05_forLimits.root
+```
 
+For each WH/ZH + nb + a mass combination you want to look at, create a simple root file with two histograms (h_sig and h_bg_sum) that holds the sum over lepton flavors and the sum over background components (for the background).
+
+```
+  root
+  .L draw_plotter_input.c
+  draw_plotter_input( 3, "all-WH.root", 60 )
+  draw_plotter_input( 4, "all-WH.root", 60 )
+  draw_plotter_input( 3, "all-ZH.root", 60 )
+  draw_plotter_input( 4, "all-ZH.root", 60 )
+  .q
+```
+
+Run the optimization
+
+```
+  root
+  .L optimization_from_plotter_hists.c
+  optimization_from_plotter_hists( "binning-optimization-input-WH-3b-ma60.root", 0.1, 2 )
+  optimization_from_plotter_hists( "binning-optimization-input-WH-4b-ma60.root", 0.1, 2 )
+  optimization_from_plotter_hists( "binning-optimization-input-ZH-3b-ma60.root", 0.1, 2 )
+  optimization_from_plotter_hists( "binning-optimization-input-ZH-4b-ma60.root", 0.1, 2 )
+  .q
+```
 
 
 
