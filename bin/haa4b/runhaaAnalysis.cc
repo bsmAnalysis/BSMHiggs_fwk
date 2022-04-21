@@ -2119,8 +2119,10 @@ int main(int argc, char* argv[])
             hasTrigger=true;
 
 	  } else { // MC tirgger:
-	    if(evcat==EE   && (hasEEtrigger || hasEtrigger)  ) hasTrigger=true;
-            if(evcat==MUMU && (hasMMtrigger || hasMtrigger) ) hasTrigger=true;
+	    if(evcat==EE && hasEEtrigger ) hasTrigger=true;   
+	    //if(evcat==MUMU && hasMMtrigger ) hasTrigger=true;  
+	    //	    if(evcat==EE   && (hasEEtrigger || hasEtrigger)  ) hasTrigger=true;
+	    if(evcat==MUMU && (hasMMtrigger || hasMtrigger) ) hasTrigger=true;
             if(evcat==EMU  && hasEMtrigger ) hasTrigger=true;
 
 	  }
@@ -2138,7 +2140,8 @@ int main(int argc, char* argv[])
 	  if(is2016MC && !isQCD) {
 	    trg_sf=getSFfrom2DHist(selLeptons[0].pt(), selLeptons[0].en_EtaSC, E_TRG_SF_h1);
 	  } else if(is2017MC && !isQCD){//2017 ele TRG scale factor: https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#E/gamma%20Trigger%20Recomendations
-	    trg_sf=0.991;
+	    //	    trg_sf=0.991;
+	    trg_sf= (0.116*0.934 + 0.232*0.992 + 0.65*1.000); // ~0.97 
 	  } else if(is2018MC && !isQCD){ // https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations
 	    trg_sf=1.0;
 	  }

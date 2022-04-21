@@ -532,7 +532,7 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("\ntext2workspace.py card_combined_wh.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-first.log \n")  
            #compute pvalue
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace.root >& COMB-signif-first.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-20 --rMax=20 --stepSize=0.05 --robustFit 1  >& log-first.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-10 --rMax=20 --stepSize=0.05 --robustFit 1  >& log-first.txt \n") 
 
            #############SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics-first.root\n\n\n")
            SCRIPT.writelines("mv fitDiagnostics.root fitDiagnostics-first.root\n\n\n")
@@ -553,7 +553,7 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("\ntext2workspace.py card_combined_wh.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-second.log \n")  
            #compute pvalue
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace.root >& COMB-signif-second.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-20 --rMax=20 --stepSize=0.05 --robustFit 1  >& log.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-10 --rMax=20 --stepSize=0.05 --robustFit 1  >& log.txt \n") 
 
 
 
@@ -685,7 +685,7 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_e_zh.dat".format(thredMCstat))
            SCRIPT.writelines("\ntext2workspace.py card_e_zh.dat -o workspace_e.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e.log \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_e.root >& COMB-signif-e.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-20 --rMax=10 --stepSize=0.05 --robustFit 1  >& log_e.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-10 --rMax=20 --stepSize=0.05 --robustFit 1  >& log_e.txt \n") 
            #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_e.txt \n")
 	   #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_e.txt\n")
 	   #########SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_e.root\n")
@@ -697,7 +697,7 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_mu_zh.dat".format(thredMCstat))
            SCRIPT.writelines("\ntext2workspace.py card_mu_zh.dat -o workspace_mu.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu.log \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_mu.root > COMB-signif-mu.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-20 --rMax=10 --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-10 --rMax=20 --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
            #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_mu.txt \n")
 	   #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_mu.txt\n")
 	   #########SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_mu.root\n")
@@ -833,7 +833,7 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +  " --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root >& cl-wh-first.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
            SCRIPT.writelines("text2workspace.py card_combined_wh.dat -o workspace-wh-first.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-wh-first.log \n")  
-           SCRIPT.writelines("combine -M FitDiagnostics workspace-wh-first.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-20 --rMax=20 --stepSize=0.05 --robustFit 1  >& log-wh-first.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace-wh-first.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-10 --rMax=20 --stepSize=0.05 --robustFit 1  >& log-wh-first.txt \n") 
            #############SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics-wh-first.root\n\n\n")
            SCRIPT.writelines("mv fitDiagnostics.root fitDiagnostics-wh-first.root\n\n\n")
            SCRIPT.writelines("mkdir datacards-wh-first-pass\n") ;
@@ -873,7 +873,7 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("text2workspace.py card_e_sr4b.dat -o workspace_e_sr4b.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e-sr4b.log  \n")  
            SCRIPT.writelines("text2workspace.py card_e.dat -o workspace_e.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e.log  \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_e.root >& COMB_e.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3      --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-20 --rMax=20 --stepSize=0.05 --robustFit 1  >& log_e.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3      --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-10 --rMax=20 --stepSize=0.05 --robustFit 1  >& log_e.txt \n") 
            #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_e.txt \n")
 	   #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_e.txt\n")
 	   #########SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_e.root\n\n")
@@ -887,7 +887,7 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("text2workspace.py card_mu_sr4b.dat -o workspace_mu_sr4b.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu-sr4b.log  \n")  
            SCRIPT.writelines("text2workspace.py card_mu.dat -o workspace_mu.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu.log  \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_mu.root > COMB_mu.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-20 --rMax=20 --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-10 --rMax=20 --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
            #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_mu.txt \n")
 	   #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_mu.txt\n")
 	   #########SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_mu.root\n\n")
