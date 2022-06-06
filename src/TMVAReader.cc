@@ -15,11 +15,12 @@ void TMVAReader::SetupMVAReader( std::string methodName, std::string modelPath )
     myreader->AddVariable( "Hmass"  , &Hmass );
     myreader->AddVariable( "HpT"    , &HpT );
     myreader->AddVariable( "bbdRAve", &bbdRAve );
+    myreader->AddVariable( "bbdMMin", &bbdMMin );  
     myreader->AddVariable( "HHt"    , &HHt );
     myreader->AddVariable( "WHdR"   , &WHdR );
     myreader->AddVariable( "lepPt"   , &lepPt );              
-    myreader->AddVariable( "pfMET"   , &pfMET );                                                                                                                                                                         
-    myreader->AddVariable( "MTw"   , &MTw );                                                                                                                                                                             
+    myreader->AddVariable( "pfMET"   , &pfMET ); 
+    if ( modelPath.find("WHaa4bMVA") != std::string::npos ) myreader->AddVariable( "MTw"   , &MTw ); 
     myreader->AddVariable( "ljDR"   , &ljDR ); 
   }
   else if ( methodName.find("QuabMVA") != std::string::npos )
@@ -31,9 +32,9 @@ void TMVAReader::SetupMVAReader( std::string methodName, std::string modelPath )
     myreader->AddVariable( "bbdMMin", &bbdMMin );
     myreader->AddVariable( "HHt"    , &HHt );
     myreader->AddVariable( "WHdR"   , &WHdR );
-    myreader->AddVariable( "lepPt"   , &lepPt );                                                                                                                                                                         
-    myreader->AddVariable( "pfMET"   , &pfMET );                                                                                                                                                                         
-    myreader->AddVariable( "MTw"   , &MTw );                                                                                                                                                                             
+    myreader->AddVariable( "lepPt"   , &lepPt ); 
+    myreader->AddVariable( "pfMET"   , &pfMET ); 
+    if ( modelPath.find("WHaa4bMVA") != std::string::npos ) myreader->AddVariable( "MTw"   , &MTw ); 
     myreader->AddVariable( "ljDR"   , &ljDR );
   }
   else

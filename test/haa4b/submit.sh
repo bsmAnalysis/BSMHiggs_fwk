@@ -37,7 +37,7 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 #--------------------------------------------------
 
 YEAR=2018
-CHANNEL=WH
+CHANNEL=ZH
 
 do_syst=True # Always run with Systematics, unless its QCD mode
 
@@ -88,8 +88,9 @@ fi
 
 ZPtSF_OUT=$MAINDIR/VPtSF_${CHANNEL}_$YEAR$SUFFIX
 BTAG_NTPL_OUTDIR=$MAINDIR/btag_SFs/$YEAR/btag_Ntpl$SUFFIX
-NTPL_OUTDIR=$MAINDIR/results_Ntpl_${CHANNEL}_$YEAR$SUFFIX   
-#NTPL_OUTDIR=$MAINDIR/results_Ntpl$SUFFIX  
+NTPL_OUTDIR=$MAINDIR/results_Ntpl_${CHANNEL}_$YEAR${SUFFIX}
+#NTPL_OUTDIR=$EOSDIR/results_Ntpl_${CHANNEL}_$YEAR$SUFFIX
+
 RUNLOG=$NTPL_OUTDIR/LOGFILES/runSelection.log
 queue='workday'   
 
@@ -176,7 +177,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        fi
 	# @btagSFMethod=1: Jet-by-jet updating of b-tagging status
 	# @btagSFMethod=2: Event reweighting using discriminator-dependent scale factors
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=$do_syst @runMVA=False @reweightDYZPt=True @reweightDYdR16=False @reweightTopPt=True @usemetNoHF=False @verbose=False @useDeepCSV=True @useWNJet=False @runQCD=$doQCD @runZH=$doZH @btagSFMethod=1" -s $queue #-t Data13TeV_ #-r true
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=$do_syst @runMVA=False @reweightDYZPt=True @reweightDYdR16=True @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=True @useWNJet=False @runQCD=$doQCD @runZH=$doZH @btagSFMethod=1" -s $queue -t MC13TeV_TTTo #-r true
    fi
 fi
 
@@ -222,7 +223,7 @@ if [[ $step > 2.999 && $step < 4 ]]; then
       INTLUMI=`tail -n 3 $RESULTSDIR/LUMI.txt | cut -d ',' -f 6`
     else
 	if [[ $JSON =~ "2016" ]]; then  
-	    INTLUMI=35866.932
+	    INTLUMI=36330.00 #35866.932
             echo "Please run step==2 above to calculate int. luminosity for 2016 data!" 
 	else
             if [[ $JSON =~ "2017" ]]; then
@@ -249,7 +250,7 @@ if [[ $step > 2.999 && $step < 4 ]]; then
     if [[ $step == 3 || $step == 3.01 ]]; then  # make plots and combined root files for limits only
 	echo "MAKE SUMMARY ROOT FILE FOR LIMITS, BASED ON AN INTEGRATED LUMINOSITY OF $INTLUMI" 
 	echo "Input DIR = "$NTPL_OUTDIR  
-	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outFile ${PLOTTER}_forLimits.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "all_optim_systs|all_optim_cut|(e|mu|ee|mumu|emu)_(A|B|C|D)_(SR|CR|CR5j)_(3b|4b)_(bdt|higgsMass|higgsPt|ht|pfmet|ptw|mtw|dphiWh|dRave|dmmin|dphijmet|dphilepmet|lep_pt_raw)(|_shapes)(|_umetup|_umetdown|_jerup|_jerdown|_(SubTotalPileUp|SubTotalRelative|SubTotalPt|SubTotalScale|SubTotalAbsolute|SubTotalMC|AbsoluteStat|AbsoluteScale|AbsoluteMPFBias|Fragmentation|SinglePionECAL|SinglePionHCAL|FlavorQCD|TimePtEta|RelativeJEREC1|RelativeJEREC2|RelativeJERHF|RelativePtBB|RelativePtEC1|RelativePtEC2|RelativePtHF|RelativeBal|RelativeSample|RelativeFSR|RelativeStatFSR|RelativeStatEC|RelativeStatHF|PileUpDataMC|PileUpPtRef|PileUpPtBB|PileUpPtEC1|PileUpPtEC2|PileUpPtHF)_jes(up|down)|_stat_eup|_stat_edown|_stat_eup|_stat_edown|_sys_eup|_sys_edown|_GS_eup|_GS_edown|_resRho_eup|_resRho_edown|_puup|_pudown|_pdfup|_pdfdown|_nloEWK_up|_nloEWK_down|_lesup|_lesdown|_softbup|_softbdown|_(b|c|l)tag(up|down))" $arguments
+	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outFile ${PLOTTER}_forLimits.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "all_optim_systs|all_optim_cut|(e|mu|ee|mumu|emu)_(A|B|C|D)_(SR|CR)_(3b|4b)_(bdt|higgsMass|higgsPt|ht|pfmet|ptw|mtw|dphiWh|dRave|dmmin|dphijmet|dphilepmet|lep_pt_raw)(|_shapes)(|_umetup|_umetdown|_jerup|_jerdown|_(SubTotalPileUp|SubTotalRelative|SubTotalPt|SubTotalScale|SubTotalAbsolute|SubTotalMC|AbsoluteStat|AbsoluteScale|AbsoluteMPFBias|Fragmentation|SinglePionECAL|SinglePionHCAL|FlavorQCD|TimePtEta|RelativeJEREC1|RelativeJEREC2|RelativeJERHF|RelativePtBB|RelativePtEC1|RelativePtEC2|RelativePtHF|RelativeBal|RelativeSample|RelativeFSR|RelativeStatFSR|RelativeStatEC|RelativeStatHF|PileUpDataMC|PileUpPtRef|PileUpPtBB|PileUpPtEC1|PileUpPtEC2|PileUpPtHF)_jes(up|down)|_stat_eup|_stat_edown|_stat_eup|_stat_edown|_sys_eup|_sys_edown|_GS_eup|_GS_edown|_resRho_eup|_resRho_edown|_puup|_pudown|_pdfup|_pdfdown|_nloEWK_up|_nloEWK_down|_lesup|_lesdown|_softbup|_softbdown|_(b|c|l)tag(up|down))" $arguments
     fi
 
     if [[ $step == 3.02 ]]; then # make plots for data-driven QCD bkg
@@ -260,9 +261,9 @@ if [[ $step > 2.999 && $step < 4 ]]; then
 
 #(ht|pfmet|ptw|mtw|higgsPt|higgsMass|dRave|dmmin|dphijmet|dphiWh|
     if [[ $step == 3 || $step == 3.1 ]]; then  # make plots and combine root files for mcbased study    
-	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption RECREATE --key haa_mcbased --only "((e|mu|ee|mumu|emu)_(A|B|C|D)_(SR|CR|CR5j)_(3b|4b)_(pfmet|ht|mtw|ptw|dphiWh|dRave|dmmin|higgsMass|higgsPt|nbjets_raw|nbtags_raw|zmass_raw|dphijmet|dphijmet1|dphijmet12|(lead|)lep_(pt|eta)_raw|lep_reliso|bdt|(nvtx_raw|nvtxwgt_raw)))|(all|e|mu|ee|mumu|emu)_eventflow|all_(nvtx_raw|nvtxwgt_raw)|(e|mu|ee|mumu|emu|e_noniso|mu_noniso|mutrk|mutrk_noniso)_lep_reliso|(e|mu|ee|mumu|emu)(|_metmt|_nj2)_lep_(pt|eta)_raw|raw_dphijmet|raw_j1_dphijmet|raw_minj1j2_dphijmet|(e|mu|ee|mumu|emu)_nj_njets_raw|(e|mu|ee|mumu|emu)_jet_(b1|b2|b3|b4)_jet_(pt|eta)_raw|(e|mu|ee|mumu|emu)_nb_nbjets_raw|(e|mu|ee|mumu|emu)_DeepCSV_(b1|b2|b3|b4)_jet_(pt|eta)_raw|(e|mu|ee|mumu|emu)_nb_soft_nbjets_raw|(e|mu|ee|mumu|emu)_(softb_(b1|b2|b3|b4)_(softjet|jet)_(pt|eta)_raw)|(e|mu|ee|mumu|emu)_dRlj_raw|raw(e|mu|ee|mumu|emu)_(pfmet|mtw|ptw)|raw_softb_ntrk|raw_softb_dxy|raw_softb_dxyz_signif|raw_softb_cos|sv_b_dR_raw|(e|mu|ee|mumu|emu)_nb_(LOOSE|MEDIUM|TIGHT)_nbjets_raw|(e|mu|ee|mumu|emu)_(sel1|sel2)_evt_cat|(e|mu|ee|mumu|emu)_DeepCSV_(b1|b2|b3|b4)_b_discrim|all_musf(id|iso|trg)" $arguments 
-	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outDir $PLOTSDIR/mcbased/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --signalScale 10 $arguments 
-	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outDir $PLOTSDIR/mcbased_log/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ
+	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outFile ${PLOTTER}.root  --json $JSON --noPlot --fileOption RECREATE  --key haa_mcbased --only "((e|mu|ee|mumu|emu)_(A|B|C|D)_(SR|CR|CR5j)_(3b|4b)_(pfmet|pfmetphi|ht|mtw|ptw|dphiWh|dRave|dmmin|higgsMass|higgsPt|nbjets_raw|nbtags_raw|jet_(b1|b2|b3|b4)_jet_(pt|eta|phi)_raw|DeepCSV_(b1|b2|b3|b4)_jet_(pt|eta|phi)_raw|zmass_raw|dphijmet|dphijmet1|dphijmet12|(lead|)lep_(pt|eta)_raw|lep_reliso|bdt|(nvtx_raw|nvtxwgt_raw)))|(e|mu|ee|mumu|emu)_eventflow|all_(nvtx_raw|nvtxwgt_raw)|(e|mu|ee|mumu|emu|e_noniso|mu_noniso|mutrk|mutrk_noniso)_lep_reliso|(e|mu|ee|mumu|emu)(|_metmt|_nj2)_lep_(pt|eta|phi)_raw|raw_dphijmet|raw_j1_dphijmet|raw_minj1j2_dphijmet|(e|mu|ee|mumu|emu)_nj_njets_raw|(e|mu|ee|mumu|emu)_jet_(b1|b2|b3|b4)_jet_(pt|eta|phi)_raw|(e|mu|ee|mumu|emu)_nb_nbjets_raw|(e|mu|ee|mumu|emu)_DeepCSV_(b1|b2|b3|b4)_jet_(pt|eta|phi)_raw|(e|mu|ee|mumu|emu)_alljets_jet_(pt|eta|phi)_raw|(e|mu|ee|mumu|emu)_dRlj_raw|raw(e|mu|ee|mumu|emu)_(pfmet|mtw|ptw)|(e|mu|ee|mumu|emu)_nb_(LOOSE|MEDIUM|TIGHT)_nbjets_raw|(e|mu|ee|mumu|emu)_(sel1|sel2)_evt_cat|(e|mu|ee|mumu|emu)_DeepCSV_(b1|b2|b3|b4)_b_discrim" $arguments 
+	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outDir $PLOTSDIR/mcbased/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ --noLog  --signalScale 1 $arguments 
+	runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outDir $PLOTSDIR/mcbased_log/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased  --fileOption READ
         runPlotter --iEcm 13 --iLumi $INTLUMI --inDir ${NTPL_OUTDIR}/ --outDir $PLOTSDIR/mcbased_blind/ --outFile ${PLOTTER}.root  --json $JSON --plotExt .png --plotExt .pdf --key haa_mcbased --fileOption READ --noLog --signalScale 10 --blind 0.1 --only "(e|mu|ee|mumu)_A_SR_(3b|4b)_bdt" $arguments
     fi
 
