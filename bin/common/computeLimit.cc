@@ -3525,7 +3525,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         //lumi
         if( !(it->second.shortName.find("ttbarbba")!=string::npos) && //!(it->second.shortName.find("ttbarcba")!=string::npos) &&
             !(it->second.shortName.find("wlnu")!=string::npos) ) {
-          if(!it->second.isData && systpostfix.Contains('3'))shapeInfo.uncScale["lumi_13TeV"] = integral*0.025;
+          if(!it->second.isData && systpostfix.Contains('3')) {
+	    if(inFileUrl.Contains("2016")) shapeInfo.uncScale["lumi_13TeV"] = integral*0.010; 
+	    if(inFileUrl.Contains("2017")) shapeInfo.uncScale["lumi_13TeV"] = integral*0.020; 
+	    if(inFileUrl.Contains("2018")) shapeInfo.uncScale["lumi_13TeV"] = integral*0.015;
+	  }
           if(!it->second.isData && systpostfix.Contains('8'))shapeInfo.uncScale["lumi_8TeV" ] = integral*0.026;
           if(!it->second.isData && systpostfix.Contains('7'))shapeInfo.uncScale["lumi_7TeV" ] = integral*0.022;
         }
@@ -3664,15 +3668,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       for(unsigned int j=0; j<clean_procs.size(); j++){
         if(clean_procs[j].find("Wh")!=string::npos) valid_procs.push_back(clean_procs[j]); //always include signal process in
         else if (procs[clean_procs[j]].channels[C->first].shapes[histoName].histo()!=NULL) valid_procs.push_back(clean_procs[j]);
-      }
-
-      bool TTcontrolregion(false);  
-      bool nonTTcontrolregion(false); 
-
-      if(C->first.find("CR5j"  )!=string::npos){ // this is the non-Top Control Region 
-        nonTTcontrolregion=true;
-      } else if(C->first.find("CR"  )!=string::npos){ // this is the Top Control Region
-        TTcontrolregion=true;
       }
 
       dcName.ReplaceAll("[", "");
@@ -4145,9 +4140,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
               ///double xbins[] = {-0.31, -0.25, -0.07, 0.12, 0.19, 0.35};   // july 21, new trial bins
               ///if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.00;xbins[3]=0.09; xbins[4]=0.17;xbins[5]=0.35;}  // july 21, new trial bins
              //-----------------
-	      double xbins[] = {-0.31, -0.13,  -0.01, 0.19, 0.25, 0.35};   // july 22, new trial bins
-	      //double xbins[] = {-0.31, -0.12,  0.00, 0.12, 0.18, 0.35};  // january 20, 2022, new trial bins
-              if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01;xbins[3]=0.13; xbins[4]=0.19;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins
+	      //	      double xbins[] = {-0.31, -0.13,  -0.01, 0.19, 0.25, 0.35};   // july 22, new trial bins
+	      double xbins[] = {-0.31, -0.13,  -0.01, 0.17, 0.23, 0.35};  // january 20, 2022, new trial bins
+              if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01;xbins[3]=0.15; xbins[4]=0.19;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins
              //-----------------
 
               int nbins=sizeof(xbins)/sizeof(double);    
@@ -4159,11 +4154,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
               ///double xbins[] = {-0.31, -0.09, 0.07, 0.11, 0.17, 0.35};     // last bins from Yuan
               ///if(runZh) {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.09;xbins[3]=0.15; xbins[4]=0.21;xbins[5]=0.35;}     // last bins from Yuan
              //-----------------
-              ///double xbins[] = {-0.31, -0.20, -0.10, -0.02, 0.10, 0.35};  // july 21, new trial bins
-              ///if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.00; xbins[4]=0.09;xbins[5]=0.35;}  // july 21, new trial bins
+              double xbins[] = {-0.31, -0.13, -0.07, 0.09, 0.19, 0.35};  // july 21, new trial bins
+              if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.09; xbins[4]=0.13;xbins[5]=0.35;}  // july 21, new trial bins
              //-----------------
-              double xbins[] = {-0.31, -0.13, -0.07,  0.09, 0.19, 0.35};  // july 22, new trial bins
-              if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.07; xbins[4]=0.13;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins
+	      //              double xbins[] = {-0.31, -0.13, -0.07,  0.09, 0.19, 0.35};  // july 22, new trial bins
+	      // if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.07; xbins[4]=0.13;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins
              //-----------------
               
               int nbins=sizeof(xbins)/sizeof(double);

@@ -20,7 +20,7 @@ iLumi=35866.932
 #iLumi=41529.152
 #iLumi=59740.565
 
-hists = ['ee_A_CR_3b', 'mumu_A_CR_3b']
+hists = ['ee_A_CR_3b', 'mumu_A_CR_3b', 'ee_A_SR_3b', 'mumu_A_SR_3b', 'ee_A_CR_4b', 'mumu_A_CR_4b', 'ee_A_SR_4b', 'mumu_A_SR_4b']
 
 startbin = 1 
 
@@ -175,7 +175,7 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     hNLO.Draw("ehistsame")
     leg = r.TLegend(0.65,0.7,0.9,0.85)
     leg.AddEntry(hLO,"2016 DY MC","l") 
-    leg.AddEntry(hNLO,"2017 DY MC","l")
+    leg.AddEntry(hNLO,"2017/18 DY MC","l")
     leg.Draw("same")
     SetOwnership( leg, 0 ) # 0 = release (not keep), 1 = keep
 
@@ -201,7 +201,7 @@ def ratioPlot(hLO,hNLO,ratio_h,name):
     ratio.SetMarkerColor(1)
 
     ratio.SetTitle("")      # Remove the ratio title
-    ratio.GetYaxis().SetTitle("2017/2016 ")
+    ratio.GetYaxis().SetTitle("201718/2016 ")
     ratio.GetYaxis().SetTitleSize(25)
     ratio.GetYaxis().SetTitleFont(43)
     ratio.GetYaxis().SetTitleOffset(1.55)
@@ -308,8 +308,8 @@ who = commands.getstatusoutput('whoami')[1]
 #    elif o in('-f'): fit = a
 print("Inputdir = "+inputdir)
 
-if os.path.isfile(inputdir +'/plotter_ZH_2016_2020_06_19_forLimits.root') and os.path.isfile(inputdir +'/plotter_ZH_2017_2020_02_05_forLimits.root'): 
-    produceDRSFs(inputdir+'/plotter_ZH_2016_2020_06_19_forLimits.root',inputdir+'/plotter_ZH_2017_2020_02_05_forLimits.root',outdir+'/drSF.root')
+if os.path.isfile(inputdir +'/plotter_ZH_2016_2020_06_19_forLimits_v1.root') and os.path.isfile(inputdir +'/plotter_ZH_201718_2020_02_05_forLimits.root'): 
+    produceDRSFs(inputdir+'/plotter_ZH_2016_2020_06_19_forLimits_v1.root',inputdir+'/plotter_ZH_201718_2020_02_05_forLimits.root',outdir+'/drSF.root')
 
 
 raw_input("Press [ENTER] to exit...")
