@@ -112,6 +112,7 @@ bool blindData = false;
 bool blindWithSignal = false; 
 bool replaceHighSensitivityBinsWithBG = false ;
 bool noCorrelatedStatUnc = false ;
+bool correlatedLumi = false;
 bool plotsOnly = false ;
 
 TString inFileUrl(""),jsonFile("");
@@ -832,6 +833,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--minErrOverSqrtNBGForBinByBin") !=string::npos) { sscanf(argv[i+1],"%f",&minErrOverSqrtNBGForBinByBin); printf("minErrOverSqrtNBGForBinByBin = %.3f\n", minErrOverSqrtNBGForBinByBin);}
     else if(arg.find("--replaceHighSensitivityBinsWithBG") !=string::npos) { replaceHighSensitivityBinsWithBG = true; printf("replaceHighSensitivityBinsWithBG = True\n");}
     else if(arg.find("--noCorrelatedStatUnc") !=string::npos) { noCorrelatedStatUnc = true; printf("noCorrelatedStatUnc = True\n");}
+    else if(arg.find("--correlatedLumi") !=string::npos) { correlatedLumi = true; printf("correlatedLumi = True\n");}
     else if(arg.find("--plotsOnly") !=string::npos) { plotsOnly = true ; printf("plotsOnly = True\n") ; }
     else if(arg.find("--autoMCStats")  !=string::npos) { autoMCStats=true; printf("autoMCStats = True\n");}
     else if(arg.find("--verbose")  !=string::npos) { verbose=true; printf("verbose = True\n");}
@@ -942,7 +944,7 @@ int main(int argc, char* argv[])
       } else {
         if(runZh){ // Zh
           Channels.push_back("ee_A_CR");Channels.push_back("mumu_A_CR"); // DY CR
-          Channels.push_back("emu_A_SR");//Channels.push_back("emu_A_CR"); // Top CR     
+          Channels.push_back("emu_A_SR"); //Channels.push_back("emu_A_CR"); // Top CR     
         }else{ // Wh
           Channels.push_back("e_A_CR");Channels.push_back("mu_A_CR"); // Top/W CR
           //Channels.push_back("e_A_CR5j");Channels.push_back("mu_A_CR5j"); // tt+bb CR   
@@ -1401,7 +1403,8 @@ int main(int argc, char* argv[])
 
   //produce a plot
   //  if(runSystematics) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  
-  if(runSystematics && !(simfit)) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  
+  if(runSystematics && !(simfit)) allInfo.showUncertainty(selCh,histo,"plot");
+  //  if (runSystematics) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  
   // georgia : now run reporting systematics only if simfit=false 
   // owen: temporarily turn this off.  Slows it down.
   
@@ -3526,36 +3529,45 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if( !(it->second.shortName.find("ttbarbba")!=string::npos) && //!(it->second.shortName.find("ttbarcba")!=string::npos) &&
             !(it->second.shortName.find("wlnu")!=string::npos) ) {
           if(!it->second.isData && systpostfix.Contains('3')) {
-	    if(inFileUrl.Contains("2016")) shapeInfo.uncScale["lumi_13TeV"] = integral*0.010; 
-	    if(inFileUrl.Contains("2017")) shapeInfo.uncScale["lumi_13TeV"] = integral*0.020; 
-	    if(inFileUrl.Contains("2018")) shapeInfo.uncScale["lumi_13TeV"] = integral*0.015;
+	    if(inFileUrl.Contains("2016")) shapeInfo.uncScale["lumi_13TeV_2016"] = integral*0.010; 
+	    if(inFileUrl.Contains("2017")) shapeInfo.uncScale["lumi_13TeV_2017"] = integral*0.020; 
+	    if(inFileUrl.Contains("2018")) shapeInfo.uncScale["lumi_13TeV_2018"] = integral*0.015;
+	    if(correlatedLumi) {
+	      //https://twiki.cern.ch/twiki/bin/viewauth/CMS/TWikiLUM
+	      if(inFileUrl.Contains("2016")) shapeInfo.uncScale["lumi_13TeV_correlated"] = integral*0.006;
+	      if(inFileUrl.Contains("2017")) {
+		shapeInfo.uncScale["lumi_13TeV_correlated"] = integral*0.009;
+		shapeInfo.uncScale["lumi_13TeV_1718"] = integral*0.006;
+	      }
+	      if(inFileUrl.Contains("2018")) {
+		shapeInfo.uncScale["lumi_13TeV_correlated"] = integral*0.020;  
+		shapeInfo.uncScale["lumi_13TeV_1718"] = integral*0.002;
+	      }
+ 	    }
 	  }
-          if(!it->second.isData && systpostfix.Contains('8'))shapeInfo.uncScale["lumi_8TeV" ] = integral*0.026;
-          if(!it->second.isData && systpostfix.Contains('7'))shapeInfo.uncScale["lumi_7TeV" ] = integral*0.022;
         }
         //Id+Trigger efficiencies combined
         
         if(!it->second.isData){
-          if(chbin.Contains("e"  ))  shapeInfo.uncScale["CMS_eff_e"] = integral*0.02; //0.072124;
+          if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_eff_e"] = integral*0.02; //0.072124;
           if(chbin.Contains("mu"))  shapeInfo.uncScale["CMS_eff_m"] = integral*0.02; //0.061788;
         }
         
         //Normalization uncertainties 
-        //      if(it->second.shortName.find("wlnu")!=string::npos){shapeInfo.uncScale["norm_wlnu"] = integral*0.10;}  
-        //      if(it->second.shortName.find("ttbarjet")!=string::npos){shapeInfo.uncScale["norm_tt"] = integral*0.10;}  
-
-        //if(it->second.shortName.find("zvv")!=string::npos){shapeInfo.uncScale["norm_zvv"] = integral*0.50;}    
-        //if(it->second.shortName.find("vhbb")!=string::npos){shapeInfo.uncScale["norm_vhbb"] = integral*0.10;}     
-        //if(it->second.shortName.find("singleto")!=string::npos){shapeInfo.uncScale["norm_singletop"] = integral*0.05;}
-        //if(it->second.shortName.find("ttbargam")!=string::npos){shapeInfo.uncScale["norm_topgzw"] = integral*0.15;} 
         if(it->second.shortName.find("otherbkg")!=string::npos){shapeInfo.uncScale["norm_otherbkgds"] = integral*0.27;} 
+	if(it->second.shortName.find("otherbkg")!=string::npos){shapeInfo.uncScale["norm_pdf"] = integral*0.012 ;}
         if(runZh) {
-          if(it->second.shortName.find("wlnu")!=string::npos){shapeInfo.uncScale["norm_wjet"] = integral*0.02;}     
+          if(it->second.shortName.find("wlnu")!=string::npos){shapeInfo.uncScale["norm_wjet"] = integral*0.02;}
+	  //	  if(it->second.shortName.find("zll")!=string::npos){shapeInfo.uncScale["norm_pdf"] = integral*0.015;}
         } else {
           if(it->second.shortName.find("zll")!=string::npos){shapeInfo.uncScale["norm_zll"] = integral*0.02;}
+	  //	  if(it->second.shortName.find("wlnu")!=string::npos){shapeInfo.uncScale["norm_pdf"] = integral*0.015;}
         }
 
         if(it->second.shortName.find("ttbarlig")!=string::npos){shapeInfo.uncScale["norm_toplight"] = integral*0.06;} 
+	if(it->second.shortName.find("ttbarlig")!=string::npos){shapeInfo.uncScale["norm_pdf"] = integral*0.015;}
+	//	if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_pdf"] = integral*0.015;}  
+	//	if(it->second.shortName.find("ttbarbba")!=string::npos){shapeInfo.uncScale["norm_pdf"] = integral*0.015;}  
         //      if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_topcc"] = integral*0.50;} 
         if (!subFake){
           if(it->second.shortName.find("qcd")!=string::npos){shapeInfo.uncScale["norm_qcd"] = integral*0.50;} 
@@ -3576,6 +3588,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["QCDscale_wh"]  = integral*0.007;} //QCD scale
             if(it->second.shortName.find("wh")!=string::npos ){shapeInfo.uncScale["PDFscale_wh"]  = integral*0.019;} //PDF+as scale
           }
+
         }//end of uncertainties to be applied only in higgs analyses
 
       }
@@ -3714,6 +3727,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
            if ( verbose ) { printf(" --- verbose : AllInfo_t::buildDataCards :   noCorrelatedStatUnc set to true.  Skipping this one.\n") ; }
            continue ;
         }
+	if( U->first.find("CMS_haa4b_pdf") !=string::npos) continue; // skip shape PDF uncertainty    
+
         char line[2048];
         sprintf(line,"%-45s %-10s ", U->first.c_str(), U->second?"shape":"lnN");
         bool isNonNull = false;

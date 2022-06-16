@@ -933,7 +933,7 @@
                     "gtag": "94X_mc2017_realistic_v17",
                     "dtag": "MC13TeV_WJets_HT70to100_2017",
                     "nevts": 22229710,
-                    "xsec": "1353*1.21"
+                    "xsec": "1319*1.21"
                 },
                 {
                     "br": [
@@ -945,7 +945,7 @@
                     "gtag": "94X_mc2017_realistic_v17",
                     "dtag": "MC13TeV_WJets_HT100to200_2017",
                     "nevts": 35804623,
-                    "xsec": "1346*1.21"
+                    "xsec": "1345*1.21"
                 },
                 {
                     "br": [
