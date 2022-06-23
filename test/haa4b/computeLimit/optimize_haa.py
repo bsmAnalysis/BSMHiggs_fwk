@@ -714,17 +714,17 @@ for signalSuffix in signalSuffixVec :
            ### THIS IS FOR Asymptotic fit
            if(ASYMTOTICLIMIT==True):
            ### THIS is for toy (hybridNew) fit
-              SCRIPT.writelines("tt_e=`cat simfit_m"+ str(m) +"_e.txt | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
-              SCRIPT.writelines("tt_mu=`cat simfit_m"+ str(m) +"_mu.txt | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+#              SCRIPT.writelines("tt_e=`cat simfit_m"+ str(m) +"_e.txt | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
+#              SCRIPT.writelines("tt_mu=`cat simfit_m"+ str(m) +"_mu.txt | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("v_3b_e=`cat simfit_m"+ str(m) +"_e.txt | grep 'z_norm_3b_e' | awk '{print $4;}'`;\n") 
               SCRIPT.writelines("v_4b_e=`cat simfit_m"+ str(m) +"_e.txt | grep 'z_norm_4b_e' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("v_3b_mu=`cat simfit_m"+ str(m) +"_mu.txt | grep 'z_norm_3b_mu' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("v_4b_mu=`cat simfit_m"+ str(m) +"_mu.txt | grep 'z_norm_4b_mu' | awk '{print $4;}'`;\n")
-              SCRIPT.writelines("combine -M AsymptoticLimits   -v 2  -m " +  str(m) + " workspace_sr3b.root -t -1 --freezeParameters tt_norm_e,tt_norm_mu --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$v_3b_e,z_norm_4b_e=$v_4b_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$v_3b_mu,z_norm_4b_mu=$v_4b_mu >& COMB-sr3b.log;\n")  
+              SCRIPT.writelines("combine -M AsymptoticLimits   -v 2  -m " +  str(m) + " workspace_sr3b.root -t -1  --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$v_3b_e,z_norm_4b_e=$v_4b_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$v_3b_mu,z_norm_4b_mu=$v_4b_mu >& COMB-sr3b.log;\n")  
               SCRIPT.writelines("mv higgsCombineTest.AsymptoticLimits.mH" + str(m) +".root higgsCombineTest.AsymptoticLimits.mH" + str(m) +"-sr3b.root\n")
-              SCRIPT.writelines("combine -M AsymptoticLimits   -v 2  -m " +  str(m) + " workspace_sr4b.root -t -1 --freezeParameters tt_norm_e,tt_norm_mu --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$v_3b_e,z_norm_4b_e=$v_4b_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$v_3b_mu,z_norm_4b_mu=$v_4b_mu >& COMB-sr4b.log;\n")  
+              SCRIPT.writelines("combine -M AsymptoticLimits   -v 2  -m " +  str(m) + " workspace_sr4b.root -t -1 --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$v_3b_e,z_norm_4b_e=$v_4b_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$v_3b_mu,z_norm_4b_mu=$v_4b_mu >& COMB-sr4b.log;\n")  
               SCRIPT.writelines("mv higgsCombineTest.AsymptoticLimits.mH" + str(m) +".root higgsCombineTest.AsymptoticLimits.mH" + str(m) +"-sr4b.root\n")
-              SCRIPT.writelines("combine -M AsymptoticLimits   -v 2  -m " +  str(m) + " workspace.root -t -1 --freezeParameters tt_norm_e,tt_norm_mu --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$v_3b_e,z_norm_4b_e=$v_4b_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$v_3b_mu,z_norm_4b_mu=$v_4b_mu >& COMB.log;\n")  
+              SCRIPT.writelines("combine -M AsymptoticLimits   -v 2  -m " +  str(m) + " workspace.root -t -1  --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$v_3b_e,z_norm_4b_e=$v_4b_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$v_3b_mu,z_norm_4b_mu=$v_4b_mu >& COMB.log;\n")  
               SCRIPT.writelines("mv higgsCombineTest.AsymptoticLimits.mH" + str(m) +".root higgsCombineTest.AsymptoticLimits.mH" + str(m) +"-all.root\n")
 
            else:
@@ -1187,7 +1187,7 @@ for signalSuffix in signalSuffixVec :
               zh2018simfit_mu = CWD + "/cards_SB13TeV_SM_Zh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
 
               SCRIPT.writelines("if [ -f " + zh2016simfit_e + " ]; then\n")
-              SCRIPT.writelines("   tt_e_2016=`cat " + zh2016simfit_e + " | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
+#              SCRIPT.writelines("   tt_e_2016=`cat " + zh2016simfit_e + " | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("   v_3b_e_2016=`cat " + zh2016simfit_e + " | grep 'z_norm_3b_e' | awk '{print $4;}'`;\n") 
               SCRIPT.writelines("   v_4b_e_2016=`cat " + zh2016simfit_e + " | grep 'z_norm_4b_e' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("else\n")
@@ -1197,7 +1197,7 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("printf \" 2016,  e:  tt = %s , v_3b = %s , v_4b = %s\\n\" $tt_e_2016, $v_3b_e_2016, $v_4b_e_2016\n\n")
 
               SCRIPT.writelines("if [ -f " + zh2016simfit_mu + " ]; then\n")
-              SCRIPT.writelines("   tt_mu_2016=`cat " + zh2016simfit_mu + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+#              SCRIPT.writelines("   tt_mu_2016=`cat " + zh2016simfit_mu + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("   v_3b_mu_2016=`cat " + zh2016simfit_mu + " | grep 'z_norm_3b_mu' | awk '{print $4;}'`;\n") 
               SCRIPT.writelines("   v_4b_mu_2016=`cat " + zh2016simfit_mu + " | grep 'z_norm_4b_mu' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("else\n")
@@ -1208,7 +1208,7 @@ for signalSuffix in signalSuffixVec :
 
 
               SCRIPT.writelines("if [ -f " + zh2017simfit_e + " ]; then\n")
-              SCRIPT.writelines("   tt_e_2017=`cat " + zh2017simfit_e + " | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
+#              SCRIPT.writelines("   tt_e_2017=`cat " + zh2017simfit_e + " | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("   v_3b_e_2017=`cat " + zh2017simfit_e + " | grep 'z_norm_3b_e' | awk '{print $4;}'`;\n") 
               SCRIPT.writelines("   v_4b_e_2017=`cat " + zh2017simfit_e + " | grep 'z_norm_4b_e' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("else\n")
@@ -1218,7 +1218,7 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("printf \" 2017,  e:  tt = %s , v_3b = %s , v_4b = %s\\n\" $tt_e_2017, $v_3b_e_2017, $v_4b_e_2017\n\n")
 
               SCRIPT.writelines("if [ -f " + zh2017simfit_mu + " ]; then\n")
-              SCRIPT.writelines("   tt_mu_2017=`cat " + zh2017simfit_mu + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+#              SCRIPT.writelines("   tt_mu_2017=`cat " + zh2017simfit_mu + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("   v_3b_mu_2017=`cat " + zh2017simfit_mu + " | grep 'z_norm_3b_mu' | awk '{print $4;}'`;\n") 
               SCRIPT.writelines("   v_4b_mu_2017=`cat " + zh2017simfit_mu + " | grep 'z_norm_4b_mu' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("else\n")
@@ -1229,7 +1229,7 @@ for signalSuffix in signalSuffixVec :
 
 
               SCRIPT.writelines("if [ -f " + zh2018simfit_e + " ]; then\n")
-              SCRIPT.writelines("   tt_e_2018=`cat " + zh2018simfit_e + " | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
+#              SCRIPT.writelines("   tt_e_2018=`cat " + zh2018simfit_e + " | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("   v_3b_e_2018=`cat " + zh2018simfit_e + " | grep 'z_norm_3b_e' | awk '{print $4;}'`;\n") 
               SCRIPT.writelines("   v_4b_e_2018=`cat " + zh2018simfit_e + " | grep 'z_norm_4b_e' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("else\n")
@@ -1239,7 +1239,7 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("printf \" 2018,  e:  tt = %s , v_3b = %s , v_4b = %s\\n\" $tt_e_2018, $v_3b_e_2018, $v_4b_e_2018\n\n")
 
               SCRIPT.writelines("if [ -f " + zh2018simfit_mu + " ]; then\n")
-              SCRIPT.writelines("   tt_mu_2018=`cat " + zh2018simfit_mu + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
+#              SCRIPT.writelines("   tt_mu_2018=`cat " + zh2018simfit_mu + " | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("   v_3b_mu_2018=`cat " + zh2018simfit_mu + " | grep 'z_norm_3b_mu' | awk '{print $4;}'`;\n") 
               SCRIPT.writelines("   v_4b_mu_2018=`cat " + zh2018simfit_mu + " | grep 'z_norm_4b_mu' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("else\n")
@@ -1248,8 +1248,7 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("fi\n")
               SCRIPT.writelines("printf \" 2018, mu:  tt = %s , v_3b = %s , v_4b = %s\\n\" $tt_mu_2018, $v_3b_mu_2018, $v_4b_mu_2018\n\n")
 
-
-	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  -m " +  str(m) + " workspace.root -t -1 --freezeParameters tt_norm_e_2016,tt_norm_mu_2016,tt_norm_e_2017,tt_norm_mu_2017,tt_norm_e_2018,tt_norm_mu_2018 --setParameters tt_norm_e_2016=$tt_e_2016,z_norm_3b_e_2016=$v_3b_e_2016,z_norm_4b_e_2016=$v_4b_e_2016,tt_norm_mu_2016=$tt_mu_2016,z_norm_3b_mu_2016=$v_3b_mu_2016,z_norm_4b_mu_2016=$v_4b_mu_2016,tt_norm_e_2017=$tt_e_2017,z_norm_3b_e_2017=$v_3b_e_2017,z_norm_4b_e_2017=$v_4b_e_2017,tt_norm_mu_2017=$tt_mu_2017,z_norm_3b_mu_2017=$v_3b_mu_2017,z_norm_4b_mu_2017=$v_4b_mu_2017,tt_norm_e_2018=$tt_e_2018,z_norm_3b_e_2018=$v_3b_e_2018,z_norm_4b_e_2018=$v_4b_e_2018,tt_norm_mu_2018=$tt_mu_2018,z_norm_3b_mu_2018=$v_3b_mu_2018,z_norm_4b_mu_2018=$v_4b_mu_2018 >& COMB.log;\n") 
+	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  -m " +  str(m) + " workspace.root -t -1  --setParameters z_norm_3b_e_2016=$v_3b_e_2016,z_norm_4b_e_2016=$v_4b_e_2016,z_norm_3b_mu_2016=$v_3b_mu_2016,z_norm_4b_mu_2016=$v_4b_mu_2016,z_norm_3b_e_2017=$v_3b_e_2017,z_norm_4b_e_2017=$v_4b_e_2017,z_norm_3b_mu_2017=$v_3b_mu_2017,z_norm_4b_mu_2017=$v_4b_mu_2017,z_norm_3b_e_2018=$v_3b_e_2018,z_norm_4b_e_2018=$v_4b_e_2018,z_norm_3b_mu_2018=$v_3b_mu_2018,z_norm_4b_mu_2018=$v_4b_mu_2018 >& COMB.log;\n") 
 
            else:
 	      print("Do not support this mode!!!")
