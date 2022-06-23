@@ -177,7 +177,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        fi
 	# @btagSFMethod=1: Jet-by-jet updating of b-tagging status
 	# @btagSFMethod=2: Event reweighting using discriminator-dependent scale factors
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=$do_syst @runMVA=False @reweightDYZPt=True @reweightDYdR16=True @reweightTopPt=False @usemetNoHF=False @verbose=False @useDeepCSV=True @useWNJet=False @runQCD=$doQCD @runZH=$doZH @btagSFMethod=1" -s $queue -t MC13TeV_TTTo #-r true
+       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=$do_syst @runMVA=False @reweightDYZPt=True @reweightDYdR16=True @reweightTopPt=True @usemetNoHF=False @verbose=False @useDeepCSV=True @useWNJet=False @runQCD=$doQCD @runZH=$doZH @btagSFMethod=1" -s $queue #-t MC13TeV_TTTo #-r true
    fi
 fi
 
