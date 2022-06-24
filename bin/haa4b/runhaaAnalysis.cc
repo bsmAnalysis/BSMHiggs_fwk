@@ -2365,10 +2365,12 @@ int main(int argc, char* argv[])
 
 	  
 	  if(varNames[ivar]=="_pdfup")    {
-	    if(!isSignal) weight *= (1.+PDFalphaSWeight);
+	    // if(!isSignal) 
+	    weight *= (1.+PDFalphaSWeight);
 	  }
 	  else if(varNames[ivar]=="_pdfdown") {
-	    if(!isSignal) weight *= (1.-PDFalphaSWeight);
+	    //if(!isSignal) 
+	    weight *= (1.-PDFalphaSWeight);
 	  }
 
 	  if(varNames[ivar]=="_stat_eup" ||  varNames[ivar]=="_sys_eup" ||  varNames[ivar]=="_GS_eup" ||  varNames[ivar]=="_resRho_eup") { imet = variedMET[9]; }
