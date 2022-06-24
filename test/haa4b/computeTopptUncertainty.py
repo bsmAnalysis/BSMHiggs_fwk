@@ -10,7 +10,7 @@ from ROOT import gROOT, gBenchmark, gRandom, gSystem, Double
 #set the tdr style
 #tdrstyle.setTDRStyle()
 
-year="2017"
+year="2018"
 vh_tag="WH"
 
 PLOTTER=vh_tag+"_"+year+"_2020_02_05_forLimits"
@@ -20,11 +20,11 @@ if year == "2016":
 
 ## Input file with top pt corrections:
 #fcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits_cor.root","READ")
-fcor = rt.TFile("plotter_"+PLOTTER+"_cor.root","READ")
+fcor = rt.TFile("plotter_"+PLOTTER+"_v2.root","READ")
 
 ## Input file without top pt corrections:
 #funcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits_uncor.root","READ")
-funcor = rt.TFile("plotter_"+PLOTTER+"_uncor.root","READ")
+funcor = rt.TFile("plotter_"+PLOTTER+"_v1.root","READ")
 
 ## Target ROOT file to store up and down templates in BDT (same as _cor):
 #flimit = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits.root","UPDATE")

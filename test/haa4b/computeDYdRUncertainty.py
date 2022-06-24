@@ -16,15 +16,12 @@ if year == "2016":
     PLOTTER=vh_tag+"_"+year+"_2020_06_19_forLimits" 
 
 ## Input file without DY DR  corrections:
-#funcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits_v1.root","READ")
 funcor = rt.TFile("plotter_"+PLOTTER+"_v1.root","READ")    
 
 ## Input file with DY DR corrections:      
-#fcor = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits_v2.root","READ")       
 fcor = rt.TFile("plotter_"+PLOTTER+"_v2.root","READ")  
 
 ## Target ROOT file to store up and down templates in BDT (must be similar to v2):
-#flimit = rt.TFile("plotter_"+vh_tag+"_"+year+"_2020_06_19_forLimits.root","UPDATE")
 flimit = rt.TFile("plotter_"+PLOTTER+".root","UPDATE")        
 
 def drawHist(cname, hcor, h_up, h_down):
