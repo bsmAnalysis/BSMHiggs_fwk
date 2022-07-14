@@ -97,21 +97,21 @@
   if [ "$step" = "1" ]
   then
      printf "\n will run initial fit\n\n"
-     combineTool.py -M Impacts -d ../$cards_dir/0060/workspace.root -m 60 --doInitialFit --robustFit 1 --rMin -1.0 --setParameterRanges $rangeString    |& tee step1.log
+     combineTool.py -M Impacts -d ../$cards_dir/0060/workspace.root -m 60 --doInitialFit --robustFit 1 --rMin -20.0  --setParameterRanges $rangeString    |& tee step1.log
   fi
 
 
   if [ "$step" = "2" ]
   then
      printf "\n will submit condor jobs\n\n"
-     combineTool.py -M Impacts -d ../$cards_dir/0060/workspace.root -m 60 --doFits       --robustFit 1 --rMin -1.0 --setParameterRanges $rangeString  --job-mode condor |& tee step2.log
+     combineTool.py -M Impacts -d ../$cards_dir/0060/workspace.root -m 60 --doFits  --robustFit 1 --rMin -20.0  --setParameterRanges $rangeString  --job-mode condor |& tee step2.log
   fi
 
 
   if [ "$step" = "3" ]
   then
      printf "\n will make the plots pdf file\n\n"
-     combineTool.py -M Impacts -d ../$cards_dir/0060/workspace.root -m 60 -o impacts.json --rMin -1.0  |& tee step3.log
+     combineTool.py -M Impacts -d ../$cards_dir/0060/workspace.root -m 60 -o impacts.json --rMin -20.0 -t -1  |& tee step3.log
      plotImpacts.py -i impacts.json -o $f_name |& tee step4.log
   fi
 
