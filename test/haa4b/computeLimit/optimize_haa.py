@@ -58,8 +58,6 @@ if ( args.only3bLimit == True and args.only4bLimit == True ):
 
 
 
-
-
 no_submit = False
 if args.no_submit:
    no_submit = True
@@ -89,6 +87,16 @@ FarmDirectory  = "FARM"
 JobName        = "computeLimits"
 CWD=os.getcwd()
 #phase=-1
+
+blind = False
+
+blindSR = ""
+bonly_asimov = ""
+
+if (blind == True): 
+   blindSR = " --replaceHighSensitivityBinsWithBG"
+   bonly_asimov = " -t -1"
+
 
 autoMCstats = True
 # https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1425/1.html
@@ -312,12 +320,12 @@ for signalSuffix in signalSuffixVec :
                 cardsdir = 'H'+ str(m) + '_' + OUTName[iConf] + '_' + str(i);
                 SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
                 #SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " --index " + str(i)     + " --json " + jsonUrl + " --shapeMin " + str(shapeCutMin_) + " --shapeMax " + str(shapeCutMax_) + " " + LandSArg + " --bins " + BIN[iConf] + " ;\n")
-                SCRIPT.writelines("computeLimit --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --in " + inUrl + " --index " + str(i)     + " --json " + jsonUrl + " --shapeMin " + str(shapeCutMin_) + " --shapeMax " + str(shapeCutMax_) + " " + LandSArg + " --bins " + BIN[iConf] + " ;\n")
+                SCRIPT.writelines("computeLimit " + blindSR + "  --m " + str(m) + " --in " + inUrl + " --index " + str(i)     + " --json " + jsonUrl + " --shapeMin " + str(shapeCutMin_) + " --shapeMax " + str(shapeCutMax_) + " " + LandSArg + " --bins " + BIN[iConf] + " ;\n")
 #                SCRIPT.writelines("computeLimit --m " + str(m) + " --in " + inUrl + " --syst " + " --index " + str(i)     + " --json " + jsonUrl + " --shapeMin " + str(shapeCutMin_) + " --shapeMax " + str(shapeCutMax_) + " " + LandSArg + " --bins " + BIN[iConf] + " ;\n")
                 SCRIPT.writelines("sh combineCards.sh;\n")
                 #SCRIPT.writelines("combine -M AsymptoticLimits -m " +  str(m) + " --run expected card_combined.dat > LIMIT.log;\n") #limit computation
                 SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  -m " +  str(m) + " --run expected card_combined.dat > LIMIT.log;\n") #limit computation
-                SCRIPT.writelines("combine -M Significance  -m " +  str(m) + " --significance -t -1 --expectSignal=1 card_combined.dat  > SIGN.log;\n") #apriori significance computation
+                SCRIPT.writelines("combine -M Significance  -m " +  str(m) + " --significance " + bonly_asimov + " --expectSignal=1 card_combined.dat  > SIGN.log;\n") #apriori significance computation
                 SCRIPT.writelines('tail -n 100 LIMIT.log > ' +OUT+str(m)+'_'+str(i)+'_'+str(shapeCutMin_)+'_'+str(shapeCutMax_)+'.log;\n')
                 SCRIPT.writelines('tail -n 100 SIGN.log >> ' +OUT+str(m)+'_'+str(i)+'_'+str(shapeCutMin_)+'_'+str(shapeCutMax_)+'.log;\n')
                 SCRIPT.writelines('cat LIMIT.log; cat SIGN.log\n')
@@ -523,7 +531,7 @@ for signalSuffix in signalSuffixVec :
 
           #--- first pass
 
-           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root >& cl-first.log\n")
+           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  " + blindSR + "  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root >& cl-first.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
 
 
@@ -532,7 +540,7 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("\ntext2workspace.py card_combined_wh.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-first.log \n")  
            #compute pvalue
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace.root >& COMB-signif-first.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-10 --rMax=20 --stepSize=0.05 --robustFit 1  >& log-first.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-20 --rMax=20 --stepSize=0.05 --robustFit 1  >& log-first.txt \n") 
 
            #############SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics-first.root\n\n\n")
            SCRIPT.writelines("mv fitDiagnostics.root fitDiagnostics-first.root\n\n\n")
@@ -542,7 +550,7 @@ for signalSuffix in signalSuffixVec :
 
           #--- second pass
 
-           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root  --fitDiagnosticsInputFile fitDiagnostics-first.root >& cl-second.log\n")
+           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  "+ blindSR + "  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root  --fitDiagnosticsInputFile fitDiagnostics-first.root >& cl-second.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
 
 
@@ -553,7 +561,7 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("\ntext2workspace.py card_combined_wh.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-second.log \n")  
            #compute pvalue
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace.root >& COMB-signif-second.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-10 --rMax=20 --stepSize=0.05 --robustFit 1  >& log.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-20 --rMax=20 --stepSize=0.05 --robustFit 1  >& log.txt \n") 
 
 
 
@@ -569,11 +577,11 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("tt_mu=`cat simfit_m"+ str(m) +".txt | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
 	      SCRIPT.writelines("v_e=`cat simfit_m"+ str(m) +".txt | grep 'w_norm_e' | awk '{print $4;}'`;\n")
 	      SCRIPT.writelines("v_mu=`cat simfit_m"+ str(m) +".txt | grep 'w_norm_mu' | awk '{print $4;}'`;\n")
-	      SCRIPT.writelines("combine -M AsymptoticLimits   -v 2  -m " +  str(m) + " workspace_sr3b.root -t -1 --setParameters tt_norm_e=$tt_e,w_norm_e=$v_e,tt_norm_mu=$tt_mu,w_norm_mu=$v_mu >& COMB-sr3b.log;\n")
+	      SCRIPT.writelines("combine -M AsymptoticLimits   -v 2 --rMin=-20 --rMax=20 -m " +  str(m) + " workspace_sr3b.root "+ bonly_asimov +" --setParameters tt_norm_e=$tt_e,w_norm_e=$v_e,tt_norm_mu=$tt_mu,w_norm_mu=$v_mu >& COMB-sr3b.log;\n")
               SCRIPT.writelines("mv higgsCombineTest.AsymptoticLimits.mH" + str(m) +".root higgsCombineTest.AsymptoticLimits.mH" + str(m) +"-sr3b.root\n")
-	      SCRIPT.writelines("combine -M AsymptoticLimits   -v 2  -m " +  str(m) + " workspace_sr4b.root -t -1 --setParameters tt_norm_e=$tt_e,w_norm_e=$v_e,tt_norm_mu=$tt_mu,w_norm_mu=$v_mu >& COMB-sr4b.log;\n")
+	      SCRIPT.writelines("combine -M AsymptoticLimits   -v 2  --rMin=-20 --rMax=20  -m " +  str(m) + " workspace_sr4b.root "+ bonly_asimov +" --setParameters tt_norm_e=$tt_e,w_norm_e=$v_e,tt_norm_mu=$tt_mu,w_norm_mu=$v_mu >& COMB-sr4b.log;\n")
               SCRIPT.writelines("mv higgsCombineTest.AsymptoticLimits.mH" + str(m) +".root higgsCombineTest.AsymptoticLimits.mH" + str(m) +"-sr4b.root\n")
-	      SCRIPT.writelines("combine -M AsymptoticLimits   -v 2  -m " +  str(m) + " workspace.root -t -1 --setParameters tt_norm_e=$tt_e,w_norm_e=$v_e,tt_norm_mu=$tt_mu,w_norm_mu=$v_mu >& COMB.log;\n")
+	      SCRIPT.writelines("combine -M AsymptoticLimits   -v 2  --rMin=-20 --rMax=20  -m " +  str(m) + " workspace.root " + bonly_asimov + " --setParameters tt_norm_e=$tt_e,w_norm_e=$v_e,tt_norm_mu=$tt_mu,w_norm_mu=$v_mu >& COMB.log;\n")
               SCRIPT.writelines("mv higgsCombineTest.AsymptoticLimits.mH" + str(m) +".root higgsCombineTest.AsymptoticLimits.mH" + str(m) +"-all.root\n")
 
 
@@ -678,14 +686,14 @@ for signalSuffix in signalSuffixVec :
 
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
            SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
-           SCRIPT.writelines("computeLimit   --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --runZh --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +"  >& cl.log\n")
+           SCRIPT.writelines("computeLimit   --noCorrelatedStatUnc  --verbose  " + blindSR + "  --runZh --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +"  >& cl.log\n")
            SCRIPT.writelines("sh combineCards_zh.sh;\n"); 
 
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_e_zh.dat".format(thredMCstat))
            SCRIPT.writelines("\ntext2workspace.py card_e_zh.dat -o workspace_e.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e.log \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_e.root >& COMB-signif-e.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-10 --rMax=20 --stepSize=0.05 --robustFit 1  >& log_e.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-20 --rMax=20 --stepSize=0.05 --robustFit 1  >& log_e.txt \n") 
            #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_e.txt \n")
 	   #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_e.txt\n")
 	   #########SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_e.root\n")
@@ -697,7 +705,7 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_mu_zh.dat".format(thredMCstat))
            SCRIPT.writelines("\ntext2workspace.py card_mu_zh.dat -o workspace_mu.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu.log \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_mu.root > COMB-signif-mu.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-10 --rMax=20 --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-20 --rMax=20 --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
            #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_mu.txt \n")
 	   #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_mu.txt\n")
 	   #########SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_mu.root\n")
@@ -720,11 +728,11 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("v_4b_e=`cat simfit_m"+ str(m) +"_e.txt | grep 'z_norm_4b_e' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("v_3b_mu=`cat simfit_m"+ str(m) +"_mu.txt | grep 'z_norm_3b_mu' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("v_4b_mu=`cat simfit_m"+ str(m) +"_mu.txt | grep 'z_norm_4b_mu' | awk '{print $4;}'`;\n")
-              SCRIPT.writelines("combine -M AsymptoticLimits   -v 2  -m " +  str(m) + " workspace_sr3b.root -t -1  --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$v_3b_e,z_norm_4b_e=$v_4b_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$v_3b_mu,z_norm_4b_mu=$v_4b_mu >& COMB-sr3b.log;\n")  
+              SCRIPT.writelines("combine -M AsymptoticLimits --rMin=-20 --rMax=20  -v 2  -m " +  str(m) + " workspace_sr3b.root "+ bonly_asimov +"  --setParameters z_norm_3b_e=$v_3b_e,z_norm_4b_e=$v_4b_e,z_norm_3b_mu=$v_3b_mu,z_norm_4b_mu=$v_4b_mu >& COMB-sr3b.log;\n")
               SCRIPT.writelines("mv higgsCombineTest.AsymptoticLimits.mH" + str(m) +".root higgsCombineTest.AsymptoticLimits.mH" + str(m) +"-sr3b.root\n")
-              SCRIPT.writelines("combine -M AsymptoticLimits   -v 2  -m " +  str(m) + " workspace_sr4b.root -t -1 --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$v_3b_e,z_norm_4b_e=$v_4b_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$v_3b_mu,z_norm_4b_mu=$v_4b_mu >& COMB-sr4b.log;\n")  
+              SCRIPT.writelines("combine -M AsymptoticLimits --rMin=-20 --rMax=20  -v 2  -m " +  str(m) + " workspace_sr4b.root "+ bonly_asimov +" --setParameters z_norm_3b_e=$v_3b_e,z_norm_4b_e=$v_4b_e,z_norm_3b_mu=$v_3b_mu,z_norm_4b_mu=$v_4b_mu >& COMB-sr4b.log;\n")   
               SCRIPT.writelines("mv higgsCombineTest.AsymptoticLimits.mH" + str(m) +".root higgsCombineTest.AsymptoticLimits.mH" + str(m) +"-sr4b.root\n")
-              SCRIPT.writelines("combine -M AsymptoticLimits   -v 2  -m " +  str(m) + " workspace.root -t -1  --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$v_3b_e,z_norm_4b_e=$v_4b_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$v_3b_mu,z_norm_4b_mu=$v_4b_mu >& COMB.log;\n")  
+              SCRIPT.writelines("combine -M AsymptoticLimits --rMin=-20 --rMax=20  -v 2  -m " +  str(m) + " workspace.root "+ bonly_asimov +"  --setParameters z_norm_3b_e=$v_3b_e,z_norm_4b_e=$v_4b_e,z_norm_3b_mu=$v_3b_mu,z_norm_4b_mu=$v_4b_mu >& COMB.log;\n") 
               SCRIPT.writelines("mv higgsCombineTest.AsymptoticLimits.mH" + str(m) +".root higgsCombineTest.AsymptoticLimits.mH" + str(m) +"-all.root\n")
 
            else:
@@ -829,7 +837,7 @@ for signalSuffix in signalSuffixVec :
 
           #--- first pass for Wh
 
-           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +  " --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root >& cl-wh-first.log\n")
+           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  " + blindSR + "  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +  " --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root >& cl-wh-first.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
            SCRIPT.writelines("text2workspace.py card_combined_wh.dat -o workspace-wh-first.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-wh-first.log \n")  
            SCRIPT.writelines("combine -M FitDiagnostics workspace-wh-first.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-20 --rMax=20 --stepSize=0.05 --robustFit 1  >& log-wh-first.txt \n") 
@@ -839,12 +847,12 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("cp *.dat datacards-wh-first-pass\n\n") ;
 
           #--- second pass for Wh
-           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root  --fitDiagnosticsInputFile fitDiagnostics-wh-first.root >& cl-wh-second.log\n")
+           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  " + blindSR + "  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root  --fitDiagnosticsInputFile fitDiagnostics-wh-first.root >& cl-wh-second.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
 
 
 
-           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  --replaceHighSensitivityBinsWithBG  --runZh --m " + str(m) + BackExtrapol + " --in " + inUrl_zh + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-zh.log\n")
+           SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  " + blindSR + "  --runZh --m " + str(m) + BackExtrapol + " --in " + inUrl_zh + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-zh.log\n")
 
            SCRIPT.writelines("sh combineCards_zh.sh;\n"); 
 
@@ -910,11 +918,11 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("z_3b_mu=`cat simfit_m"+ str(m) +"_mu.txt | grep 'z_norm_3b_mu' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("z_4b_mu=`cat simfit_m"+ str(m) +"_mu.txt | grep 'z_norm_4b_mu' | awk '{print $4;}'`;\n")
               SCRIPT.writelines("w_mu=`cat simfit_m"+ str(m) +"_mu.txt | grep 'w_norm_mu' | awk '{print $4;}'`;\n")
-              SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  -m " +  str(m) + " workspace_sr3b.root -t -1 --freezeParameters tt_norm_e,tt_norm_mu --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$z_3b_e,z_norm_4b_e=$z_4b_e,w_norm_e=$w_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$z_3b_mu,z_norm_4b_mu=$z_4b_mu,w_norm_mu=$w_mu >& COMB-sr3b.log;\n")  
+              SCRIPT.writelines("combine -M AsymptoticLimits  -v 2 --rMin=-20 --rMax=20  -m " +  str(m) + " workspace_sr3b.root "+ bonly_asimov+" --freezeParameters tt_norm_e,tt_norm_mu --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$z_3b_e,z_norm_4b_e=$z_4b_e,w_norm_e=$w_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$z_3b_mu,z_norm_4b_mu=$z_4b_mu,w_norm_mu=$w_mu >& COMB-sr3b.log;\n")  
               SCRIPT.writelines("mv higgsCombineTest.AsymptoticLimits.mH" + str(m) +".root higgsCombineTest.AsymptoticLimits.mH" + str(m) +"-sr3b.root\n")
-              SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  -m " +  str(m) + " workspace_sr4b.root -t -1 --freezeParameters tt_norm_e,tt_norm_mu --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$z_3b_e,z_norm_4b_e=$z_4b_e,w_norm_e=$w_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$z_3b_mu,z_norm_4b_mu=$z_4b_mu,w_norm_mu=$w_mu >& COMB-sr4b.log;\n")  
+              SCRIPT.writelines("combine -M AsymptoticLimits  -v 2 --rMin=-20 --rMax=20  -m " +  str(m) + " workspace_sr4b.root "+ bonly_asimov+" --freezeParameters tt_norm_e,tt_norm_mu --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$z_3b_e,z_norm_4b_e=$z_4b_e,w_norm_e=$w_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$z_3b_mu,z_norm_4b_mu=$z_4b_mu,w_norm_mu=$w_mu >& COMB-sr4b.log;\n")  
               SCRIPT.writelines("mv higgsCombineTest.AsymptoticLimits.mH" + str(m) +".root higgsCombineTest.AsymptoticLimits.mH" + str(m) +"-sr4b.root\n")
-              SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  -m " +  str(m) + " workspace.root -t -1 --freezeParameters tt_norm_e,tt_norm_mu --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$z_3b_e,z_norm_4b_e=$z_4b_e,w_norm_e=$w_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$z_3b_mu,z_norm_4b_mu=$z_4b_mu,w_norm_mu=$w_mu >& COMB.log;\n")  
+              SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  --rMin=-20 --rMax=20  -m " +  str(m) + " workspace.root "+ bonly_asimov+" --freezeParameters tt_norm_e,tt_norm_mu --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$z_3b_e,z_norm_4b_e=$z_4b_e,w_norm_e=$w_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$z_3b_mu,z_norm_4b_mu=$z_4b_mu,w_norm_mu=$w_mu >& COMB.log;\n")  
               SCRIPT.writelines("mv higgsCombineTest.AsymptoticLimits.mH" + str(m) +".root higgsCombineTest.AsymptoticLimits.mH" + str(m) +"-all.root\n")
 
            else:
@@ -1018,9 +1026,9 @@ for signalSuffix in signalSuffixVec :
               ############whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnosticsTest.root"
               whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnostics.root"
 	      if "2016" in inUrl:
-	          SCRIPT.writelines("\ncomputeLimit   --noCorrelatedStatUnc --correlatedLumi  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-"+ year + ".log\n")  
+	          SCRIPT.writelines("\ncomputeLimit   --noCorrelatedStatUnc --correlatedLumi  --verbose  " + blindSR + "  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-"+ year + ".log\n")  
 	      else:
-	          SCRIPT.writelines("\ncomputeLimit   --noCorrelatedStatUnc  --correlatedLumi  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-" + year + ".log\n")  
+	          SCRIPT.writelines("\ncomputeLimit   --noCorrelatedStatUnc  --correlatedLumi  --verbose  " + blindSR + "  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-" + year + ".log\n")  
 	      SCRIPT.writelines("sh combineCards_"+year+"_wh.sh;\n"); 
 
 	   SCRIPT.writelines("\ncombineCards.py card_combined_2016_wh.dat card_combined_2017_wh.dat card_combined_2018_wh.dat > card_combined_wh.dat")
@@ -1068,7 +1076,7 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("fi\n")
               SCRIPT.writelines("printf \" 2018,   tt_e = %s , tt_mu = %s , w_e = %s , w_mu = %s\\n\" $tt_e_2018, $tt_mu_2018, $v_e_2018, $v_mu_2018\n\n")
 
-	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  -m " +  str(m) + " workspace.root -t -1 --setParameters tt_norm_e_2016=$tt_e_2016,w_norm_e_2016=$v_e_2016,tt_norm_mu_2016=$tt_mu_2016,w_norm_mu_2016=$v_mu_2016,tt_norm_e_2017=$tt_e_2017,w_norm_e_2017=$v_e_2017,tt_norm_mu_2017=$tt_mu_2017,w_norm_mu_2017=$v_mu_2017,tt_norm_e_2018=$tt_e_2018,w_norm_e_2018=$v_e_2018,tt_norm_mu_2018=$tt_mu_2018,w_norm_mu_2018=$v_mu_2018 >& COMB.log;\n")
+	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2 --rMin=-20 --rMax=20  -m " +  str(m) + " workspace.root "+ bonly_asimov+" --setParameters tt_norm_e_2016=$tt_e_2016,w_norm_e_2016=$v_e_2016,tt_norm_mu_2016=$tt_mu_2016,w_norm_mu_2016=$v_mu_2016,tt_norm_e_2017=$tt_e_2017,w_norm_e_2017=$v_e_2017,tt_norm_mu_2017=$tt_mu_2017,w_norm_mu_2017=$v_mu_2017,tt_norm_e_2018=$tt_e_2018,w_norm_e_2018=$v_e_2018,tt_norm_mu_2018=$tt_mu_2018,w_norm_mu_2018=$v_mu_2018 >& COMB.log;\n")
 
            else:
 	      print("Do not support this mode!!!")
@@ -1168,7 +1176,7 @@ for signalSuffix in signalSuffixVec :
 	      datacard = "card_{}_zh.dat".format(year)
          
 	      SCRIPT.writelines("\n#****************** {} *****************\n".format(year)) 
-	      SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc --correlatedLumi  --replaceHighSensitivityBinsWithBG  --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-" + year + ".log \n")
+	      SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc --correlatedLumi  " + blindSR + "  --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-" + year + ".log \n")
 	      SCRIPT.writelines("sh combineCards_{}_zh.sh;\n".format(year))
            
 	   SCRIPT.writelines("\ncombineCards.py card_combined_2016_zh.dat card_combined_2017_zh.dat card_combined_2018_zh.dat > card_combined_zh.dat")
@@ -1248,7 +1256,7 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("fi\n")
               SCRIPT.writelines("printf \" 2018, mu:  tt = %s , v_3b = %s , v_4b = %s\\n\" $tt_mu_2018, $v_3b_mu_2018, $v_4b_mu_2018\n\n")
 
-	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  -m " +  str(m) + " workspace.root -t -1  --setParameters z_norm_3b_e_2016=$v_3b_e_2016,z_norm_4b_e_2016=$v_4b_e_2016,z_norm_3b_mu_2016=$v_3b_mu_2016,z_norm_4b_mu_2016=$v_4b_mu_2016,z_norm_3b_e_2017=$v_3b_e_2017,z_norm_4b_e_2017=$v_4b_e_2017,z_norm_3b_mu_2017=$v_3b_mu_2017,z_norm_4b_mu_2017=$v_4b_mu_2017,z_norm_3b_e_2018=$v_3b_e_2018,z_norm_4b_e_2018=$v_4b_e_2018,z_norm_3b_mu_2018=$v_3b_mu_2018,z_norm_4b_mu_2018=$v_4b_mu_2018 >& COMB.log;\n") 
+	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2 --rMin=-20 --rMax=20  -m " +  str(m) + " workspace.root "+ bonly_asimov+"  --setParameters z_norm_3b_e_2016=$v_3b_e_2016,z_norm_4b_e_2016=$v_4b_e_2016,z_norm_3b_mu_2016=$v_3b_mu_2016,z_norm_4b_mu_2016=$v_4b_mu_2016,z_norm_3b_e_2017=$v_3b_e_2017,z_norm_4b_e_2017=$v_4b_e_2017,z_norm_3b_mu_2017=$v_3b_mu_2017,z_norm_4b_mu_2017=$v_4b_mu_2017,z_norm_3b_e_2018=$v_3b_e_2018,z_norm_4b_e_2018=$v_4b_e_2018,z_norm_3b_mu_2018=$v_3b_mu_2018,z_norm_4b_mu_2018=$v_4b_mu_2018 >& COMB.log;\n") 
 
            else:
 	      print("Do not support this mode!!!")
@@ -1346,9 +1354,9 @@ for signalSuffix in signalSuffixVec :
               ############whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnosticsTest.root"
               whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnostics.root"
 	      if "2016" in inUrl:
-	          SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --correlatedLumi --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-wh-" + year + ".log \n")  
+	          SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --correlatedLumi --verbose  " + blindSR + "  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-wh-" + year + ".log \n")  
 	      else:
-	          SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc --correlatedLumi  --verbose  --replaceHighSensitivityBinsWithBG  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-wh-" + year + ".log \n")  
+	          SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc --correlatedLumi  --verbose " + blindSR + "  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-wh-" + year + ".log \n")  
 	      SCRIPT.writelines("sh combineCards_"+year+"_wh.sh;\n"); 
 	      
 	      inUrl = inUrl_zhs[i]
@@ -1356,7 +1364,7 @@ for signalSuffix in signalSuffixVec :
 	      year = years[i]
          
 	      SCRIPT.writelines("\n#****************** {} Zh *****************\n".format(year)) 
-	      SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --correlatedLumi  --verbose  --replaceHighSensitivityBinsWithBG  --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-zh-" + year + ".log ;\n")
+	      SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --correlatedLumi  --verbose  " + blindSR + "  --runZh --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-zh-" + year + ".log ;\n")
 	      SCRIPT.writelines("sh combineCards_{}_zh.sh;\n".format(year))
 
 	      SCRIPT.writelines("combineCards.py card_combined_{}_wh.dat card_combined_{}_zh.dat > card_combined_{}.dat\n".format(year, year, year))
@@ -1478,7 +1486,7 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("printf \" 2018, mu:  tt = %s , z_3b = %s , z_4b = %s\\n\" $tt_mu_2018, $z_3b_mu_2018, $z_4b_mu_2018\n\n")
 
 
-	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  -m " +  str(m) + " workspace.root -t -1 --freezeParameters tt_norm_e_2016,tt_norm_mu_2016,tt_norm_e_2017,tt_norm_mu_2017,tt_norm_e_2018,tt_norm_mu_2018 --setParameters tt_norm_e_2016=$tt_e_2016,z_norm_3b_e_2016=$z_3b_e_2016,z_norm_4b_e_2016=$z_4b_e_2016,w_norm_e_2016=$w_e_2016,tt_norm_mu_2016=$tt_mu_2016,z_norm_3b_mu_2016=$z_3b_mu_2016,z_norm_4b_mu_2016=$z_4b_mu_2016,w_norm_mu_2016=$w_mu_2016,tt_norm_e_2017=$tt_e_2017,z_norm_3b_e_2017=$z_3b_e_2017,z_norm_4b_e_2017=$z_4b_e_2017,w_norm_e_2017=$w_e_2017,tt_norm_mu_2017=$tt_mu_2017,z_norm_3b_mu_2017=$z_3b_mu_2017,z_norm_4b_mu_2017=$z_4b_mu_2017,w_norm_mu_2017=$w_mu_2017,tt_norm_e_2018=$tt_e_2018,z_norm_3b_e_2018=$z_3b_e_2018,z_norm_4b_e_2018=$z_4b_e_2018,w_norm_e_2018=$w_e_2018,tt_norm_mu_2018=$tt_mu_2018,z_norm_3b_mu_2018=$z_3b_mu_2018,z_norm_4b_mu_2018=$z_4b_mu_2018,w_norm_mu_2018=$w_mu_2018  >& COMB.log;\n") 
+	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  --rMin=-20 --rMax=20  -m " +  str(m) + " workspace.root "+ bonly_asimov+" --freezeParameters tt_norm_e_2016,tt_norm_mu_2016,tt_norm_e_2017,tt_norm_mu_2017,tt_norm_e_2018,tt_norm_mu_2018 --setParameters tt_norm_e_2016=$tt_e_2016,z_norm_3b_e_2016=$z_3b_e_2016,z_norm_4b_e_2016=$z_4b_e_2016,w_norm_e_2016=$w_e_2016,tt_norm_mu_2016=$tt_mu_2016,z_norm_3b_mu_2016=$z_3b_mu_2016,z_norm_4b_mu_2016=$z_4b_mu_2016,w_norm_mu_2016=$w_mu_2016,tt_norm_e_2017=$tt_e_2017,z_norm_3b_e_2017=$z_3b_e_2017,z_norm_4b_e_2017=$z_4b_e_2017,w_norm_e_2017=$w_e_2017,tt_norm_mu_2017=$tt_mu_2017,z_norm_3b_mu_2017=$z_3b_mu_2017,z_norm_4b_mu_2017=$z_4b_mu_2017,w_norm_mu_2017=$w_mu_2017,tt_norm_e_2018=$tt_e_2018,z_norm_3b_e_2018=$z_3b_e_2018,z_norm_4b_e_2018=$z_4b_e_2018,w_norm_e_2018=$w_e_2018,tt_norm_mu_2018=$tt_mu_2018,z_norm_3b_mu_2018=$z_3b_mu_2018,z_norm_4b_mu_2018=$z_4b_mu_2018,w_norm_mu_2018=$w_mu_2018  >& COMB.log;\n") 
 
            else:
 	      print("Do not support this mode!!!")
@@ -1522,10 +1530,15 @@ for signalSuffix in signalSuffixVec :
 
       output_dir_all3b4b = "all_"
       if args.only3bLimit == True : output_dir_all3b4b = "only3b_"
-      if args.only4bLimit == True : output_dir_all3b4b = "only4b_"
+      if args.only4bLimit == True : output_dir_all3b4b = "only4b_"      
 
-      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_"+output_dir_all3b4b+"\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , "+str(integrated_luminosity)+" )'")
-      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_"+output_dir_all3b4b+"\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , "+str(integrated_luminosity)+" , \"Wh channels\" ,false)'")
+      blindLimits="true"
+
+      if(blind == False):
+         blindLimits="false"
+
+      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_"+output_dir_all3b4b+"\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, "+blindLimits+", 13 , "+str(integrated_luminosity)+" )'")
+      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_"+output_dir_all3b4b+"\",\""+DataCardsDir+"/LimitTree.root\",\"\", false,"+blindLimits+", 13 , "+str(integrated_luminosity)+" , \"Wh channels\" ,false)'")
 
 
 #      os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Strength_\",\""+DataCardsDir+"/LimitTree.root\",\"\", false, true, 13 , 35914.143 )'")
