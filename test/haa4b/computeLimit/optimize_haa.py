@@ -88,6 +88,7 @@ JobName        = "computeLimits"
 CWD=os.getcwd()
 #phase=-1
 
+### HERE SET blind = False TO MOVE TO UNBLINDING STAGE: ###
 blind = False
 
 blindSR = ""
@@ -95,7 +96,7 @@ bonly_asimov = ""
 
 if (blind == True): 
    blindSR = " --replaceHighSensitivityBinsWithBG"
-   bonly_asimov = " -t -1"
+#   bonly_asimov = " -t -1"
 
 
 autoMCstats = True

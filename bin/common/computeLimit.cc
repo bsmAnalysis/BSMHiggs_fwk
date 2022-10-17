@@ -2755,7 +2755,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       TH1* axis = (TH1*)map_data[p->first]->Clone("axis");
       axis->Reset();      
       //      axis->GetXaxis()->SetRangeUser(axis->GetXaxis()->FindBin(0.), axis->GetXaxis()->GetXmax());
-      axis->GetXaxis()->SetRangeUser(axis->GetXaxis()->GetXmin(),axis->GetXaxis()->GetXmax());
+      //      axis->GetXaxis()->SetRangeUser(axis->GetXaxis()->GetXmin(),axis->GetXaxis()->GetXmax());
+      axis->GetXaxis()->SetRangeUser(-0.31,0.35);
       //double signalHeight=0;
       //for(unsigned int s=0;s<map_signals[p->first].size();s++){signalHeight = std::max(signalHeight, map_signals[p->first][s]->GetMaximum());}
       //axis->SetMaximum(1.5*std::max(signalHeight , std::max( map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum())));
@@ -3774,12 +3775,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if(C->first.find("e" )!=string::npos) {             
           if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1\n",year.Data());      
           if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarcba 1\n",year.Data());   
-          if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_e%s rateParam bin1 wlnu 1 \n",year.Data());
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_e%s rateParam bin1 wlnu 1 \n",year.Data());
           //      fprintf(pFile,"w_norm_e rateParam bin1 wlnu 1 \n");     
         } else if (C->first.find("mu" )!=string::npos) {    
           if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1\n",year.Data());            
           if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarcba 1\n",year.Data()); 
-          if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_mu%s rateParam bin1 wlnu 1 \n",year.Data()); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_mu%s rateParam bin1 wlnu 1 \n",year.Data()); 
           //      fprintf(pFile,"w_norm_mu rateParam bin1 wlnu 1 \n"); 
         }                  
       }
@@ -4158,21 +4159,23 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
               ///if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.00;xbins[3]=0.09; xbins[4]=0.17;xbins[5]=0.35;}  // july 21, new trial bins
              //-----------------
 	      //	      double xbins[] = {-0.31, -0.13,  -0.01, 0.19, 0.25, 0.35};   // july 22, new trial bins
-	      double xbins[] = {-0.31, -0.13,  -0.01, 0.17, 0.23, 0.35};  // january 20, 2022, new trial bins
-              if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01;xbins[3]=0.15; xbins[4]=0.19;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins
+	      //	      double xbins[] = {-0.31, -0.13,  -0.01, 0.17, 0.23, 0.35};  // january 20, 2022, new trial bins
+	      double xbins[] = {-0.31, -0.13,  -0.01, 0.15, 0.21, 0.35};  // sep 23, georgia for unblinding 
+              //if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01;xbins[3]=0.13; xbins[4]=0.17;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins
+	      if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01;xbins[3]=0.13; xbins[4]=0.17;xbins[5]=0.35;}  // sep 23, georgia for unblinding  
              //-----------------
 
               int nbins=sizeof(xbins)/sizeof(double);    
               unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);  
               utils::root::fixExtremities(unc->second, false, true); 
             }else if(jetBin.Contains("4b")){ 
-
              //-----------------
-              ///double xbins[] = {-0.31, -0.09, 0.07, 0.11, 0.17, 0.35};     // last bins from Yuan
-              ///if(runZh) {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.09;xbins[3]=0.15; xbins[4]=0.21;xbins[5]=0.35;}     // last bins from Yuan
-             //-----------------
-              double xbins[] = {-0.31, -0.13, -0.07, 0.09, 0.19, 0.35};  // july 21, new trial bins
-              if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.09; xbins[4]=0.13;xbins[5]=0.35;}  // july 21, new trial bins
+	      //              double xbins[] = {-0.31, -0.13, -0.07, 0.09, 0.19, 0.35};  // july 21, new trial bins
+	      //double xbins[] = {-0.31, -0.13, -0.07, 0.07, 0.17, 0.35}; // sep 23, georgia for unblinding
+	      double xbins[] = {-0.31, -0.13, -0.07, 0.07, 0.35}; // sep 28, georgia
+	      //	      if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.09; xbins[4]=0.13;xbins[5]=0.35;}  // july 21, new trial bins
+	      //if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.05;xbins[4]=0.11; xbins[5]=0.35; } // sep 23, georgia for unblinding
+	      if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.05; xbins[4]=0.35; } // sep 28
              //-----------------
 	      //              double xbins[] = {-0.31, -0.13, -0.07,  0.09, 0.19, 0.35};  // july 22, new trial bins
 	      // if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.07; xbins[4]=0.13;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins
