@@ -4162,7 +4162,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	      //	      double xbins[] = {-0.31, -0.13,  -0.01, 0.17, 0.23, 0.35};  // january 20, 2022, new trial bins
 	      double xbins[] = {-0.31, -0.13,  -0.01, 0.15, 0.21, 0.35};  // sep 23, georgia for unblinding 
               //if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01;xbins[3]=0.13; xbins[4]=0.17;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins
-	      if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01;xbins[3]=0.13; xbins[4]=0.17;xbins[5]=0.35;}  // sep 23, georgia for unblinding  
+	      if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01;xbins[3]=0.11; xbins[4]=0.15;xbins[5]=0.35;}  // sep 23, georgia for unblinding  
              //-----------------
 
               int nbins=sizeof(xbins)/sizeof(double);    
@@ -4175,7 +4175,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	      double xbins[] = {-0.31, -0.13, -0.07, 0.07, 0.35}; // sep 28, georgia
 	      //	      if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.09; xbins[4]=0.13;xbins[5]=0.35;}  // july 21, new trial bins
 	      //if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.05;xbins[4]=0.11; xbins[5]=0.35; } // sep 23, georgia for unblinding
-	      if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.05; xbins[4]=0.35; } // sep 28
+	      if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=-0.01; xbins[4]=0.35; } // sep 28
              //-----------------
 	      //              double xbins[] = {-0.31, -0.13, -0.07,  0.09, 0.19, 0.35};  // july 22, new trial bins
 	      // if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.07; xbins[4]=0.13;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins

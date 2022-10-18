@@ -59,9 +59,12 @@ canvas.SetTickx(0)
 canvas.SetTicky(0)
 
 # configure your card directory below after running ./goodnessfit.sh
-directory = "/afs/cern.ch/work/y/yuanc/Analysis/H2a4b/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Wh_2018_noSoftb/0060/"
-datafname = "higgsCombineTest.GoodnessOfFit.mH120.root"
-toyfname = "higgsCombineTest.GoodnessOfFit.mH120.123456.root"
+directory = "/afs/cern.ch/work/g/georgia/BSMAnalysis/limits-combine-v8.1.0/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Wh_2016_noSoftb/0060/"
+#"/afs/cern.ch/work/y/yuanc/Analysis/H2a4b/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Wh_2018_noSoftb/0060/"
+datafname = "higgsCombine_result_sb.GoodnessOfFit.mH120.root"
+#"higgsCombineTest.GoodnessOfFit.mH120.root"
+toyfname = "higgsCombineresult_toy_sb.GoodnessOfFit.mH120.123456.root"
+#"higgsCombineTest.GoodnessOfFit.mH120.123456.root"
 
 dataf = rt.TFile.Open(os.path.join(directory, datafname))
 datatree = dataf.limit
