@@ -115,6 +115,8 @@ bool noCorrelatedStatUnc = false ;
 bool correlatedLumi = false;
 bool plotsOnly = false ;
 
+TString showOneUncertainty("");
+
 TString inFileUrl(""),jsonFile("");
 
 TString sumFileUrl("") ;
@@ -207,7 +209,7 @@ void resetNegativeBinsAndErrors( TH1* hp, double val_for_reset = 1., double min_
 
 	 hp -> SetBinContent( hbi, val_for_reset ) ;
 	 hp -> SetBinError( hbi, sqrt( pow( err, 2. ) + pow( val, 2. ) ) ) ;
-
+	 
 	 if(val_for_reset==0.) { // for region B (QCD template) reset errors if weights too large
 	   if ( (fabs(val)>=1) && (err > max_error) ) {   
 	     printf(" REL ERR > 1: resetNegativeBinsAndErrors : hist %s, bin %d, val = %.1f, reset val to %.1f and err to %.1f.\n", 
@@ -216,12 +218,12 @@ void resetNegativeBinsAndErrors( TH1* hp, double val_for_reset = 1., double min_
 	   }
 	 }
 
+	 
       }
-   } // hbi
-
+   } 
+   
 } // resetNegativeBinsAndErrors
 
-//--------------
 
 
 
@@ -291,6 +293,7 @@ class ShapeData_t
           unsigned endPosOfFirstDelimiter = firstDelimiter + delimiter.length();
           string channel_and_bin = suffix.substr(endPosOfFirstDelimiter, lastDelimiter-endPosOfFirstDelimiter);
           
+	  
           if(suffix.find("instrmet") != std::string::npos){
             TH1* h = (TH1*) histo()->Clone("TMPFORSTAT");
             int BIN=0;
@@ -299,10 +302,11 @@ class ShapeData_t
             TString InstrMET_gammaStats_Url(string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/InstrMET_systematics/InstrMET_systematics_GAMMASTATS.root");
             TFile* f_InstrMET_gammaStats = TFile::Open(InstrMET_gammaStats_Url);
             TH1* h_InstrMET_Up_gammaStats = (TH1*)utils::root::GetObjectFromPath(f_InstrMET_gammaStats, (channel_and_bin+"_mt_InstrMET_absolute_shape_up").c_str() );
-            TH1* h_InstrMET_Down_gammaStats = (TH1*)utils::root::GetObjectFromPath(f_InstrMET_gammaStats, (channel_and_bin+"_mt_InstrMET_absolute_shape_down").c_str() );                       
+            TH1* h_InstrMET_Down_gammaStats = (TH1*)utils::root::GetObjectFromPath(f_InstrMET_gammaStats, (channel_and_bin+"_mt_InstrMET_absolute_shape_down").c_str() );     
+                  
             for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++){           
               if( true /*h->GetBinContent(ibin)/h->Integral()>0.01*/){ //This condition is removed for the moment, we may put it back in the future. 
-                
+	                 
                 char ibintxt[255]; sprintf(ibintxt, "_b%i", BIN);BIN++;
 
                 if ( verbose ) { 
@@ -351,9 +355,9 @@ class ShapeData_t
 
             delete h; //all done with this copy
             
-          }
+	  }
           else{
-
+	    	    
          // if ( verbose ) {
          //    printf(" --- verbose: makeStatUnc : %s   %s   %s  histo name: %s\n", prefix.c_str(), suffix.c_str(), suffix2.c_str(), histo()->GetName() ) ;
          //    if ( total_hist != 0x0 ) {
@@ -374,7 +378,7 @@ class ShapeData_t
               for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++){           
 
                 /////////////if( !(h->GetBinContent(ibin)<=0 && h->GetBinError(ibin)>0) &&  (h->GetBinContent(ibin)<=0 || h->GetBinContent(ibin)/h->Integral()<0.01 || h->GetBinError(ibin)/h->GetBinContent(ibin)<statBinByBin))continue;
-
+		if ( h->GetBinError(ibin)/h->GetBinContent(ibin)<statBinByBin ) continue;
                 if ( h->GetBinContent(ibin) <= 0 ) continue ;
                 if ( total_hist == 0x0 ) {
                    if ( verbose ) { printf("  *** verbose: makeStatUnc :  statBinByBin requested bu no total_hist.  Skipping statBinByBin.\n") ; fflush(stdout) ; }
@@ -649,7 +653,7 @@ class ProcessInfo_t
                     if ( hp -> GetNbinsX() < 10 ) {
                        for ( int bi=1; bi<= hp -> GetNbinsX(); bi++ ) {
                           if ( !(is_data_sr && bi >= 4) ) {
-                             printf(" b%d %9.1f |", bi, hp -> GetBinContent( bi ) ) ;
+			    printf(" b%d %9.1f +/- %6.1f |", bi, hp -> GetBinContent( bi ), hp -> GetBinError ( bi) ) ;
                           } else {
                              printf(" b%d *******.* |", bi ) ;
                           }
@@ -753,6 +757,7 @@ void printHelp()
   printf("--verbose   --> turn on a lot of extra printing\n");
   printf("--autoMCStats   --> use Combine implementation of bin-by-bin stat errors on background histograms.  Will turn of statBinByBin.\n");
   printf("--replaceHighSensitivityBinsWithBG  --> replace high-sensitivity histogram bins in SR with total BG.\n") ;
+  printf("--showOneUncertaintyOnly --> draw only one type of uncertainty") ;
   printf("--in        --> input file with from plotter\n");
   printf("--json      --> json file with the sample descriptor\n");
   printf("--histoVBF  --> name of histogram to be used for VBF\n");
@@ -862,6 +867,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--index" )   !=string::npos && i+1<argc)   { char* pch = strtok(argv[i+1],",");while (pch!=NULL){int C;  sscanf(pch,"%i",&C); indexcutV .push_back(C);  pch = strtok(NULL,",");} i++; printf("index  = "); for(unsigned int i=0;i<indexcutV .size();i++)printf(" %i ", indexcutV [i]);printf("\n");}
     else if(arg.find("--indexL")    !=string::npos && i+1<argc)  { char* pch = strtok(argv[i+1],",");while (pch!=NULL){int C;  sscanf(pch,"%i",&C); indexcutVL.push_back(C);  pch = strtok(NULL,",");} i++; printf("indexL = "); for(unsigned int i=0;i<indexcutVL.size();i++)printf(" %i ", indexcutVL[i]);printf("\n");}
     else if(arg.find("--indexR")    !=string::npos && i+1<argc)  { char* pch = strtok(argv[i+1],",");while (pch!=NULL){int C;  sscanf(pch,"%i",&C); indexcutVR.push_back(C);  pch = strtok(NULL,",");} i++; printf("indexR = "); for(unsigned int i=0;i<indexcutVR.size();i++)printf(" %i ", indexcutVR[i]);printf("\n");}
+    else if(arg.find("--showOneUncertaintyOnly") !=string::npos && i+1<argc) { showOneUncertainty = argv[i+1]; printf("showOneUncertainty = %s\n", showOneUncertainty.Data()); }
     else if(arg.find("--in")       !=string::npos && i+1<argc)  { inFileUrl = argv[i+1];  i++;  printf("in = %s\n", inFileUrl.Data());  }
     else if(arg.find("--json")     !=string::npos && i+1<argc)  { jsonFile  = argv[i+1];  i++;  printf("json = %s\n", jsonFile.Data()); }
     else if(arg.find("--histoVBF") !=string::npos && i+1<argc)  { histoVBF  = argv[i+1];  i++;  printf("histoVBF = %s\n", histoVBF.Data()); }
@@ -1402,9 +1408,8 @@ int main(int argc, char* argv[])
   if ( verbose && runSystematics ) { printf("\n  --- verbose : main :    calling allInfo.showUncertainty(selCh,histo,\"plot\"); \n") ; fflush(stdout) ; }
 
   //produce a plot
-  //  if(runSystematics) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  
+  //if(runSystematics) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  
   if(runSystematics && !(simfit)) allInfo.showUncertainty(selCh,histo,"plot");
-  //  if (runSystematics) allInfo.showUncertainty(selCh,histo,"plot"); //this produces all the plots with the syst  
   // georgia : now run reporting systematics only if simfit=false 
   // owen: temporarily turn this off.  Slows it down.
   
@@ -2235,11 +2240,21 @@ void AllInfo_t::replaceHighSensitivityBinsWithBG() {
            if ( total_hist == 0x0 ) { printf("\n\n *** AllInfo_t::replaceHighSensitivityBinsWithBG : total BG hist is null pointer!!! bailing out.\n\n") ; return ; }
 
            if ( data_hist -> GetNbinsX() != 5 ) { printf("\n\n *** AllInfo_t::replaceHighSensitivityBinsWithBG :  was expecting 5 bins.  found %d in data hist.  bailing out.\n\n", data_hist -> GetNbinsX() ) ; }
-           if ( total_hist -> GetNbinsX() != 5 ) { printf("\n\n *** AllInfo_t::replaceHighSensitivityBinsWithBG :  was expecting 5 bins.  found %d in total BG hist.  bailing out.\n\n", total_hist -> GetNbinsX() ) ; }
+	   //           if ( total_hist -> GetNbinsX() != 5 ) { printf("\n\n *** AllInfo_t::replaceHighSensitivityBinsWithBG :  was expecting 5 bins.  found %d in total BG hist.  bailing out.\n\n", total_hist -> GetNbinsX() ) ; }
+	   if ( total_hist -> GetNbinsX() != 5 ) { 
+	     printf("\n\n *** AllInfo_t::replaceHighSensitivityBinsWithBG :  was expecting 5 bins.  found %d in total BG hist.  bailing out.\n\n", total_hist -> GetNbinsX() ) ; 
+	     int nbinlast = total_hist->GetNbinsX();
+	     int nbinlastmone = total_hist->GetNbinsX() - 1;
 
-           data_hist -> SetBinContent( 4, total_hist -> GetBinContent( 4 ) ) ;
-           data_hist -> SetBinContent( 5, total_hist -> GetBinContent( 5 ) ) ;
-
+	     // this case applies only to the Zh channel, 4B category:
+	     data_hist -> SetBinContent( nbinlastmone, total_hist -> GetBinContent( nbinlastmone ) ) ;
+	     data_hist -> SetBinContent( nbinlast, total_hist -> GetBinContent( nbinlast ) ) ;
+	   } else {
+	     // Standard cases:
+	     data_hist -> SetBinContent( 4, total_hist -> GetBinContent( 4 ) ) ;
+	     data_hist -> SetBinContent( 5, total_hist -> GetBinContent( 5 ) ) ;
+	  
+	   }
 
         } // is
 
@@ -2798,6 +2813,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       }
       //if((I-1)%NBins!=0)
       axis->GetYaxis()->SetTitle("Events");
+      //      axis->GetXaxis()->SetRangeUser(-0.31,0.35);
       //if(I<=NBins)
       //      axis->GetXaxis()->SetTitle("BDT");
       axis->Draw();
@@ -2817,6 +2833,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           hs->Draw("HIST same");
         }
       }
+      axis->GetXaxis()->SetRangeUser(-0.31,0.34);   
       
       if(blindSR){
          if ( startsWith(p->first,"mu_A_SR_3b") || startsWith(p->first,"mu_A_SR_4b") ||
@@ -3114,12 +3131,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
         //add the stat uncertainty is there;
         //ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false );//add stat uncertainty to the uncertainty map;
-
-        if((it->second.shortName).find("wh")!=std::string::npos)ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_wh")).Data(),systpostfix.Data(), h_total );// attention
-
-        //      else if((it->second.shortName).find("qqH")!=std::string::npos)ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_qqH")).Data(),systpostfix.Data(), false );
-
-        else ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false, h_total );
+        if((it->second.shortName).find("wh")!=std::string::npos)
+	  ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_wh")).Data(),systpostfix.Data(), h_total );// attention
+        else 
+	  ch->second.shapes[histoName.Data()].makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false, h_total );
 
         TVirtualPad* pad = t1->cd(I); 
         pad->SetTopMargin(0.06); pad->SetRightMargin(0.03); pad->SetBottomMargin(0.07);  pad->SetLeftMargin(0.06);
@@ -3138,8 +3153,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
         //print histograms
         TH1* axis = (TH1*)h->Clone("axis");
-        axis->Reset();      
-        axis->GetXaxis()->SetRangeUser(axis->GetXaxis()->GetXmin(), axis->GetXaxis()->GetXmax());
+        axis->Reset();
+	axis->GetXaxis()->SetRangeUser(-0.31,0.34); 
+	//        axis->GetXaxis()->SetRangeUser(axis->GetXaxis()->GetXmin(), axis->GetXaxis()->GetXmax());
         axis->GetYaxis()->SetRangeUser(0.5, 1.5); //100% uncertainty
         if((I-1)%NBins!=0)axis->GetYaxis()->SetTitle("");
         axis->Draw();
@@ -3204,8 +3220,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           mapYieldInc[systName.Data()].first += ScaleChange*h->Integral();
           mapYieldInc[systName.Data()].second += h->Integral();
 
-          lineUp->SetLineWidth(2);  lineUp->SetLineColor(color); lineUp->Draw("same");
-          lineDn->SetLineWidth(2);  lineDn->SetLineColor(color); lineDn->Draw("same");
+          lineUp->SetLineWidth(1);  lineUp->SetLineColor(color); lineUp->Draw("same");
+          lineDn->SetLineWidth(1);  lineDn->SetLineColor(color); lineDn->Draw("same");
         }
 
         //draw shape uncertainties
@@ -3228,6 +3244,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           //systName.ReplaceAll("up","");
           //systName.ReplaceAll("down","");
           //if(systName.Index("jes")<0 && systName.Index("umet")<0 && systName.Index("resj")<0) continue;
+
+	  if(!showOneUncertainty.IsNull()) {
+	    if(!systName.Contains(showOneUncertainty.Data() )) continue; // georgia, Nov 25 
+	  }
 
           int color = ColorIndex;
           if(systName.Contains("stat")){systName = "stat"; color=2;}
@@ -3256,8 +3276,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           hvar->SetFillColor(0);                  
           hvar->SetLineStyle(1);
           hvar->SetLineColor(color);
-          hvar->SetLineWidth(2);
-          hvar->Draw("HIST same");                   
+          hvar->SetLineWidth(1);
+          hvar->Draw("HIST esame");                   
           hvar->Write(vh_tag + "_" + systName+"_Uncertainty_"+ch->second.channel+"_"+ch->second.bin+"_"+it->second.shortName);
         }
         //remove the stat uncertainty
@@ -3415,9 +3435,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         //////if ( verbose ) { printf(" ---  verbose : AllInfo_t::saveHistoForLimit :  TH1 name : %s\n", h -> GetName() ) ; fflush(stdout) ; }
 
         //Fix
-        if((it->second.shortName).find("ggH")!=std::string::npos)shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_ggH")).Data(),systpostfix.Data(), false, h_total );// attention
-        else if((it->second.shortName).find("qqH")!=std::string::npos)shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_qqH")).Data(),systpostfix.Data(), false, h_total );
-        else shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false, h_total );
+	//        if((it->second.shortName).find("ggH")!=std::string::npos)shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_ggH")).Data(),systpostfix.Data(), false, h_total );// attention
+	//        else if((it->second.shortName).find("qqH")!=std::string::npos)shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+TString("_qqH")).Data(),systpostfix.Data(), false, h_total );
+        //else 
+	shapeInfo.makeStatUnc("_CMS_haa4b_", (TString("_")+ch->first+"_"+it->second.shortName).Data(),systpostfix.Data(), false, h_total );
         fout->cd(chbin);
 
         TString proc = it->second.shortName.c_str();
@@ -3527,8 +3548,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         TH1* h=shapeInfo.histo(); if (h) integral=h->Integral();
 
         //lumi
-        if( !(it->second.shortName.find("ttbarbba")!=string::npos) && //!(it->second.shortName.find("ttbarcba")!=string::npos) &&
+	//        if( !(!runZh && (it->second.shortName.find("ttbarbba")!=string::npos)) && 
+	//  !(!runZh && (it->second.shortName.find("wlnu")!=string::npos)) && !(runZh && (it->second.shortName.find("zll")!=string::npos)) ) {
+	if( !(it->second.shortName.find("ttbarbba")!=string::npos) && //!(it->second.shortName.find("ttbarcba")!=string::npos) &&
             !(it->second.shortName.find("wlnu")!=string::npos) ) {
+
           if(!it->second.isData && systpostfix.Contains('3')) {
 	    if(inFileUrl.Contains("2016")) shapeInfo.uncScale["lumi_13TeV_2016"] = integral*0.010; 
 	    if(inFileUrl.Contains("2017")) shapeInfo.uncScale["lumi_13TeV_2017"] = integral*0.020; 
@@ -3546,31 +3570,192 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	      }
  	    }
 	  }
-        }
-        //Id+Trigger efficiencies combined
+	  
+
+	  //Id+Trigger efficiencies combined
+	  if(!it->second.isData){
+	    if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_eff_e"] = integral*0.02; //0.072124;
+	    if(chbin.Contains("mu"))  shapeInfo.uncScale["CMS_eff_m"] = integral*0.02; //0.061788;
+	  }
+
+	  // PDF + alpha_s + QCD scale uncertainties (both ZH and WH): 
+	  if( (it->second.shortName.find("wh")==string::npos) && (it->second.shortName.find("ddqcd")==string::npos) ){ 
+	    if(chbin.Contains("SR" )) shapeInfo.uncScale["norm_SR_pdf"] = integral*0.20; // 0.20 for Jan
+	    else shapeInfo.uncScale["norm_CR_pdf"] = integral*0.10; 
+	  } 
+
+	} // outside the rateparams processes
         
-        if(!it->second.isData){
-          if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_eff_e"] = integral*0.02; //0.072124;
-          if(chbin.Contains("mu"))  shapeInfo.uncScale["CMS_eff_m"] = integral*0.02; //0.061788;
-        }
-        
-        //Normalization uncertainties 
+	// Updates during unblinding:
+	
+	if(runZh){ // Zh channel
+
+	  if (it->second.shortName.find("wh")!=string::npos) {
+	    shapeInfo.uncScale["norm_pu"] = integral*0.01;
+	    if(chbin.Contains("SR" )) {        
+	      shapeInfo.uncScale["norm_SR_effc"] = integral*0.001; shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.002; 
+	      shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001;
+	      shapeInfo.uncScale["norm_SR_effb"] = integral*0.075;   
+	    } else {
+	      shapeInfo.uncScale["norm_CR_effb"] = integral*0.03;  
+	    }
+	  }
+
+	  if(it->second.shortName.find("otherbkg")!=string::npos){ 
+	    shapeInfo.uncScale["norm_pu"] = integral*0.02; 
+	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.005;      
+	    if(chbin.Contains("SR" )) { 
+	      shapeInfo.uncScale["norm_SR_effc"] = integral*0.03; shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.02; 
+	      shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001; 
+	      //	      shapeInfo.uncScale["norm_SR_effb"] = integral*0.04; 
+	    } else {
+	      shapeInfo.uncScale["norm_CR_effc"] = integral*0.007; shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.002; 
+	      shapeInfo.uncScale["norm_CR_scalejes"] = integral*0.001; 
+	      //	      shapeInfo.uncScale["norm_CR_effb"] = integral*0.04;  
+	    }
+	  }
+
+	  if(it->second.shortName.find("ttbarbba")!=string::npos){
+	    shapeInfo.uncScale["norm_pu"] = integral*0.006; 
+	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.004;    
+	    if(chbin.Contains("SR" )) {  
+	      shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.006; shapeInfo.uncScale["norm_SR_effc"] = integral*0.01; 
+	      shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001;  
+	      //	      shapeInfo.uncScale["norm_SR_effb"] = integral*0.05; 
+	    }else{
+	      shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.001; shapeInfo.uncScale["norm_CR_effc"] = integral*0.002; 
+	      shapeInfo.uncScale["norm_CR_scalejes"] = integral*0.001;   
+	      //	      shapeInfo.uncScale["norm_CR_effb"] = integral*0.05;    
+	    }
+	  }
+
+	  if(it->second.shortName.find("ttbarcba")!=string::npos){
+	    shapeInfo.uncScale["norm_pu"] = integral*0.006;   
+	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.005;  
+	    if(chbin.Contains("SR" )) {         
+	      shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.01; shapeInfo.uncScale["norm_SR_effc"] = integral*0.07; 
+	      shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001; 
+	      //	      shapeInfo.uncScale["norm_SR_effb"] = integral*0.04;  
+	    }else{   
+	      shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.001; shapeInfo.uncScale["norm_CR_effc"] = integral*0.01; 
+	      shapeInfo.uncScale["norm_CR_scalejes"] = integral*0.001;
+	      //	      shapeInfo.uncScale["norm_CR_effb"] = integral*0.03;  
+	    }
+	  } 
+
+	  if(it->second.shortName.find("ttbarlig")!=string::npos){
+	    shapeInfo.uncScale["norm_pu"] = integral*0.008;     
+	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.004;      
+	    if(chbin.Contains("SR" )) { 
+	      shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.05; //shapeInfo.uncScale["norm_SR_effc"] = integral*0.07; 
+	      shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001;  
+	      //	      shapeInfo.uncScale["norm_SR_effb"] = integral*0.04; 
+	    }else{   
+	      shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.001; //shapeInfo.uncScale["norm_CR_effc"] = integral*0.01; 
+	      shapeInfo.uncScale["norm_CR_scalejes"] = integral*0.001; 
+	      //	      shapeInfo.uncScale["norm_CR_effb"] = integral*0.038;           
+	    }
+	  }
+
+	} else {// Wh channel  :  
+
+	  if (it->second.shortName.find("wh")!=string::npos) { 
+            shapeInfo.uncScale["norm_pu"] = integral*0.01; 
+            if(chbin.Contains("SR" )) { 
+              shapeInfo.uncScale["norm_SR_effc"] = integral*0.002; shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.002; 
+	      //shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.006; 
+	      //              shapeInfo.uncScale["norm_SR_effb"] = integral*0.09; 
+            } else { 
+	      //              shapeInfo.uncScale["norm_CR_effb"] = integral*0.032; 
+            }
+          }
+
+	  if(it->second.shortName.find("otherbkg")!=string::npos){  
+	    shapeInfo.uncScale["norm_pu"] = integral*0.05;  
+	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.005;
+	    shapeInfo.uncScale["norm_umet"] = integral*0.003;        
+
+	    if(chbin.Contains("SR" )) {
+	      shapeInfo.uncScale["norm_SR_effc"] = integral*0.04; shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.02; 
+	      //shapeInfo.uncScale["norm_SR_effb"] = integral*0.05;
+	      //   shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001;  //shapeInfo.uncScale["norm_SR_resj"] = integral*0.001; 
+	    } else {
+	      shapeInfo.uncScale["norm_CR_effc"] = integral*0.008; shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.003; 
+	      //shapeInfo.uncScale["norm_CR_effb"] = integral*0.04;
+	      // shapeInfo.uncScale["norm_CR_scalejes"] = integral*0.001; // shapeInfo.uncScale["norm_CR_resj"] = integral*0.001; 
+	    }
+	  } // end otherbkg
+
+	  if(it->second.shortName.find("ttbarcba")!=string::npos){       
+	    shapeInfo.uncScale["norm_pu"] = integral*0.003;
+	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.005;  
+	    shapeInfo.uncScale["norm_umet"] = integral*0.003;
+
+	    if(chbin.Contains("SR" )) {   
+              shapeInfo.uncScale["norm_SR_effc"] = integral*0.06; shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.005; //shapeInfo.uncScale["norm_SR_effb"] = integral*0.03; 
+	      // shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001; 
+	      shapeInfo.uncScale["norm_SR_toppt"] = integral*0.015;  
+            }else{
+              shapeInfo.uncScale["norm_CR_effc"] = integral*0.015; shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.001; 
+	      //shapeInfo.uncScale["norm_CR_effb"] = integral*0.03; 
+              //shapeInfo.uncScale["norm_CR_scalejes"] = integral*0.001; 
+	      shapeInfo.uncScale["norm_CR_toppt"] = integral*0.01;// shapeInfo.uncScale["norm_CR_resj"] = integral*0.001; 
+            }                                         
+	  }// end tt+cc
+
+	  if(it->second.shortName.find("ttbarlig")!=string::npos){  
+	    shapeInfo.uncScale["norm_pu"] = integral*0.003; 
+	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.004;
+	    shapeInfo.uncScale["norm_umet"] = integral*0.003;   
+
+            if(chbin.Contains("SR" )) {
+              //shapeInfo.uncScale["norm_SR_effc"] = integral*0.06; 
+	      shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.05; 
+	      //shapeInfo.uncScale["norm_SR_effb"] = integral*0.04; 
+              //shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001;
+	      shapeInfo.uncScale["norm_SR_toppt"] = integral*0.02;   //shapeInfo.uncScale["norm_SR_resj"] = integral*0.001; 
+            }else{
+              //shapeInfo.uncScale["norm_CR_effc"] = integral*0.015; 
+	      shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.001; 
+	      //shapeInfo.uncScale["norm_CR_effb"] = integral*0.04; 
+	      // shapeInfo.uncScale["norm_CR_scalejes"] = integral*0.001; 
+	      shapeInfo.uncScale["norm_CR_toppt"] = integral*0.006; // shapeInfo.uncScale["norm_CR_resj"] = integral*0.001; 
+            }         
+	  } // end tt+light
+
+	}// end Wh channel
+		
+
+        //Normalization uncertainties (THEORY)
         if(it->second.shortName.find("otherbkg")!=string::npos){shapeInfo.uncScale["norm_otherbkgds"] = integral*0.27;} 
-	if(it->second.shortName.find("otherbkg")!=string::npos){shapeInfo.uncScale["norm_pdf"] = integral*0.012 ;}
+
         if(runZh) {
           if(it->second.shortName.find("wlnu")!=string::npos){shapeInfo.uncScale["norm_wjet"] = integral*0.02;}
-	  if(it->second.shortName.find("ttbarbba")!=string::npos){shapeInfo.uncScale["norm_ttbb"] = integral*0.06;}  
-	  if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_ttcc"] = integral*0.06;}  
-	  //	  if(it->second.shortName.find("zll")!=string::npos){shapeInfo.uncScale["norm_pdf"] = integral*0.015;}
+	  if(it->second.shortName.find("ttbarbba")!=string::npos){shapeInfo.uncScale["norm_ttbb"] = integral*0.50;}//0.06;}  
+	  if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_ttcc"] = integral*0.50;} //0.06;}  
+	  /*
+	  if(it->second.shortName.find("zll")!=string::npos) {
+	    if(chbin.Contains("CR" ))shapeInfo.uncScale["norm_zll"] = integral*0.02;
+	  }
+	  */
         } else {
           if(it->second.shortName.find("zll")!=string::npos){shapeInfo.uncScale["norm_zll"] = integral*0.02;}
-	  //	  if(it->second.shortName.find("wlnu")!=string::npos){shapeInfo.uncScale["norm_pdf"] = integral*0.015;}
+	  if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_ttcc"] = integral*0.50;} //0.06;} 
+	  /*
+	  if(it->second.shortName.find("ttbarbba")!=string::npos){      
+	    if(chbin.Contains("CR" ))shapeInfo.uncScale["norm_ttbb"] = integral*0.06;  
+	  }
+	  if(it->second.shortName.find("ttbarcba")!=string::npos){   
+	    if(chbin.Contains("CR" ))shapeInfo.uncScale["norm_ttcc"] = integral*0.06;
+	  }
+	  */
         }
 
         if(it->second.shortName.find("ttbarlig")!=string::npos){shapeInfo.uncScale["norm_toplight"] = integral*0.06;} 
-	if(it->second.shortName.find("ttbarlig")!=string::npos){shapeInfo.uncScale["norm_pdf"] = integral*0.015;}
-	//	if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_pdf"] = integral*0.015;}  
-	//	if(it->second.shortName.find("ttbarbba")!=string::npos){shapeInfo.uncScale["norm_pdf"] = integral*0.015;}  
+
+	//	if(it->second.shortName.find("ttbarlig")!=string::npos){shapeInfo.uncScale["norm_pdf"] = integral*0.10; } //0.015;}
+	//	if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_pdf"] = integral*0.10; } //015;}  
+	//	if(it->second.shortName.find("ttbarbba")!=string::npos){shapeInfo.uncScale["norm_pdf"] = integral*0.10; } //0.015;}  
         //      if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_topcc"] = integral*0.50;} 
         if (!subFake){
           if(it->second.shortName.find("qcd")!=string::npos){shapeInfo.uncScale["norm_qcd"] = integral*0.50;} 
@@ -3638,11 +3823,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
     TString eecard = "";
     TString mumucard = "";
-    TString combinedcard = "";
+    TString combinedcard = ""; TString combinedsrcard = "";   
 
-    TString ecrcard = "";
-    TString mucrcard = "";
-
+    TString esrcard = ""; TString musrcard = "";
+    TString ecrcard = ""; TString mucrcard = "";
+    /*
+    TString e3bcard = ""; TString e4bcard = "";
+    TString mu3bcard = ""; TString mu4bcard = "";
+    */
     for(std::map<string, bool>::iterator C=allChannels.begin(); C!=allChannels.end();C++){
       // REmove B,C,D control regions from the datacard
       if(modeDD && ((C->first.find("B_")!=string::npos) || (C->first.find("C_")!=string::npos) ||(C->first.find("D_")!=string::npos)))continue;  
@@ -3656,28 +3844,64 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       //-- owen: August 10, 2020:  remove CR5j completely.
       //      if (C->first.find("CR5j")!=string::npos) continue;
 
-      if(C->first.find("emu")==string::npos) combinedcard += (C->first+"=").c_str()+dcName+" ";
-      if(runZh) {
-        if(C->first.find("ee"  )!=string::npos)eecard   += (C->first+"=").c_str()+dcName+" ";
-        if(C->first.find("mumu")!=string::npos)mumucard += (C->first+"=").c_str()+dcName+" ";
+      if(C->first.find("emu")==string::npos) {
+	combinedcard += (C->first+"=").c_str()+dcName+" ";
+	if(C->first.find("SR")!=string::npos) combinedsrcard += (C->first+"=").c_str()+dcName+" ";  
+      }
 
-        if(C->first.find("ee_A_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";      
-        if(C->first.find("mumu_A_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" ";  
-        /*
-        if(C->first.find("emu_A_CR"  )!=string::npos || C->first.find("emu_A_SR_3b")!=string::npos){ // emu_A_SR_4b is dropped in 2016 and 2017 zh
-          eecard   += (C->first+"=").c_str()+dcName+" ";mumucard += (C->first+"=").c_str()+dcName+" ";
-        }
-        if(C->first.find("emu_A_SR_4b"  )!=string::npos && inFileUrl.Contains("2018")){
-          eecard   += (C->first+"=").c_str()+dcName+" ";mumucard += (C->first+"=").c_str()+dcName+" ";
-        }
-	*/
+      if(runZh) {
+        if(C->first.find("ee"  )!=string::npos) { // georgia - Dec 16 temp update
+	  eecard   += (C->first+"=").c_str()+dcName+" ";
+	  if(C->first.find("SR")!=string::npos) { esrcard += (C->first+"=").c_str()+dcName+" ";   }
+	  /*
+	  if(C->first.find("3b")!=string::npos) { 
+	    e3bcard += (C->first+"=").c_str()+dcName+" "; 
+	  } else if (C->first.find("4b")!=string::npos) {
+	    e4bcard += (C->first+"=").c_str()+dcName+" ";   
+	  }
+	  */
+	}
+
+        if(C->first.find("mumu")!=string::npos) { // georgia - Dec 16 temp update
+	  mumucard += (C->first+"=").c_str()+dcName+" ";
+	  if(C->first.find("SR")!=string::npos) { musrcard += (C->first+"=").c_str()+dcName+" ";   }  
+	  /*
+	  if(C->first.find("3b")!=string::npos) { 
+	    mu3bcard += (C->first+"=").c_str()+dcName+" ";
+	  } else if (C->first.find("4b")!=string::npos) {   
+	    mu4bcard += (C->first+"=").c_str()+dcName+" ";
+	  }
+	  */
+	}
+	if(C->first.find("ee_A_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";      
+	if(C->first.find("mumu_A_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" ";  
 
       } else {
-        if(C->first.find("e"  )!=string::npos)eecard   += (C->first+"=").c_str()+dcName+" ";    
-        if(C->first.find("mu")!=string::npos)mumucard += (C->first+"=").c_str()+dcName+" ";  
+        if(C->first.find("e"  )!=string::npos) {
+	  eecard   += (C->first+"=").c_str()+dcName+" ";    
+	  if(C->first.find("SR")!=string::npos) { esrcard += (C->first+"=").c_str()+dcName+" ";   }  
+	  /*
+	  if(C->first.find("3b")!=string::npos) { 
+            e3bcard += (C->first+"=").c_str()+dcName+" "; 
+          } else if (C->first.find("4b")!=string::npos) { 
+            e4bcard += (C->first+"=").c_str()+dcName+" "; 
+          } 
+	  */
+	}
 
-        if(C->first.find("e_A_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";  
-        if(C->first.find("mu_A_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" "; 
+        if(C->first.find("mu")!=string::npos) {
+	  mumucard += (C->first+"=").c_str()+dcName+" ";  
+	  if(C->first.find("SR")!=string::npos) { musrcard += (C->first+"=").c_str()+dcName+" ";   }  
+	  /*
+	  if(C->first.find("3b")!=string::npos) { 
+            mu3bcard += (C->first+"=").c_str()+dcName+" "; 
+          } else if (C->first.find("4b")!=string::npos) { 
+            mu4bcard += (C->first+"=").c_str()+dcName+" "; 
+          } 
+	  */ 
+	}
+	if(C->first.find("e_A_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";  
+	if(C->first.find("mu_A_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" "; 
       }
 
       std::vector<string> valid_procs;
@@ -3731,6 +3955,27 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
            continue ;
         }
 	if( U->first.find("CMS_haa4b_pdf") !=string::npos) continue; // skip shape PDF uncertainty    
+	
+	
+	if( U->first.find("CMS_haa4b_toppt") !=string::npos) continue;  // skip shape umet   }
+
+	if( U->first.find("CMS_haa4b_pu") !=string::npos) continue; // skip shape pu uncertainty
+	if( U->first.find("CMS_haa4b_umet") !=string::npos) continue; // skip shape umet
+	
+	if( U->first.find("CMS_haa4b_resRho_e") !=string::npos) continue; // skip shape e
+	//	if(inFileUrl.Contains("2016")){        
+	if( U->first.find("CMS_haa4b_sys_e") !=string::npos) continue; // skip shape e
+	//}
+	//	if( U->first.find("CMS_haa4b_nloEWK") !=string::npos) continue; // skip shape nloEWK, its negligible..
+	
+	if( U->first.find("CMS_eff_c") !=string::npos) continue; // skip shape eff_c
+	if( U->first.find("CMS_eff_mistag") !=string::npos) continue; // skip shape eff mistag
+	//	if( U->first.find("CMS_eff_b") !=string::npos) continue; // skip shape eff_b 
+	
+	//	if( U->first.find("CMS_res_j") !=string::npos) continue; // skip shape res_j
+	if(runZh) { // UPDATE TESTs: 090123
+	  if( U->first.find("_jes") !=string::npos) continue; // skip shape JEC
+	}
 
         char line[2048];
         sprintf(line,"%-45s %-10s ", U->first.c_str(), U->second?"shape":"lnN");
@@ -3754,53 +3999,67 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       if(runZh) {
         if(C->first.find("ee" )!=string::npos) {         
-	  //          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1\n",year.Data()); 
-	  //          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarcba 1\n",year.Data());    
+	  //	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
           if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){  
-            if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_e%s rateParam bin1 zll 1 \n",year.Data());
-            if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_e%s rateParam bin1 zll 1 \n",year.Data());
+            if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_e%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
+            if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_e%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
           }
         } else if (C->first.find("mumu" )!=string::npos) {  
-	  //          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1\n",year.Data()); 
-	  //          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarcba 1\n",year.Data());    
+	  //	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
           if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){
-            if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_mu%s rateParam bin1 zll 1 \n",year.Data());
-            if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_mu%s rateParam bin1 zll 1 \n",year.Data());
+            if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_mu%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
+            if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_mu%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
           }
+	  /*
         } else if  (C->first.find("emu" )!=string::npos) {     
           if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  {fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1\n",year.Data());fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1\n",year.Data());}
           if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  {fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarcba 1\n",year.Data());fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarcba 1\n",year.Data());} 
-        } 
+	  */
+        }
+	  
       } else {
         if(C->first.find("e" )!=string::npos) {             
-          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1\n",year.Data());      
-          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarcba 1\n",year.Data());   
-	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_e%s rateParam bin1 wlnu 1 \n",year.Data());
+          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data());      
+	  //          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarcba 1\n",year.Data());   
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_e%s rateParam bin1 wlnu 1 [0.1,4.0] \n",year.Data());
           //      fprintf(pFile,"w_norm_e rateParam bin1 wlnu 1 \n");     
         } else if (C->first.find("mu" )!=string::npos) {    
-          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1\n",year.Data());            
-          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarcba 1\n",year.Data()); 
-	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_mu%s rateParam bin1 wlnu 1 \n",year.Data()); 
+          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data());            
+	  //          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarcba 1\n",year.Data()); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_mu%s rateParam bin1 wlnu 1 [0.1,4.0]\n",year.Data()); 
           //      fprintf(pFile,"w_norm_mu rateParam bin1 wlnu 1 \n"); 
         }                  
       }
       
       fprintf(pFile, "-------------------------------\n");  
       if ( autoMCStats ) {
-         fprintf( pFile, "* autoMCStats 0\n") ;
+         fprintf( pFile, "* autoMCStats 10\n") ;
          fprintf(pFile, "-------------------------------\n");  
       }
       fclose(pFile);
-
       
 
     }
 
     FILE* pFile = fopen("combineCards"+vh_tag+".sh","w");   
     fprintf(pFile,"%s;\n",(TString("combineCards.py ") + combinedcard + " > " + "card_combined"+vh_tag+".dat").Data());
+    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + combinedsrcard + " > " + "card_combined_sr"+vh_tag+".dat").Data()); 
+
     fprintf(pFile,"%s;\n",(TString("combineCards.py ") + eecard       + " > " + "card_e"+vh_tag+".dat").Data());
+    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + esrcard       + " > " + "card_esr"+vh_tag+".dat").Data());  
+    /*
+    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + e3bcard       + " > " + "card_e3b"+vh_tag+".dat").Data());
+    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + e4bcard       + " > " + "card_e4b"+vh_tag+".dat").Data());
+    */
     fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mumucard     + " > " + "card_mu"+vh_tag+".dat").Data());
-    
+    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + musrcard     + " > " + "card_musr"+vh_tag+".dat").Data());
+    /*
+    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mu3bcard     + " > " + "card_mu3b"+vh_tag+".dat").Data());  
+    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mu4bcard     + " > " + "card_mu4b"+vh_tag+".dat").Data());  
+    */
+    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + ecrcard       + " > " + "card_ecr"+vh_tag+".dat").Data());  
+    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mucrcard       + " > " + "card_mucr"+vh_tag+".dat").Data());  
+
     fprintf(pFile,"%s;\n",(TString("sed -i '/tt_norm_mu/d' card_e"+vh_tag+".dat")).Data());   
     fprintf(pFile,"%s;\n",(TString("sed -i '/tt_norm_e/d' card_mu"+vh_tag+".dat")).Data());         
 
@@ -4147,44 +4406,85 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if(!histo)continue;
             TString jetBin = ch->second.bin.c_str();
 
-            //      printf("Now going to rebinMainHisto of: %s\n",jetBin.Data());
-
             if(jetBin.Contains("3b")){
 
              //-----------------
-              //double xbins[] = {-0.31, -0.09, 0.09, 0.19, 0.21, 0.35};   // last bins from Yuan
-              //if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.09;xbins[3]=0.17; xbins[4]=0.19;xbins[5]=0.35;}  // last bins from Yuan
-             //-----------------
-              ///double xbins[] = {-0.31, -0.25, -0.07, 0.12, 0.19, 0.35};   // july 21, new trial bins
-              ///if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.00;xbins[3]=0.09; xbins[4]=0.17;xbins[5]=0.35;}  // july 21, new trial bins
-             //-----------------
-	      //	      double xbins[] = {-0.31, -0.13,  -0.01, 0.19, 0.25, 0.35};   // july 22, new trial bins
-	      //	      double xbins[] = {-0.31, -0.13,  -0.01, 0.17, 0.23, 0.35};  // january 20, 2022, new trial bins
-	      double xbins[] = {-0.31, -0.13,  -0.01, 0.15, 0.21, 0.35};  // sep 23, georgia for unblinding 
-              //if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01;xbins[3]=0.13; xbins[4]=0.17;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins
-	      if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01;xbins[3]=0.11; xbins[4]=0.15;xbins[5]=0.35;}  // sep 23, georgia for unblinding  
-             //-----------------
+	      if (!runZh) {
+		double xbins[] = {-0.31, -0.13,  -0.01, 0.19, 0.25, 0.35};  // original/optimal binning (pre-approval)
+		//double xbins[] = {-0.31, -0.13,  -0.01, 0.15, 0.21, 0.35};   // july 22, new trial bins
+		if(inFileUrl.Contains("2016")){
+		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.13;xbins[4]=0.17;xbins[5]=0.35;
+		}
+	      //double xbins[] = {-0.31, -0.13,  -0.01, 0.13, 0.19, 0.35};  // oct 27, georgia for unblinding 
+	      //	      if(inFileUrl.Contains("2016")) 
+	      //		xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.13;xbins[4]=0.21;xbins[5]=0.35; 
+	      /*
+	      if(inFileUrl.Contains("2017"))
+		double xbins[] = {-0.31, -0.13,  -0.01, 0.17, 0.23, 0.35};
+	      if(inFileUrl.Contains("2018"))
+		double xbins[] = {-0.31, -0.13,  -0.01, 0.17, 0.23, 0.35};  
+	      */
+	      //	      if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01;xbins[3]=0.15; xbins[4]=0.19;xbins[5]=0.35;} 
+	      //	      if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01;xbins[3]=0.13; xbins[4]=0.17;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins
+		int nbins=sizeof(xbins)/sizeof(double);   
+		unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
+		utils::root::fixExtremities(unc->second, false, true); 
 
-              int nbins=sizeof(xbins)/sizeof(double);    
-              unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);  
-              utils::root::fixExtremities(unc->second, false, true); 
-            }else if(jetBin.Contains("4b")){ 
-             //-----------------
-	      //              double xbins[] = {-0.31, -0.13, -0.07, 0.09, 0.19, 0.35};  // july 21, new trial bins
-	      //double xbins[] = {-0.31, -0.13, -0.07, 0.07, 0.17, 0.35}; // sep 23, georgia for unblinding
-	      double xbins[] = {-0.31, -0.13, -0.07, 0.07, 0.35}; // sep 28, georgia
-	      //	      if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.09; xbins[4]=0.13;xbins[5]=0.35;}  // july 21, new trial bins
-	      //if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.05;xbins[4]=0.11; xbins[5]=0.35; } // sep 23, georgia for unblinding
-	      if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=-0.01; xbins[4]=0.35; } // sep 28
-             //-----------------
-	      //              double xbins[] = {-0.31, -0.13, -0.07,  0.09, 0.19, 0.35};  // july 22, new trial bins
-	      // if(runZh) {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.07; xbins[4]=0.13;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins
-             //-----------------
-              
-              int nbins=sizeof(xbins)/sizeof(double);
-              unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
-              utils::root::fixExtremities(unc->second, false, true); 
-            }
+	      } else { // ZH
+		//		double xbins[] = {-0.31, -0.09, 0.01, 0.09, 0.17, 0.35 };           
+		double xbins[] = {-0.31, -0.09, 0.01, 0.11, 0.17, 0.35 }; 
+		//		double xbins[] = {-0.31, -0.09, 0.07, 0.11, 0.35 };
+		
+		//		double xbins[] = {-0.31, -0.09,  0.07, 0.9, 0.35 }; 
+		/*
+		if(inFileUrl.Contains("2018")) { 
+		  xbins[0]=-0.31;xbins[1]=-0.07;xbins[2]=-0.01; xbins[3]=0.07; xbins[4]=0.11;xbins[5]=0.35;
+		}
+		*/
+	      //-----------------
+		int nbins=sizeof(xbins)/sizeof(double);    
+		unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);  
+		utils::root::fixExtremities(unc->second, false, true); 
+	      }
+	    }else if(jetBin.Contains("4b")){ 
+	      //-----------------
+	      if(!runZh) {
+	      //double xbins[] = {-0.31, -0.13, -0.07, 0.05, 0.15, 0.35};  
+		double xbins[] = {-0.31, -0.13, -0.07, 0.05, 0.19, 0.35};  // july 21, new trial bins
+		//		xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.07;xbins[3]=0.01;xbins[4]=0.11;xbins[5]=0.35;  
+	      
+		//	      double xbins[] = {-0.31, -0.13, -0.07, 0.07, 0.35}; // sep 23, georgia for unblinding
+	      if(inFileUrl.Contains("2016"))  {
+		xbins[0]=-0.31;xbins[1]=-0.19;xbins[2]=-0.13;xbins[3]=-0.05;xbins[4]=0.09; xbins[5]=0.35;
+	      }
+	      
+		//		xbins[] = {-0.31, -0.15, -0.11, 0.35}; // oct 28, georgia, 3 bins
+	      /*
+	      if(inFileUrl.Contains("2017"))  
+		double xbins[] = {-0.31, -0.13, -0.07, 0.07, 0.35};
+	      if(inFileUrl.Contains("2018"))  
+		double xbins[] = {-0.31, -0.13, -0.07, 0.07, 0.35};   
+	      */
+		int nbins=sizeof(xbins)/sizeof(double);
+		unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
+		utils::root::fixExtremities(unc->second, false, true);
+
+	      } else { // runZH
+		//double xbins[] = {-0.31, -0.15,-0.07,0.07, 0.11, 0.35};
+		double xbins[] = {-0.31, -0.15,-0.07,0.09, 0.13, 0.35}; // oct 29, georgia, 2 bins
+		if(inFileUrl.Contains("2018")) {xbins[0]=-0.31; xbins[1]=-0.15; xbins[2]=-0.07; xbins[3]=0.07; xbins[4]=0.11; xbins[5]=0.35; }    
+		//		if(inFileUrl.Contains("2018"))  {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=0.01;xbins[3]=0.35; } //xbins[4]=0.35; } // sep 23, georgia for unblinding
+		//double xbins[] = {-0.31,-0.01, 0.35};
+		//if(runZh) {xbins[0]=-0.31;xbins[1]=0.03;xbins[2]=0.35;} 
+		//		if(runZh) {xbins[0]=-0.31;xbins[1]=-0.01;xbins[2]=0.01;xbins[3]=; xbins[4]=0.13;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins
+		//-----------------
+		
+		int nbins=sizeof(xbins)/sizeof(double);
+		unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
+		utils::root::fixExtremities(unc->second, false, true); 
+	      }
+	    } // 4b category
+	
 
               /*
           if(jetBin.Contains("vbf")){
