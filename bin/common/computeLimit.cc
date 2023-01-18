@@ -3595,9 +3595,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    if(chbin.Contains("SR" )) {        
 	      shapeInfo.uncScale["norm_SR_effc"] = integral*0.001; shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.002; 
 	      shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001;
-	      shapeInfo.uncScale["norm_SR_effb"] = integral*0.075;   
+	      //	      shapeInfo.uncScale["norm_SR_effb"] = integral*0.075;   
 	    } else {
-	      shapeInfo.uncScale["norm_CR_effb"] = integral*0.03;  
+	      //	      shapeInfo.uncScale["norm_CR_effb"] = integral*0.03;  
 	    }
 	  }
 
