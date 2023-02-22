@@ -205,11 +205,11 @@ void resetNegativeBinsAndErrors( TH1* hp, double val_for_reset = 1., double min_
             printf("  resetNegativeBinsAndErrors : hist %s, bin %d, val = %.1f, reset val to %.1f and err to %.1f.\n",
              hp->GetName(), hbi, val, val_for_reset, sqrt( pow( err, 2. ) + pow( val, 2. ) ) ) ;
          }
-	 double max_error=0.5*fabs(val);
+	 //	 double max_error=0.5*fabs(val);
 
 	 hp -> SetBinContent( hbi, val_for_reset ) ;
 	 hp -> SetBinError( hbi, sqrt( pow( err, 2. ) + pow( val, 2. ) ) ) ;
-	 
+	 /*
 	 if(val_for_reset==0.) { // for region B (QCD template) reset errors if weights too large
 	   if ( (fabs(val)>=1) && (err > max_error) ) {   
 	     printf(" REL ERR > 1: resetNegativeBinsAndErrors : hist %s, bin %d, val = %.1f, reset val to %.1f and err to %.1f.\n", 
@@ -217,10 +217,10 @@ void resetNegativeBinsAndErrors( TH1* hp, double val_for_reset = 1., double min_
 	     hp -> SetBinError( hbi, 1.0 ) ; 
 	   }
 	 }
-
+	 */
 	 
       }
-   } 
+   }
    
 } // resetNegativeBinsAndErrors
 
@@ -1663,6 +1663,8 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     TString procName = it->first.c_str();
 
     if(!(procName.Contains("Other Bkgds") || procName.Contains("Z#rightarrow") || procName.Contains("t#bar{t}") || procName.Contains("W#rightarrow")))continue;
+    //    if(chData->first.find("_B_")!=string::npos) {if(procName.Contains("W#rightarrow"))continue;}
+    //    if(chData->first.find("_D_")!=string::npos) {if(procName.Contains("W#rightarrow"))continue;}    
     /*
     if(inFileUrl.Contains("2018")){
       if(procName.Contains("W#rightarrow"))continue; // in regions B,D, skip W sample from non-QCD processes  
@@ -1670,7 +1672,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     */
     printf("Subtracting nonQCD process from data: %s, long name %s \n", it->second.shortName.c_str(), procName.Data() ); 
 
-    if ( fdInputFile.Length() > 0 ) {
+    if ( fdInputFile.Length() > 0 ) { // && (inFileUrl.Contains("2016")) ) {
        if ( strcmp( it->second.shortName.c_str(), "wlnu" ) == 0 ) {
           if ( verbose ) { printf("  applying w_norm_e and w_norm_mu\n") ; }
           addProc(procInfo_NRB, it->second, false, w_norm_e_val, w_norm_mu_val );
@@ -1695,8 +1697,6 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
   for(std::map<string, ChannelInfo_t>::iterator chData = dataProcIt->second.channels.begin(); chData!=dataProcIt->second.channels.end(); chData++){
     if(std::find(selCh.begin(), selCh.end(), chData->second.channel)==selCh.end())continue;
 
-
-    // if(chData->first.find("CR5j"))continue;
     if(chData->first.find("_A_")!=string::npos)continue; // do not subtract nonQCD MC in regions A...
 
     if ( verbose ) { printf("  --- verbose :  AllInfo_t::doBackgroundSubtraction :  loop over data channels :  %s\n", chData->first.c_str() ) ; }
@@ -2076,9 +2076,14 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     chDD->second.shapes[mainHisto.Data()].clearSyst();
     //add syst uncertainty
     //chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_ddqcd_") + binName.Data() +"_"+chData->second.bin.c_str() + systpostfix.Data()] = valDD_err; //:1.8*valDD;
-    chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_ddqcd_") + binName.Data() +"_"+chData->second.bin.c_str() + year.Data() + systpostfix.Data()] = valDD*datadriven_qcd_Syst; //:1.8*valDD;
+
+    if(inFileUrl.Contains("2018")) { datadriven_qcd_Syst=1.0;} // 100% uncetainty for 2018 data prediction
+    if(chData->first.find("SR")!=string::npos) { datadriven_qcd_Syst=1.0;}  // 100% uncertainty in the SRs
+    if(chData->first.find("4b")!=string::npos) { datadriven_qcd_Syst=1.0;}  // 100% uncertainty in the 4b category
+
+    chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_ddqcd_") + binName.Data() +"_"+chData->second.bin.c_str() + year.Data() + systpostfix.Data()] = 
+      valDD*datadriven_qcd_Syst; 
     
-    //    chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_ddqcd_") + binName.Data() + systpostfix.Data()] = ratioMC<0.5?valDD*datadriven_qcd_Syst:fabs(1.-ratioMC)*valDD;    
 
     //printout
     sprintf(Lcol    , "%s%s"  ,Lcol,    "|c");
@@ -3551,7 +3556,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	//        if( !(!runZh && (it->second.shortName.find("ttbarbba")!=string::npos)) && 
 	//  !(!runZh && (it->second.shortName.find("wlnu")!=string::npos)) && !(runZh && (it->second.shortName.find("zll")!=string::npos)) ) {
 	if( !(it->second.shortName.find("ttbarbba")!=string::npos) && //!(it->second.shortName.find("ttbarcba")!=string::npos) &&
-            !(it->second.shortName.find("wlnu")!=string::npos) ) {
+            !(it->second.shortName.find("wlnu")!=string::npos) ) { //&& !(it->second.shortName.find("zll")!=string::npos) ) {
 
           if(!it->second.isData && systpostfix.Contains('3')) {
 	    if(inFileUrl.Contains("2016")) shapeInfo.uncScale["lumi_13TeV_2016"] = integral*0.010; 
@@ -3574,14 +3579,19 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 	  //Id+Trigger efficiencies combined
 	  if(!it->second.isData){
-	    if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_eff_e"] = integral*0.02; //0.072124;
-	    if(chbin.Contains("mu"))  shapeInfo.uncScale["CMS_eff_m"] = integral*0.02; //0.061788;
+	    if(runZh){
+	      if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_ch2_eff_e"] = integral*0.02; //0.072124;
+	      if(chbin.Contains("mu"))  shapeInfo.uncScale["CMS_ch2_eff_m"] = integral*0.02; //0.061788;
+	    } else {
+	      if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_ch1_eff_e"] = integral*0.02; 
+	      if(chbin.Contains("mu"))  shapeInfo.uncScale["CMS_ch1_eff_m"] = integral*0.02;
+	    }
 	  }
-
+	  
 	  // PDF + alpha_s + QCD scale uncertainties (both ZH and WH): 
 	  if( (it->second.shortName.find("wh")==string::npos) && (it->second.shortName.find("ddqcd")==string::npos) ){ 
-	    if(chbin.Contains("SR" )) shapeInfo.uncScale["norm_SR_pdf"] = integral*0.20; // 0.20 for Jan
-	    else shapeInfo.uncScale["norm_CR_pdf"] = integral*0.10; 
+	    if(chbin.Contains("SR" )) shapeInfo.uncScale["norm_SR_pdf"] = integral*0.20; // 0.20 originally for Jan
+	    else shapeInfo.uncScale["norm_CR_pdf"] = integral*0.10; // 0.10 originally 
 	  } 
 
 	} // outside the rateparams processes
@@ -3594,7 +3604,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    shapeInfo.uncScale["norm_pu"] = integral*0.01;
 	    if(chbin.Contains("SR" )) {        
 	      shapeInfo.uncScale["norm_SR_effc"] = integral*0.001; shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.002; 
-	      shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001;
+	      shapeInfo.uncScale["norm_ch2_SR_scalejes"] = integral*0.001;
 	      //	      shapeInfo.uncScale["norm_SR_effb"] = integral*0.075;   
 	    } else {
 	      //	      shapeInfo.uncScale["norm_CR_effb"] = integral*0.03;  
@@ -3606,11 +3616,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.005;      
 	    if(chbin.Contains("SR" )) { 
 	      shapeInfo.uncScale["norm_SR_effc"] = integral*0.03; shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.02; 
-	      shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001; 
+	      shapeInfo.uncScale["norm_ch2_SR_scalejes"] = integral*0.001; 
 	      //	      shapeInfo.uncScale["norm_SR_effb"] = integral*0.04; 
 	    } else {
 	      shapeInfo.uncScale["norm_CR_effc"] = integral*0.007; shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.002; 
-	      shapeInfo.uncScale["norm_CR_scalejes"] = integral*0.001; 
+	      shapeInfo.uncScale["norm_ch2_CR_scalejes"] = integral*0.001; 
 	      //	      shapeInfo.uncScale["norm_CR_effb"] = integral*0.04;  
 	    }
 	  }
@@ -3620,11 +3630,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.004;    
 	    if(chbin.Contains("SR" )) {  
 	      shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.006; shapeInfo.uncScale["norm_SR_effc"] = integral*0.01; 
-	      shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001;  
+	      shapeInfo.uncScale["norm_ch2_SR_scalejes"] = integral*0.001;  
 	      //	      shapeInfo.uncScale["norm_SR_effb"] = integral*0.05; 
 	    }else{
 	      shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.001; shapeInfo.uncScale["norm_CR_effc"] = integral*0.002; 
-	      shapeInfo.uncScale["norm_CR_scalejes"] = integral*0.001;   
+	      shapeInfo.uncScale["norm_ch2_CR_scalejes"] = integral*0.001;   
 	      //	      shapeInfo.uncScale["norm_CR_effb"] = integral*0.05;    
 	    }
 	  }
@@ -3634,11 +3644,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.005;  
 	    if(chbin.Contains("SR" )) {         
 	      shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.01; shapeInfo.uncScale["norm_SR_effc"] = integral*0.07; 
-	      shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001; 
+	      shapeInfo.uncScale["norm_ch2_SR_scalejes"] = integral*0.001; 
 	      //	      shapeInfo.uncScale["norm_SR_effb"] = integral*0.04;  
 	    }else{   
 	      shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.001; shapeInfo.uncScale["norm_CR_effc"] = integral*0.01; 
-	      shapeInfo.uncScale["norm_CR_scalejes"] = integral*0.001;
+	      shapeInfo.uncScale["norm_ch2_CR_scalejes"] = integral*0.001;
 	      //	      shapeInfo.uncScale["norm_CR_effb"] = integral*0.03;  
 	    }
 	  } 
@@ -3647,15 +3657,31 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    shapeInfo.uncScale["norm_pu"] = integral*0.008;     
 	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.004;      
 	    if(chbin.Contains("SR" )) { 
-	      shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.05; //shapeInfo.uncScale["norm_SR_effc"] = integral*0.07; 
-	      shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001;  
+	      shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.05; shapeInfo.uncScale["norm_SR_effc"] = integral*0.07; 
+	      shapeInfo.uncScale["norm_ch2_SR_scalejes"] = integral*0.001;  
 	      //	      shapeInfo.uncScale["norm_SR_effb"] = integral*0.04; 
 	    }else{   
-	      shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.001; //shapeInfo.uncScale["norm_CR_effc"] = integral*0.01; 
-	      shapeInfo.uncScale["norm_CR_scalejes"] = integral*0.001; 
+	      shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.001; shapeInfo.uncScale["norm_CR_effc"] = integral*0.01; 
+	      shapeInfo.uncScale["norm_ch2_CR_scalejes"] = integral*0.001; 
 	      //	      shapeInfo.uncScale["norm_CR_effb"] = integral*0.038;           
 	    }
 	  }
+
+	  // Still on zll:
+	  if(it->second.shortName.find("zll")!=string::npos){
+	    shapeInfo.uncScale["norm_pu"] = integral*0.02;
+	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.001;
+	    if(chbin.Contains("SR" )) { // SRs
+	      shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.03; 
+	      shapeInfo.uncScale["norm_SR_effc"] = integral*0.03; 
+	      shapeInfo.uncScale["norm_ch2_SR_scalejes"] = integral*0.002;  
+	    } else { // CRs
+	      shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.01; 
+	      shapeInfo.uncScale["norm_CR_effc"] = integral*0.015;
+	      shapeInfo.uncScale["norm_ch2_CR_scalejes"] = integral*0.002;   
+	    }
+	  }// end zll process
+
 
 	} else {// Wh channel  :  
 
@@ -3663,7 +3689,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             shapeInfo.uncScale["norm_pu"] = integral*0.01; 
             if(chbin.Contains("SR" )) { 
               shapeInfo.uncScale["norm_SR_effc"] = integral*0.002; shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.002; 
-	      //shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.006; 
+	      //	      shapeInfo.uncScale["norm_ch1_SR_scalejes"] = integral*0.01; //0.006; 
 	      //              shapeInfo.uncScale["norm_SR_effb"] = integral*0.09; 
             } else { 
 	      //              shapeInfo.uncScale["norm_CR_effb"] = integral*0.032; 
@@ -3678,13 +3704,27 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    if(chbin.Contains("SR" )) {
 	      shapeInfo.uncScale["norm_SR_effc"] = integral*0.04; shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.02; 
 	      //shapeInfo.uncScale["norm_SR_effb"] = integral*0.05;
-	      //   shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001;  //shapeInfo.uncScale["norm_SR_resj"] = integral*0.001; 
+	      //	      shapeInfo.uncScale["norm_ch1_SR_scalejes"] = integral*0.01;//0.001;  //shapeInfo.uncScale["norm_SR_resj"] = integral*0.001; 
 	    } else {
 	      shapeInfo.uncScale["norm_CR_effc"] = integral*0.008; shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.003; 
 	      //shapeInfo.uncScale["norm_CR_effb"] = integral*0.04;
-	      // shapeInfo.uncScale["norm_CR_scalejes"] = integral*0.001; // shapeInfo.uncScale["norm_CR_resj"] = integral*0.001; 
+	      //	      shapeInfo.uncScale["norm_ch1_CR_scalejes"] = integral*0.01;//0.001; // shapeInfo.uncScale["norm_CR_resj"] = integral*0.001; 
 	    }
 	  } // end otherbkg
+
+	  if(it->second.shortName.find("ttbarbba")!=string::npos){
+	    shapeInfo.uncScale["norm_pu"] = integral*0.002;
+	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.004;    
+	    if(chbin.Contains("SR" )) { //SRs
+	      shapeInfo.uncScale["norm_SR_effc"] = integral*0.015;
+	      shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.01; 
+	      //	      shapeInfo.uncScale["norm_ch1_SR_scalejes"] = integral*0.01;
+	    } else { // CRs
+	      shapeInfo.uncScale["norm_CR_effc"] = integral*0.002;
+	      shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.001;   
+	      //	      shapeInfo.uncScale["norm_ch1_CR_scalejes"] = integral*0.01;
+	    }
+	  }
 
 	  if(it->second.shortName.find("ttbarcba")!=string::npos){       
 	    shapeInfo.uncScale["norm_pu"] = integral*0.003;
@@ -3693,12 +3733,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 	    if(chbin.Contains("SR" )) {   
               shapeInfo.uncScale["norm_SR_effc"] = integral*0.06; shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.005; //shapeInfo.uncScale["norm_SR_effb"] = integral*0.03; 
-	      // shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001; 
+	      //	      shapeInfo.uncScale["norm_ch1_SR_scalejes"] = integral*0.01; 
 	      shapeInfo.uncScale["norm_SR_toppt"] = integral*0.015;  
             }else{
               shapeInfo.uncScale["norm_CR_effc"] = integral*0.015; shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.001; 
 	      //shapeInfo.uncScale["norm_CR_effb"] = integral*0.03; 
-              //shapeInfo.uncScale["norm_CR_scalejes"] = integral*0.001; 
+	      //	      shapeInfo.uncScale["norm_ch1_CR_scalejes"] = integral*0.01; 
 	      shapeInfo.uncScale["norm_CR_toppt"] = integral*0.01;// shapeInfo.uncScale["norm_CR_resj"] = integral*0.001; 
             }                                         
 	  }// end tt+cc
@@ -3709,16 +3749,16 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    shapeInfo.uncScale["norm_umet"] = integral*0.003;   
 
             if(chbin.Contains("SR" )) {
-              //shapeInfo.uncScale["norm_SR_effc"] = integral*0.06; 
+              shapeInfo.uncScale["norm_SR_effc"] = integral*0.06; 
 	      shapeInfo.uncScale["norm_SR_effmistag"] = integral*0.05; 
 	      //shapeInfo.uncScale["norm_SR_effb"] = integral*0.04; 
-              //shapeInfo.uncScale["norm_SR_scalejes"] = integral*0.001;
+	      //	      shapeInfo.uncScale["norm_ch1_SR_scalejes"] = integral*0.01;
 	      shapeInfo.uncScale["norm_SR_toppt"] = integral*0.02;   //shapeInfo.uncScale["norm_SR_resj"] = integral*0.001; 
             }else{
-              //shapeInfo.uncScale["norm_CR_effc"] = integral*0.015; 
+              shapeInfo.uncScale["norm_CR_effc"] = integral*0.015; 
 	      shapeInfo.uncScale["norm_CR_effmistag"] = integral*0.001; 
 	      //shapeInfo.uncScale["norm_CR_effb"] = integral*0.04; 
-	      // shapeInfo.uncScale["norm_CR_scalejes"] = integral*0.001; 
+	      //	      shapeInfo.uncScale["norm_ch1_CR_scalejes"] = integral*0.01; 
 	      shapeInfo.uncScale["norm_CR_toppt"] = integral*0.006; // shapeInfo.uncScale["norm_CR_resj"] = integral*0.001; 
             }         
 	  } // end tt+light
@@ -3966,7 +4006,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	//	if(inFileUrl.Contains("2016")){        
 	if( U->first.find("CMS_haa4b_sys_e") !=string::npos) continue; // skip shape e
 	//}
-	//	if( U->first.find("CMS_haa4b_nloEWK") !=string::npos) continue; // skip shape nloEWK, its negligible..
+	if( U->first.find("CMS_haa4b_nloEWK") !=string::npos) continue; // skip shape nloEWK, its negligible..
 	
 	if( U->first.find("CMS_eff_c") !=string::npos) continue; // skip shape eff_c
 	if( U->first.find("CMS_eff_mistag") !=string::npos) continue; // skip shape eff mistag
@@ -3997,38 +4037,33 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       fprintf(pFile, "-------------------------------\n");  
       fprintf(pFile,"\n");
 
-      if(runZh) {
-        if(C->first.find("ee" )!=string::npos) {         
+      if(runZh) { // ZH channel:
+	if(C->first.find("ee" )!=string::npos) {         
 	  //	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
-          if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){  
-            if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_e%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
-            if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_e%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
-          }
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){  
+	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_e%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
+	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_e%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
+	  }
+	  
         } else if (C->first.find("mumu" )!=string::npos) {  
 	  //	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
           if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){
             if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_mu%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
             if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_mu%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
           }
-	  /*
-        } else if  (C->first.find("emu" )!=string::npos) {     
-          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  {fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1\n",year.Data());fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1\n",year.Data());}
-          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  {fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarcba 1\n",year.Data());fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarcba 1\n",year.Data());} 
-	  */
         }
-	  
-      } else {
-        if(C->first.find("e" )!=string::npos) {             
-          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data());      
-	  //          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarcba 1\n",year.Data());   
+	
+      } else { // WH channel:
+	if(C->first.find("e" )!=string::npos) {             
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_e%s rateParam bin1 wlnu 1 [0.1,4.0] \n",year.Data());
-          //      fprintf(pFile,"w_norm_e rateParam bin1 wlnu 1 \n");     
+	  
         } else if (C->first.find("mu" )!=string::npos) {    
-          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data());            
-	  //          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarcba 1\n",year.Data()); 
+	  
+          if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_mu%s rateParam bin1 wlnu 1 [0.1,4.0]\n",year.Data()); 
-          //      fprintf(pFile,"w_norm_mu rateParam bin1 wlnu 1 \n"); 
         }                  
+	
       }
       
       fprintf(pFile, "-------------------------------\n");  
@@ -4415,17 +4450,15 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		if(inFileUrl.Contains("2016")){
 		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.13;xbins[4]=0.17;xbins[5]=0.35;
 		}
-	      //double xbins[] = {-0.31, -0.13,  -0.01, 0.13, 0.19, 0.35};  // oct 27, georgia for unblinding 
-	      //	      if(inFileUrl.Contains("2016")) 
-	      //		xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.13;xbins[4]=0.21;xbins[5]=0.35; 
-	      /*
-	      if(inFileUrl.Contains("2017"))
-		double xbins[] = {-0.31, -0.13,  -0.01, 0.17, 0.23, 0.35};
-	      if(inFileUrl.Contains("2018"))
-		double xbins[] = {-0.31, -0.13,  -0.01, 0.17, 0.23, 0.35};  
-	      */
-	      //	      if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01;xbins[3]=0.15; xbins[4]=0.19;xbins[5]=0.35;} 
-	      //	      if(runZh)  {xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01;xbins[3]=0.13; xbins[4]=0.17;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins
+		
+		if(inFileUrl.Contains("2017")){     
+		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.15;xbins[4]=0.21;xbins[5]=0.35; 
+		}
+		if(inFileUrl.Contains("2018")){     
+		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.15;xbins[4]=0.21;xbins[5]=0.35;      
+		  //xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.13;xbins[4]=0.17;xbins[5]=0.35;   
+		}
+		
 		int nbins=sizeof(xbins)/sizeof(double);   
 		unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
 		utils::root::fixExtremities(unc->second, false, true); 
@@ -4436,11 +4469,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		//		double xbins[] = {-0.31, -0.09, 0.07, 0.11, 0.35 };
 		
 		//		double xbins[] = {-0.31, -0.09,  0.07, 0.9, 0.35 }; 
-		/*
-		if(inFileUrl.Contains("2018")) { 
-		  xbins[0]=-0.31;xbins[1]=-0.07;xbins[2]=-0.01; xbins[3]=0.07; xbins[4]=0.11;xbins[5]=0.35;
+		
+		if(inFileUrl.Contains("2017")) { 
+		  xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01; xbins[3]=0.07; xbins[4]=0.13;xbins[5]=0.35;
 		}
-		*/
+		if(inFileUrl.Contains("2018")) {      
+		  xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01; xbins[3]=0.07; xbins[4]=0.13;xbins[5]=0.35;      
+		}
+		
 	      //-----------------
 		int nbins=sizeof(xbins)/sizeof(double);    
 		unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);  
@@ -4454,17 +4490,19 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		//		xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.07;xbins[3]=0.01;xbins[4]=0.11;xbins[5]=0.35;  
 	      
 		//	      double xbins[] = {-0.31, -0.13, -0.07, 0.07, 0.35}; // sep 23, georgia for unblinding
-	      if(inFileUrl.Contains("2016"))  {
-		xbins[0]=-0.31;xbins[1]=-0.19;xbins[2]=-0.13;xbins[3]=-0.05;xbins[4]=0.09; xbins[5]=0.35;
-	      }
-	      
-		//		xbins[] = {-0.31, -0.15, -0.11, 0.35}; // oct 28, georgia, 3 bins
-	      /*
-	      if(inFileUrl.Contains("2017"))  
-		double xbins[] = {-0.31, -0.13, -0.07, 0.07, 0.35};
-	      if(inFileUrl.Contains("2018"))  
-		double xbins[] = {-0.31, -0.13, -0.07, 0.07, 0.35};   
-	      */
+		if(inFileUrl.Contains("2016"))  {
+		  xbins[0]=-0.31;xbins[1]=-0.19;xbins[2]=-0.13;xbins[3]=-0.05;xbins[4]=0.09; xbins[5]=0.35;
+		}
+		
+		if(inFileUrl.Contains("2017"))   {
+		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.07;xbins[3]=0.03;xbins[4]=0.17; xbins[5]=0.35;  
+		}
+		if(inFileUrl.Contains("2018"))  {
+		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.07;xbins[3]=0.03;xbins[4]=0.17; xbins[5]=0.35;     
+		  //xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.07;xbins[3]=-0.01;xbins[4]=0.09; xbins[5]=0.35;  
+		}
+		
+
 		int nbins=sizeof(xbins)/sizeof(double);
 		unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
 		utils::root::fixExtremities(unc->second, false, true);
@@ -4472,13 +4510,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	      } else { // runZH
 		//double xbins[] = {-0.31, -0.15,-0.07,0.07, 0.11, 0.35};
 		double xbins[] = {-0.31, -0.15,-0.07,0.09, 0.13, 0.35}; // oct 29, georgia, 2 bins
-		if(inFileUrl.Contains("2018")) {xbins[0]=-0.31; xbins[1]=-0.15; xbins[2]=-0.07; xbins[3]=0.07; xbins[4]=0.11; xbins[5]=0.35; }    
-		//		if(inFileUrl.Contains("2018"))  {xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=0.01;xbins[3]=0.35; } //xbins[4]=0.35; } // sep 23, georgia for unblinding
-		//double xbins[] = {-0.31,-0.01, 0.35};
-		//if(runZh) {xbins[0]=-0.31;xbins[1]=0.03;xbins[2]=0.35;} 
-		//		if(runZh) {xbins[0]=-0.31;xbins[1]=-0.01;xbins[2]=0.01;xbins[3]=; xbins[4]=0.13;xbins[5]=0.35;}  // july 22, (same as 21), new trial bins
-		//-----------------
-		
+		if(inFileUrl.Contains("2018")) {
+		  xbins[0]=-0.31; xbins[1]=-0.15; xbins[2]=-0.07; xbins[3]=0.03; xbins[4]=0.07; xbins[5]=0.35; 
+		}    
+		if(inFileUrl.Contains("2017"))   {  
+		  xbins[0]=-0.31; xbins[1]=-0.15; xbins[2]=-0.07; xbins[3]=0.03; xbins[4]=0.07; xbins[5]=0.35;
+		}
 		int nbins=sizeof(xbins)/sizeof(double);
 		unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
 		utils::root::fixExtremities(unc->second, false, true); 
