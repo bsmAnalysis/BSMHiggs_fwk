@@ -11,7 +11,7 @@ two_lines_operation ()
 
 ## Here we have all the txt files with the pulls for each channel
 #years=("2016" "2017" "2018")
-years=("2018")
+years=("all")
 
 for year in ${years[@]}; do
 
@@ -32,14 +32,14 @@ for year in ${years[@]}; do
 	    pullA=`echo -e $lineA1 |awk '{print $4}'`; low_limit=-999.
 	    dpullA=`echo -e $lineA1 |awk '{print $8}'`;
 	    
-	    result=$(echo "${pullA}<${low_limit}" | bc)
+	    result=$(echo "${pullA#-}<${low_limit}" | bc)
 
 	    if [ $result = 1 ]; then
 		continue;
 	    fi
 
 	    # rename parameter for bin-wise uncertainties: 
-	    if [[ $pullnameA != *"scalejes"* && $pullnameA != *"eff_"* ]]; then 
+	    if [[ $pullnameA != *"JES"* && $pullnameA != *"res_j"* && $pullnameA != *"eff"* && $pullnameA != *"toppt"*  ]]; then 
 		if [[ $pullnameA =~ "ch1_" ]]; then
 		    pullnameA=${pullnameA/ch1_}
 		fi
@@ -117,20 +117,28 @@ EOF
     RowNum=$i
     printf "RowNum = %d \n\n" $i
 
+    tempfile=temp_${year}.txt ; rm -rf $tempfile    
+    if [[ $low_limit == 2.0 ]]; then
+	outfile=largepulls_${year}.txt ; rm -rf $outfile
+    else 
+	outfile=sortedpulls_${year}.txt ; rm -rf $outfile  
+    fi
+
     echo -e "|--------------------------------------------------------------------------------------------------------------|" 
     format="%45s%12s%12s%18s%18s\n" 
-    printf "$format" "Parameter " "|  Pull (WH+ZH) " "| D(pull)/unc "  "|  Pull (WH) " "|  Pull (ZH) "
+    printf "$format" "Parameter " "|  Pull (WH+ZH) " "| D(pull)/unc "  "|  Pull (WH) " "|  Pull (ZH) " 
     echo -e "|--------------------------------------------------------------------------------------------------------------|" 
-
-    tempfile=temp.txt ; rm $tempfile
 
     # sort array in dpullA and print:
     for ((j=1;j<=RowNum;j++)) do
        printf "$format" ${Array2D[0,$j]} ${Array2D[1,$j]} ${Array2D[2,$j]} ${Array2D[3,$j]} ${Array2D[4,$j]} >>$tempfile
-#       printf "$format" $pullnameA $pullA $dpullA $pullB $pullC     
     done
 
-    sort -n -k3 $tempfile
-
-    echo -e "|--------------------------------------------------------------------------------------------------------------|"    
+    sort -r -k3 $tempfile >> $outfile
+#    sort -n -k3 $tempfile # ascending order
+    sed -i '1i |--------------------------------------------------------------------------------------------------------------|' $outfile
+    sed -i '2i "                                    Parameter |  Pull (WH+ZH) | D(pull)/unc  |  Pull (WH)   |  Pull (ZH)     ' $outfile
+    sed -i '3i |--------------------------------------------------------------------------------------------------------------|' $outfile
+    echo -e "|--------------------------------------------------------------------------------------------------------------|"    >>$outfile        
+    echo -r "Sorted pulls for pulls with |pull|>$low_limit " >>$outfile
 done

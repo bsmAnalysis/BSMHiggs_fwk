@@ -1,6 +1,6 @@
 #dirs=("SB13TeV_SM_2016_noSoftb" "SB13TeV_SM_2017_noSoftb" "SB13TeV_SM_2018_noSoftb" "SB13TeV_SM_Wh_2016_noSoftb" "SB13TeV_SM_Wh_2017_noSoftb" "SB13TeV_SM_Wh_2018_noSoftb" "SB13TeV_SM_Zh_2016_noSoftb" "SB13TeV_SM_Zh_2017_noSoftb" "SB13TeV_SM_Zh_2018_noSoftb")
-
-dirs=("SB13TeV_SM_2018_noSoftb" "SB13TeV_SM_Wh_2018_noSoftb" "SB13TeV_SM_Zh_2018_noSoftb")   
+dirs=("SB13TeV_SM_Wh_all_noSoftb_Combined" "SB13TeV_SM_Zh_all_noSoftb_Combined" "SB13TeV_SM_all_noSoftb_Combined")      
+#dirs=("SB13TeV_SM_2018_noSoftb" "SB13TeV_SM_Wh_2018_noSoftb" "SB13TeV_SM_Zh_2018_noSoftb")   
 
 for dir in ${dirs[@]}; do
 
@@ -10,6 +10,8 @@ for dir in ${dirs[@]}; do
 	year="2017"
     elif [[ $dir == *"2018"* ]]; then  
 	year="2018"
+    else 
+	year="all"
     fi
 
     if [[ $dir == *"Wh"* ]]; then
@@ -21,7 +23,7 @@ for dir in ${dirs[@]}; do
     fi
 
     file=impacts_${ch}_${year}.json 
-#    rm $file ; cp $dir/impacts/impacts.json $file
+    rm $file ; cp $dir/impacts/impacts.json $file
 
     outfile=pulls_${ch}_${year}.txt; rm $outfile       
     
@@ -52,5 +54,4 @@ for dir in ${dirs[@]}; do
 
     done <$file	
 
-#    exit;
 done
