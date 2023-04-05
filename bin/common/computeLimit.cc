@@ -209,15 +209,20 @@ void resetNegativeBinsAndErrors( TH1* hp, double val_for_reset = 1., double min_
 	 hp -> SetBinContent( hbi, val_for_reset ) ;
 	 hp -> SetBinError( hbi, sqrt( pow( err, 2. ) + pow( val, 2. ) ) ) ;
 	 
+	 if(fabs(val)>10.) {
+           hp -> SetBinError( hbi, 1.0 ) ; 
+	   printf("  resetNegativeBinsAndErrors : hist %s, bin %d, val = %.1f, reset val to %.1f and err to %.1f.\n", 
+		  hp->GetName(), hbi, val, val_for_reset,1.0);
+         }   
+	 
 	 double max_error=0.5*fabs(val);   
 	 if(val_for_reset==0.) { // for region B (QCD template) reset errors if weights too large
 	   if ( (fabs(val)>=1) && (err > max_error) ) {   
-	     printf(" REL ERR > 1: resetNegativeBinsAndErrors : hist %s, bin %d, val = %.1f, reset val to %.1f and err to %.1f.\n", 
-		    hp->GetName(), hbi, val, val_for_reset, 1.0 ); //max_error );  
+	     printf(" REL ERR > 1: resetNegativeBinsAndErrors : hist %s, bin %d, val = %.1f, reset val to %.1f with err_old = %.1f. to err = %.1f.\n", 
+		    hp->GetName(), hbi, val, val_for_reset, err, 1.0 ); //max_error );  
 	     hp -> SetBinError( hbi, 1.0 ) ; 
 	   }
 	 }
-	 
 	 
       }
    }
@@ -1667,7 +1672,8 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     //    if(chData->first.find("_D_")!=string::npos) {if(procName.Contains("W#rightarrow"))continue;}    
     
     if(inFileUrl.Contains("2018") || inFileUrl.Contains("2016")){
-      if(procName.Contains("W#rightarrow"))continue; // in regions B,D, skip W sample from non-QCD processes  
+      if(!correlatedLumi) 
+	if(procName.Contains("W#rightarrow"))continue; // in regions B,D, skip W sample from non-QCD processes  
     }
     
     printf("Subtracting nonQCD process from data: %s, long name %s \n", it->second.shortName.c_str(), procName.Data() ); 
@@ -1841,7 +1847,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
    //-- For every bin in B, C, and D, check if it's negative.  If it is, set error to sqrt( err^2 + val^2 ) and value to 1 event.
     resetNegativeBinsAndErrors( hChan_SB, 1. ) ; // C
     resetNegativeBinsAndErrors( hCtrl_SB, 1. ) ; // D
-    resetNegativeBinsAndErrors( hCtrl_SI, 0. ) ; // B // georgia changed from: resetNegativeBinsAndErrors( hCtrl_SI, 0. ) ;
+    resetNegativeBinsAndErrors( hCtrl_SI, 0. ) ; // B 
 
  
     if(hCtrl_SB->Integral()>0){

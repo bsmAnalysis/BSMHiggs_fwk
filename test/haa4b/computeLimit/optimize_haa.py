@@ -96,7 +96,7 @@ bonly_asimov = ""
 
 if (blind == True): 
    blindSR = " --replaceHighSensitivityBinsWithBG"
-#   bonly_asimov = " -t -1"
+   bonly_asimov = " -t -1"
 
 
 autoMCstats = True
@@ -541,10 +541,10 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("\ntext2workspace.py card_combined_wh.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-first.log \n")  
            #compute pvalue
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace.root >& COMB-signif-first.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log-first.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0 --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log-first.txt \n") 
 
            #############SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics-first.root\n\n\n")
-           SCRIPT.writelines("mv fitDiagnostics.root fitDiagnostics-first.root\n\n\n")
+           SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics-first.root\n\n\n")
            SCRIPT.writelines("mkdir datacards-wh-first-pass\n") ;
            SCRIPT.writelines("cp *.dat datacards-wh-first-pass\n\n") ;
 
@@ -557,20 +557,20 @@ for signalSuffix in signalSuffixVec :
 
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_combined_wh.dat".format(thredMCstat))
-           SCRIPT.writelines("\ntext2workspace.py card_combined_wh_sr3b.dat -o workspace_sr3b.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-second-sr3b.log \n")  
-           SCRIPT.writelines("\ntext2workspace.py card_combined_wh_sr4b.dat -o workspace_sr4b.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-second-sr4b.log \n")  
-           SCRIPT.writelines("\ntext2workspace.py card_combined_wh.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-second.log \n")  
+           SCRIPT.writelines("\ntext2workspace.py card_combined_wh_sr3b.dat -o workspace_sr3b.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-second-sr3b.log \n")  
+           SCRIPT.writelines("\ntext2workspace.py card_combined_wh_sr4b.dat -o workspace_sr4b.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-second-sr4b.log \n")  
+           SCRIPT.writelines("\ntext2workspace.py card_combined_wh.dat -o workspace.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-second.log \n")  
            #compute pvalue
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace.root >& COMB-signif-second.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0 --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log.txt \n") 
 
 
 
            # save likelihood fit info
            ###########SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+".txt \n")
 	   ###########SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +".txt\n")
-           SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnostics.root > simfit_m"+ str(m)+".txt \n")
-	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnostics.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +".txt\n")
+           SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+".txt \n")
+	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +".txt\n")
 
            ### THIS IS FOR Asymptotic fit
            if(ASYMTOTICLIMIT==True):
@@ -692,34 +692,34 @@ for signalSuffix in signalSuffixVec :
 
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_e_zh.dat".format(thredMCstat))
-           SCRIPT.writelines("\ntext2workspace.py card_e_zh.dat -o workspace_e.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e.log \n")  
+           SCRIPT.writelines("\ntext2workspace.py card_e_zh.dat -o workspace_e.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e.log \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_e.root >& COMB-signif-e.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log_e.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0 --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log_e.txt \n") 
            #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_e.txt \n")
 	   #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_e.txt\n")
 	   #########SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_e.root\n")
-           SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnostics.root > simfit_m"+ str(m)+"_e.txt \n")
-	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnostics.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_e.txt\n")
-	   SCRIPT.writelines("mv fitDiagnostics.root fitDiagnostics_e.root\n")
+           SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_e.txt \n")
+	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_e.txt\n")
+	   SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_e.root\n")
 
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_mu_zh.dat".format(thredMCstat))
-           SCRIPT.writelines("\ntext2workspace.py card_mu_zh.dat -o workspace_mu.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu.log \n")  
+           SCRIPT.writelines("\ntext2workspace.py card_mu_zh.dat -o workspace_mu.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu.log \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_mu.root > COMB-signif-mu.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
            #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_mu.txt \n")
 	   #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_mu.txt\n")
 	   #########SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_mu.root\n")
-           SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnostics.root > simfit_m"+ str(m)+"_mu.txt \n")
-	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnostics.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_mu.txt\n")
-	   SCRIPT.writelines("mv fitDiagnostics.root fitDiagnostics_mu.root\n")
+           SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_mu.txt \n")
+	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_mu.txt\n")
+	   SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_mu.root\n")
 
 
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_combined_zh.dat".format(thredMCstat))
-           SCRIPT.writelines("\ntext2workspace.py card_combined_zh.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
-           SCRIPT.writelines("\ntext2workspace.py card_combined_zh_sr3b.dat -o workspace_sr3b.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-sr3b.log \n")  
-           SCRIPT.writelines("\ntext2workspace.py card_combined_zh_sr4b.dat -o workspace_sr4b.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-sr4b.log \n")  
+           SCRIPT.writelines("\ntext2workspace.py card_combined_zh.dat -o workspace.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
+           SCRIPT.writelines("\ntext2workspace.py card_combined_zh_sr3b.dat -o workspace_sr3b.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-sr3b.log \n")  
+           SCRIPT.writelines("\ntext2workspace.py card_combined_zh_sr4b.dat -o workspace_sr4b.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-sr4b.log \n")  
            ### THIS IS FOR Asymptotic fit
            if(ASYMTOTICLIMIT==True):
            ### THIS is for toy (hybridNew) fit
@@ -841,9 +841,9 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("computeLimit  --noCorrelatedStatUnc  --verbose  " + blindSR + "  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +  " --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root >& cl-wh-first.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
            SCRIPT.writelines("text2workspace.py card_combined_wh.dat -o workspace-wh-first.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-wh-first.log \n")  
-           SCRIPT.writelines("combine -M FitDiagnostics workspace-wh-first.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log-wh-first.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace-wh-first.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log-wh-first.txt \n") 
            #############SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics-wh-first.root\n\n\n")
-           SCRIPT.writelines("mv fitDiagnostics.root fitDiagnostics-wh-first.root\n\n\n")
+           SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics-wh-first.root\n\n\n")
            SCRIPT.writelines("mkdir datacards-wh-first-pass\n") ;
            SCRIPT.writelines("cp *.dat datacards-wh-first-pass\n\n") ;
 
@@ -877,37 +877,37 @@ for signalSuffix in signalSuffixVec :
 
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_e.dat".format(thredMCstat))
-           SCRIPT.writelines("text2workspace.py card_e_sr3b.dat -o workspace_e_sr3b.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e-sr3b.log  \n")  
-           SCRIPT.writelines("text2workspace.py card_e_sr4b.dat -o workspace_e_sr4b.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e-sr4b.log  \n")  
-           SCRIPT.writelines("text2workspace.py card_e.dat -o workspace_e.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e.log  \n")  
+           SCRIPT.writelines("text2workspace.py card_e_sr3b.dat -o workspace_e_sr3b.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e-sr3b.log  \n")  
+           SCRIPT.writelines("text2workspace.py card_e_sr4b.dat -o workspace_e_sr4b.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e-sr4b.log  \n")  
+           SCRIPT.writelines("text2workspace.py card_e.dat -o workspace_e.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e.log  \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_e.root >& COMB_e.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3      --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log_e.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3      --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log_e.txt \n") 
            #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_e.txt \n")
 	   #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_e.txt\n")
 	   #########SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_e.root\n\n")
-           SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnostics.root > simfit_m"+ str(m)+"_e.txt \n")
-	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnostics.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_e.txt\n")
-	   SCRIPT.writelines("mv fitDiagnostics.root fitDiagnostics_e.root\n\n")
+           SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_e.txt \n")
+	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_e.txt\n")
+	   SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_e.root\n\n")
 
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_mu.dat".format(thredMCstat))
-           SCRIPT.writelines("text2workspace.py card_mu_sr3b.dat -o workspace_mu_sr3b.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu-sr3b.log  \n")  
-           SCRIPT.writelines("text2workspace.py card_mu_sr4b.dat -o workspace_mu_sr4b.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu-sr4b.log  \n")  
-           SCRIPT.writelines("text2workspace.py card_mu.dat -o workspace_mu.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu.log  \n")  
+           SCRIPT.writelines("text2workspace.py card_mu_sr3b.dat -o workspace_mu_sr3b.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu-sr3b.log  \n")  
+           SCRIPT.writelines("text2workspace.py card_mu_sr4b.dat -o workspace_mu_sr4b.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu-sr4b.log  \n")  
+           SCRIPT.writelines("text2workspace.py card_mu.dat -o workspace_mu.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu.log  \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_mu.root > COMB_mu.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL  --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
            #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_mu.txt \n")
 	   #########SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_mu.txt\n")
 	   #########SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_mu.root\n\n")
-           SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnostics.root > simfit_m"+ str(m)+"_mu.txt \n")
-	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnostics.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_mu.txt\n")
-	   SCRIPT.writelines("mv fitDiagnostics.root fitDiagnostics_mu.root\n\n")
+           SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_mu.txt \n")
+	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_mu.txt\n")
+	   SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_mu.root\n\n")
 
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_combined.dat".format(thredMCstat))
-           SCRIPT.writelines("text2workspace.py card_combined_sr3b.dat -o workspace_sr3b.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-sr3b.log  \n")
-           SCRIPT.writelines("text2workspace.py card_combined_sr4b.dat -o workspace_sr4b.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-sr4b.log  \n")
-           SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log  \n")
+           SCRIPT.writelines("text2workspace.py card_combined_sr3b.dat -o workspace_sr3b.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-sr3b.log  \n")
+           SCRIPT.writelines("text2workspace.py card_combined_sr4b.dat -o workspace_sr4b.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-sr4b.log  \n")
+           SCRIPT.writelines("text2workspace.py card_combined.dat -o workspace.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log  \n")
            ### THIS IS FOR Asymptotic fit
            if(ASYMTOTICLIMIT==True):
            ### THIS is for toy (hybridNew) fit
@@ -1025,7 +1025,7 @@ for signalSuffix in signalSuffixVec :
          
 	      SCRIPT.writelines("\n#****************** {} *****************\n".format(year)) 
               ############whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnosticsTest.root"
-              whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnostics.root"
+              whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnosticsTest.root"
 	      if "2016" in inUrl:
 	          SCRIPT.writelines("\ncomputeLimit   --noCorrelatedStatUnc --correlatedLumi  --verbose  " + blindSR + "  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-"+ year + ".log\n")  
 	      else:
@@ -1033,7 +1033,7 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("sh combineCards_"+year+"_wh.sh;\n"); 
 
 	   SCRIPT.writelines("\ncombineCards.py card_combined_2016_wh.dat card_combined_2017_wh.dat card_combined_2018_wh.dat > card_combined_wh.dat")
-	   SCRIPT.writelines("\ntext2workspace.py card_combined_wh.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
+	   SCRIPT.writelines("\ntext2workspace.py card_combined_wh.dat -o workspace.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
 	   SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace.root > COMB-signif.log;\n\n\n")
 
 	    
@@ -1181,7 +1181,7 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("sh combineCards_{}_zh.sh;\n".format(year))
            
 	   SCRIPT.writelines("\ncombineCards.py card_combined_2016_zh.dat card_combined_2017_zh.dat card_combined_2018_zh.dat > card_combined_zh.dat")
-	   SCRIPT.writelines("\ntext2workspace.py card_combined_zh.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
+	   SCRIPT.writelines("\ntext2workspace.py card_combined_zh.dat -o workspace.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
 	   SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace.root >& COMB-signif.log;\n")
 
 	    
@@ -1353,7 +1353,7 @@ for signalSuffix in signalSuffixVec :
          
 	      SCRIPT.writelines("\n#****************** {} Wh *****************\n".format(year)) 
               ############whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnosticsTest.root"
-              whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnostics.root"
+              whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnosticsTest.root"
 	      if "2016" in inUrl:
 	          SCRIPT.writelines("\ncomputeLimit  --noCorrelatedStatUnc  --correlatedLumi --verbose  " + blindSR + "  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/all_plotter_forLimits.root  --fitDiagnosticsInputFile " + whfdfile + " >& cl-wh-" + year + ".log \n")  
 	      else:
@@ -1371,7 +1371,7 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("combineCards.py card_combined_{}_wh.dat card_combined_{}_zh.dat > card_combined_{}.dat\n".format(year, year, year))
 
 	   SCRIPT.writelines("\ncombineCards.py card_combined_2016.dat card_combined_2017.dat card_combined_2018.dat > card_combined.dat")
-	   SCRIPT.writelines("\ntext2workspace.py card_combined.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
+	   SCRIPT.writelines("\ntext2workspace.py card_combined.dat -o workspace.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
 	   SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace.root >& COMB-signif.log;\n")
 
 	    
