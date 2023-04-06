@@ -26,8 +26,8 @@ args = parser.parse_args()
 limit_dir = args.limit_dir
 
 # Choose if you need to blind SRs
-#iblind=-1
-iblind=4
+iblind=-1
+#iblind=4
 
 
 # Picks up the pre-fit BDT:
@@ -172,10 +172,11 @@ for ch in e_mu:
   if ( verbose ) : print("\n\n verbose:  ch = ", ch , "\n")
 
   if wz=="zh":
-    file = rt.TFile(limit_dir+"fitDiagnostics_{}.root".format(ch),"READ")
+#     file = rt.TFile(limit_dir+"fitDiagnosticsTest.root","READ") 
+     file = rt.TFile(limit_dir+"fitDiagnostics_{}.root".format(ch),"READ")
   elif wz=="wh":
-    file = rt.TFile(limit_dir+"fitDiagnostics.root","READ")
-    #file = rt.TFile(limit_dir+"fitDiagnosticsTest.root","READ")
+#    file = rt.TFile(limit_dir+"fitDiagnostics.root","READ")
+     file = rt.TFile(limit_dir+"fitDiagnosticsTest.root","READ")
 
   if ( verbose ) : print("\n\n verbose: file = ", file.GetName(),"\n" )
 

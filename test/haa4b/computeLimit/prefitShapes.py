@@ -27,8 +27,8 @@ args = parser.parse_args()
 limit_dir = args.limit_dir
 
 # Choose if you need to blind SRs
-#iblind=-1
-iblind=4
+iblind=-1
+#iblind=4
 
 #limit_dir="/afs/cern.ch/work/y/yuanc/Analysis/H2a4b/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Wh_2018_noSoftb/0060/"
 #limit_dir="/afs/cern.ch/work/o/owen/private/htoaa/reldirs/for-limits/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Zh_2016_noSoftb/0040/"
@@ -183,9 +183,10 @@ for ch in e_mu:
 
   if wz=="zh":
     file = rt.TFile(limit_dir+"fitDiagnostics_{}.root".format(ch),"READ")
+#    file = rt.TFile(limit_dir+"fitDiagnosticsTest.root","READ")      
   elif wz=="wh":
-    file = rt.TFile(limit_dir+"fitDiagnostics.root","READ")
-    #file = rt.TFile(limit_dir+"fitDiagnosticsTest.root","READ")
+#    file = rt.TFile(limit_dir+"fitDiagnostics.root","READ")
+    file = rt.TFile(limit_dir+"fitDiagnosticsTest.root","READ")
 
   if ( verbose ) : print("\n\n verbose: file = ", file.GetName(),"\n" )
 
