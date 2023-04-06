@@ -4997,13 +4997,13 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 	      } else { // runZH
 		//double xbins[] = {-0.31, -0.15,-0.07,0.07, 0.11, 0.35};
-		double xbins[] = {-0.31, -0.15,-0.07,0.09, 0.13, 0.35}; // oct 29, georgia, 2 bins
-		if(inFileUrl.Contains("2018")) {
-		  xbins[0]=-0.31; xbins[1]=-0.15; xbins[2]=-0.07; xbins[3]=0.03; xbins[4]=0.07; xbins[5]=0.35; 
-		}    
-		if(inFileUrl.Contains("2017"))   {  
-		  xbins[0]=-0.31; xbins[1]=-0.15; xbins[2]=-0.07; xbins[3]=0.03; xbins[4]=0.07; xbins[5]=0.35;
+		//double xbins[] = {-0.31, -0.15,-0.07,0.09, 0.13, 0.35}; // oct 29, georgia, 2 bins
+		double xbins[] = {-0.31, -0.15, -0.07, 0.03, 0.07, 0.35}; // Apr 5, 2023, georgia after Jan noticed
+
+		if(inFileUrl.Contains("2016")) {    
+		  xbins[0]=-0.31; xbins[1]=-0.15; xbins[2]=-0.07; xbins[3]=-0.03; xbins[4]=0.07; xbins[5]=0.35;
 		}
+		
 		int nbins=sizeof(xbins)/sizeof(double);
 		unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
 		utils::root::fixExtremities(unc->second, false, true); 
