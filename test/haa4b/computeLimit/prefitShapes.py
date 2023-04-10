@@ -30,13 +30,6 @@ limit_dir = args.limit_dir
 iblind=-1
 #iblind=4
 
-#limit_dir="/afs/cern.ch/work/y/yuanc/Analysis/H2a4b/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Wh_2018_noSoftb/0060/"
-#limit_dir="/afs/cern.ch/work/o/owen/private/htoaa/reldirs/for-limits/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/cards_SB13TeV_SM_Zh_2016_noSoftb/0040/"
-
-#limit_dir="all-batch-output-10x-july24a--new-bdt-binning2--autoMCStats/cards_SB13TeV_SM_Zh_2016_noSoftb/0040/"
-#limit_dir="all-batch-output-10x-july24a--new-bdt-binning2--autoMCStats/cards_SB13TeV_SM_Wh_2016_noSoftb/0040/"
-
-
 # Picks up the pre-fit BDT:
 dir1="shapes_prefit"
 
@@ -48,7 +41,6 @@ dir1="shapes_prefit"
 
 #wz = "zh"
 #wz = "wh"
-
 
 wz = args.prodmode
 if ( not (wz == "wh" or wz == "zh" )):
@@ -111,6 +103,10 @@ CMS_lumi.writeExtraText = 1
 CMS_lumi.extraText = "Preliminary"
 CMS_lumi.lumi_sqrtS = "" #"13 TeV" # used with iPeriod = 0, e.g. for simulation-only plots (default is an empty string)
 
+if ( "2016" in limit_dir ): iPeriod = 6
+if ( "2017" in limit_dir ): iPeriod = 7
+if ( "2018" in limit_dir ): iPeriod = 8
+
 iPos = 11
 if( iPos==0 ): CMS_lumi.relPosX = 0.12
 
@@ -170,7 +166,7 @@ def convertXRange(hist, name, edges):
 # Updated by:   Dinko Ferencek (Rutgers)
 #
 
-iPeriod = 0
+#iPeriod = 0
 
 # references for T, B, L, R
 T = 0.08*H_ref
@@ -287,7 +283,7 @@ for ch in e_mu:
       qcd.SetFillColor(634)
       qcd.SetLineColor(1)
       bkgd_list.append(qcd)
-      lgname_list.append("DD qcd")
+      lgname_list.append("QCD (dd)")
 
     zll = file.Get(dir+"zll")
     if zll:
@@ -381,9 +377,21 @@ for ch in e_mu:
     #py = ctypes.c_double()
     #pyerr = ctypes.c_double()
     
+    alpha = 1 - 0.6827;
+
     nPoints=data.GetN()
     for i in range(0,nPoints):
         data.GetPoint(i,px,py)
+
+        N=px  
+        if N==0: 
+           L=0
+           U= rt.Math.gamma_quantile_c(alpha/2,N+1,1)     
+           data.SetMarkerSize(0.5);
+           data.SetMarkerStyle (20);
+           data.SetPointEYlow(i,0) 
+           data.SetPointEYhigh(i,U-N)
+
         pyerr=data.GetErrorY(i)
         hdata.Fill(px,py)
         hdata.SetBinContent(i+1,py)
@@ -405,35 +413,50 @@ for ch in e_mu:
     
     hdata.GetYaxis().SetTitle("Events");
     hdata.GetXaxis().SetTitle("BDT");
-    hdata.Draw();
+    #hdata.Draw();
     
     t1.Update();
     
         
-    MC.Draw("histsame")
-    hdata.Draw("epsame0")
+    MC.Draw("hist")
+    hdata.Draw("e0psame0")
+
+    MC.GetXaxis().SetLabelOffset(0.007);
+    MC.GetXaxis().SetLabelSize(0.04);
+    MC.GetXaxis().SetTitleOffset(1.2);
+    MC.GetXaxis().SetTitleFont(42);
+    MC.GetXaxis().SetTitleSize(0.04);
+    MC.GetYaxis().SetLabelFont(42);
+    MC.GetYaxis().SetLabelOffset(0.007);
+    MC.GetYaxis().SetLabelSize(0.04);
+    MC.GetYaxis().SetTitleOffset(1.35);
+    MC.GetYaxis().SetTitleFont(42);
+    MC.GetYaxis().SetTitleSize(0.04);
     
+    MC.GetYaxis().SetTitle("Events");
+    MC.GetXaxis().SetTitle("BDT");
+
     if sig: 
       sig.Draw("histsame")
     
 #    hdata.SetMaximum(1.5*max(hdata.GetMaximum(), MC.GetMaximum()))
-    hdata.SetMinimum(0.1)
+    MC.SetMinimum(0.1)
     hmax = max(hdata.GetMaximum(), MC.GetMaximum())
     if ( not do_liny ) :
        if hmax > 50000:
-           hdata.SetMaximum(1000*hmax)
+          MC.SetMaximum(1000*hmax)
        elif hmax > 10000:
-           hdata.SetMaximum(500*hmax)
+          MC.SetMaximum(500*hmax)
        elif hmax > 1000:
-           hdata.SetMaximum(100*hmax)
+          MC.SetMaximum(100*hmax)
        else:
-           hdata.SetMaximum(50*hmax)
+          MC.SetMaximum(50*hmax)
     else:
        if ( do_linzoom ):
           zoombin = hdata.GetBinContent(4)
-          hdata.SetMaximum(3*zoombin)
+          MC.SetMaximum(3*zoombin)
        else:
-          hdata.SetMaximum(1.4*hmax)
+          MC.SetMaximum(1.4*hmax)
 
     if (blind>0):
 #        for i in range(hdata.FindBin(blind),hdata.GetNbinsX()+1):
@@ -463,13 +486,14 @@ for ch in e_mu:
     y0_l = y1_l-dy_l
     
     #######legend =  rt.TLegend(0.40,0.74,0.93,0.96, "NDC")
-    legend =  rt.TLegend(0.40,0.74,0.98,1.02, "NDC")
+    legend =  rt.TLegend(0.67,0.96,0.83,0.55, "NDC")
+    #legend = rt.TLegend(0.40,0.74,0.98,1.02, "NDC")
     #legend.SetFillColor( rt.kGray )
-    legend.SetHeader(dir)
-    legend.SetNColumns(3)  
+    legend.SetHeader("") #(dir)
+    #legend.SetNColumns(2)  
     legend.SetBorderSize(0)
     legend.SetTextFont(42)
-    legend.SetTextSize(0.03)
+    legend.SetTextSize(0.035)
     legend.SetLineColor(0)
     legend.SetLineStyle(1)
     legend.SetLineWidth(1)
@@ -493,17 +517,19 @@ for ch in e_mu:
     
     ## latex.DrawLatex(xx_+1.*bwx_,yy_,"Data")
     legend.AddEntry(hdata,"Data","LP")
-    if sig: legend.AddEntry(sig,"Zh (60)","L")
     #if sig: legend.AddEntry(sig,"Zh (40) x 10","L")
     print("-"*100)
     print(dir2) 
     for i in range(len(bkgd_list)):
-      legend.AddEntry(bkgd_list[i], lgname_list[i], "LF")
+      legend.AddEntry(bkgd_list[i], lgname_list[i], "F")
       printEvtYields(bkgd_list[i], lgname_list[i])
     printEvtYields(total, "total")
     print("\n")
     printEvtYields(hdata, "data")
-    if sig: printEvtYields(sig, "signal")
+    if sig: 
+       if ( wz == "zh" ): legend.AddEntry(sig,"Signal ZH (60GeV)","L") 
+       if ( wz == "wh" ): legend.AddEntry(sig,"Signal WH (60GeV)","L") 
+       printEvtYields(sig, "signal")
     
     #legend.AddEntry(wlnu,"W#rightarrow l#nu","LF")
     #legend.AddEntry(zll,"Z#rightarrow ll","LF")
@@ -520,10 +546,13 @@ for ch in e_mu:
     if ( not do_liny ) : t1.SetLogy(True)
     
     #draw the lumi text on the canvas
-    CMS_lumi.CMS_lumi(canvas, iPeriod, iPos)
+    CMS_lumi.CMS_lumi(t1, iPeriod, iPos)
+
+    t1.Update()
     
-    
-    
+    canvas.cd()
+    canvas.Update()
+
     ## ratio plot
     t2 = rt.TPad("t2", "t2",0.0,0.0, 1.0,0.2)
     t2.SetFillColor(0)
@@ -545,51 +574,95 @@ for ch in e_mu:
     t2.SetGridy(1)
     t2.SetPad(0,0.0,1.0,0.2)
     
-    
-    
-    hratio=hdata.Clone("myratio")
-    hratio.Divide(htotal)
-    
-    hratio.Draw("same e2")
 
-    #hratio.DrawCopy("histsame");
-    #canvas.Update()
-    #canvas.Draw()
+    hMCtotal = htotal.Clone("mcrelunc")
+    hMCtotal.Sumw2()
+ #   utils::root::checkSumw2(hMCtotal)
 
-    hratio.SetFillColor(rt.kBlue);
-    hratio.SetFillStyle(3018);
-    hratio.Draw("same 2");
-     
+    # Make ratio with TGraphErrors
+    gtotal = rt.TGraphErrors(hMCtotal.GetNbinsX())
+
+    GPoint = 0
+    for i in range(1,hMCtotal.GetXaxis().GetNbins()+1):
+       gtotal.SetPoint(GPoint, hMCtotal.GetBinCenter(i), 1.0)
+       if (hMCtotal.GetBinContent(i) != 0):
+          gtotal.SetPointError(GPoint, hMCtotal.GetBinWidth(i)/2, hMCtotal.GetBinError(i)/hMCtotal.GetBinContent(i))
+          GPoint += 1
+       else:
+          gtotal.SetPointError(GPoint, hMCtotal.GetBinWidth(i)/2, 0)
+          GPoint += 1 ; continue
+      
+       err = hMCtotal.GetBinError(i)/hMCtotal.GetBinContent(i)
+       hMCtotal.SetBinContent(i,1)
+       hMCtotal.SetBinError(i,err)
+
+    gtotal.Set(GPoint)
+    gtotal.SetLineColor(1)
+    gtotal.SetFillStyle(3001) #3004
+    gtotal.SetFillColor(16) #rt.kGray+3)
+    gtotal.SetMarkerColor(1)
+    gtotal.SetMarkerStyle(20) #1)
+
+    hMCtotal.Reset("ICE")
+    hMCtotal.SetTitle("")
+    hMCtotal.SetStats(0)
+    hMCtotal.Draw()
+    gtotal.Draw("2 0 same") #("2 0 same")
     
-    
-    #hratio.SetFillColor(rt.kMagenta)
-    
-    #hratio.Draw("e2")
-    #hratio.Draw("hist L same"); # you missed the option L
-    #hratio.Draw("same 2 0")
-    
-    
-    hratio.SetMinimum(0.2);
-    hratio.SetMaximum(1.8);
-    
-    hratio.SetLineColor(1)
-    hratio.SetFillStyle(3005)
-    hratio.SetFillColor(rt.kGray+3)
-    hratio.SetMarkerColor(1)
-    hratio.SetMarkerStyle(20)
-    hratio.GetYaxis().SetLabelSize(0.13)
-    hratio.GetYaxis().SetTitleSize(0.13)
-    hratio.GetYaxis().SetTitleOffset(1.)
-    hratio.GetXaxis().SetLabelSize(0.13)
-    hratio.GetXaxis().SetTitleSize(0.13)
-    hratio.GetXaxis().SetTitleOffset(1.2)
-    hratio.SetMarkerSize(0.5)
+    yscale = (1.0-0.2)/(0.2)
+    hMCtotal.GetYaxis().SetTitle("Data/#Sigma Bkg.")
+    hMCtotal.GetXaxis().SetTitle() # drop the title to gain space
+    hMCtotal.SetMinimum(0.2)
+    hMCtotal.SetMaximum(1.8)
+
+    if "CR" in dir2:
+        hMCtotal.SetMinimum(0.4)     
+        hMCtotal.SetMaximum(1.6)
+
+    hMCtotal.GetXaxis().SetLabelFont(42)
+    hMCtotal.GetXaxis().SetLabelOffset(0.007)
+    hMCtotal.GetXaxis().SetLabelSize(0.04 * yscale)
+    hMCtotal.GetXaxis().SetTitleFont(42)
+    hMCtotal.GetXaxis().SetTitleSize(0.035 * yscale)
+    hMCtotal.GetXaxis().SetTitleOffset(0.8)
+    hMCtotal.GetYaxis().SetLabelFont(42)
+    hMCtotal.GetYaxis().SetLabelOffset(0.007)
+    hMCtotal.GetYaxis().SetLabelSize(0.03 * yscale)
+    hMCtotal.GetYaxis().SetTitleFont(42)
+    hMCtotal.GetYaxis().SetTitleSize(0.035 * yscale)
+    hMCtotal.GetYaxis().SetTitleOffset(0.3)
+    #    hratio.SetLineColor(1)
+#    hratio.SetFillStyle(3005)
+#    hratio.SetFillColor(rt.kGray+3)
+#    hratio.SetMarkerColor(1)
+#    hratio.SetMarkerStyle(20)
+#    hratio.GetYaxis().SetLabelSize(0.13)
+#    hratio.GetYaxis().SetTitleSize(0.13)
+#    hratio.GetYaxis().SetTitleOffset(1.)
+#    hratio.GetXaxis().SetLabelSize(0.13)
+#    hratio.GetXaxis().SetTitleSize(0.13)
+#    hratio.GetXaxis().SetTitleOffset(1.2)
+#    hratio.SetMarkerSize(0.5)
     #hratio.GetYaxis().SetTitle("ratio")
-    hratio.SetLineWidth(2)
+#    hratio.SetLineWidth(2)
     
+#add comparisons
+    dataToObsH=hdata.Clone("myratio") 
+    dataToObsH.Divide(htotal) 
+
+    dataToObs = rt.TGraphErrors(dataToObsH)
+    dataToObs.SetMarkerColor(dataToObsH.GetMarkerColor())
+    dataToObs.SetMarkerStyle(dataToObsH.GetMarkerStyle())
+    dataToObs.SetMarkerSize(dataToObsH.GetMarkerSize())
+    dataToObs.Draw("P 0 same");
+    
+#    hratio.Draw("same e2")
+
+
+
     if(blind>0):
 #        blinding_box2 = rt.TPave(hdata.GetBinLowEdge(hdata.FindBin(blind)), 0.4, hdata.GetXaxis().GetXmax(), 1.6, 0, "NB" )  
-        blinding_box2 = rt.TPave(hdata.GetBinLowEdge(blind), 0.2, hdata.GetXaxis().GetXmax(), 1.8, 0, "NB" )  
+        blinding_box2 = rt.TPave(hMCtotal.GetBinLowEdge(blind), 0.2, hMCtotal.GetXaxis().GetXmax(), 1.8, 0, "NB" )  
         blinding_box2.SetFillColor(15)
         blinding_box2.SetFillStyle(3013)
         blinding_box2.Draw("same F");

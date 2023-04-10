@@ -63,7 +63,7 @@ proc_tex = { "otherbkg" : "Other Bkgs",
              "data"     : "Data"
            }
 
-bin_group_list = [ {"first":1, "last":3, "blind":False}, {"first":4, "last":4, "blind":True}, {"first":5, "last":5, "blind":True} ]
+bin_group_list = [ {"first":1, "last":3, "blind":False}, {"first":4, "last":4, "blind":False}, {"first":5, "last":5, "blind":False} ]
 
 if "2016" in limit_dir: year = "2016"
 if "2017" in limit_dir: year = "2017"
@@ -74,8 +74,8 @@ if ( "Wh" in limit_dir ):
    wz_label = "Wh"
    lf_list = [ "e", "mu" ]
    lf_tex = { "e":"$e$",  "mu":"$\\mu$" }
-   fd_file_dict = { "e": "fitDiagnostics.root", "mu": "fitDiagnostics.root" }
-   #fd_file_dict = { "e": "fitDiagnosticsTest.root", "mu": "fitDiagnosticsTest.root" }
+#   fd_file_dict = { "e": "fitDiagnostics.root", "mu": "fitDiagnostics.root" }
+   fd_file_dict = { "e": "fitDiagnosticsTest.root", "mu": "fitDiagnosticsTest.root" }
 elif ( "Zh" in limit_dir ):
    wz = "zh"
    wz_label = "Zh"
@@ -197,7 +197,12 @@ for chan in chans:
 
                      val = -1
                      if bin_group["first"] == bin_group["last"] :
-                        val = hist.GetPointY( bin_group["first"]-1 )
+                        px = Double()   
+                        py = Double() 
+                        i = bin_group["first"]
+                        hist.GetPoint( i-1, px, py )
+                        val = py
+#                        val = hist.GetPointY( bin_group["first"]-1 )
                      else :
                         val = 0
                         i = bin_group["first"]
