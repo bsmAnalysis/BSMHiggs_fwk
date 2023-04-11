@@ -6,7 +6,7 @@ import ROOT as rt
 #   Updated by:   Dinko Ferencek (Rutgers)
 #
 
-cmsText     = "CMS";
+cmsText     = "CMS ";
 cmsTextFont   = 61  
 
 writeExtraText = True
@@ -16,7 +16,7 @@ extraTextFont = 52
 lumiTextSize     = 0.6
 lumiTextOffset   = 0.2
 
-cmsTextSize      = 0.75
+cmsTextSize      = 0.85
 cmsTextOffset    = 0.1
 
 relPosX    = 0.045
@@ -24,6 +24,10 @@ relPosY    = 0.035
 relExtraDY = 1.2
 
 extraOverCmsTextSize  = 0.76
+
+lumi_2016 = "35.9 fb^{-1}"
+lumi_2017 = "41.5 fb^{-1}"
+lumi_2018 = "59.7 fb^{-1}"
 
 lumi_13TeV = "20.1 fb^{-1}"
 lumi_8TeV  = "19.7 fb^{-1}" 
@@ -73,7 +77,17 @@ def CMS_lumi(pad,  iPeriod,  iPosX ):
     elif ( iPeriod==4 ):
         lumiText += lumi_13TeV
         lumiText += " (13 TeV)"
+    elif ( iPeriod==6 ):
+        lumiText += lumi_2016
+        lumiText += " (13 TeV)"
     elif ( iPeriod==7 ):
+        lumiText += lumi_2017
+        lumiText += " (13 TeV)"
+    elif ( iPeriod==8 ):
+        lumiText += lumi_2018
+        lumiText += " (13 TeV)"
+
+    elif ( iPeriod==10 ):
         if( outOfFrame ):lumiText += "#scale[0.85]{"
         lumiText += lumi_13TeV 
         lumiText += " (13 TeV)"
@@ -141,12 +155,14 @@ def CMS_lumi(pad,  iPeriod,  iPosX ):
             latex.SetTextFont(cmsTextFont)
             latex.SetTextSize(cmsTextSize*t)
             latex.SetTextAlign(align_)
-            latex.DrawLatex(posX_, posY_, cmsText)
+            latex.DrawLatex(posX_, 1-t+lumiTextOffset*t, cmsText) 
+#            latex.DrawLatex(posX_, posY_, cmsText)
             if( writeExtraText ) :
                 latex.SetTextFont(extraTextFont)
                 latex.SetTextAlign(align_)
                 latex.SetTextSize(extraTextSize*t)
-                latex.DrawLatex(posX_, posY_- relExtraDY*cmsTextSize*t, extraText)
+                latex.DrawLatex(posX_+0.08*H/W, 1-t+lumiTextOffset*t, extraText) 
+                #latex.DrawLatex(posX_, posY_- relExtraDY*cmsTextSize*t, extraText)
     elif( writeExtraText ):
         if( iPosX==0):
             posX_ =   l +  relPosX*(1-l-r)
