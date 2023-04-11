@@ -10,8 +10,8 @@ two_lines_operation ()
 }
 
 ## Here we have all the txt files with the pulls for each channel
-#years=("2016" "2017" "2018")
-years=("all")
+years=("2016" "2017" "2018")
+#years=("all")
 
 for year in ${years[@]}; do
 
