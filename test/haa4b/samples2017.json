@@ -1493,7 +1493,7 @@
                     ],
                     "gtag": "94X_mc2017_realistic_v17",
                     "dtag": "MC13TeV_Zh_amass60_2017",
-                    "nevts": 496105,
+                    "nevts": 385680,
                     "xsec": "0.8839*0.75*1.0474"
                 }
             ],
@@ -1515,3 +1515,7 @@
         }
     ]
 }
+ ***** Reading samples json file: 
+ ***** Reading samples json file: 
+ ***** Reading samples json file: 
+ ***** Reading samples json file: 

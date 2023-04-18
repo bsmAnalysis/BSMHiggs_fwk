@@ -156,7 +156,7 @@ std::vector<string> keywords;
 int indexvbf = -1;
 int massL=-1, massR=-1;
 
-double dropBckgBelow=0.01; 
+double dropBckgBelow=0.00001; 
 
 /*
  *Case Sensitive Implementation of startsWith()
@@ -1328,8 +1328,6 @@ int main(int argc, char* argv[])
 
   //drop backgrounds with rate<1%
   allInfo.dropSmallBckgProc(selCh, histo.Data(), dropBckgBelow);
-
-
 
 
   if ( verbose ) { printf("\n  --- verbose : main :   calling allInfo.dropCtrlChannels(selCh);\n") ; fflush(stdout) ; }
@@ -2777,7 +2775,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       axis->Reset();      
       //      axis->GetXaxis()->SetRangeUser(axis->GetXaxis()->FindBin(0.), axis->GetXaxis()->GetXmax());
       //      axis->GetXaxis()->SetRangeUser(axis->GetXaxis()->GetXmin(),axis->GetXaxis()->GetXmax());
-      axis->GetXaxis()->SetRangeUser(-0.31,0.35);
+      if (histoName.Contains("bdt")) axis->GetXaxis()->SetRangeUser(-0.31,0.35);
       //double signalHeight=0;
       //for(unsigned int s=0;s<map_signals[p->first].size();s++){signalHeight = std::max(signalHeight, map_signals[p->first][s]->GetMaximum());}
       //axis->SetMaximum(1.5*std::max(signalHeight , std::max( map_unc[p->first]->GetMaximum(), map_data[p->first]->GetMaximum())));
@@ -2839,7 +2837,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           hs->Draw("HIST same");
         }
       }
-      axis->GetXaxis()->SetRangeUser(-0.31,0.34);   
+      if (histoName.Contains("bdt")) axis->GetXaxis()->SetRangeUser(-0.31,0.34);   
       
       if(blindSR){
          if ( startsWith(p->first,"mu_A_SR_3b") || startsWith(p->first,"mu_A_SR_4b") ||
@@ -3160,7 +3158,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         //print histograms
         TH1* axis = (TH1*)h->Clone("axis");
         axis->Reset();
-	axis->GetXaxis()->SetRangeUser(-0.31,0.34); 
+	if(histoName.Contains("bdt")) axis->GetXaxis()->SetRangeUser(-0.31,0.34); 
 	//        axis->GetXaxis()->SetRangeUser(axis->GetXaxis()->GetXmin(), axis->GetXaxis()->GetXmax());
         axis->GetYaxis()->SetRangeUser(0.5, 1.5); //100% uncertainty
         if((I-1)%NBins!=0)axis->GetYaxis()->SetTitle("");
@@ -4312,87 +4310,49 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     int nsign = sign_procs.size();
     printf("\n\n Now building the datacards . We have %d signal points available \n",nsign);
 
-    TString eecard = "";
-    TString mumucard = "";
-    TString combinedcard = ""; TString combinedsrcard = "";   
-
+    TString eecard = ""; TString mumucard = "";
+    TString combinedcard = ""; 
+    /*
+    TString combinedsrcard = "";   
     TString esrcard = ""; TString musrcard = "";
     TString ecrcard = ""; TString mucrcard = "";
-    /*
-    TString e3bcard = ""; TString e4bcard = "";
-    TString mu3bcard = ""; TString mu4bcard = "";
     */
+
     for(std::map<string, bool>::iterator C=allChannels.begin(); C!=allChannels.end();C++){
       // REmove B,C,D control regions from the datacard
       if(modeDD && ((C->first.find("B_")!=string::npos) || (C->first.find("C_")!=string::npos) ||(C->first.find("D_")!=string::npos)))continue;  
-      // Remove CR5j_3b channel
-      //      if (C->first.find("CR5j_3b")!=string::npos) continue;
 
       TString dcName=url;              
       dcName.ReplaceAll(".root","_"+TString(C->first.c_str())+".dat");
       //      dcName.ReplaceAll("_qcdB","_qcdB");  
 
-      //-- owen: August 10, 2020:  remove CR5j completely.
-      //      if (C->first.find("CR5j")!=string::npos) continue;
-
+      
       if(C->first.find("emu")==string::npos) {
 	combinedcard += (C->first+"=").c_str()+dcName+" ";
-	if(C->first.find("SR")!=string::npos) combinedsrcard += (C->first+"=").c_str()+dcName+" ";  
+	//	if(C->first.find("SR")!=string::npos) combinedsrcard += (C->first+"=").c_str()+dcName+" ";  
       }
-
+      
       if(runZh) {
         if(C->first.find("ee"  )!=string::npos) { // georgia - Dec 16 temp update
 	  eecard   += (C->first+"=").c_str()+dcName+" ";
-	  if(C->first.find("SR")!=string::npos) { esrcard += (C->first+"=").c_str()+dcName+" ";   }
-	  /*
-	  if(C->first.find("3b")!=string::npos) { 
-	    e3bcard += (C->first+"=").c_str()+dcName+" "; 
-	  } else if (C->first.find("4b")!=string::npos) {
-	    e4bcard += (C->first+"=").c_str()+dcName+" ";   
-	  }
-	  */
+	  //	  if(C->first.find("SR")!=string::npos) { esrcard += (C->first+"=").c_str()+dcName+" ";   }
 	}
 
         if(C->first.find("mumu")!=string::npos) { // georgia - Dec 16 temp update
 	  mumucard += (C->first+"=").c_str()+dcName+" ";
-	  if(C->first.find("SR")!=string::npos) { musrcard += (C->first+"=").c_str()+dcName+" ";   }  
-	  /*
-	  if(C->first.find("3b")!=string::npos) { 
-	    mu3bcard += (C->first+"=").c_str()+dcName+" ";
-	  } else if (C->first.find("4b")!=string::npos) {   
-	    mu4bcard += (C->first+"=").c_str()+dcName+" ";
-	  }
-	  */
+	  //	  if(C->first.find("SR")!=string::npos) { musrcard += (C->first+"=").c_str()+dcName+" ";   }  
 	}
-	if(C->first.find("ee_A_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";      
-	if(C->first.find("mumu_A_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" ";  
 
       } else {
         if(C->first.find("e"  )!=string::npos) {
 	  eecard   += (C->first+"=").c_str()+dcName+" ";    
-	  if(C->first.find("SR")!=string::npos) { esrcard += (C->first+"=").c_str()+dcName+" ";   }  
-	  /*
-	  if(C->first.find("3b")!=string::npos) { 
-            e3bcard += (C->first+"=").c_str()+dcName+" "; 
-          } else if (C->first.find("4b")!=string::npos) { 
-            e4bcard += (C->first+"=").c_str()+dcName+" "; 
-          } 
-	  */
+	  //	  if(C->first.find("SR")!=string::npos) { esrcard += (C->first+"=").c_str()+dcName+" ";   }  
 	}
 
         if(C->first.find("mu")!=string::npos) {
 	  mumucard += (C->first+"=").c_str()+dcName+" ";  
-	  if(C->first.find("SR")!=string::npos) { musrcard += (C->first+"=").c_str()+dcName+" ";   }  
-	  /*
-	  if(C->first.find("3b")!=string::npos) { 
-            mu3bcard += (C->first+"=").c_str()+dcName+" "; 
-          } else if (C->first.find("4b")!=string::npos) { 
-            mu4bcard += (C->first+"=").c_str()+dcName+" "; 
-          } 
-	  */ 
+	  //	  if(C->first.find("SR")!=string::npos) { musrcard += (C->first+"=").c_str()+dcName+" ";   }  
 	}
-	if(C->first.find("e_A_CR"  )!=string::npos)ecrcard   += (C->first+"=").c_str()+dcName+" ";  
-	if(C->first.find("mu_A_CR")!=string::npos)mucrcard += (C->first+"=").c_str()+dcName+" "; 
       }
 
       std::vector<string> valid_procs;
@@ -4508,14 +4468,16 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       if(runZh) { // ZH channel:
 	if(C->first.find("ee" )!=string::npos) {         
-	  //	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
+	  //	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  
+	  // fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){  
 	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_e%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
 	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_e%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
 	  }
 	  
         } else if (C->first.find("mumu" )!=string::npos) {  
-	  //	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
+	  //	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  
+	  //fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
           if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){
             if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_mu%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
             if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_mu%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
@@ -4547,22 +4509,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
     FILE* pFile = fopen("combineCards"+vh_tag+".sh","w");   
     fprintf(pFile,"%s;\n",(TString("combineCards.py ") + combinedcard + " > " + "card_combined"+vh_tag+".dat").Data());
-    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + combinedsrcard + " > " + "card_combined_sr"+vh_tag+".dat").Data()); 
+    //    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + combinedsrcard + " > " + "card_combined_sr"+vh_tag+".dat").Data()); 
 
     fprintf(pFile,"%s;\n",(TString("combineCards.py ") + eecard       + " > " + "card_e"+vh_tag+".dat").Data());
-    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + esrcard       + " > " + "card_esr"+vh_tag+".dat").Data());  
-    /*
-    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + e3bcard       + " > " + "card_e3b"+vh_tag+".dat").Data());
-    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + e4bcard       + " > " + "card_e4b"+vh_tag+".dat").Data());
-    */
     fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mumucard     + " > " + "card_mu"+vh_tag+".dat").Data());
-    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + musrcard     + " > " + "card_musr"+vh_tag+".dat").Data());
-    /*
-    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mu3bcard     + " > " + "card_mu3b"+vh_tag+".dat").Data());  
-    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mu4bcard     + " > " + "card_mu4b"+vh_tag+".dat").Data());  
-    */
-    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + ecrcard       + " > " + "card_ecr"+vh_tag+".dat").Data());  
-    fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mucrcard       + " > " + "card_mucr"+vh_tag+".dat").Data());  
 
     fprintf(pFile,"%s;\n",(TString("sed -i '/tt_norm_mu/d' card_e"+vh_tag+".dat")).Data());   
     fprintf(pFile,"%s;\n",(TString("sed -i '/tt_norm_e/d' card_mu"+vh_tag+".dat")).Data());         
@@ -4572,9 +4522,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     if ( verbose ) { printf(" --- verbose : AllInfo_t::buildDataCards : done.\n" ) ; fflush(stdout) ; }
 
   }
-
-
-
 
 
 
