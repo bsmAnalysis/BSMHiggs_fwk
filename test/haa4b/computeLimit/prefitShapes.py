@@ -325,19 +325,12 @@ for ch in e_mu:
       bkgd_list.append(ttbarlig)
       lgname_list.append("t#bar{t} + light")
 
-    MC = rt.THStack()
-
-    #MC.Add(zll)
-    #MC.Add(wlnu)
-
-    #MC.Add(qcd)
-    #MC.Add(otherbkg)
-
-    #MC.Add(ttbarbba)
-    #MC.Add(ttbarcba)
-    #MC.Add(ttbarlig)
+    MC = rt.THStack() ; 
+#    mcstat = total.Clone("mcstat"); mcstat.Reset()
+    #add to stack
     for bkgd in bkgd_list:
       MC.Add(bkgd)
+#      mcstat.Add(bkgd)
 
 
     t1 = rt.TPad("t1","t1", 0.0, 0.2, 1.0, 1.0)
@@ -383,7 +376,7 @@ for ch in e_mu:
     for i in range(0,nPoints):
         data.GetPoint(i,px,py)
 
-        N=px  
+        N=px  # Update for asymmetric error bar in 0 observed events
         if N==0: 
            L=0
            U= rt.Math.gamma_quantile_c(alpha/2,N+1,1)     
@@ -393,33 +386,16 @@ for ch in e_mu:
            data.SetPointEYhigh(i,U-N)
 
         pyerr=data.GetErrorY(i)
-        hdata.Fill(px,py)
+#        hdata.Fill(px,py)
         hdata.SetBinContent(i+1,py)
         hdata.SetBinError(i+1,pyerr)
     
     
+ #   t1.Update();
     
-    hdata.GetXaxis().SetLabelOffset(0.007);
-    hdata.GetXaxis().SetLabelSize(0.04);
-    hdata.GetXaxis().SetTitleOffset(1.2);
-    hdata.GetXaxis().SetTitleFont(42);
-    hdata.GetXaxis().SetTitleSize(0.04);
-    hdata.GetYaxis().SetLabelFont(42);
-    hdata.GetYaxis().SetLabelOffset(0.007);
-    hdata.GetYaxis().SetLabelSize(0.04);
-    hdata.GetYaxis().SetTitleOffset(1.35);
-    hdata.GetYaxis().SetTitleFont(42);
-    hdata.GetYaxis().SetTitleSize(0.04);
-    
-    hdata.GetYaxis().SetTitle("Events");
-    hdata.GetXaxis().SetTitle("BDT");
-    #hdata.Draw();
-    
-    t1.Update();
-    
-        
+    #draw the stack which will serve as frame
     MC.Draw("hist")
-    hdata.Draw("e0psame0")
+#    hdata.Draw("e0psame0")
 
     MC.GetXaxis().SetLabelOffset(0.007);
     MC.GetXaxis().SetLabelSize(0.04);
@@ -435,6 +411,8 @@ for ch in e_mu:
     
     MC.GetYaxis().SetTitle("Events");
     MC.GetXaxis().SetTitle("BDT");
+
+    t1.Update()
 
     if sig: 
       sig.Draw("histsame")
@@ -458,6 +436,24 @@ for ch in e_mu:
        else:
           MC.SetMaximum(1.4*hmax)
 
+#           if(showUnc && mc){
+    systBand = rt.TGraphErrors(total.GetNbinsX()); IPoint=0
+    for ibin in range(1,htotal.GetXaxis().GetNbins()+1):
+       systBand.SetPoint(IPoint, htotal.GetBinCenter(ibin), htotal.GetBinContent(ibin) )
+       systBand.SetPointError(IPoint, htotal.GetBinWidth(ibin)/2, htotal.GetBinError(ibin) )
+       IPoint += 1
+    
+    systBand.Set(IPoint);
+#    htotal.SetFillStyle(3004);
+#    htotal.SetFillColor(kGray+2);
+#    htotal.SetMarkerStyle(1);
+    
+    systBand.SetFillStyle(3004);
+    systBand.SetFillColor(rt.kGray+2);
+    systBand.SetMarkerStyle(1);
+    systBand.Draw("same 2 0");
+ 
+
     if (blind>0):
 #        for i in range(hdata.FindBin(blind),hdata.GetNbinsX()+1):
         for i in range(blind,hdata.GetNbinsX()+1):
@@ -468,7 +464,10 @@ for ch in e_mu:
         blinding_box.SetFillColor(15)
         blinding_box.SetFillStyle(3013)
         blinding_box.Draw("same F");
-    
+
+    hdata.Draw("e0psame0")     
+    hdata.Draw("e1same")
+
     #set the colors and size for the legend
     histLineColor = rt.kOrange+7
     histFillColor = rt.kOrange-2
@@ -486,7 +485,7 @@ for ch in e_mu:
     y0_l = y1_l-dy_l
     
     #######legend =  rt.TLegend(0.40,0.74,0.93,0.96, "NDC")
-    legend =  rt.TLegend(0.67,0.96,0.83,0.55, "NDC")
+    legend =  rt.TLegend(0.67,0.96,0.83,0.45, "NDC")
     #legend = rt.TLegend(0.40,0.74,0.98,1.02, "NDC")
     #legend.SetFillColor( rt.kGray )
     legend.SetHeader("") #(dir)
@@ -517,6 +516,8 @@ for ch in e_mu:
     
     ## latex.DrawLatex(xx_+1.*bwx_,yy_,"Data")
     legend.AddEntry(hdata,"Data","LP")
+#    legend.AddEntry(errBand, "Stat. Unc.", "F");
+    legend.AddEntry(systBand, "Syst + Stat.", "F");
     #if sig: legend.AddEntry(sig,"Zh (40) x 10","L")
     print("-"*100)
     print(dir2) 
@@ -576,7 +577,7 @@ for ch in e_mu:
     
 
     hMCtotal = htotal.Clone("mcrelunc")
-    hMCtotal.Sumw2()
+#    hMCtotal.Sumw2()
  #   utils::root::checkSumw2(hMCtotal)
 
     # Make ratio with TGraphErrors
@@ -631,14 +632,7 @@ for ch in e_mu:
     hMCtotal.GetYaxis().SetTitleFont(42)
     hMCtotal.GetYaxis().SetTitleSize(0.035 * yscale)
     hMCtotal.GetYaxis().SetTitleOffset(0.3)
-    #    hratio.SetLineColor(1)
-#    hratio.SetFillStyle(3005)
-#    hratio.SetFillColor(rt.kGray+3)
-#    hratio.SetMarkerColor(1)
-#    hratio.SetMarkerStyle(20)
-#    hratio.GetYaxis().SetLabelSize(0.13)
-#    hratio.GetYaxis().SetTitleSize(0.13)
-#    hratio.GetYaxis().SetTitleOffset(1.)
+
 #    hratio.GetXaxis().SetLabelSize(0.13)
 #    hratio.GetXaxis().SetTitleSize(0.13)
 #    hratio.GetXaxis().SetTitleOffset(1.2)
@@ -647,15 +641,30 @@ for ch in e_mu:
 #    hratio.SetLineWidth(2)
     
 #add comparisons
-    dataToObsH=hdata.Clone("myratio") 
-    dataToObsH.Divide(htotal) 
+#    dataToObsH=hdata.Clone("myratio") 
+#    dataToObsH.Sumw2()
+#    utils::root::checkSumw2(dataToObsH);
+#    hmc=htotal.Clone("mc"); hmc.Sumw2()
+#    dataToObsH.Divide(htotal) 
 
-    dataToObs = rt.TGraphErrors(dataToObsH)
-    dataToObs.SetMarkerColor(dataToObsH.GetMarkerColor())
-    dataToObs.SetMarkerStyle(dataToObsH.GetMarkerStyle())
-    dataToObs.SetMarkerSize(dataToObsH.GetMarkerSize())
+    dataToObs = rt.TGraphErrors(hdata.GetNbinsX())
+
+    RPoint = 0  
+    for i in range(1,hdata.GetXaxis().GetNbins()+1): 
+       dataToObs.SetPoint(RPoint, hdata.GetBinCenter(i), hdata.GetBinContent(i)/htotal.GetBinContent(i)) 
+       if (hdata.GetBinContent(i) != 0): 
+          dataToObs.SetPointError(RPoint, hdata.GetBinWidth(i)/2, hdata.GetBinError(i)/hdata.GetBinContent(i)) 
+          RPoint += 1 
+       else:
+          dataToObs.SetPointError(RPoint, hdata.GetBinWidth(i)/2, 0)
+          RPoint += 1 ; continue
+#    dataToObs = rt.TGraphErrors(dataToObsH)
+#    dataToObs.SetMarkerColor(dataToObsH.GetMarkerColor())
+#    dataToObs.SetMarkerStyle(dataToObsH.GetMarkerStyle())
+#    dataToObs.SetMarkerSize(dataToObsH.GetMarkerSize())
     dataToObs.Draw("P 0 same");
-    
+    dataToObs.SetLineWidth(2)
+#    dataToObsH.Draw("same e0") 
 #    hratio.Draw("same e2")
 
 
@@ -668,7 +677,7 @@ for ch in e_mu:
         blinding_box2.Draw("same F");
     
     
-    line = rt.TLine(0.,1,hdata.GetXaxis().GetXmax(),1);
+    line = rt.TLine(hdata.GetXaxis().GetXmin(),1,hdata.GetXaxis().GetXmax(),1);
     line.SetLineColor(rt.kBlack)
     line.Draw("same")
     

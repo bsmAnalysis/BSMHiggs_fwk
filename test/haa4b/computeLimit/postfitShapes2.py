@@ -48,18 +48,19 @@ if ( not (wz == "wh" or wz == "zh" )):
    print("\n\n *** set prodmode to wh or zh.  ", wz, " is not allowed.\n\n")
    quit()
 
+outdir = "postfit-plots"
+if ( "fit_s" in dir1 ): outdir = "postfit_s+b-plots"
 
-outdir = ""
 if ( wz == "zh" ) :
-   outdir = "postfit-plots-zh"
-   if ( "2016" in limit_dir ): outdir = "postfit-plots-zh-2016"
-   if ( "2017" in limit_dir ): outdir = "postfit-plots-zh-2017"
-   if ( "2018" in limit_dir ): outdir = "postfit-plots-zh-2018"
+   outdir += "-zh"
+   if ( "2016" in limit_dir ): outdir += "-2016"
+   if ( "2017" in limit_dir ): outdir += "-2017"
+   if ( "2018" in limit_dir ): outdir += "-2018"
 if ( wz == "wh" ) :
-   outdir = "postfit-plots-wh"
-   if ( "2016" in limit_dir ): outdir = "postfit-plots-wh-2016"
-   if ( "2017" in limit_dir ): outdir = "postfit-plots-wh-2017"
-   if ( "2018" in limit_dir ): outdir = "postfit-plots-wh-2018"
+   outdir += "-wh"
+   if ( "2016" in limit_dir ): outdir += "-2016"
+   if ( "2017" in limit_dir ): outdir += "-2017"
+   if ( "2018" in limit_dir ): outdir += "-2018"
 
 try:
         os.mkdir( outdir )
@@ -385,47 +386,25 @@ for ch in e_mu:
 
     nPoints=data.GetN()
     for i in range(0,nPoints):
-        data.GetPoint(i,px,py)
-#        pyerr=data.GetErrorY(i)
-        #hdata.Fill(px,py)
+      data.GetPoint(i,px,py)
+#      hdata.Fill(px,py)
 
-        N=px
-        if N==0:
-           L=0
-           U= rt.Math.gamma_quantile_c(alpha/2,N+1,1) 
-           data.SetMarkerSize(0.5);
-           data.SetMarkerStyle (20);
-           data.SetPointEYlow(i,0)
-           data.SetPointEYhigh(i,U-N)
-        
-        pyerr=data.GetErrorY(i)            
-
-        hdata.SetBinContent(i+1,py)
-        hdata.SetBinError(i+1,pyerr)
-    
-    
-    
-    hdata.GetXaxis().SetLabelOffset(0.007);
-    hdata.GetXaxis().SetLabelSize(0.04);
-    hdata.GetXaxis().SetTitleOffset(1.2);
-    hdata.GetXaxis().SetTitleFont(42);
-    hdata.GetXaxis().SetTitleSize(0.04);
-    hdata.GetYaxis().SetLabelFont(42);
-    hdata.GetYaxis().SetLabelOffset(0.007);
-    hdata.GetYaxis().SetLabelSize(0.04);
-    hdata.GetYaxis().SetTitleOffset(1.35);
-    hdata.GetYaxis().SetTitleFont(42);
-    hdata.GetYaxis().SetTitleSize(0.04);
-    
-    hdata.GetYaxis().SetTitle("Events");
-    hdata.GetXaxis().SetTitle("BDT");
-#    hdata.Draw();
-    
-    t1.Update();
-    
+      N=px  
+      if N==0:
+         L=0
+         U= rt.Math.gamma_quantile_c(alpha/2,N+1,1) 
+         data.SetMarkerSize(0.5);
+         data.SetMarkerStyle (20);
+         data.SetPointEYlow(i,0)
+         data.SetPointEYhigh(i,U-N)
+         
+      pyerr=data.GetErrorY(i)            
+         
+      hdata.SetBinContent(i+1,py)
+      hdata.SetBinError(i+1,pyerr)
         
     MC.Draw("hist")
-    hdata.Draw("e0psame0")
+#    hdata.Draw("e0psame0")
     
     MC.GetXaxis().SetLabelOffset(0.007);
     MC.GetXaxis().SetLabelSize(0.04);
@@ -442,6 +421,7 @@ for ch in e_mu:
     MC.GetYaxis().SetTitle("Events");
     MC.GetXaxis().SetTitle("BDT");
 
+    t1.Update()          
 
     if sig: 
       sig.Draw("histsame")
@@ -465,6 +445,19 @@ for ch in e_mu:
        else:
           MC.SetMaximum(1.4*hmax)
 
+    systBand = rt.TGraphErrors(total.GetNbinsX()); IPoint=0  
+    for ibin in range(1,htotal.GetXaxis().GetNbins()+1):  
+       systBand.SetPoint(IPoint, htotal.GetBinCenter(ibin), htotal.GetBinContent(ibin) )
+       systBand.SetPointError(IPoint, htotal.GetBinWidth(ibin)/2, htotal.GetBinError(ibin) ) 
+       IPoint += 1 
+
+    systBand.Set(IPoint);   
+
+    systBand.SetFillStyle(3004); 
+    systBand.SetFillColor(rt.kGray+2);  
+    systBand.SetMarkerStyle(1);  
+    systBand.Draw("same 2 0"); 
+
     if (blind>0):
 #        for i in range(hdata.FindBin(blind),hdata.GetNbinsX()+1):
         for i in range(blind,hdata.GetNbinsX()+1):
@@ -476,6 +469,9 @@ for ch in e_mu:
         blinding_box.SetFillStyle(3013)
         blinding_box.Draw("same F");
     
+    hdata.Draw("e0psame0")   
+    hdata.Draw("e1same")
+
     #set the colors and size for the legend
     histLineColor = rt.kOrange+7
     histFillColor = rt.kOrange-2
@@ -493,7 +489,7 @@ for ch in e_mu:
     y0_l = y1_l-dy_l
     
     #######legend =  rt.TLegend(0.40,0.74,0.93,0.96, "NDC")
-    legend =  rt.TLegend(0.67,0.96,0.83,0.55, "NDC") 
+    legend =  rt.TLegend(0.67,0.96,0.83,0.45, "NDC") 
 #    legend =  rt.TLegend(0.40,0.74,0.98,1.02, "NDC")
     #legend.SetFillColor( rt.kGray )
     legend.SetHeader("") #dir)
@@ -524,6 +520,7 @@ for ch in e_mu:
     
     ## latex.DrawLatex(xx_+1.*bwx_,yy_,"Data")
     legend.AddEntry(hdata,"Data","LP")
+    legend.AddEntry(systBand, "Syst + Stat.", "F");  
     #if sig: legend.AddEntry(sig,"Zh (60)","L")
 #    if sig: legend.AddEntry(sig,"Zh (60)","L")
     print("-"*100)
@@ -643,13 +640,30 @@ for ch in e_mu:
     #add comparisons
     dataToObsH=hdata.Clone("myratio")  
     dataToObsH.Divide(htotal)  
-    
-    dataToObs = rt.TGraphErrors(dataToObsH)  
-    dataToObs.SetMarkerColor(dataToObsH.GetMarkerColor())   
-    dataToObs.SetMarkerStyle(dataToObsH.GetMarkerStyle())
-    dataToObs.SetMarkerSize(dataToObsH.GetMarkerSize())
-    dataToObs.Draw("P 0 same");
 
+#    dataToObs = rt.TGraphErrors(hdata.GetNbinsX()) 
+#    RPoint = 0 
+    for i in range(1,hdata.GetXaxis().GetNbins()+1): 
+#       dataToObs.SetPoint(RPoint, hdata.GetBinCenter(i), hdata.GetBinContent(i)/htotal.GetBinContent(i)) 
+       if (hdata.GetBinContent(i) != 0): 
+          err=hdata.GetBinError(i)/hdata.GetBinContent(i);
+          dataToObsH.SetBinError(i,err);
+#          dataToObs.SetPointError(RPoint, hdata.GetBinWidth(i)/2, hdata.GetBinError(i)/hdata.GetBinContent(i)) 
+#          RPoint += 1 
+       else: 
+          dataToObsH.SetBinError(i,0);  
+          continue
+          #          dataToObs.SetPointError(RPoint, hdata.GetBinWidth(i)/2, 0) 
+#          RPoint += 1 ; continue   
+
+#    dataToObs = rt.TGraphErrors(dataToObsH)  
+    dataToObsH.Draw("e0psame0")
+    dataToObsH.Draw("e1same")
+#    dataToObs.SetMarkerColor(dataToObsH.GetMarkerColor())   
+#    dataToObs.SetMarkerStyle(dataToObsH.GetMarkerStyle())
+#    dataToObs.SetMarkerSize(dataToObsH.GetMarkerSize())
+#    dataToObs.Draw("P 0 same");
+    dataToObsH.SetLineWidth(2)  
     
     if(blind>0):
 #        blinding_box2 = rt.TPave(hdata.GetBinLowEdge(hdata.FindBin(blind)), 0.4, hdata.GetXaxis().GetXmax(), 1.6, 0, "NB" )  
@@ -659,7 +673,7 @@ for ch in e_mu:
         blinding_box2.Draw("same F");
     
     
-    line = rt.TLine(0.,1,hdata.GetXaxis().GetXmax(),1);
+    line = rt.TLine(hdata.GetXaxis().GetXmin(),1,hdata.GetXaxis().GetXmax(),1);
     line.SetLineColor(rt.kBlack)
     line.Draw("same")
     
