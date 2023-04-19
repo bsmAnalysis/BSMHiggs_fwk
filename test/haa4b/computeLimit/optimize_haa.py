@@ -158,19 +158,9 @@ ASYMTOTICLIMIT=True #Set to True to compute asymptotic limits (faster) instead o
 BINS = ["3b,4b"] # list individual analysis bins to consider as well as combined bins (separated with a coma but without space)
 #BINS = ["3b+4b"] # list individual analysis bins to consider as well as combined bins (separated with a coma but without space)
 
-#MASS = [20, 25, 30, 40, 50, 60]
-#SUBMASS = [20, 25, 30, 40, 50, 60]
-
-#MASS = [12, 15]
-#SUBMASS = [12, 15]
-
-#MASS = [40]
-#SUBMASS = [40]
-
 MASS = [12, 15, 20, 25, 30, 40, 50, 60]
 SUBMASS = [12, 15, 20, 25, 30, 40, 50, 60]
-#LandSArgCommonOptions=" --dropBckgBelow 0.01  --autoMCStats  "    
-#LandSArgCommonOptions_2016wh=" --dropBckgBelow 0.015  --autoMCStats  " 
+
 #LandSArgCommonOptions=" --dropBckgBelow 0.00001  --autoMCStats  "
 #LandSArgCommonOptions_2016wh=" --dropBckgBelow 0.00001  --autoMCStats  "
 
