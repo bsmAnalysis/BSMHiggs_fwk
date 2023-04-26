@@ -161,18 +161,11 @@ BINS = ["3b,4b"] # list individual analysis bins to consider as well as combined
 MASS = [12, 15, 20, 25, 30, 40, 50, 60]
 SUBMASS = [12, 15, 20, 25, 30, 40, 50, 60]
 
-
-#LandSArgCommonOptions=" --dropBckgBelow 0.01  --autoMCStats  "    
-#LandSArgCommonOptions_2016wh=" --dropBckgBelow 0.015  --autoMCStats  " 
 #LandSArgCommonOptions=" --dropBckgBelow 0.00001  --autoMCStats  "
 #LandSArgCommonOptions_2016wh=" --dropBckgBelow 0.00001  --autoMCStats  "
 
-LandSArgCommonOptions=" "
-LandSArgCommonOptions_2016wh=" "
-
-if autoMCstats:   
-   LandSArgCommonOptions=" --autoMCStats  "
-   LandSArgCommonOptions_2016wh=" --autoMCStats  "
+LandSArgCommonOptions=" --autoMCStats  "
+LandSArgCommonOptions_2016wh=" --autoMCStats  " 
 
 #LandSArgCommonOptions=" --dropBckgBelow 0.01 --statBinByBin 0.001 " #--BackExtrapol " #--statBinByBin 0.00001 "
 #LandSArgCommonOptions_2016wh=" --dropBckgBelow 0.015 --statBinByBin 0.001 " #--BackExtrapol " #--statBinByBin 0.00001 --blind "
@@ -184,6 +177,10 @@ for model in MODELS:
          if(model=="SM"):
             suffix = "" 
             signalSuffixVec += [ suffix ]
+            #OUTName         += ["SB13TeV_SM_Wh_2016_noSoftb"]
+            #OUTName         += ["SB13TeV_SM_Wh_2017_noSoftb"]
+            #OUTName         += ["SB13TeV_SM_Wh_2018_noSoftb"]
+            #OUTName         += ["SB13TeV_SM_Wh_AllRun2_noSoftb"]
             OUTName += ["SB13TeV_SM_Wh_"+year_to_run+"_noSoftb"]
             LandSArgOptions += [" --histo " + shape + "  --systpostfix _13TeV --shape "]
             BIN             += [bin]
@@ -276,17 +273,8 @@ for signalSuffix in signalSuffixVec :
       inUrl = inUrl_whs[0]
    DataCardsDir='cards_'+OUTName[iConf]+signalSuffix+binSuffix
 
-   out_prefix=''
-
-   if args.onlyeLimit :
-      out_prefix='e_' 
-      DataCardsDir='ecards_'+OUTName[iConf]+signalSuffix+binSuffix 
-   if args.onlymuLimit : 
-      out_prefix='mu_'
-      DataCardsDir='mucards_'+OUTName[iConf]+signalSuffix+binSuffix 
-
    #prepare the output
-   OUT = CWD+'/'+out_prefix+'JOBS/'+OUTName[iConf]+signalSuffix+binSuffix+'/'
+   OUT = CWD+'/JOBS/'+OUTName[iConf]+signalSuffix+binSuffix+'/'
    os.system('mkdir -p ' + OUT)
 
    #get the cuts
@@ -479,7 +467,7 @@ for signalSuffix in signalSuffixVec :
                Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #also add a graph for shapeMax
 
                INbinSuffix = "_" + bin 
-               IN = CWD+'/'+out_prefix+'JOBS/'+OUTName[iConf]+signalSuffix+INbinSuffix+'/'
+               IN = CWD+'/JOBS/'+OUTName[iConf]+signalSuffix+INbinSuffix+'/'
                try:
                   listcuts = open(IN+'cuts.txt',"r")
                   mi=0
@@ -528,13 +516,12 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines('cd -;\n')
 
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
-#           SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
-           SCRIPT.writelines('mkdir -p {}out_{}\n'.format(out_prefix,m))
-           SCRIPT.writelines('cd {}out_{};\n'.format(out_prefix,m))
+           SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
 
           #--- first pass
-           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  " + blindSR + "  --m " + str(m)  + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/" + QCDinputFile +" >& cl-first.log\n")
+           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  " + blindSR + "  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/" + QCDinputFile +" >& cl-first.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
+
 
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_combined_wh.dat".format(thredMCstat))
@@ -549,7 +536,7 @@ for signalSuffix in signalSuffixVec :
 
 
           #--- second pass
-           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  "+ blindSR + "  --m " + str(m)  + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/"+ QCDinputFile+ "  --fitDiagnosticsInputFile fitDiagnostics-first.root >& cl-second.log\n")
+           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  "+ blindSR + "  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/"+ QCDinputFile+ "  --fitDiagnosticsInputFile fitDiagnostics-first.root >& cl-second.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
 
            datacard = "card_combined_wh.dat"
@@ -560,7 +547,7 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("\nsed -i '$a*     autoMCStats     {}' {}".format(thredMCstat,datacard)) 
 #              SCRIPT.writelines("\nsed -i '$a*     autoMCStats     {}' card_combined_wh.dat".format(thredMCstat))
 
-              SCRIPT.writelines("\ntext2workspace.py "+ datacard + " -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-second.log \n")  
+              SCRIPT.writelines("\ntext2workspace.py "+ datacard + " -o workspace.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-second.log \n")  
               #compute pvalue
               SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace.root >& COMB-signif-second.log;\n")
               SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0 --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log.txt \n") 
@@ -629,7 +616,7 @@ for signalSuffix in signalSuffixVec :
                Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #also add a graph for shapeMax
 
                INbinSuffix = "_" + bin 
-               IN = CWD+'/'+out_prefix+'JOBS/'+OUTName[iConf]+signalSuffix+INbinSuffix+'/'
+               IN = CWD+'/JOBS/'+OUTName[iConf]+signalSuffix+INbinSuffix+'/'
                try:
                   listcuts = open(IN+'cuts.txt',"r")
                   mi=0
@@ -678,16 +665,13 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines('cd -;\n')
 
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
-#           SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
-           SCRIPT.writelines('mkdir -p {}out_{}\n'.format(out_prefix,m))
-           SCRIPT.writelines('cd {}out_{};\n'.format(out_prefix,m))
-
-           SCRIPT.writelines("computeLimit   "+ removeStatUnc +"  --verbose  " + blindSR + "  --runZh --m " + str(m)  + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +"  >& cl.log\n")
+           SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
+           SCRIPT.writelines("computeLimit   "+ removeStatUnc +"  --verbose  " + blindSR + "  --runZh --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +"  >& cl.log\n")
            SCRIPT.writelines("sh combineCards_zh.sh;\n"); 
 
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_e_zh.dat".format(thredMCstat))
-           SCRIPT.writelines("\ntext2workspace.py card_e_zh.dat -o workspace_e.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e.log \n")  
+           SCRIPT.writelines("\ntext2workspace.py card_e_zh.dat -o workspace_e.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e.log \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_e.root >& COMB-signif-e.log;\n")
            SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0 --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log_e.txt \n") 
            SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_e.txt \n")
@@ -696,7 +680,7 @@ for signalSuffix in signalSuffixVec :
 
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_mu_zh.dat".format(thredMCstat))
-           SCRIPT.writelines("\ntext2workspace.py card_mu_zh.dat -o workspace_mu.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu.log \n")  
+           SCRIPT.writelines("\ntext2workspace.py card_mu_zh.dat -o workspace_mu.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu.log \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_mu.root > COMB-signif-mu.log;\n")
            SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
            SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_mu.txt \n")
@@ -706,7 +690,7 @@ for signalSuffix in signalSuffixVec :
 
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_combined_zh.dat".format(thredMCstat))
-           SCRIPT.writelines("\ntext2workspace.py card_combined_zh.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
+           SCRIPT.writelines("\ntext2workspace.py card_combined_zh.dat -o workspace.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
            ### THIS IS FOR Asymptotic fit
            if(ASYMTOTICLIMIT==True):
            ### THIS is for toy (hybridNew) fit
@@ -773,7 +757,7 @@ for signalSuffix in signalSuffixVec :
                Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #also add a graph for shapeMax
 
                INbinSuffix = "_" + bin 
-               IN = CWD+'/'+out_prefix+'JOBS/'+OUTName[iConf]+signalSuffix+INbinSuffix+'/'
+               IN = CWD+'/JOBS/'+OUTName[iConf]+signalSuffix+INbinSuffix+'/'
                try:
                   listcuts = open(IN+'cuts.txt',"r")
                   mi=0
@@ -821,12 +805,10 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines('cd -;\n')
 
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
-#           SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
-           SCRIPT.writelines('mkdir -p {}out_{}\n'.format(out_prefix,m)) 
-           SCRIPT.writelines('cd {}out_{};\n'.format(out_prefix,m))
+           SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
 
           #--- first pass for Wh
-           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  " + blindSR + "  --m " + str(m)  + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +  " --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/"+ QCDinputFile+ " >& cl-wh-first.log\n")
+           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  " + blindSR + "  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +  " --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/"+ QCDinputFile+ " >& cl-wh-first.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
            SCRIPT.writelines("text2workspace.py card_combined_wh.dat -o workspace-wh-first.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-wh-first.log \n")  
            SCRIPT.writelines("combine -M FitDiagnostics workspace-wh-first.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log-wh-first.txt \n") 
@@ -836,11 +818,12 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("cp *.dat datacards-wh-first-pass\n\n") ;
 
           #--- second pass for Wh
-           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  " + blindSR + "  --m " + str(m)  + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/"+ QCDinputFile+ "  --fitDiagnosticsInputFile fitDiagnostics-wh-first.root >& cl-wh-second.log\n")
+           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  " + blindSR + "  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/"+ QCDinputFile+ "  --fitDiagnosticsInputFile fitDiagnostics-wh-first.root >& cl-wh-second.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
 
 
-           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  " + blindSR + "  --runZh --m " + str(m)  + BackExtrapol + " --in " + inUrl_zh + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-zh.log\n")
+
+           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  " + blindSR + "  --runZh --m " + str(m) + BackExtrapol + " --in " + inUrl_zh + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-zh.log\n")
 
            SCRIPT.writelines("sh combineCards_zh.sh;\n"); 
 
@@ -854,7 +837,7 @@ for signalSuffix in signalSuffixVec :
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_e.dat".format(thredMCstat))
 
-           SCRIPT.writelines("\ntext2workspace.py card_e.dat -o workspace_e.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e.log  \n")  
+           SCRIPT.writelines("\ntext2workspace.py card_e.dat -o workspace_e.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e.log  \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_e.root >& COMB_e.log;\n")
            SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3      --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log_e.txt \n") 
            SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_e.txt \n")
@@ -864,7 +847,7 @@ for signalSuffix in signalSuffixVec :
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_mu.dat".format(thredMCstat))
 
-           SCRIPT.writelines("\ntext2workspace.py card_mu.dat -o workspace_mu.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu.log  \n")  
+           SCRIPT.writelines("\ntext2workspace.py card_mu.dat -o workspace_mu.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu.log  \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_mu.root > COMB_mu.log;\n")
            SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
            SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_mu.txt \n")
@@ -873,7 +856,7 @@ for signalSuffix in signalSuffixVec :
 
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_combined.dat".format(thredMCstat))
-           SCRIPT.writelines("\ntext2workspace.py card_combined.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log  \n")
+           SCRIPT.writelines("\ntext2workspace.py card_combined.dat -o workspace.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log  \n")
            ### THIS IS FOR Asymptotic fit
            if(ASYMTOTICLIMIT==True):
            ### THIS is for toy (hybridNew) fit
@@ -890,9 +873,8 @@ for signalSuffix in signalSuffixVec :
                  SCRIPT.writelines("rm workspace.root ; mv workspace_e.root workspace.root\n")
               if args.onlymuLimit:
                  SCRIPT.writelines("rm workspace.root ; mv workspace_mu.root workspace.root\n") 
-                 
-                 # removed --freezeParameters tt_norm_e,tt_norm_mu
-              SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  --rMin=-5 --rMax=5  -m " +  str(m) + " workspace.root "+ bonly_asimov+" --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$z_3b_e,z_norm_4b_e=$z_4b_e,w_norm_e=$w_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$z_3b_mu,z_norm_4b_mu=$z_4b_mu,w_norm_mu=$w_mu >& COMB.log;\n")  
+
+              SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  --rMin=-5 --rMax=5  -m " +  str(m) + " workspace.root "+ bonly_asimov+" --freezeParameters tt_norm_e,tt_norm_mu --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$z_3b_e,z_norm_4b_e=$z_4b_e,w_norm_e=$w_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$z_3b_mu,z_norm_4b_mu=$z_4b_mu,w_norm_mu=$w_mu >& COMB.log;\n")  
               SCRIPT.writelines("mv higgsCombineTest.AsymptoticLimits.mH" + str(m) +".root higgsCombineTest.AsymptoticLimits.mH" + str(m) +"-all.root\n")
 
            else:
@@ -928,7 +910,7 @@ for signalSuffix in signalSuffixVec :
                Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #also add a graph for shapeMax
 
                INbinSuffix = "_" + bin 
-               IN = CWD+'/'+out_prefix+'JOBS/'+OUTName[iConf]+signalSuffix+INbinSuffix+'/'
+               IN = CWD+'/JOBS/'+OUTName[iConf]+signalSuffix+INbinSuffix+'/'
                try:
                   listcuts = open(IN+'cuts.txt',"r")
                   mi=0
@@ -980,14 +962,8 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines('cd -;\n')
 
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
-#           SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
-           SCRIPT.writelines('mkdir -p {}out_{}\n'.format(out_prefix,m)) 
-           SCRIPT.writelines('cd {}out_{};\n'.format(out_prefix,m))
+           SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
 	   
-           whcards = "/cards_" 
-           if args.onlyeLimit : whcards = "/ecards_" 
-           if args.onlymuLimit : whcards = "/mucards_"
-
 	   for i in range(0, len(jsonPaths)):
 	      inUrl = inUrl_whs[i]
 	      jsonUrl = jsonPaths[i] + " --key " + based_key
@@ -999,8 +975,8 @@ for signalSuffix in signalSuffixVec :
 	      datacard = "card_{}_wh.dat".format(year)
          
 	      SCRIPT.writelines("\n#****************** {} *****************\n".format(year)) 
-              whfdfile  = CWD + whcards + "SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnosticsTest.root"
-
+              ############whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnosticsTest.root"
+              whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnosticsTest.root"
 	      if "2016" in inUrl:
 	          SCRIPT.writelines("\ncomputeLimit   "+ removeStatUnc +" --correlatedLumi  --verbose  " + blindSR + "  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"   --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/"+ QCDinputFile+ "  --fitDiagnosticsInputFile " + whfdfile + " >& cl-"+ year + ".log\n")  
 	      else:
@@ -1008,16 +984,16 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("sh combineCards_"+year+"_wh.sh;\n"); 
 
 	   SCRIPT.writelines("\ncombineCards.py card_combined_2016_wh.dat card_combined_2017_wh.dat card_combined_2018_wh.dat > card_combined_wh.dat")
-	   SCRIPT.writelines("\ntext2workspace.py card_combined_wh.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
+	   SCRIPT.writelines("\ntext2workspace.py card_combined_wh.dat -o workspace.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
 	   SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace.root > COMB-signif.log;\n\n\n")
 
 	    
 	   if(ASYMTOTICLIMIT==True):
            ### THIS is for toy (hybridNew) fit
 
-              wh2016simfit  = CWD + whcards + "SB13TeV_SM_Wh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
-              wh2017simfit  = CWD + whcards + "SB13TeV_SM_Wh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
-              wh2018simfit  = CWD + whcards + "SB13TeV_SM_Wh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
+              wh2016simfit  = CWD + "/cards_SB13TeV_SM_Wh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
+              wh2017simfit  = CWD + "/cards_SB13TeV_SM_Wh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
+              wh2018simfit  = CWD + "/cards_SB13TeV_SM_Wh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
 
               SCRIPT.writelines("if [ -f " + wh2016simfit + " ]; then\n")
               SCRIPT.writelines("   tt_e_2016=`cat "  + wh2016simfit + " | grep 'tt_norm_e'  | awk '{print $4;}'`;\n")
@@ -1087,7 +1063,7 @@ for signalSuffix in signalSuffixVec :
                Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #also add a graph for shapeMax
 
                INbinSuffix = "_" + bin 
-               IN = CWD+'/'+out_prefix+'JOBS/'+OUTName[iConf]+signalSuffix+INbinSuffix+'/'
+               IN = CWD+'/JOBS/'+OUTName[iConf]+signalSuffix+INbinSuffix+'/'
                try:
                   listcuts = open(IN+'cuts.txt',"r")
                   mi=0
@@ -1139,14 +1115,8 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines('cd -;\n')
 
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
-#           SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
-           SCRIPT.writelines('mkdir -p {}out_{}\n'.format(out_prefix,m))
-           SCRIPT.writelines('cd {}out_{};\n'.format(out_prefix,m))
+           SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
 	   
-           zhcards = "/cards_" 
-           if args.onlyeLimit : zhcards = "/ecards_"
-           if args.onlymuLimit : zhcards = "/mucards_"
-
 	   for i in range(0, len(jsonPaths)):
 	      inUrl = inUrl_zhs[i]
 	      jsonUrl = jsonPaths[i] + " --key " + based_key
@@ -1162,18 +1132,19 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("sh combineCards_{}_zh.sh;\n".format(year))
            
 	   SCRIPT.writelines("\ncombineCards.py card_combined_2016_zh.dat card_combined_2017_zh.dat card_combined_2018_zh.dat > card_combined_zh.dat")
-	   SCRIPT.writelines("\ntext2workspace.py card_combined_zh.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
+	   SCRIPT.writelines("\ntext2workspace.py card_combined_zh.dat -o workspace.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
 	   SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace.root >& COMB-signif.log;\n")
 
 	    
 	   if(ASYMTOTICLIMIT==True):
            ### THIS is for toy (hybridNew) fit
-              zh2016simfit_e  = CWD + zhcards + "SB13TeV_SM_Zh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
-              zh2017simfit_e  = CWD + zhcards + "SB13TeV_SM_Zh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
-              zh2018simfit_e  = CWD + zhcards + "SB13TeV_SM_Zh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
-              zh2016simfit_mu = CWD + zhcards + "SB13TeV_SM_Zh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
-              zh2017simfit_mu = CWD + zhcards + "SB13TeV_SM_Zh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
-              zh2018simfit_mu = CWD + zhcards + "SB13TeV_SM_Zh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
+
+              zh2016simfit_e  = CWD + "/cards_SB13TeV_SM_Zh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
+              zh2017simfit_e  = CWD + "/cards_SB13TeV_SM_Zh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
+              zh2018simfit_e  = CWD + "/cards_SB13TeV_SM_Zh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
+              zh2016simfit_mu = CWD + "/cards_SB13TeV_SM_Zh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
+              zh2017simfit_mu = CWD + "/cards_SB13TeV_SM_Zh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
+              zh2018simfit_mu = CWD + "/cards_SB13TeV_SM_Zh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
 
               SCRIPT.writelines("if [ -f " + zh2016simfit_e + " ]; then\n")
 #              SCRIPT.writelines("   tt_e_2016=`cat " + zh2016simfit_e + " | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
@@ -1272,7 +1243,7 @@ for signalSuffix in signalSuffixVec :
                Gcut.extend([ROOT.TGraph(len(SUBMASS))]) #also add a graph for shapeMax
 
                INbinSuffix = "_" + bin 
-               IN = CWD+'/'+out_prefix+'JOBS/'+OUTName[iConf]+signalSuffix+INbinSuffix+'/'
+               IN = CWD+'/JOBS/'+OUTName[iConf]+signalSuffix+INbinSuffix+'/'
                try:
                   listcuts = open(IN+'cuts.txt',"r")
                   mi=0
@@ -1324,21 +1295,16 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines('cd -;\n')
 
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
-#           SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
-           SCRIPT.writelines('mkdir -p {}out_{}\n'.format(out_prefix,m)) 
-           SCRIPT.writelines('cd {}out_{};\n'.format(out_prefix,m))
-
-           vhcards = "/cards_"
-           if args.onlyeLimit : vhcards = "/ecards_"
-           if args.onlymuLimit : vhcards = "/mucards_"
-
+           SCRIPT.writelines('mkdir -p out_{};\ncd out_{};\n'.format(m,m)) #--blind instead of --simfit
+	   
 	   for i in range(0, len(jsonPaths)):
 	      inUrl = inUrl_whs[i]
 	      jsonUrl = jsonPaths[i] + " --key " + based_key
 	      year = years[i]
          
 	      SCRIPT.writelines("\n#****************** {} Wh *****************\n".format(year)) 
-              whfdfile  = CWD + vhcards + "SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnosticsTest.root"
+              ############whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnosticsTest.root"
+              whfdfile  = CWD + "/cards_SB13TeV_SM_Wh_" + year + "_noSoftb/00" + str(m) + "/fitDiagnosticsTest.root"
 	      if "2016" in inUrl:
 	          SCRIPT.writelines("\ncomputeLimit  "+ removeStatUnc +"  --correlatedLumi --verbose  " + blindSR + "  --m " + str(m) + " --year " + year + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg_2016wh + cutStr  +"  --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/"+ QCDinputFile+ "  --fitDiagnosticsInputFile " + whfdfile + " >& cl-wh-" + year + ".log \n")  
 	      else:
@@ -1356,7 +1322,7 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("combineCards.py card_combined_{}_wh.dat card_combined_{}_zh.dat > card_combined_{}.dat\n".format(year, year, year))
 
 	   SCRIPT.writelines("\ncombineCards.py card_combined_2016.dat card_combined_2017.dat card_combined_2018.dat > card_combined.dat")
-	   SCRIPT.writelines("\ntext2workspace.py card_combined.dat -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
+	   SCRIPT.writelines("\ntext2workspace.py card_combined.dat -o workspace.root --PO verbose  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w.log \n")  
 	   SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace.root >& COMB-signif.log;\n")
 
 	    
@@ -1364,9 +1330,9 @@ for signalSuffix in signalSuffixVec :
            ### THIS is for toy (hybridNew) fit
 	      # put normalizations below	      
 
-              wh2016simfit  = CWD + vhcards + "SB13TeV_SM_Wh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
-              wh2017simfit  = CWD + vhcards + "SB13TeV_SM_Wh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
-              wh2018simfit  = CWD + vhcards + "SB13TeV_SM_Wh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
+              wh2016simfit  = CWD + "/cards_SB13TeV_SM_Wh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
+              wh2017simfit  = CWD + "/cards_SB13TeV_SM_Wh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
+              wh2018simfit  = CWD + "/cards_SB13TeV_SM_Wh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + ".txt"
 
               SCRIPT.writelines("if [ -f " + wh2016simfit + " ]; then\n")
               SCRIPT.writelines("   tt_e_2016=`cat "  + wh2016simfit + " | grep 'tt_norm_e'  | awk '{print $4;}'`;\n")
@@ -1402,12 +1368,12 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("printf \" 2018,   tt_e = %s , tt_mu = %s , w_e = %s , w_mu = %s\\n\" $tt_e_2018, $tt_mu_2018, $w_e_2018, $w_mu_2018\n\n")
 
 
-              zh2016simfit_e  = CWD + vhcards + "SB13TeV_SM_Zh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
-              zh2017simfit_e  = CWD + vhcards + "SB13TeV_SM_Zh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
-              zh2018simfit_e  = CWD + vhcards + "SB13TeV_SM_Zh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
-              zh2016simfit_mu = CWD + vhcards + "SB13TeV_SM_Zh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
-              zh2017simfit_mu = CWD + vhcards + "SB13TeV_SM_Zh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
-              zh2018simfit_mu = CWD + vhcards + "SB13TeV_SM_Zh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
+              zh2016simfit_e  = CWD + "/cards_SB13TeV_SM_Zh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
+              zh2017simfit_e  = CWD + "/cards_SB13TeV_SM_Zh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
+              zh2018simfit_e  = CWD + "/cards_SB13TeV_SM_Zh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_e.txt"
+              zh2016simfit_mu = CWD + "/cards_SB13TeV_SM_Zh_2016_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
+              zh2017simfit_mu = CWD + "/cards_SB13TeV_SM_Zh_2017_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
+              zh2018simfit_mu = CWD + "/cards_SB13TeV_SM_Zh_2018_noSoftb/00" + str(m) + "/simfit_m" + str(m) + "_mu.txt"
 
               SCRIPT.writelines("if [ -f " + zh2016simfit_e + " ]; then\n")
               SCRIPT.writelines("   tt_e_2016=`cat " + zh2016simfit_e + " | grep 'tt_norm_e' | awk '{print $4;}'`;\n")
@@ -1471,8 +1437,7 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("fi\n")
               SCRIPT.writelines("printf \" 2018, mu:  tt = %s , z_3b = %s , z_4b = %s\\n\" $tt_mu_2018, $z_3b_mu_2018, $z_4b_mu_2018\n\n")
 
-              # Removed: --freezeParameters tt_norm_e_2016,tt_norm_mu_2016,tt_norm_e_2017,tt_norm_mu_2017,tt_norm_e_2018,tt_norm_mu_2018
-	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  --rMin=-5 --rMax=5  -m " +  str(m) + " workspace.root "+ bonly_asimov+" --setParameters tt_norm_e_2016=$tt_e_2016,z_norm_3b_e_2016=$z_3b_e_2016,z_norm_4b_e_2016=$z_4b_e_2016,w_norm_e_2016=$w_e_2016,tt_norm_mu_2016=$tt_mu_2016,z_norm_3b_mu_2016=$z_3b_mu_2016,z_norm_4b_mu_2016=$z_4b_mu_2016,w_norm_mu_2016=$w_mu_2016,tt_norm_e_2017=$tt_e_2017,z_norm_3b_e_2017=$z_3b_e_2017,z_norm_4b_e_2017=$z_4b_e_2017,w_norm_e_2017=$w_e_2017,tt_norm_mu_2017=$tt_mu_2017,z_norm_3b_mu_2017=$z_3b_mu_2017,z_norm_4b_mu_2017=$z_4b_mu_2017,w_norm_mu_2017=$w_mu_2017,tt_norm_e_2018=$tt_e_2018,z_norm_3b_e_2018=$z_3b_e_2018,z_norm_4b_e_2018=$z_4b_e_2018,w_norm_e_2018=$w_e_2018,tt_norm_mu_2018=$tt_mu_2018,z_norm_3b_mu_2018=$z_3b_mu_2018,z_norm_4b_mu_2018=$z_4b_mu_2018,w_norm_mu_2018=$w_mu_2018  >& COMB.log;\n") 
+	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  --rMin=-5 --rMax=5  -m " +  str(m) + " workspace.root "+ bonly_asimov+" --freezeParameters tt_norm_e_2016,tt_norm_mu_2016,tt_norm_e_2017,tt_norm_mu_2017,tt_norm_e_2018,tt_norm_mu_2018 --setParameters tt_norm_e_2016=$tt_e_2016,z_norm_3b_e_2016=$z_3b_e_2016,z_norm_4b_e_2016=$z_4b_e_2016,w_norm_e_2016=$w_e_2016,tt_norm_mu_2016=$tt_mu_2016,z_norm_3b_mu_2016=$z_3b_mu_2016,z_norm_4b_mu_2016=$z_4b_mu_2016,w_norm_mu_2016=$w_mu_2016,tt_norm_e_2017=$tt_e_2017,z_norm_3b_e_2017=$z_3b_e_2017,z_norm_4b_e_2017=$z_4b_e_2017,w_norm_e_2017=$w_e_2017,tt_norm_mu_2017=$tt_mu_2017,z_norm_3b_mu_2017=$z_3b_mu_2017,z_norm_4b_mu_2017=$z_4b_mu_2017,w_norm_mu_2017=$w_mu_2017,tt_norm_e_2018=$tt_e_2018,z_norm_3b_e_2018=$z_3b_e_2018,z_norm_4b_e_2018=$z_4b_e_2018,w_norm_e_2018=$w_e_2018,tt_norm_mu_2018=$tt_mu_2018,z_norm_3b_mu_2018=$z_3b_mu_2018,z_norm_4b_mu_2018=$z_4b_mu_2018,w_norm_mu_2018=$w_mu_2018  >& COMB.log;\n") 
 
            else:
 	      print("Do not support this mode!!!")
@@ -1512,7 +1477,7 @@ for signalSuffix in signalSuffixVec :
       if year_to_run == "2018":
          integrated_luminosity =  59740.565
       if year_to_run == "all":
-         integrated_luminosity = 138.0 # 7183.86
+         integrated_luminosity = 138 # 7183.86
 
       output_dir_allemu = "all_"
       if args.onlyeLimit == True : output_dir_allemu = "onlye_"
