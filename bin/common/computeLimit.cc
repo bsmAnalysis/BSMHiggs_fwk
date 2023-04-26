@@ -156,7 +156,7 @@ std::vector<string> keywords;
 int indexvbf = -1;
 int massL=-1, massR=-1;
 
-double dropBckgBelow=0.00001; 
+double dropBckgBelow=0.01; //0001; 
 
 /*
  *Case Sensitive Implementation of startsWith()
@@ -289,80 +289,15 @@ class ShapeData_t
       //----------------------------------------------------------------------------------
        void makeStatUnc(string prefix="", string suffix="", string suffix2="", bool noBinByBin=false, TH1* total_hist = 0x0 ){
 
-          if ( verbose ) { printf("\n --- verbose : makeStatUnc : begin.  prefix = %s, suffix = %s, suffix2 = %s\n", prefix.c_str(), suffix.c_str(), suffix2.c_str() ) ; fflush(stdout) ; }
+	 if ( verbose ) { printf("\n --- verbose : makeStatUnc : begin.  prefix = %s, suffix = %s, suffix2 = %s\n", prefix.c_str(), suffix.c_str(), suffix2.c_str() ) ; fflush(stdout) ; }
 
-          if(!histo() || histo()->Integral()<=0)return;
-          string delimiter = "_";
-          unsigned firstDelimiter = suffix.find(delimiter);
-          unsigned lastDelimiter = suffix.find_last_of(delimiter);
-          unsigned endPosOfFirstDelimiter = firstDelimiter + delimiter.length();
-          string channel_and_bin = suffix.substr(endPosOfFirstDelimiter, lastDelimiter-endPosOfFirstDelimiter);
-          
-	  
-          if(suffix.find("instrmet") != std::string::npos){
-            TH1* h = (TH1*) histo()->Clone("TMPFORSTAT");
-            int BIN=0;
-            std::vector<unsigned int > v_lowStatBin;
-            v_lowStatBin.clear();
-            TString InstrMET_gammaStats_Url(string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/InstrMET_systematics/InstrMET_systematics_GAMMASTATS.root");
-            TFile* f_InstrMET_gammaStats = TFile::Open(InstrMET_gammaStats_Url);
-            TH1* h_InstrMET_Up_gammaStats = (TH1*)utils::root::GetObjectFromPath(f_InstrMET_gammaStats, (channel_and_bin+"_mt_InstrMET_absolute_shape_up").c_str() );
-            TH1* h_InstrMET_Down_gammaStats = (TH1*)utils::root::GetObjectFromPath(f_InstrMET_gammaStats, (channel_and_bin+"_mt_InstrMET_absolute_shape_down").c_str() );     
-                  
-            for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++){           
-              if( true /*h->GetBinContent(ibin)/h->Integral()>0.01*/){ //This condition is removed for the moment, we may put it back in the future. 
-	                 
-                char ibintxt[255]; sprintf(ibintxt, "_b%i", BIN);BIN++;
-
-                if ( verbose ) { 
-                   TString hname( TString(h->GetName())+"StatU"+ibintxt ) ;
-                   printf(" --- verbose : makeStatUnc : making clones 1.  name = %s\n", hname.Data() ) ; fflush(stdout) ;
-                }
-
-
-                TH1* statU=(TH1 *)h->Clone(TString(h->GetName())+"StatU"+ibintxt);//  statU->Reset();
-                TH1* statD=(TH1 *)h->Clone(TString(h->GetName())+"StatD"+ibintxt);//  statD->Reset();           
-                
-                statU->SetBinContent(ibin, std::max(0.0, h_InstrMET_Up_gammaStats->GetBinContent(ibin))>0 ? h_InstrMET_Up_gammaStats->GetBinContent(ibin) : 0.115);
-                statD->SetBinContent(ibin, std::max(0.0, h_InstrMET_Down_gammaStats->GetBinContent(ibin))); 
-
-                if ( verbose ) { printf(" --- verbose : makeStatUnc : 1 adding to uncShape with key %s\n", (prefix+"stat"+suffix+ibintxt+suffix2+"Up").c_str() ) ; fflush(stdout) ; }
-
-                uncShape[prefix+"stat"+suffix+ibintxt+suffix2+"Up"  ] = statU;
-                uncShape[prefix+"stat"+suffix+ibintxt+suffix2+"Down"] = statD;
-                
-              }
-              else{
-                v_lowStatBin.push_back(ibin);
-              }
-            }
-            
-            if ( verbose ) {
-               TString hname( TString(h->GetName())+"StatU" ) ;
-               printf(" --- verbose : makeStatUnc : making clones 2.  name = %s\n", hname.Data() ) ; fflush(stdout) ;
-            }
-
-
-            TH1* statU=(TH1 *)h->Clone(TString(h->GetName())+"StatU");
-            TH1* statD=(TH1 *)h->Clone(TString(h->GetName())+"StatD");
-            
-            if(v_lowStatBin.size()>0){
-              for(unsigned int j=0; j < v_lowStatBin.size(); j++){
-                statU->SetBinContent(v_lowStatBin[j], std::max(0.0, h_InstrMET_Up_gammaStats->GetBinContent(v_lowStatBin[j])));   
-                statD->SetBinContent(v_lowStatBin[j], std::max(0.0, h_InstrMET_Down_gammaStats->GetBinContent(v_lowStatBin[j])));   
-              }
-
-              if ( verbose ) { printf(" --- verbose : makeStatUnc : 2 adding to uncShape with key %s\n", (prefix+"stat"+suffix+"Up").c_str() ) ; fflush(stdout) ; }
-
-              uncShape[prefix+"stat"+suffix+"Up"  ] = statU;
-              uncShape[prefix+"stat"+suffix+"Down"] = statD;
-            }   
-
-            delete h; //all done with this copy
-            
-	  }
-          else{
-	    	    
+	 if(!histo() || histo()->Integral()<=0)return;
+	 string delimiter = "_";
+	 unsigned firstDelimiter = suffix.find(delimiter);
+	 unsigned lastDelimiter = suffix.find_last_of(delimiter);
+	 unsigned endPosOfFirstDelimiter = firstDelimiter + delimiter.length();
+	 string channel_and_bin = suffix.substr(endPosOfFirstDelimiter, lastDelimiter-endPosOfFirstDelimiter);
+	 
          // if ( verbose ) {
          //    printf(" --- verbose: makeStatUnc : %s   %s   %s  histo name: %s\n", prefix.c_str(), suffix.c_str(), suffix2.c_str(), histo()->GetName() ) ;
          //    if ( total_hist != 0x0 ) {
@@ -372,114 +307,126 @@ class ShapeData_t
          //    }
          //    fflush(stdout) ;
          // }
-
             
-            TH1* h = (TH1*) histo()->Clone("TMPFORSTAT");
+	 TH1* h = (TH1*) histo()->Clone("TMPFORSTAT");
             
-            //bin by bin stat uncertainty
-            if(statBinByBin>0 && shape==true && !noBinByBin){
+	 //bin by bin stat uncertainty
+	 if(statBinByBin>0 && shape==true && !noBinByBin){
+	   
+	   int BIN=0;
+	   for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++){           
+	     
+	     /////////////if( !(h->GetBinContent(ibin)<=0 && h->GetBinError(ibin)>0) &&  (h->GetBinContent(ibin)<=0 || h->GetBinContent(ibin)/h->Integral()<0.01 || h->GetBinError(ibin)/h->GetBinContent(ibin)<statBinByBin))continue;
+	     if ( h->GetBinError(ibin)/h->GetBinContent(ibin)<statBinByBin ) continue;
+	     if ( h->GetBinContent(ibin) <= 0 ) continue ;
+	     if ( total_hist == 0x0 ) {
+	       if ( verbose ) { printf("  *** verbose: makeStatUnc :  statBinByBin requested bu no total_hist.  Skipping statBinByBin.\n") ; fflush(stdout) ; }
+	       continue ;
+	     }
+	     if ( total_hist -> GetNbinsX() != h -> GetNbinsX() ) {
+	       printf("\n\n *** makeStatUnc : inconsistent histogram binnings:  %d for this hist, %d for total_hist.\n\n", h -> GetNbinsX(), total_hist -> GetNbinsX() ) ;
+	       gSystem -> Exit(-1) ;
+	     }
+	     double Nbg = total_hist -> GetBinContent( ibin ) ;
+	     double err = h->GetBinError( ibin ) ;
+	     if ( verbose ) { printf("  --- verbose: makeStatUnc :  bin %d,  Nbg = %9.1f, err = %.1f.  ", ibin, Nbg, err ) ; fflush(stdout) ; }
+	     if ( Nbg <= 0 ) {
+	       if ( verbose ) { printf("\n") ; fflush(stdout) ; }
+	       continue ;
+	     }
+	     if ( verbose ) { printf("  err / sqrt(Nbg) = %7.3f , threshold = %7.3f\n", (err / sqrt(Nbg) ), minErrOverSqrtNBGForBinByBin ) ; fflush(stdout) ; }
+	     if ( (err / sqrt(Nbg) ) < minErrOverSqrtNBGForBinByBin ) continue ;
+	     
+	     
+	     
+	     char ibintxt[255]; sprintf(ibintxt, "_b%i", BIN);BIN++;
+	     
+	     if ( verbose ) {
+	       TString hname( TString(h->GetName())+"StatU"+ibintxt ) ;
+	       printf(" --- verbose : makeStatUnc : making clones 3.  name = %s\n", hname.Data() ) ; fflush(stdout) ;
+	     }
+	     
+	     TH1* statU=(TH1 *)h->Clone(TString(h->GetName())+"StatU"+ibintxt);//  statU->Reset();
+	     TH1* statD=(TH1 *)h->Clone(TString(h->GetName())+"StatD"+ibintxt);//  statD->Reset();           
+	     if(h->GetBinContent(ibin)>0){
+	       statU->SetBinContent(ibin,std::min(2*h->GetBinContent(ibin), std::max(0.01*h->GetBinContent(ibin), h->GetBinContent(ibin) + h->GetBinError(ibin))));   statU->SetBinError(ibin, 0.0);
+	       statD->SetBinContent(ibin,std::min(2*h->GetBinContent(ibin), std::max(0.01*h->GetBinContent(ibin), h->GetBinContent(ibin) - h->GetBinError(ibin))));   statD->SetBinError(ibin, 0.0);
+	     }else{
+	       statU->SetBinContent(ibin,std::max(0.0, statU->GetBinContent(ibin) + statU->GetBinError(ibin)));
+	       statD->SetBinContent(ibin,std::max(0.0, statD->GetBinContent(ibin) - statD->GetBinError(ibin)));
+	     }
+	     
+	     if ( verbose ) { printf(" --- verbose: makeStatUnc : setting uncShape[%s] to hist with name %s\n", (prefix+"stat"+suffix+ibintxt+suffix2+"Up").c_str(), statU -> GetName() ) ; fflush(stdout) ; }
+	     if ( verbose ) { printf(" --- verbose: makeStatUnc : setting uncShape[%s] to hist with name %s\n", (prefix+"stat"+suffix+ibintxt+suffix2+"Down").c_str(), statD -> GetName() ) ; fflush(stdout) ; }
+	     
+	     if ( verbose ) { printf(" --- verbose : makeStatUnc : 3 adding to uncShape with key %s\n", (prefix+"stat"+suffix+ibintxt+suffix2+"Up").c_str() ) ; fflush(stdout) ; }
+	     
+	     uncShape[prefix+"stat"+suffix+ibintxt+suffix2+"Up"  ] = statU;
+	     uncShape[prefix+"stat"+suffix+ibintxt+suffix2+"Down"] = statD;
+	     /*h->SetBinContent(ibin, 0);*/  h->SetBinError(ibin, 0);  //remove this bin from shape variation for the other ones
+	     //printf("%s --> %f - %f - %f\n", (prefix+"stat"+suffix+ibintxt+suffix2+"Up").c_str(), statD->Integral(), h->GetBinContent(ibin), statU->Integral() );
+	   }
+	 }
+         
+	 //after this line, all bins with large stat uncertainty have been considered separately
+	 //so now it remains to consider all the other bins for which we assume a total correlation bin by bin
+	 if(h->Integral()<=0)return; //all non empty bins have already bin variated
+	 
+	 
+	 if ( verbose ) {
+	   TString hname( TString(h->GetName())+"StatU" ) ;
+	   printf(" --- verbose : makeStatUnc : making clones 4.  name = %s\n", hname.Data() ) ; fflush(stdout) ;
+	 }
+	 /*
+	 // MAke a map with the event weights for processes W/DY and TT, and Other bkg.
+	 std::map<string, double> hmap_wgt;
+	 hmap_wgt["otherbkg"] = ; hmap_wgt["ttbarbba"] =; hmap_wgt["ttbarcba"] = ; hmap_wgt["ttbarlig"] = ;
+	 hmap_wgt["zll"] = ; hmap_wgt["wlnu"] = ;
+	 */
+	 TH1* statU=(TH1 *)h->Clone(TString(h->GetName())+"StatU");
+	 TH1* statD=(TH1 *)h->Clone(TString(h->GetName())+"StatD");
+	 for(int ibin=1; ibin<=statU->GetXaxis()->GetNbins(); ibin++){
+	   /*
+	   if(h->GetBinContent(ibin)<0.1){
+	     statU->SetBinContent(ibin,0.1); statU->SetBinError(ibin, 2.); //hmap_wgt[hname.Data()]);
+	     statD->SetBinContent(ibin,0.1); statD->SetBinError(ibin, 0.1);
+	   } 
+	   */  
+	   
+	   if(h->GetBinContent(ibin)>0){
+	     statU->SetBinContent(ibin,std::min(2*h->GetBinContent(ibin), std::max(0.01*h->GetBinContent(ibin), statU->GetBinContent(ibin) + statU->GetBinError(ibin))));
+	     statD->SetBinContent(ibin,std::min(2*h->GetBinContent(ibin), std::max(0.01*h->GetBinContent(ibin), statD->GetBinContent(ibin) - statD->GetBinError(ibin))));
+	   }else{
+	     //statU->SetBinContent(ibin,              statU->GetBinContent(ibin) + statU->GetBinError(ibin));
+	     statU->SetBinContent(ibin,std::min(0.0, statU->GetBinContent(ibin) + statU->GetBinError(ibin)));
+	     statD->SetBinContent(ibin,std::min(0.0, statD->GetBinContent(ibin) - statD->GetBinError(ibin)));
+	   }
+	 }
 
-              int BIN=0;
-              for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++){           
-
-                /////////////if( !(h->GetBinContent(ibin)<=0 && h->GetBinError(ibin)>0) &&  (h->GetBinContent(ibin)<=0 || h->GetBinContent(ibin)/h->Integral()<0.01 || h->GetBinError(ibin)/h->GetBinContent(ibin)<statBinByBin))continue;
-		if ( h->GetBinError(ibin)/h->GetBinContent(ibin)<statBinByBin ) continue;
-                if ( h->GetBinContent(ibin) <= 0 ) continue ;
-                if ( total_hist == 0x0 ) {
-                   if ( verbose ) { printf("  *** verbose: makeStatUnc :  statBinByBin requested bu no total_hist.  Skipping statBinByBin.\n") ; fflush(stdout) ; }
-                   continue ;
-                }
-                if ( total_hist -> GetNbinsX() != h -> GetNbinsX() ) {
-                   printf("\n\n *** makeStatUnc : inconsistent histogram binnings:  %d for this hist, %d for total_hist.\n\n", h -> GetNbinsX(), total_hist -> GetNbinsX() ) ;
-                   gSystem -> Exit(-1) ;
-                }
-                double Nbg = total_hist -> GetBinContent( ibin ) ;
-                double err = h->GetBinError( ibin ) ;
-                if ( verbose ) { printf("  --- verbose: makeStatUnc :  bin %d,  Nbg = %9.1f, err = %.1f.  ", ibin, Nbg, err ) ; fflush(stdout) ; }
-                if ( Nbg <= 0 ) {
-                   if ( verbose ) { printf("\n") ; fflush(stdout) ; }
-                   continue ;
-                }
-                if ( verbose ) { printf("  err / sqrt(Nbg) = %7.3f , threshold = %7.3f\n", (err / sqrt(Nbg) ), minErrOverSqrtNBGForBinByBin ) ; fflush(stdout) ; }
-                if ( (err / sqrt(Nbg) ) < minErrOverSqrtNBGForBinByBin ) continue ;
-
-
-
-                char ibintxt[255]; sprintf(ibintxt, "_b%i", BIN);BIN++;
-
-                if ( verbose ) {
-                   TString hname( TString(h->GetName())+"StatU"+ibintxt ) ;
-                   printf(" --- verbose : makeStatUnc : making clones 3.  name = %s\n", hname.Data() ) ; fflush(stdout) ;
-                }
-
-                TH1* statU=(TH1 *)h->Clone(TString(h->GetName())+"StatU"+ibintxt);//  statU->Reset();
-                TH1* statD=(TH1 *)h->Clone(TString(h->GetName())+"StatD"+ibintxt);//  statD->Reset();           
-                if(h->GetBinContent(ibin)>0){
-                  statU->SetBinContent(ibin,std::min(2*h->GetBinContent(ibin), std::max(0.01*h->GetBinContent(ibin), h->GetBinContent(ibin) + h->GetBinError(ibin))));   statU->SetBinError(ibin, 0.0);
-                  statD->SetBinContent(ibin,std::min(2*h->GetBinContent(ibin), std::max(0.01*h->GetBinContent(ibin), h->GetBinContent(ibin) - h->GetBinError(ibin))));   statD->SetBinError(ibin, 0.0);
-                }else{
-                  statU->SetBinContent(ibin,std::max(0.0, statU->GetBinContent(ibin) + statU->GetBinError(ibin)));
-                  statD->SetBinContent(ibin,std::max(0.0, statD->GetBinContent(ibin) - statD->GetBinError(ibin)));
-                }
-
-                if ( verbose ) { printf(" --- verbose: makeStatUnc : setting uncShape[%s] to hist with name %s\n", (prefix+"stat"+suffix+ibintxt+suffix2+"Up").c_str(), statU -> GetName() ) ; fflush(stdout) ; }
-                if ( verbose ) { printf(" --- verbose: makeStatUnc : setting uncShape[%s] to hist with name %s\n", (prefix+"stat"+suffix+ibintxt+suffix2+"Down").c_str(), statD -> GetName() ) ; fflush(stdout) ; }
-
-                if ( verbose ) { printf(" --- verbose : makeStatUnc : 3 adding to uncShape with key %s\n", (prefix+"stat"+suffix+ibintxt+suffix2+"Up").c_str() ) ; fflush(stdout) ; }
-
-                uncShape[prefix+"stat"+suffix+ibintxt+suffix2+"Up"  ] = statU;
-                uncShape[prefix+"stat"+suffix+ibintxt+suffix2+"Down"] = statD;
-                /*h->SetBinContent(ibin, 0);*/  h->SetBinError(ibin, 0);  //remove this bin from shape variation for the other ones
-                //printf("%s --> %f - %f - %f\n", (prefix+"stat"+suffix+ibintxt+suffix2+"Up").c_str(), statD->Integral(), h->GetBinContent(ibin), statU->Integral() );
-              }
-            }
-            
-            //after this line, all bins with large stat uncertainty have been considered separately
-            //so now it remains to consider all the other bins for which we assume a total correlation bin by bin
-            if(h->Integral()<=0)return; //all non empty bins have already bin variated
-
-
-            if ( verbose ) {
-               TString hname( TString(h->GetName())+"StatU" ) ;
-               printf(" --- verbose : makeStatUnc : making clones 4.  name = %s\n", hname.Data() ) ; fflush(stdout) ;
-            }
-
-            TH1* statU=(TH1 *)h->Clone(TString(h->GetName())+"StatU");
-            TH1* statD=(TH1 *)h->Clone(TString(h->GetName())+"StatD");
-            for(int ibin=1; ibin<=statU->GetXaxis()->GetNbins(); ibin++){
-              if(h->GetBinContent(ibin)>0){
-                statU->SetBinContent(ibin,std::min(2*h->GetBinContent(ibin), std::max(0.01*h->GetBinContent(ibin), statU->GetBinContent(ibin) + statU->GetBinError(ibin))));
-                statD->SetBinContent(ibin,std::min(2*h->GetBinContent(ibin), std::max(0.01*h->GetBinContent(ibin), statD->GetBinContent(ibin) - statD->GetBinError(ibin))));
-              }else{
-                //statU->SetBinContent(ibin,              statU->GetBinContent(ibin) + statU->GetBinError(ibin));
-                statU->SetBinContent(ibin,std::min(0.0, statU->GetBinContent(ibin) + statU->GetBinError(ibin)));
-                statD->SetBinContent(ibin,std::min(0.0, statD->GetBinContent(ibin) - statD->GetBinError(ibin)));
-              }
-            }
-
-            if ( verbose ) { printf(" --- verbose : makeStatUnc : 4 adding to uncShape with key %s\n", (prefix+"stat"+suffix+"Up").c_str() ) ; fflush(stdout) ; }
-
+	 
+	 if ( verbose ) { printf(" --- verbose : makeStatUnc : 4 adding to uncShape with key %s\n", (prefix+"stat"+suffix+"Up").c_str() ) ; fflush(stdout) ; }
+	    
            //-- owen: first check if this is already set.  If so, delete the existing one to avoid memory leak.
 	    
-            if ( uncShape.find( prefix+"stat"+suffix+"Up" ) != uncShape.end() ) {
-               if ( uncShape[prefix+"stat"+suffix+"Up"  ] != 0x0 ) {
-                  if ( verbose ) { printf(" --- verbose : makeStatUnc : 4 deleting existing hist with name %s before assignment.\n", uncShape[prefix+"stat"+suffix+"Up"  ] -> GetName() ) ; fflush(stdout) ; }
-                  delete uncShape[prefix+"stat"+suffix+"Up"  ] ;
-               }
-            }
-            if ( uncShape.find( prefix+"stat"+suffix+"Down" ) != uncShape.end() ) {
-               if ( uncShape[prefix+"stat"+suffix+"Down"  ] != 0x0 ) {
-                  if ( verbose ) { printf(" --- verbose : makeStatUnc : 4 deleting existing hist with name %s before assignment.\n", uncShape[prefix+"stat"+suffix+"Down"  ] -> GetName() ) ; fflush(stdout) ; }
-                  delete uncShape[prefix+"stat"+suffix+"Down"  ] ;
-               }
-            }
-	    
-            uncShape[prefix+"stat"+suffix+"Up"  ] = statU;
-            uncShape[prefix+"stat"+suffix+"Down"] = statD;
-            
-            delete h; //all done with this copy
-          }
-        } // makeStatUnc
+	 if ( uncShape.find( prefix+"stat"+suffix+"Up" ) != uncShape.end() ) {
+	   if ( uncShape[prefix+"stat"+suffix+"Up"  ] != 0x0 ) {
+	     if ( verbose ) { printf(" --- verbose : makeStatUnc : 4 deleting existing hist with name %s before assignment.\n", uncShape[prefix+"stat"+suffix+"Up"  ] -> GetName() ) ; fflush(stdout) ; }
+	     delete uncShape[prefix+"stat"+suffix+"Up"  ] ;
+	   }
+	 }
+	 if ( uncShape.find( prefix+"stat"+suffix+"Down" ) != uncShape.end() ) {
+	   if ( uncShape[prefix+"stat"+suffix+"Down"  ] != 0x0 ) {
+	     if ( verbose ) { printf(" --- verbose : makeStatUnc : 4 deleting existing hist with name %s before assignment.\n", uncShape[prefix+"stat"+suffix+"Down"  ] -> GetName() ) ; fflush(stdout) ; }
+	     delete uncShape[prefix+"stat"+suffix+"Down"  ] ;
+	   }
+	 }
+	 
+	 uncShape[prefix+"stat"+suffix+"Up"  ] = statU;
+	 uncShape[prefix+"stat"+suffix+"Down"] = statD;
+         
+	 delete h; //all done with this copy
+	    //}
+       } // makeStatUnc
   
 
 
@@ -616,10 +563,15 @@ class ProcessInfo_t
         double br;
         double mass;
         string shortName;
+  //std::map<string, double> hmap_wgt; // map with (average) event weights for each process
         std::map<string, ChannelInfo_t> channels;
         JSONWrapper::Object jsonObj;
 
-        ProcessInfo_t(){xsec=0;isSign=false;}
+        ProcessInfo_t(){xsec=0;isSign=false;
+	  // MAke a map with the event weights for processes W/DY and TT, and Other bkg. 
+	  //	  hmap_wgt["otherbkg"] = ; hmap_wgt["ttbarbba"] =; hmap_wgt["ttbarcba"] = ; hmap_wgt["ttbarlig"] = ; 
+	  // hmap_wgt["zll"] = ; hmap_wgt["wlnu"] = ; 
+	}
         ~ProcessInfo_t(){}
 
         void printProcess() {
@@ -1607,17 +1559,21 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
      if ( rfr == 0x0 ) { printf("\n\n *** did not find fit_b RooFitResult in %s.  I quit.\n\n", fdInputFile.Data() ) ; gSystem -> Exit(-1) ; }
 
      RooRealVar* rrv_w_e = (RooRealVar*)(rfr -> floatParsFinal()).find( "w_norm_e" ) ;
-     if ( rrv_w_e == 0x0 ) { printf("\n\n *** did not find w_norm_e in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; gSystem -> Exit(-1) ; }
+     if ( rrv_w_e == 0x0 ) { printf("\n\n *** did not find w_norm_e in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; }  //gSystem -> Exit(-1) ; } 
+     else {w_norm_e_val = rrv_w_e -> getVal() ; w_norm_e_err = rrv_w_e -> getError() ; }
 
      RooRealVar* rrv_w_mu = (RooRealVar*)(rfr -> floatParsFinal()).find( "w_norm_mu" ) ;
-     if ( rrv_w_mu == 0x0 ) { printf("\n\n *** did not find w_norm_mu in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; gSystem -> Exit(-1) ; }
+     if ( rrv_w_mu == 0x0 ) { printf("\n\n *** did not find w_norm_mu in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; } //gSystem -> Exit(-1) ; }
+     else {  w_norm_mu_val = rrv_w_mu -> getVal() ;  w_norm_mu_err = rrv_w_mu -> getError() ;}
 
      RooRealVar* rrv_tt_e = (RooRealVar*)(rfr -> floatParsFinal()).find( "tt_norm_e" ) ;
-     if ( rrv_tt_e == 0x0 ) { printf("\n\n *** did not find tt_norm_e in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; gSystem -> Exit(-1) ; }
+     if ( rrv_tt_e == 0x0 ) { printf("\n\n *** did not find tt_norm_e in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; } //gSystem -> Exit(-1) ; }
+     else {  tt_norm_e_val = rrv_tt_e -> getVal() ;   tt_norm_e_err = rrv_tt_e -> getError() ;  }
 
      RooRealVar* rrv_tt_mu = (RooRealVar*)(rfr -> floatParsFinal()).find( "tt_norm_mu" ) ;
-     if ( rrv_tt_mu == 0x0 ) { printf("\n\n *** did not find tt_norm_mu in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; gSystem -> Exit(-1) ; }
-
+     if ( rrv_tt_mu == 0x0 ) { printf("\n\n *** did not find tt_norm_mu in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; } //gSystem -> Exit(-1) ; }
+     else { tt_norm_mu_val = rrv_tt_mu -> getVal() ;  tt_norm_mu_err = rrv_tt_mu -> getError() ; }
+     /*
      w_norm_e_val = rrv_w_e -> getVal() ;
      w_norm_e_err = rrv_w_e -> getError() ;
 
@@ -1629,7 +1585,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
 
      tt_norm_mu_val = rrv_tt_mu -> getVal() ;
      tt_norm_mu_err = rrv_tt_mu -> getError() ;
-
+     */
      if ( verbose ) {
          printf( "\n\n --- verbose :  AllInfo_t::doBackgroundSubtraction :  post-fit scale factors from %s\n", fdInputFile.Data() ) ;
          printf( "     w_norm_e = %6.3f +/- %6.3f ,    w_norm_mu = %6.3f +/- %6.3f\n", w_norm_e_val, w_norm_e_err, w_norm_mu_val, w_norm_mu_err ) ;
@@ -1668,12 +1624,12 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     if(!(procName.Contains("Other Bkgds") || procName.Contains("Z#rightarrow") || procName.Contains("t#bar{t}") || procName.Contains("W#rightarrow")))continue;
     //    if(chData->first.find("_B_")!=string::npos) {if(procName.Contains("W#rightarrow"))continue;}
     //    if(chData->first.find("_D_")!=string::npos) {if(procName.Contains("W#rightarrow"))continue;}    
-    
+    /*
     if(inFileUrl.Contains("2018") || inFileUrl.Contains("2016")){
       if(!correlatedLumi) 
 	if(procName.Contains("W#rightarrow"))continue; // in regions B,D, skip W sample from non-QCD processes  
     }
-    
+    */
     printf("Subtracting nonQCD process from data: %s, long name %s \n", it->second.shortName.c_str(), procName.Data() ); 
 
     if ( fdInputFile.Length() > 0 ) { // && (inFileUrl.Contains("2016")) ) {
@@ -2318,6 +2274,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       // Only get yields from shapes for regions A 
       if(modeDD && ((ch->first.find("_B_")!=string::npos) || (ch->first.find("_C_")!=string::npos) ||(ch->first.find("_D_")!=string::npos)))continue;   
+      if((ch->first.find("_CR_")!=string::npos)) continue; // do not show CRs
 
       printf("Get yields from shapes:\n");
       printf("Process: %s , channel: %s \n",procName.c_str(),ch->first.c_str());
@@ -2536,6 +2493,16 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
     for(std::map<string, std::map<string, double> >::iterator p = map_yields.begin();p!=map_yields.end();p++){
       for(std::map<string, double>::iterator ch = p->second.begin();ch!=p->second.end();ch++){
+	
+	if(p->first.find("t#bar{t} + light")<std::string::npos)continue;//never drop this background  
+	if(p->first.find("t#bar{t} + b#bar{b}")<std::string::npos)continue;//never drop this background  
+	if(p->first.find("t#bar{t} + c#bar{c}")<std::string::npos)continue;//never drop this background      
+	if(p->first.find("Other Bkgds")<std::string::npos)continue;//never drop this background    
+	if(p->first.find("Z#rightarrow ll")<std::string::npos)continue;//never drop this background   
+
+	if(!runZh) { //Wh channel   
+	  if(p->first.find("W#rightarrow l#nu")<std::string::npos)continue;//never drop this background      
+	}
         double tot = total_yields[ch->first];
         double yield = map_yields[p->first][ch->first];
         if(tot>0 && yield/tot<threshold){
@@ -3586,13 +3553,13 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    
 	  } else {
 	    if(inFileUrl.Contains("2016")) {  
-	      if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_ch1_eff_e_2016"] = integral*0.04; 
+	      if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_ch1_eff_e_2016"] = integral*0.02; 
 	      if(chbin.Contains("mu"))  shapeInfo.uncScale["CMS_ch1_eff_m_2016"] = integral*0.04;
 	    } else  if(inFileUrl.Contains("2017")) {
-	      if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_ch1_eff_e_2017"] = integral*0.04;  
+	      if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_ch1_eff_e_2017"] = integral*0.02;  
 	      if(chbin.Contains("mu"))  shapeInfo.uncScale["CMS_ch1_eff_m_2017"] = integral*0.04;  
 	    } else if(inFileUrl.Contains("2018")) {  
-	      if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_ch1_eff_e_2018"] = integral*0.04;
+	      if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_ch1_eff_e_2018"] = integral*0.02;
 	      if(chbin.Contains("mu"))  shapeInfo.uncScale["CMS_ch1_eff_m_2018"] = integral*0.04;
 	    }
 	    
@@ -3615,7 +3582,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	// preUL scale factor uncertainties and correlations across years (2016/2017/2018)
 	//	if(!israteParams && (it->second.shortName.find("ddqcd")==string::npos) ) {  
 	if(runZh) {
-
+	  
 	  // b-tagging uncertainty independed per process (same b-jet multiplicity) 
           if(chbin.Contains("SR" )) { 
             shapeInfo.uncScale[string("norm_ch2_effb_")+ chbin.Data()] = integral*0.085; 
@@ -4312,11 +4279,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
     TString eecard = ""; TString mumucard = "";
     TString combinedcard = ""; 
-    /*
-    TString combinedsrcard = "";   
-    TString esrcard = ""; TString musrcard = "";
-    TString ecrcard = ""; TString mucrcard = "";
-    */
+
 
     for(std::map<string, bool>::iterator C=allChannels.begin(); C!=allChannels.end();C++){
       // REmove B,C,D control regions from the datacard
@@ -4403,7 +4366,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if ( verbose ) { printf(" --- verbose : AllInfo_t::buildDataCards : datacard %s :  allSysts : %s  %s \n", dcName.Data(), U->first.c_str(), U->second?"shape":"lnN" ) ; }
         if ( noCorrelatedStatUnc && U->first.find("CMS_haa4b_stat_") !=string::npos ) {
            if ( verbose ) { printf(" --- verbose : AllInfo_t::buildDataCards :   noCorrelatedStatUnc set to true.  Skipping this one.\n") ; }
-           continue ;
+	   continue;
+	   //	   if(C->first.find("CR")!=string::npos) continue ;
         }
 	if( U->first.find("CMS_haa4b_pdf") !=string::npos) continue; // skip shape PDF uncertainty    
 
@@ -4412,10 +4376,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	if( U->first.find("CMS_haa4b_pu") !=string::npos) continue; // skip shape pu uncertainty
 	if( U->first.find("CMS_haa4b_umet") !=string::npos) continue; // skip shape umet
 	
-	if( U->first.find("CMS_haa4b_resRho_e") !=string::npos) continue; // skip shape e
-	//	if(inFileUrl.Contains("2016")){        
+	//if( U->first.find("CMS_haa4b_resRho_e") !=string::npos) continue; // skip shape e
 	if( U->first.find("CMS_haa4b_sys_e") !=string::npos) continue; // skip shape e
-	//}
+
 	if( U->first.find("CMS_haa4b_nloEWK") !=string::npos) continue; // skip shape nloEWK, its negligible..
 
 	if( U->first.find("CMS_ch1_eff_c") !=string::npos) continue; 
@@ -4423,28 +4386,18 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	
 	if( U->first.find("CMS_ch2_eff_c") !=string::npos) continue; // skip shape eff_c
 	if( U->first.find("CMS_ch2_eff_mistag") !=string::npos) continue; // skip shape eff mistag
-	
-	//
+
+		
 	if(correlatedLumi)
 	  if( U->first.find("CMS_ch1_eff_b") !=string::npos) continue; // skip shape eff_b 
 	
 	if( U->first.find("CMS_ch2_eff_b") !=string::npos) continue; // skip shape eff_b 
 
-	//	if( U->first.find("CMS_res_j") !=string::npos) continue; // skip shape res_j
-
 	if(runZh) { // UPDATE TESTs: 090123
-	//	if(!correlatedLumi){  
 	  if( U->first.find("_jes") !=string::npos) continue; // skip shape JEC
 	  if( U->first.find("CMS_res_j") !=string::npos) continue; // skip shape res_j  
 	} 
-	/*
-	else { // Wh
-	  if(correlatedLumi) {
-	    if( U->first.find("_jes") !=string::npos) continue; // skip shape JEC in full run2 for WH  
-	    if( U->first.find("CMS_res_j") !=string::npos) continue; 
-	  }
-	}
-	*/
+	
 
         char line[2048];
         sprintf(line,"%-45s %-10s ", U->first.c_str(), U->second?"shape":"lnN");
@@ -4593,13 +4546,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         sprintf(procMassStr,"%i",(int)procMass);
         //printf("found signal to be %s\n",  proc.Data());
       }
-      
-      /*
-      if(!isSignal &&  mass>0 && proc.Contains("XH(") && proc.Contains(")#rightarrow WW")){
-        sscanf(proc.Data()+proc.First("H(")+2,"%lf",&procMass);
-        if(!(procMass==mass || procMass==massL || procMass==massR))continue; //skip XH-->WW background sample not concerned
-      }
-        */
+
 
       TString procSave = proc;
       //      if(isSignal && mass>0 && proc.Contains("ggH") && proc.Contains("ZZ"))proc = TString("ggH")  +procMassStr;
@@ -4899,11 +4846,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		utils::root::fixExtremities(unc->second, false, true); 
 
 	      } else { // ZH
-		//		double xbins[] = {-0.31, -0.09, 0.01, 0.09, 0.17, 0.35 };           
-		double xbins[] = {-0.31, -0.09, 0.01, 0.11, 0.17, 0.35 }; 
-		//		double xbins[] = {-0.31, -0.09, 0.07, 0.11, 0.35 };
-		
-		//		double xbins[] = {-0.31, -0.09,  0.07, 0.9, 0.35 }; 
+		//		double xbins[] = {-0.31, -0.09, 0.01, 0.09, 0.15, 0.35 }; 
+		double xbins[] = {-0.31, -0.09,  0.01, 0.07, 0.13, 0.35 }; 
 		
 		if(inFileUrl.Contains("2017")) { 
 		  xbins[0]=-0.31;xbins[1]=-0.09;xbins[2]=0.01; xbins[3]=0.07; xbins[4]=0.13;xbins[5]=0.35;
@@ -4943,34 +4887,23 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		utils::root::fixExtremities(unc->second, false, true);
 
 	      } else { // runZH
-		//double xbins[] = {-0.31, -0.15,-0.07,0.07, 0.11, 0.35};
-		//double xbins[] = {-0.31, -0.15,-0.07,0.09, 0.13, 0.35}; // oct 29, georgia, 2 bins
-		double xbins[] = {-0.31, -0.15, -0.07, 0.03, 0.07, 0.35}; // Apr 5, 2023, georgia after Jan noticed
 
+		double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.07, 0.35}; // 0.03-->0.01 (Apr 19) -- Apr 5, 2023, georgia after Jan noticed
+		
 		if(inFileUrl.Contains("2016")) {    
-		  xbins[0]=-0.31; xbins[1]=-0.15; xbins[2]=-0.07; xbins[3]=-0.03; xbins[4]=0.07; xbins[5]=0.35;
+		  //		  xbins[0]=-0.31; xbins[1]=-0.15; xbins[2]=-0.09; xbins[3]=-0.03; xbins[4]=0.05; xbins[5]=0.35;
+		  //		  if(jetBin.Contains("e")) {
+		  xbins[0]=-0.31; xbins[1]=-0.15; xbins[2]=-0.09; xbins[3]=-0.05; xbins[4]=-0.01; xbins[5]=0.35; 
+		    //		    xbins[0]=-0.31; xbins[1]=-0.15; xbins[2]=-0.09; xbins[3]=-0.05; xbins[4]=0.01; xbins[5]=0.35; // THATS QUITE GOOD
+		  //} 
 		}
+		// -0.09 --> -0.07, -0.03 --> -0.01
 		
 		int nbins=sizeof(xbins)/sizeof(double);
 		unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
 		utils::root::fixExtremities(unc->second, false, true); 
 	      }
 	    } // 4b category
-	
-
-              /*
-          if(jetBin.Contains("vbf")){
-            double xbins[] = {150, 225, 300, 375, 450, 600, 750, 1100, 3000};
-            int nbins=sizeof(xbins)/sizeof(double);
-            unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);
-            utils::root::fixExtremities(unc->second, false, true);
-          }else if( jetBin.Contains("eq0jets") || jetBin.Contains("geq1jets") ){
-            double xbins[] = {150, 225, 300, 375, 450, 525, 600, 725, 850, 975, 1100, 1350, 1600, 2100, 3000};
-            int nbins=sizeof(xbins)/sizeof(double);
-            unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);
-            utils::root::fixExtremities(unc->second, false, true);
-          }
-              */
 
         }
       }
@@ -5014,22 +4947,100 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 
     void AllInfo_t::HandleEmptyBins(string histoName){
-      for(unsigned int p=0;p<sorted_procs.size();p++){
-        string procName = sorted_procs[p];
-        //if(procName!="FakeLep")continue; //only do this for the FakeLepbackground right now
-        std::map<string, ProcessInfo_t>::iterator it=procs.find(procName);
-        if(it==procs.end())continue;
-	if(it->second.isData)continue; //only do this for MC
-	//        if(it->second.isData && procName!="Instr. MET")continue; //only do this for MC or InstrMET (which also contains MC and negative bins)
+      
+      // Make the average event weight per process:
+      std::map <string, double> procWeight_2016;
+      std::map <string, double> procWeight_2017;
+      std::map <string, double> procWeight_2018;
+      
+      if(runZh) { // ZH channel:
+
+	procWeight_2016.insert({"Other Bkgds", 3.23}); 
+	procWeight_2016.insert({"W#rightarrow l#nu", 25.70}); 
+	procWeight_2016.insert({"Z#rightarrow ll", 3.44});  
+	procWeight_2016.insert({"t#bar{t} + b#bar{b}", 5.57 });
+	procWeight_2016.insert({"t#bar{t} + c#bar{c}", 5.57 });  
+	procWeight_2016.insert({"t#bar{t} + light", 0.45 });
+
+	procWeight_2017.insert({"Other Bkgds", 2.28}); 
+	procWeight_2017.insert({"W#rightarrow l#nu", 38.93});
+	procWeight_2017.insert({"Z#rightarrow ll", 5.06});
+	procWeight_2017.insert({"t#bar{t} + b#bar{b}", 12.16 });    
+	procWeight_2017.insert({"t#bar{t} + c#bar{c}", 1.97 });
+	procWeight_2017.insert({"t#bar{t} + light", 1.05 }); 
+
+	procWeight_2018.insert({"Other Bkgds", 2.60});   
+	procWeight_2018.insert({"W#rightarrow l#nu", 69.48});
+	procWeight_2018.insert({"Z#rightarrow ll", 6.86 });     
+	procWeight_2018.insert({"t#bar{t} + b#bar{b}", 4.27 }); 
+	procWeight_2018.insert({"t#bar{t} + c#bar{c}", 1.91 }); 
+	procWeight_2018.insert({"t#bar{t} + light", 0.48 }); 
+
+      } else { // WH channel:
+
+	procWeight_2016.insert({"Other Bkgds", 3.23});
+	procWeight_2016.insert({"W#rightarrow l#nu", 25.70});
+	procWeight_2016.insert({"Z#rightarrow ll", 3.44});
+	procWeight_2016.insert({"t#bar{t} + b#bar{b}", 4.87 });
+	procWeight_2016.insert({"t#bar{t} + c#bar{c}", 1.15 });
+	procWeight_2016.insert({"t#bar{t} + light", 0.67 });
+	procWeight_2016.insert({"QCD", 1. });
+
+	procWeight_2017.insert({"Other Bkgds", 2.28});     
+	procWeight_2017.insert({"W#rightarrow l#nu", 38.93});  
+	procWeight_2017.insert({"Z#rightarrow ll", 5.06});  
+	procWeight_2017.insert({"t#bar{t} + b#bar{b}", 6.46 });   
+	procWeight_2017.insert({"t#bar{t} + c#bar{c}", 1.72 }); 
+	procWeight_2017.insert({"t#bar{t} + light", 1.16 });
+	procWeight_2017.insert({"QCD", 1. }); 
+
+	procWeight_2018.insert({"Other Bkgds", 2.60});    
+	procWeight_2018.insert({"W#rightarrow l#nu", 69.48});
+	procWeight_2018.insert({"Z#rightarrow ll", 6.86});   
+	procWeight_2018.insert({"t#bar{t} + b#bar{b}", 3.14 }); 
+	procWeight_2018.insert({"t#bar{t} + c#bar{c}", 1.45 });
+	procWeight_2018.insert({"t#bar{t} + light", 0.55 });
+	procWeight_2018.insert({"QCD", 1. }); 
+
+      }
+      
+      //      double procWeight(1E-6);
+
+      for(unsigned int p=0;p<sorted_procs.size();p++){ 
+	string procName = sorted_procs[p]; 
+	//if(procName!="FakeLep")continue; //only do this for the FakeLepbackground right now 
+	std::map<string, ProcessInfo_t>::iterator it=procs.find(procName); 
+	if(it==procs.end())continue; 
+	if(it->second.isData || it->second.isSign)continue; //only do this for background MC
+
         for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
+	  TString chbin = ch->first;
           ShapeData_t& shapeInfo = ch->second.shapes[histoName];
           TH1* histo = (TH1*)shapeInfo.histo();
           if(!histo){printf("Histo does not exist... skip it \n"); fflush(stdout); continue;}
 
+	  double procWeight(1E-6);            
+	  if(inFileUrl.Contains("2016")) procWeight=procWeight_2016[procName.c_str()]; 
+	  if(inFileUrl.Contains("2017")) procWeight=procWeight_2017[procName.c_str()];
+	  if(inFileUrl.Contains("2018")) procWeight=procWeight_2018[procName.c_str()];
+
           double StartIntegral = histo->Integral();
           for(int binx=1;binx<=histo->GetNbinsX();binx++){
-            if(histo->GetBinContent(binx)<=0){histo->SetBinContent(binx, 1E-6); histo->SetBinError(binx, 1E-6);  }
-          }
+            if(histo->GetBinContent(binx)<=0){ // georgia, Apr 21, 2023: account for limited MC statistics, large weights
+	      histo->SetBinContent(binx, 1E-6); //histo->SetBinError(binx, 1E-6);  }
+	      histo->SetBinError(binx, procWeight); 
+
+	      if (verbose ) {
+		printf("--- verbose : AllInfo_t::HandleEmptyBins : found empty bins " ) ;
+		printf(" proc = %s ", procName.c_str() ) ; printf(", year = %s ", year.Data() ) ;
+		printf(" channel = %s ", chbin.Data() );
+		printf(",  histoName = %s ", histoName.c_str() ) ;
+		printf(" in bin: %i ", binx);
+		printf(", weighted by = %.2f ", procWeight ); //[procName.c_str()].second ) ;
+		printf("\n") ; fflush(stdout) ;
+	      }
+	    }
+	  }
           double EndIntegral = histo->Integral();                 
           shapeInfo.rescaleScaleUncertainties(StartIntegral, EndIntegral);
 
