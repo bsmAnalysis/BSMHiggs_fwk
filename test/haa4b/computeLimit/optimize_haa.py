@@ -533,9 +533,8 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines('cd {}out_{};\n'.format(out_prefix,m))
 
           #--- first pass
-           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  " + blindSR + "  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/" + QCDinputFile +" >& cl-first.log\n")
+           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  " + blindSR + "  --m " + str(m)  + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/" + QCDinputFile +" >& cl-first.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
-
 
 	   if autoMCstats:
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_combined_wh.dat".format(thredMCstat))
@@ -550,7 +549,7 @@ for signalSuffix in signalSuffixVec :
 
 
           #--- second pass
-           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  "+ blindSR + "  --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/"+ QCDinputFile+ "  --fitDiagnosticsInputFile fitDiagnostics-first.root >& cl-second.log\n")
+           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  "+ blindSR + "  --m " + str(m)  + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/"+ QCDinputFile+ "  --fitDiagnosticsInputFile fitDiagnostics-first.root >& cl-second.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
 
            datacard = "card_combined_wh.dat"
@@ -683,7 +682,7 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines('mkdir -p {}out_{}\n'.format(out_prefix,m))
            SCRIPT.writelines('cd {}out_{};\n'.format(out_prefix,m))
 
-           SCRIPT.writelines("computeLimit   "+ removeStatUnc +"  --verbose  " + blindSR + "  --runZh --m " + str(m) + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +"  >& cl.log\n")
+           SCRIPT.writelines("computeLimit   "+ removeStatUnc +"  --verbose  " + blindSR + "  --runZh --m " + str(m)  + BackExtrapol + " --in " + inUrl + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +"  >& cl.log\n")
            SCRIPT.writelines("sh combineCards_zh.sh;\n"); 
 
 	   if autoMCstats:
@@ -827,7 +826,7 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines('cd {}out_{};\n'.format(out_prefix,m))
 
           #--- first pass for Wh
-           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  " + blindSR + "  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +  " --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/"+ QCDinputFile+ " >& cl-wh-first.log\n")
+           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  " + blindSR + "  --m " + str(m)  + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +  " --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/"+ QCDinputFile+ " >& cl-wh-first.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
            SCRIPT.writelines("text2workspace.py card_combined_wh.dat -o workspace-wh-first.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-wh-first.log \n")  
            SCRIPT.writelines("combine -M FitDiagnostics workspace-wh-first.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  --rMin=-5 --rMax=5 --stepSize=0.05 --robustFit 1  >& log-wh-first.txt \n") 
@@ -837,12 +836,11 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("cp *.dat datacards-wh-first-pass\n\n") ;
 
           #--- second pass for Wh
-           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  " + blindSR + "  --m " + str(m) + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/"+ QCDinputFile+ "  --fitDiagnosticsInputFile fitDiagnostics-wh-first.root >& cl-wh-second.log\n")
+           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  " + blindSR + "  --m " + str(m)  + BackExtrapol + " --in " + inUrl_wh + " " + "--syst --simfit --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " --modeDD --shape --subFake " + LandSArg + cutStr  +" --sumInputFile $CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b/"+ QCDinputFile+ "  --fitDiagnosticsInputFile fitDiagnostics-wh-first.root >& cl-wh-second.log\n")
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
 
 
-
-           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  " + blindSR + "  --runZh --m " + str(m) + BackExtrapol + " --in " + inUrl_zh + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-zh.log\n")
+           SCRIPT.writelines("computeLimit  "+ removeStatUnc +"  --verbose  " + blindSR + "  --runZh --m " + str(m)  + BackExtrapol + " --in " + inUrl_zh + " " + "--syst --simfit --shape --index 1 --bins " + BIN[iConf] + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" >& cl-zh.log\n")
 
            SCRIPT.writelines("sh combineCards_zh.sh;\n"); 
 

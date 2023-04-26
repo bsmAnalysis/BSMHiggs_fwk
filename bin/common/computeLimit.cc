@@ -3539,32 +3539,21 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 	//Id+Trigger efficiencies combined
 	if( (!it->second.isData) ) {// && (it->second.shortName.find("ddqcd")==string::npos) ){
+
+	  // set year
+	  TString iyear("");
+	  if(inFileUrl.Contains("2016")){  iyear="2016"; } 
+          else  if(inFileUrl.Contains("2017")){  iyear="2017";} 
+          else  if(inFileUrl.Contains("2018")){  iyear="2018";} 
+
 	  if(runZh){
-	    if(inFileUrl.Contains("2016")) {
-	      if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_ch2_eff_e_2016"] = integral*0.04; //0.072124;
-	      if(chbin.Contains("mu"))  shapeInfo.uncScale["CMS_ch2_eff_m_2016"] = integral*0.04; //0.061788;
-	    } else  if(inFileUrl.Contains("2017")) {
-	      if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_ch2_eff_e_2017"] = integral*0.04;
-	      if(chbin.Contains("mu"))  shapeInfo.uncScale["CMS_ch2_eff_m_2017"] = integral*0.04;
-	    } else  if(inFileUrl.Contains("2018")) {
-	      if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_ch2_eff_e_2018"] = integral*0.04; 
-	      if(chbin.Contains("mu"))  shapeInfo.uncScale["CMS_ch2_eff_m_2018"] = integral*0.04;
-	    }
-	    
+	    if(chbin.Contains("e" ))  shapeInfo.uncScale[string("CMS_ch2_eff_e_")+iyear.Data()] = integral*0.04; //0.072124;
+	    if(chbin.Contains("mu"))  shapeInfo.uncScale[string("CMS_ch2_eff_m_")+iyear.Data()] = integral*0.04; //0.061788;
 	  } else {
-	    if(inFileUrl.Contains("2016")) {  
-	      if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_ch1_eff_e_2016"] = integral*0.02; 
-	      if(chbin.Contains("mu"))  shapeInfo.uncScale["CMS_ch1_eff_m_2016"] = integral*0.04;
-	    } else  if(inFileUrl.Contains("2017")) {
-	      if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_ch1_eff_e_2017"] = integral*0.02;  
-	      if(chbin.Contains("mu"))  shapeInfo.uncScale["CMS_ch1_eff_m_2017"] = integral*0.04;  
-	    } else if(inFileUrl.Contains("2018")) {  
-	      if(chbin.Contains("e" ))  shapeInfo.uncScale["CMS_ch1_eff_e_2018"] = integral*0.02;
-	      if(chbin.Contains("mu"))  shapeInfo.uncScale["CMS_ch1_eff_m_2018"] = integral*0.04;
-	    }
-	    
+	    if(chbin.Contains("e" ))  shapeInfo.uncScale[string("CMS_ch1_eff_e_")+iyear.Data()] = integral*0.05; 
+	    if(chbin.Contains("mu"))  shapeInfo.uncScale[string("CMS_ch1_eff_m_")+iyear.Data()] = integral*0.04;
 	  }
-      
+
 	}
 	  
 	  // PDF + alpha_s + QCD scale uncertainties (both ZH and WH): 
@@ -3587,14 +3576,15 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if(chbin.Contains("SR" )) { 
             shapeInfo.uncScale[string("norm_ch2_effb_")+ chbin.Data()] = integral*0.085; 
             shapeInfo.uncScale[string("norm_ch2_JES_")+ chbin.Data()] = integral*0.008; 
-            shapeInfo.uncScale[string("norm_ch2_res_j_")+ chbin.Data()] = integral*0.005; 
+            shapeInfo.uncScale[string("norm_ch2_JER_")+ chbin.Data()] = integral*0.005; 
           } else { 
             shapeInfo.uncScale[string("norm_ch2_effb_")+ chbin.Data()] = integral*0.06; 
             shapeInfo.uncScale[string("norm_ch2_JES_")+ chbin.Data()] = integral*0.005; 
-            shapeInfo.uncScale[string("norm_ch2_res_j_")+ chbin.Data()] = integral*0.005; 
+            shapeInfo.uncScale[string("norm_ch2_JER_")+ chbin.Data()] = integral*0.005; 
           } 
 	  
 	  // Add correlation terms in btagSFbc/light, JES/JER: 
+	  /*
 	  if(correlatedLumi) { 
 	    if(chbin.Contains("SR" )) { 
 	      //	      shapeInfo.uncScale["CMS_ch2_btagSFb_SR_correlated"] = integral*0.01; 
@@ -3615,22 +3605,25 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	      
 	    } 
 	  }
-	  
+	  */
 	} else { // Wh channel
 	  // b-tagging uncertainty independed per process (same b-jet multiplicity) 
-
+	  
 	  if(chbin.Contains("SR" )) { 
-	    if(correlatedLumi)shapeInfo.uncScale[string("norm_ch1_effb_")+ chbin.Data()] = integral*0.10; //0.09; 
+	    // if(correlatedLumi)
+	    shapeInfo.uncScale[string("norm_ch1_effb_")+ chbin.Data()] = integral*0.10; //0.09; 
 	    //	    if(correlatedLumi)shapeInfo.uncScale[string("norm_ch1_JES_")+chbin.Data()] = integral*0.008; 
 	    //	    if(correlatedLumi)shapeInfo.uncScale[string("norm_ch1_res_j_")+ chbin.Data()] = integral*0.005; 
 	  } else { 
-	    if(correlatedLumi)shapeInfo.uncScale[string("norm_ch1_effb_")+ chbin.Data()] = integral*0.08; //0.06; 
+	    // if(correlatedLumi)
+	    shapeInfo.uncScale[string("norm_ch1_effb_")+ chbin.Data()] = integral*0.08; //0.06; 
 	    //	    if(correlatedLumi)shapeInfo.uncScale[string("norm_ch1_JES_")+chbin.Data()] = integral*0.005; 
 	    //	    if(correlatedLumi)shapeInfo.uncScale[string("norm_ch1_res_j_")+ chbin.Data()] = integral*0.001; 
 	  } 
-
+	  
 
 	  // Add correlation terms in btagSFbc/light, JES/JER:    
+	  /*
 	  if(correlatedLumi) {  
 	    if(chbin.Contains("SR" )) {
 	      if(it->second.shortName.find("ttbarcba")!=string::npos || it->second.shortName.find("ttbarbba")!=string::npos
@@ -3647,9 +3640,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		shapeInfo.uncScale["CMS_ch1_btagSFlight_CR_correlated"] = integral*0.008; }
 	    }
 	  }
-	  
+	  */
 	} // end Wh channel    
-	
+	/*
 	if(correlatedLumi) {   
 	  if(chbin.Contains("SR" )) {  
 	    //	    shapeInfo.uncScale["norm_SR_resj_correlated"] = integral*0.001;
@@ -3661,540 +3654,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    //	    else  shapeInfo.uncScale["norm_ch1_CR_JES_correlated"] = integral*0.005; 
 	  }
 	}
-	
+	*/
 
-	// Rest of shape uncertainties that turned into log-normal:
-	if(runZh){ // Zh channel
-
-	  if (it->second.shortName.find("wh")!=string::npos) {
-
-	    if(inFileUrl.Contains("2016")) {shapeInfo.uncScale["norm_pu_2016"] = integral*0.01;   
-	    } else if(inFileUrl.Contains("2017")) { shapeInfo.uncScale["norm_pu_2017"] = integral*0.01;  
-	    } else if(inFileUrl.Contains("2018")) {  shapeInfo.uncScale["norm_pu_2018"] = integral*0.01;}
-	    /*
-	    if(inFileUrl.Contains("2016")) { 
-              if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2016"] = integral*0.001; 
-            } else if(inFileUrl.Contains("2017")) {
-              if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2017"] = integral*0.001; 
-            } else if(inFileUrl.Contains("2018")) { 
-              if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2018"] = integral*0.001; 
-            }
-	    */
-	    if(chbin.Contains("SR" )) {        
-	      if(inFileUrl.Contains("2016")) {
-		shapeInfo.uncScale["norm_SR_ch2_effc_2016"] = integral*0.008; 
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2016"] = integral*0.006; 
-	      } else if(inFileUrl.Contains("2017")) {
-		shapeInfo.uncScale["norm_SR_ch2_effc_2017"] = integral*0.008; 
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2017"] = integral*0.006;  
-	      } else if(inFileUrl.Contains("2018")) {
-		shapeInfo.uncScale["norm_SR_ch2_effc_2018"] = integral*0.008; 
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2018"] = integral*0.006;  
-	      }
-	    } else {
-	      if(inFileUrl.Contains("2016")) {     
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2016"] = integral*0.001;   
-	      } else if(inFileUrl.Contains("2016")) {     
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2017"] = integral*0.001; 
-	      } else if(inFileUrl.Contains("2016")) {     
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2018"] = integral*0.001; 
-	      }
-
-	    }
-	  }
-
-	  if(it->second.shortName.find("otherbkg")!=string::npos){ 
-	    if(inFileUrl.Contains("2016")) {shapeInfo.uncScale["norm_pu_2016"] = integral*0.02;
-            } else if(inFileUrl.Contains("2017")) { shapeInfo.uncScale["norm_pu_2017"] = integral*0.02;
-            } else if(inFileUrl.Contains("2018")) {  shapeInfo.uncScale["norm_pu_2018"] = integral*0.02;} 
-	    /*
-	    if(inFileUrl.Contains("2016")) {
-	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2016"] = integral*0.005;
-	    } else if(inFileUrl.Contains("2017")) {
-	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2017"] = integral*0.005;     
-	    } else if(inFileUrl.Contains("2018")) {
-	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2018"] = integral*0.005;     
-	    }
-	    */
-	    //	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.005;      
-	    if(chbin.Contains("SR" )) { 
-	      if(inFileUrl.Contains("2016")) { 
-		shapeInfo.uncScale["norm_SR_ch2_effc_2016"] = integral*0.06; 
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2016"] = integral*0.05; 
-	      } else  if(inFileUrl.Contains("2017")) { 
-		shapeInfo.uncScale["norm_SR_ch2_effc_2017"] = integral*0.06; 
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2017"] = integral*0.05; 
-	      } else  if(inFileUrl.Contains("2018")) { 
-		shapeInfo.uncScale["norm_SR_ch2_effc_2018"] = integral*0.06;
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2018"] = integral*0.05;
-	      }
-	    } else {
-	      if(inFileUrl.Contains("2016")) {   
-		shapeInfo.uncScale["norm_CR_ch2_effc_2016"] = integral*0.008; 
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2016"] = integral*0.002; 
-	      } else if(inFileUrl.Contains("2017")) {   
-		shapeInfo.uncScale["norm_CR_ch2_effc_2017"] = integral*0.008; 
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2017"] = integral*0.002;  
-	      } else if(inFileUrl.Contains("2018")) {   
-		shapeInfo.uncScale["norm_CR_ch2_effc_2018"] = integral*0.008; 
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2018"] = integral*0.002; 
-	      }
-	    }
-	  }
-
-	  if(it->second.shortName.find("ttbarbba")!=string::npos){
-	    if(inFileUrl.Contains("2016")) {shapeInfo.uncScale["norm_pu_2016"] = integral*0.006;
-            } else if(inFileUrl.Contains("2017")) { shapeInfo.uncScale["norm_pu_2017"] = integral*0.006;
-            } else if(inFileUrl.Contains("2018")) {  shapeInfo.uncScale["norm_pu_2018"] = integral*0.006;} 
-	    //	    shapeInfo.uncScale["norm_pu"] = integral*0.006; 
-	    /*
-	    if(inFileUrl.Contains("2016")) { 
-              if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2016"] = integral*0.004;
-            } else if(inFileUrl.Contains("2017")) { 
-              if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2017"] = integral*0.004; 
-            } else if(inFileUrl.Contains("2018")) { 
-              if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2018"] = integral*0.004; 
-            } 
-	    */
-	    //	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.004;    
-	    if(chbin.Contains("SR" )) {  
-	      if(inFileUrl.Contains("2016")) {  
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2016"] = integral*0.01; 
-		shapeInfo.uncScale["norm_SR_ch2_effc_2016"] = integral*0.015; 
-	      } else  if(inFileUrl.Contains("2017")) {  
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2017"] = integral*0.01;
-		shapeInfo.uncScale["norm_SR_ch2_effc_2017"] = integral*0.01; 
-	      } else  if(inFileUrl.Contains("2018")) {  
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2018"] = integral*0.01;
-		shapeInfo.uncScale["norm_SR_ch2_effc_2018"] = integral*0.01;  
-	      }
-	      //	      shapeInfo.uncScale["norm_SR_ch2_effb"] = integral*0.07; 
-	    }else{
-	      if(inFileUrl.Contains("2016")) { 
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2016"] = integral*0.001; 
-		shapeInfo.uncScale["norm_CR_ch2_effc_2016"] = integral*0.002; 
-	      } else if(inFileUrl.Contains("2017")) { 
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2017"] = integral*0.001;
-		shapeInfo.uncScale["norm_CR_ch2_effc_2017"] = integral*0.002; 
-	      } else if(inFileUrl.Contains("2018")) { 
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2018"] = integral*0.001;
-		shapeInfo.uncScale["norm_CR_ch2_effc_2018"] = integral*0.002;
-	      }
-	    }
-	  }
-
-	  if(it->second.shortName.find("ttbarcba")!=string::npos){
-	    if(inFileUrl.Contains("2016")) {shapeInfo.uncScale["norm_pu_2016"] = integral*0.006;
-            } else if(inFileUrl.Contains("2017")) { shapeInfo.uncScale["norm_pu_2017"] = integral*0.006; 
-            } else if(inFileUrl.Contains("2018")) {  shapeInfo.uncScale["norm_pu_2018"] = integral*0.006;}
-	    //	    shapeInfo.uncScale["norm_pu"] = integral*0.006;   
-	    //	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.005;  
-	    /*
-	    if(inFileUrl.Contains("2016")) { 
-              if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2016"] = integral*0.005; 
-            } else if(inFileUrl.Contains("2017")) { 
-              if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2017"] = integral*0.005; 
-            } else if(inFileUrl.Contains("2018")) { 
-              if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2018"] = integral*0.005; 
-            } 
-	    */
-	    if(chbin.Contains("SR" )) {         
-	      if(inFileUrl.Contains("2016")) {  
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2016"] = integral*0.03;//0.03; 
-		shapeInfo.uncScale["norm_SR_ch2_effc_2016"] = integral*0.12; //0.12; 
-	      } else  if(inFileUrl.Contains("2017")) {  
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2017"] = integral*0.03;   
-		shapeInfo.uncScale["norm_SR_ch2_effc_2017"] = integral*0.12; 
-	      } else  if(inFileUrl.Contains("2018")) {  
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2018"] = integral*0.03;     
-		shapeInfo.uncScale["norm_SR_ch2_effc_2018"] = integral*0.12;    
-	      }
-	      //	      shapeInfo.uncScale["norm_ch2_SR_toppt"] = integral*0.015;    
-	    }else{   
-	      if(inFileUrl.Contains("2016")) { 
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2016"] = integral*0.001; 
-		shapeInfo.uncScale["norm_CR_ch2_effc_2016"] = integral*0.015; 
-	      } else if(inFileUrl.Contains("2017")) { 
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2017"] = integral*0.001; 
-		shapeInfo.uncScale["norm_CR_ch2_effc_2017"] = integral*0.015;  
-	      } else if(inFileUrl.Contains("2018")) { 
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2018"] = integral*0.001;
-		shapeInfo.uncScale["norm_CR_ch2_effc_2018"] = integral*0.015;
-	      }
-	      //	      shapeInfo.uncScale["norm_ch2_CR_toppt"] = integral*0.01;
-	    }
-	  } 
-
-	  if(it->second.shortName.find("ttbarlig")!=string::npos){
-	    if(inFileUrl.Contains("2016")) {shapeInfo.uncScale["norm_pu_2016"] = integral*0.008;
-            } else if(inFileUrl.Contains("2017")) { shapeInfo.uncScale["norm_pu_2017"] = integral*0.008;
-            } else if(inFileUrl.Contains("2018")) {  shapeInfo.uncScale["norm_pu_2018"] = integral*0.008;}
-	    //	    shapeInfo.uncScale["norm_pu"] = integral*0.008;     
-	    /*
-	    if(inFileUrl.Contains("2016")) { 
-              if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2016"] = integral*0.005; 
-            } else if(inFileUrl.Contains("2017")) { 
-              if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2017"] = integral*0.005; 
-            } else if(inFileUrl.Contains("2018")) { 
-              if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2018"] = integral*0.005; 
-            } 
-	    */
-	    //	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.004;      
-	    if(chbin.Contains("SR" )) { 
-	      if(inFileUrl.Contains("2016")) {  
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2016"] = integral*0.06; 
-		shapeInfo.uncScale["norm_SR_ch2_effc_2016"] = integral*0.005; 
-	      } else if(inFileUrl.Contains("2017")) {  
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2017"] = integral*0.06;  
-		shapeInfo.uncScale["norm_SR_ch2_effc_2017"] = integral*0.005;
-	      } else if(inFileUrl.Contains("2018")) {  
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2018"] = integral*0.06; 
-		shapeInfo.uncScale["norm_SR_ch2_effc_2018"] = integral*0.005;   
-	      }
-	      //	      shapeInfo.uncScale["norm_ch2_SR_toppt"] = integral*0.02; 
-	    }else{   
-	      if(inFileUrl.Contains("2016")) {   
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2016"] = integral*0.005; 
-		shapeInfo.uncScale["norm_CR_ch2_effc_2016"] = integral*0.005; 
-	      } else if(inFileUrl.Contains("2017")) {   
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2017"] = integral*0.005;
-		shapeInfo.uncScale["norm_CR_ch2_effc_2017"] = integral*0.005;
-	      } else if(inFileUrl.Contains("2018")) {   
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2018"] = integral*0.005;
-		shapeInfo.uncScale["norm_CR_ch2_effc_2018"] = integral*0.005; 
-	      }
-	      //shapeInfo.uncScale["norm_ch2_CR_toppt"] = integral*0.006; 
-	    }
-	  }
-
-	  // Still on zll:
-	  if(it->second.shortName.find("zll")!=string::npos){
-	    if(inFileUrl.Contains("2016")) {shapeInfo.uncScale["norm_pu_2016"] = integral*0.02;
-            } else if(inFileUrl.Contains("2017")) { shapeInfo.uncScale["norm_pu_2017"] = integral*0.02;
-            } else if(inFileUrl.Contains("2018")) {  shapeInfo.uncScale["norm_pu_2018"] = integral*0.02;}
-	    //	    shapeInfo.uncScale["norm_pu"] = integral*0.02;
-
-	    //	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.001;
-	    if(chbin.Contains("SR" )) { // SRs
-	      if(inFileUrl.Contains("2016")) { 
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2016"] = integral*0.05; 
-		shapeInfo.uncScale["norm_SR_ch2_effc_2016"] = integral*0.04; 
-	      } else if(inFileUrl.Contains("2017")) { 
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2017"] = integral*0.05; 
-		shapeInfo.uncScale["norm_SR_ch2_effc_2017"] = integral*0.04; 
-	      } else if(inFileUrl.Contains("2018")) { 
-		shapeInfo.uncScale["norm_SR_ch2_effmistag_2018"] = integral*0.05;   
-		shapeInfo.uncScale["norm_SR_ch2_effc_2018"] = integral*0.04;
-	      }
-	    } else { // CRs
-	      if(inFileUrl.Contains("2016")) {   
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2016"] = integral*0.01; 
-		shapeInfo.uncScale["norm_CR_ch2_effc_2016"] = integral*0.015;
-	      } else if(inFileUrl.Contains("2017")) {   
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2017"] = integral*0.01; 
-		shapeInfo.uncScale["norm_CR_ch2_effc_2017"] = integral*0.015;        
-	      } else if(inFileUrl.Contains("2018")) {   
-		shapeInfo.uncScale["norm_CR_ch2_effmistag_2018"] = integral*0.01; 
-		shapeInfo.uncScale["norm_CR_ch2_effc_2018"] = integral*0.015; 
-	      }
-
-	    }
-	  }// end zll process
-	  
-
-	} else {// Wh channel  :  
-
-	  if (it->second.shortName.find("wh")!=string::npos) { 
-	    if(inFileUrl.Contains("2016")) {shapeInfo.uncScale["norm_pu_2016"] = integral*0.01; 
-            } else if(inFileUrl.Contains("2017")) { shapeInfo.uncScale["norm_pu_2017"] = integral*0.01;
-            } else if(inFileUrl.Contains("2018")) {  shapeInfo.uncScale["norm_pu_2018"] = integral*0.01;}
-	    //            shapeInfo.uncScale["norm_pu"] = integral*0.01; 
-	    /*
-	    if(inFileUrl.Contains("2016")) { 
-              if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2016"] = integral*0.001; 
-            } else if(inFileUrl.Contains("2017")) { 
-              if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2017"] = integral*0.001; 
-            } else if(inFileUrl.Contains("2018")) { 
-              if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2018"] = integral*0.001; 
-            }  
-	    */
-            if(chbin.Contains("SR" )) { 
-	      if(inFileUrl.Contains("2016")) { 
-		shapeInfo.uncScale["norm_SR_ch1_effc_2016"] = integral*0.002; 
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2016"] = integral*0.002; 
-	      } else  if(inFileUrl.Contains("2017")) { 
-		shapeInfo.uncScale["norm_SR_ch1_effc_2017"] = integral*0.002;
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2017"] = integral*0.002;   
-	      } else  if(inFileUrl.Contains("2018")) { 
-		shapeInfo.uncScale["norm_SR_ch1_effc_2018"] = integral*0.002;
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2018"] = integral*0.002;   
-	      }
-	      //	      shapeInfo.uncScale["norm_ch1_SR_scalejes"] = integral*0.006; 
-            } else { 
-	    
-	    }
-	    
-          }
-
-	  if(it->second.shortName.find("otherbkg")!=string::npos){  
-	    
-	    if(inFileUrl.Contains("2016")) {shapeInfo.uncScale["norm_pu_2016"] = integral*0.05;
-            } else if(inFileUrl.Contains("2017")) { shapeInfo.uncScale["norm_pu_2017"] = integral*0.05;
-            } else if(inFileUrl.Contains("2018")) {  shapeInfo.uncScale["norm_pu_2018"] = integral*0.05;}
-	    
-	    //	    shapeInfo.uncScale[string("norm_pu_")+ chbin.Data()]  = integral*0.05;  
-	    //	    shapeInfo.uncScale[string("norm_ch1_umet_")+ chbin.Data()]  = integral*0.005;
-	    
-	    if(inFileUrl.Contains("2016")) {
-	      //	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2016"] = integral*0.005;
-	      shapeInfo.uncScale["norm_umet_2016"] = integral*0.003;        
-	    } else  if(inFileUrl.Contains("2017")) {
-	      //	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2017"] = integral*0.005;   
-	      shapeInfo.uncScale["norm_umet_2017"] = integral*0.003; 
-	    } else  if(inFileUrl.Contains("2018")) {
-	      //	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2018"] = integral*0.005; 
-	      shapeInfo.uncScale["norm_umet_2018"] = integral*0.003; 
-	    }
-	    
-	    if(chbin.Contains("SR" )) {
-	      if(inFileUrl.Contains("2016")) {    
-		shapeInfo.uncScale["norm_SR_ch1_effc_2016"] = integral*0.04; 
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2016"] = integral*0.02; 
-	      } else if(inFileUrl.Contains("2017")) {    
-		shapeInfo.uncScale["norm_SR_ch1_effc_2017"] = integral*0.04;
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2017"] = integral*0.02; 
-	      } else if(inFileUrl.Contains("2018")) {
-		shapeInfo.uncScale["norm_SR_ch1_effc_2018"] = integral*0.04;  
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2018"] = integral*0.02;  
-	      }
-	    } else {
-	      if(inFileUrl.Contains("2016")) { 
-		shapeInfo.uncScale["norm_CR_ch1_effc_2016"] = integral*0.008; 
-		shapeInfo.uncScale["norm_CR_ch1_effmistag_2016"] = integral*0.003; 
-	      } else  if(inFileUrl.Contains("2017")) { 
-		shapeInfo.uncScale["norm_CR_ch1_effc_2017"] = integral*0.008;  
-		shapeInfo.uncScale["norm_CR_ch1_effmistag_2017"] = integral*0.003;  
-	      } else  if(inFileUrl.Contains("2018")) { 
-		shapeInfo.uncScale["norm_CR_ch1_effc_2018"] = integral*0.008; 
-		shapeInfo.uncScale["norm_CR_ch1_effmistag_2018"] = integral*0.003; 
-	      }
-	    }
-	   
-	  } // end otherbkg
-
-	  if(it->second.shortName.find("ttbarbba")!=string::npos){
-	    
-	    if(inFileUrl.Contains("2016")) {shapeInfo.uncScale["norm_pu_2016"] = integral*0.01;
-            } else if(inFileUrl.Contains("2017")) { shapeInfo.uncScale["norm_pu_2017"] = integral*0.01;
-            } else if(inFileUrl.Contains("2018")) {  shapeInfo.uncScale["norm_pu_2018"] = integral*0.01;}
-	    
-	    //	    shapeInfo.uncScale["norm_pu"] = integral*0.002;
-	    //	    shapeInfo.uncScale[string("norm_pu_")+ chbin.Data()]  = integral*0.01;   
-	    //	    shapeInfo.uncScale[string("norm_ch1_umet_")+ chbin.Data()]  = integral*0.003;
-	    
-	    if(inFileUrl.Contains("2016")) { 
-	      //	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2016"] = integral*0.004; 
-              shapeInfo.uncScale["norm_umet_2016"] = integral*0.003; 
-            } else  if(inFileUrl.Contains("2017")) { 
-	      //	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2017"] = integral*0.004; 
-              shapeInfo.uncScale["norm_umet_2017"] = integral*0.003; 
-            } else  if(inFileUrl.Contains("2018")) { 
-	      //	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2018"] = integral*0.004; 
-              shapeInfo.uncScale["norm_umet_2018"] = integral*0.003; 
-            }
-	    
-	    //	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.004;    
-	    
-	    if(chbin.Contains("SR" )) { //SRs
-	      if(inFileUrl.Contains("2016")) {    
-		shapeInfo.uncScale["norm_SR_ch1_effc_2016"] = integral*0.015;
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2016"] = integral*0.01; 
-	      } else if(inFileUrl.Contains("2017")) {    
-		shapeInfo.uncScale["norm_SR_ch1_effc_2017"] = integral*0.015;  
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2017"] = integral*0.01;
-	      } else if(inFileUrl.Contains("2016")) {    
-		shapeInfo.uncScale["norm_SR_ch1_effc_2018"] = integral*0.015;  
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2018"] = integral*0.01;
-	      }
-	      shapeInfo.uncScale["norm_ch1_SR_toppt"] = integral*0.02;     
-	      //	      shapeInfo.uncScale[string("norm_ch1_toppt_")+ chbin.Data()]  = integral*0.02;  
-	    } else { // CRs
-	      if(inFileUrl.Contains("2016")) { 
-		shapeInfo.uncScale["norm_CR_ch1_effc_2016"] = integral*0.002;
-		shapeInfo.uncScale["norm_CR_ch1_effmistag_2016"] = integral*0.001;   
-	      } else if(inFileUrl.Contains("2017")) { 
-		shapeInfo.uncScale["norm_CR_ch1_effc_2017"] = integral*0.002;   
-		shapeInfo.uncScale["norm_CR_ch1_effmistag_2017"] = integral*0.001;  
-	      } else if(inFileUrl.Contains("2018")) { 
-		shapeInfo.uncScale["norm_CR_ch1_effc_2018"] = integral*0.002; 
-		shapeInfo.uncScale["norm_CR_ch1_effmistag_2018"] = integral*0.001;  
-	      }
-	      shapeInfo.uncScale["norm_ch1_CR_toppt"] = integral*0.01;   
-	    }
-	    
-	  }
-
-	  if(it->second.shortName.find("ttbarcba")!=string::npos){       
-	    
-	    if(inFileUrl.Contains("2016")) {shapeInfo.uncScale["norm_pu_2016"] = integral*0.008;
-            } else if(inFileUrl.Contains("2017")) { shapeInfo.uncScale["norm_pu_2017"] = integral*0.008;
-            } else if(inFileUrl.Contains("2018")) {  shapeInfo.uncScale["norm_pu_2018"] = integral*0.008;}
-	    
-	    //	    shapeInfo.uncScale["norm_pu"] = integral*0.003;
-	    //	    shapeInfo.uncScale[string("norm_pu_")+ chbin.Data()]  = integral*0.008;   
-	    //	    shapeInfo.uncScale[string("norm_ch1_umet_")+ chbin.Data()]  = integral*0.003;
-	    
-	    if(inFileUrl.Contains("2016")) { 
-	      //	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2016"] = integral*0.005; 
-              shapeInfo.uncScale["norm_umet_2016"] = integral*0.003; 
-            } else  if(inFileUrl.Contains("2017")) { 
-	      //	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2017"] = integral*0.005; 
-              shapeInfo.uncScale["norm_umet_2017"] = integral*0.003; 
-            } else  if(inFileUrl.Contains("2018")) { 
-	      //	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2018"] = integral*0.005; 
-              shapeInfo.uncScale["norm_umet_2018"] = integral*0.003; 
-            }
-	    
-	    //	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.005;  
-	    // shapeInfo.uncScale["norm_umet"] = integral*0.003;
-	    
-	    if(chbin.Contains("SR" )) {   
-	      //	      shapeInfo.uncScale[string("norm_ch1_effc_")+ chbin.Data()] = integral*0.06;    
-	      if(inFileUrl.Contains("2016")) {   
-		shapeInfo.uncScale["norm_SR_ch1_effc_2016"] = integral*0.06; 
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2016"] = integral*0.005; 
-	      } else if(inFileUrl.Contains("2017")) {   
-		shapeInfo.uncScale["norm_SR_ch1_effc_2017"] = integral*0.06;
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2017"] = integral*0.005; 
-	      } else if(inFileUrl.Contains("2018")) {   
-		shapeInfo.uncScale["norm_SR_ch1_effc_2018"] = integral*0.06; 
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2018"] = integral*0.005;
-	      }
-	      shapeInfo.uncScale["norm_ch1_SR_toppt"] = integral*0.02;   
-
-            }else{
-	      if(inFileUrl.Contains("2016")) { 
-		shapeInfo.uncScale["norm_CR_ch1_effc_2016"] = integral*0.015; 
-		shapeInfo.uncScale["norm_CR_ch1_effmistag_2016"] = integral*0.001; 
-	      } else if(inFileUrl.Contains("2017")) { 
-		shapeInfo.uncScale["norm_CR_ch1_effc_2017"] = integral*0.015; 
-		shapeInfo.uncScale["norm_CR_ch1_effmistag_2017"] = integral*0.001;   
-	      } else if(inFileUrl.Contains("2018")) { 
-		shapeInfo.uncScale["norm_CR_ch1_effc_2018"] = integral*0.015;       
-		shapeInfo.uncScale["norm_CR_ch1_effmistag_2018"] = integral*0.001;
-	      }
-	      shapeInfo.uncScale["norm_ch1_CR_toppt"] = integral*0.01;   
-
-            } 
-	                                            
-	  }// end tt+cc
-
-	  if(it->second.shortName.find("ttbarlig")!=string::npos){  
-	    
-	    if(inFileUrl.Contains("2016")) {shapeInfo.uncScale["norm_pu_2016"] = integral*0.008;
-            } else if(inFileUrl.Contains("2017")) { shapeInfo.uncScale["norm_pu_2017"] = integral*0.008;
-            } else if(inFileUrl.Contains("2018")) {  shapeInfo.uncScale["norm_pu_2018"] = integral*0.008;}
-	    
-	    //	    shapeInfo.uncScale["norm_pu"] = integral*0.003; 
-	    //	    shapeInfo.uncScale[string("norm_pu_")+ chbin.Data()]  = integral*0.008;   
-	    //	    shapeInfo.uncScale[string("norm_ch1_umet_")+ chbin.Data()]  = integral*0.003;
-	    
-	    if(inFileUrl.Contains("2016")) { 
-	      //	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2016"] = integral*0.005; 
-              shapeInfo.uncScale["norm_umet_2016"] = integral*0.003; 
-            } else  if(inFileUrl.Contains("2017")) { 
-	      //	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2017"] = integral*0.005; 
-              shapeInfo.uncScale["norm_umet_2017"] = integral*0.003; 
-            } else  if(inFileUrl.Contains("2018")) { 
-	      //	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2018"] = integral*0.005; 
-              shapeInfo.uncScale["norm_umet_2018"] = integral*0.003; 
-            }
-	    
-	    //	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.004;
-	    // shapeInfo.uncScale["norm_umet"] = integral*0.003;   
-	    
-            if(chbin.Contains("SR" )) {
-	      if(inFileUrl.Contains("2016")) { 
-		shapeInfo.uncScale["norm_SR_ch1_effc_2016"] = integral*0.06; 
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2016"] = integral*0.05;
-	      } else if(inFileUrl.Contains("2017")) { 
-		shapeInfo.uncScale["norm_SR_ch1_effc_2017"] = integral*0.06; 
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2017"] = integral*0.05;  
-	      } else if(inFileUrl.Contains("2018")) { 
-		shapeInfo.uncScale["norm_SR_ch1_effc_2018"] = integral*0.06;  
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2018"] = integral*0.05;
-	      } 
-	      shapeInfo.uncScale["norm_ch1_SR_toppt"] = integral*0.03;   
-
-            }else{
-	      if(inFileUrl.Contains("2016")) { 
-		shapeInfo.uncScale["norm_CR_ch1_effc_2016"] = integral*0.015; 
-		shapeInfo.uncScale["norm_CR_ch1_effmistag_2016"] = integral*0.001; 
-	      } else if(inFileUrl.Contains("2017")) { 
-		shapeInfo.uncScale["norm_CR_ch1_effc_2017"] = integral*0.015;
-		shapeInfo.uncScale["norm_CR_ch1_effmistag_2017"] = integral*0.001; 
-	      } else if(inFileUrl.Contains("2018")) { 
-		shapeInfo.uncScale["norm_CR_ch1_effc_2018"] = integral*0.015; 
-		shapeInfo.uncScale["norm_CR_ch1_effmistag_2018"] = integral*0.001; 
-	      }
-	      shapeInfo.uncScale["norm_ch1_CR_toppt"] = integral*0.01;   
-
-            }         
-	  } // end tt+light
-
-	  // wlnu process
-	  if(it->second.shortName.find("wlnu")!=string::npos){
-	    
-	    if(inFileUrl.Contains("2016")) {shapeInfo.uncScale["norm_pu_2016"] = integral*0.05;
-            } else if(inFileUrl.Contains("2017")) { shapeInfo.uncScale["norm_pu_2017"] = integral*0.05;
-            } else if(inFileUrl.Contains("2018")) {  shapeInfo.uncScale["norm_pu_2018"] = integral*0.05;}
-	    
-	    //	    shapeInfo.uncScale["norm_pu"] = integral*0.003; 
-	    //	    shapeInfo.uncScale[string("norm_pu_")+ chbin.Data()]  = integral*0.05;   
-	    //	    shapeInfo.uncScale[string("norm_ch1_umet_")+ chbin.Data()]  = integral*0.015;
-	    
-	    if(inFileUrl.Contains("2016")) { 
-	      //	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2016"] = integral*0.005; 
-              shapeInfo.uncScale["norm_umet_2016"] = integral*0.015; 
-            } else  if(inFileUrl.Contains("2017")) { 
-	      //	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2017"] = integral*0.005; 
-              shapeInfo.uncScale["norm_umet_2017"] = integral*0.015; 
-            } else  if(inFileUrl.Contains("2018")) { 
-	      //	      if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e_2018"] = integral*0.005; 
-              shapeInfo.uncScale["norm_umet_2018"] = integral*0.015; 
-            }
-	    
-	    //	    if(chbin.Contains("e" )) shapeInfo.uncScale["norm_resrho_e"] = integral*0.004;
-	    // shapeInfo.uncScale["norm_umet"] = integral*0.003;   
-	    
-            if(chbin.Contains("SR" )) {
-	      if(inFileUrl.Contains("2016")) { 
-		shapeInfo.uncScale["norm_SR_ch1_effc_2016"] = integral*0.05; 
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2016"] = integral*0.04;
-	      } else if(inFileUrl.Contains("2017")) { 
-		shapeInfo.uncScale["norm_SR_ch1_effc_2017"] = integral*0.05; 
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2017"] = integral*0.04;  
-	      } else if(inFileUrl.Contains("2018")) { 
-		shapeInfo.uncScale["norm_SR_ch1_effc_2018"] = integral*0.05;  
-		shapeInfo.uncScale["norm_SR_ch1_effmistag_2018"] = integral*0.04;
-	      } 
-            }else{
-	      if(inFileUrl.Contains("2016")) { 
-		shapeInfo.uncScale["norm_CR_ch1_effc_2016"] = integral*0.035; 
-		shapeInfo.uncScale["norm_CR_ch1_effmistag_2016"] = integral*0.02; 
-	      } else if(inFileUrl.Contains("2017")) { 
-		shapeInfo.uncScale["norm_CR_ch1_effc_2017"] = integral*0.035;
-		shapeInfo.uncScale["norm_CR_ch1_effmistag_2017"] = integral*0.02; 
-	      } else if(inFileUrl.Contains("2018")) { 
-		shapeInfo.uncScale["norm_CR_ch1_effc_2018"] = integral*0.035; 
-		shapeInfo.uncScale["norm_CR_ch1_effmistag_2018"] = integral*0.02; 
-	      }
-            }         
-	    
-	  } // end W+jet
-	  
-
-	}// end Wh channel
 		
         //Normalization uncertainties (THEORY)
         if(it->second.shortName.find("otherbkg")!=string::npos){shapeInfo.uncScale["norm_otherbkgds"] = integral*0.27;} 
@@ -4371,34 +3832,33 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         }
 	if( U->first.find("CMS_haa4b_pdf") !=string::npos) continue; // skip shape PDF uncertainty    
 
-	if( U->first.find("CMS_haa4b_toppt") !=string::npos) continue;  // skip shape umet   }
+	//	if( U->first.find("CMS_haa4b_toppt") !=string::npos) continue;  // skip shape umet   }
 
-	if( U->first.find("CMS_haa4b_pu") !=string::npos) continue; // skip shape pu uncertainty
-	if( U->first.find("CMS_haa4b_umet") !=string::npos) continue; // skip shape umet
+	//	if( U->first.find("CMS_haa4b_pu") !=string::npos) continue; // skip shape pu uncertainty
+	//	if( U->first.find("CMS_haa4b_umet") !=string::npos) continue; // skip shape umet
 	
 	//if( U->first.find("CMS_haa4b_resRho_e") !=string::npos) continue; // skip shape e
-	if( U->first.find("CMS_haa4b_sys_e") !=string::npos) continue; // skip shape e
+	//	if( U->first.find("CMS_haa4b_sys_e") !=string::npos) continue; // skip shape e
 
-	if( U->first.find("CMS_haa4b_nloEWK") !=string::npos) continue; // skip shape nloEWK, its negligible..
-
+	//	if( U->first.find("CMS_haa4b_nloEWK") !=string::npos) continue; // skip shape nloEWK, its negligible..
+	/*
 	if( U->first.find("CMS_ch1_eff_c") !=string::npos) continue; 
 	if( U->first.find("CMS_ch1_eff_mistag") !=string::npos) continue; 
 	
 	if( U->first.find("CMS_ch2_eff_c") !=string::npos) continue; // skip shape eff_c
 	if( U->first.find("CMS_ch2_eff_mistag") !=string::npos) continue; // skip shape eff mistag
-
-		
-	if(correlatedLumi)
-	  if( U->first.find("CMS_ch1_eff_b") !=string::npos) continue; // skip shape eff_b 
+	*/
 	
-	if( U->first.find("CMS_ch2_eff_b") !=string::npos) continue; // skip shape eff_b 
+	//	if(correlatedLumi)
+	if( U->first.find("CMS_ch1_eff_B") !=string::npos) continue; // skip shape eff_b 
+	if( U->first.find("CMS_ch2_eff_B") !=string::npos) continue; // skip shape eff_b 
 
 	if(runZh) { // UPDATE TESTs: 090123
-	  if( U->first.find("_jes") !=string::npos) continue; // skip shape JEC
-	  if( U->first.find("CMS_res_j") !=string::npos) continue; // skip shape res_j  
+	  if( U->first.find("_JES") !=string::npos) continue; // skip shape JEC
+	  if( U->first.find("_JER") !=string::npos) continue; // skip shape res_j  
 	} 
 	
-
+	
         char line[2048];
         sprintf(line,"%-45s %-10s ", U->first.c_str(), U->second?"shape":"lnN");
         bool isNonNull = false;
@@ -4755,36 +4215,48 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           varName.ReplaceAll("down","Down");
           varName.ReplaceAll("up","Up");
 
+	  // set year
+	  TString iyear("");
+	  if(inFileUrl.Contains("2016")){  iyear="2016"; }
+	  else  if(inFileUrl.Contains("2017")){  iyear="2017";}
+	  else  if(inFileUrl.Contains("2018")){  iyear="2018";}
+
           if(varName==""){//does nothing
-            //    }else if(varName.EndsWith("_jes")){varName.ReplaceAll("_jes","_CMS_scale_j");
-            //    }else if(varName.BeginsWith("_umet")) { continue; //skip this one for now
-          }else if(varName.BeginsWith("_jer")){ varName.ReplaceAll("_jer","_CMS_res_j"); //+year.Data());
-	    /*
-	    if(inFileUrl.Contains("2016"))varName.ReplaceAll("_jer","_CMS_res_j_2016"); // continue;//skip res for now
-	    else if(inFileUrl.Contains("2017"))varName.ReplaceAll("_jer","_CMS_res_j_2017");
-	    else if(inFileUrl.Contains("2018"))varName.ReplaceAll("_jer","_CMS_res_j_2018");
-	    */
-	    //	  }else if(varName.BeginsWith("_jer")){ varName.ReplaceAll("_jer","_CMS_resRho_e");
+
+	    //	  }else if(varName.EndsWith("_jes")){
+	  }else if(varName.BeginsWith("_jes")){ // CHECK!!!    
+	    //varName.ReplaceAll("_jes","_CMS_scale_j");
+	    if(runZh) { varName.ReplaceAll("_jes",string("_CMS_ch2_JES_")+iyear.Data());  }  
+	    else { varName.ReplaceAll("_jes",string("_CMS_ch1_JES_")+iyear.Data());  }  
+	  } else if(varName.BeginsWith("_pu")){
+	    if(runZh) { varName.ReplaceAll("_pu",string("_CMS_ch2_pu_")+iyear.Data());  }
+	    else { varName.ReplaceAll("_pu",string("_CMS_ch1_pu_")+iyear.Data());  }     
+	  } else if(varName.BeginsWith("_resRho_e")){
+	    if(runZh) { varName.ReplaceAll("_resRho_e",string("_CMS_ch2_resRho_e_")+iyear.Data());  }     
+	    else { varName.ReplaceAll("_resRho_e",string("_CMS_ch1_resRho_e_")+iyear.Data());  }
+	  } else if(varName.BeginsWith("_sys_e")){
+	    if(runZh) { varName.ReplaceAll("_sys_e",string("_CMS_ch2_sys_e_")+iyear.Data());  }  
+	    else { varName.ReplaceAll("_sys_e",string("_CMS_ch1_sys_e_")+iyear.Data());  }   
+	  }else if(varName.BeginsWith("_umet")) { //continue; //skip this one for now
+	    if(runZh) { varName.ReplaceAll("_umet",string("_CMS_ch2_umet_")+iyear.Data());  }  
+	    else { varName.ReplaceAll("_umet",string("_CMS_ch1_umet_")+iyear.Data());  }
+	  }else if(varName.BeginsWith("_jer")){ 
+	    //varName.ReplaceAll("_jer","_CMS_res_j"); //+iyear.Data());
+	    if(runZh) { varName.ReplaceAll("_jer",string("_CMS_ch2_JER_")+iyear.Data());  }     
+	    else { varName.ReplaceAll("_jer",string("_CMS_ch1_JER_")+iyear.Data());  }     
           }else if(varName.BeginsWith("_les")){
             continue; // skip this one for now
             //      if(ch.Contains("e"  ))varName.ReplaceAll("_les","_CMS_scale_e");
             //      if(ch.Contains("mu"))varName.ReplaceAll("_les","_CMS_scale_m");
           }else if(varName.BeginsWith("_btag"  )){
-	    if(runZh) {
-	      varName.ReplaceAll("_btag","_CMS_ch2_eff_b");     
-	      //	      varName.ReplaceAll("_btag","_CMS_ch2_eff_b_"+year.Data());
-	    }else {
-	      //	      varName.ReplaceAll("_btag","_CMS_ch1_eff_b"); //+year.Data());  
-	      if(inFileUrl.Contains("2016")) varName.ReplaceAll("_btag","_CMS_ch1_eff_b_2016");
-	      else if(inFileUrl.Contains("2017"))varName.ReplaceAll("_btag","_CMS_ch1_eff_b_2017");
-	      else if(inFileUrl.Contains("2018"))varName.ReplaceAll("_btag","_CMS_ch1_eff_b_2018"); 
-	    }
+	    if(runZh) { varName.ReplaceAll("_btag",string("_CMS_ch2_eff_B_")+iyear.Data());  } 
+	    else { varName.ReplaceAll("_btag",string("_CMS_ch1_eff_B_")+iyear.Data());  }        
           }else if(varName.BeginsWith("_ctag"  )){
-	    if(runZh) varName.ReplaceAll("_ctag","_CMS_ch2_eff_c");
-	    else varName.ReplaceAll("_ctag","_CMS_ch1_eff_c");  
+	    if(runZh) { varName.ReplaceAll("_ctag",string("_CMS_ch2_eff_C_")+iyear.Data());  } 
+	    else { varName.ReplaceAll("_ctag",string("_CMS_ch1_eff_C_")+iyear.Data());  }
           }else if(varName.BeginsWith("_ltag"  )){
-	    if(runZh)varName.ReplaceAll("_ltag","_CMS_ch2_eff_mistag");
-	    else varName.ReplaceAll("_ltag","_CMS_ch1_eff_mistag");  
+	    if(runZh) { varName.ReplaceAll("_ltag",string("_CMS_ch2_eff_mistag_")+iyear.Data());  } 
+	    else { varName.ReplaceAll("_ltag",string("_CMS_ch1_eff_mistag_")+iyear.Data());  }  
             //          }else if(varName.BeginsWith("_pu"    )){varName.ReplaceAll("_pu", "_CMS_haa4b_pu");
             //    }else if(varName.BeginsWith("_pdf" )){
             //      if (proc.Contains("wh")!=std::string::npos) {continue; }
@@ -4832,7 +4304,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		if(inFileUrl.Contains("2016")){
 		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.13;xbins[4]=0.17;xbins[5]=0.35;
 		}
-		
 		if(inFileUrl.Contains("2017")){     
 		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.15;xbins[4]=0.21;xbins[5]=0.35; 
 		}
@@ -5030,6 +4501,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	      histo->SetBinContent(binx, 1E-6); //histo->SetBinError(binx, 1E-6);  }
 	      histo->SetBinError(binx, procWeight); 
 
+	      // What if QCD?? Add 100% uncertainty
 	      if (verbose ) {
 		printf("--- verbose : AllInfo_t::HandleEmptyBins : found empty bins " ) ;
 		printf(" proc = %s ", procName.c_str() ) ; printf(", year = %s ", year.Data() ) ;
