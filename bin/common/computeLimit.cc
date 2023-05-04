@@ -3505,6 +3505,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
   //
   void AllInfo_t::addHardCodedUncertainties(string histoName){
     
+    // set year                                                                                                                                                       
+    TString iyear("");                                                                                                                                                
+    if(inFileUrl.Contains("2016")){  iyear="2016"; }                                                                                                                  
+    else  if(inFileUrl.Contains("2017")){  iyear="2017";}                                                                                                             
+    else  if(inFileUrl.Contains("2018")){  iyear="2018";}     
+
 
     for(unsigned int p=0;p<sorted_procs.size();p++){
       string procName = sorted_procs[p];
@@ -3540,17 +3546,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	//Id+Trigger efficiencies combined
 	if( (!it->second.isData) ) {// && (it->second.shortName.find("ddqcd")==string::npos) ){
 
-	  // set year
-	  TString iyear("");
-	  if(inFileUrl.Contains("2016")){  iyear="2016"; } 
-          else  if(inFileUrl.Contains("2017")){  iyear="2017";} 
-          else  if(inFileUrl.Contains("2018")){  iyear="2018";} 
 
 	  if(runZh){
 	    if(chbin.Contains("e" ))  shapeInfo.uncScale[string("CMS_ch2_eff_e_")+iyear.Data()] = integral*0.04; //0.072124;
 	    if(chbin.Contains("mu"))  shapeInfo.uncScale[string("CMS_ch2_eff_m_")+iyear.Data()] = integral*0.04; //0.061788;
 	  } else {
-	    if(chbin.Contains("e" ))  shapeInfo.uncScale[string("CMS_ch1_eff_e_")+iyear.Data()] = integral*0.05; 
+	    if(chbin.Contains("e" ))  shapeInfo.uncScale[string("CMS_ch1_eff_e_")+iyear.Data()] = integral*0.04; 
 	    if(chbin.Contains("mu"))  shapeInfo.uncScale[string("CMS_ch1_eff_m_")+iyear.Data()] = integral*0.04;
 	  }
 
@@ -3575,11 +3576,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  // b-tagging uncertainty independed per process (same b-jet multiplicity) 
           if(chbin.Contains("SR" )) { 
             shapeInfo.uncScale[string("norm_ch2_effb_")+ chbin.Data()] = integral*0.085; 
-            shapeInfo.uncScale[string("norm_ch2_JES_")+ chbin.Data()] = integral*0.008; 
+	    //            shapeInfo.uncScale[string("norm_ch2_JES_")+ chbin.Data()] = integral*0.008; 
             shapeInfo.uncScale[string("norm_ch2_JER_")+ chbin.Data()] = integral*0.005; 
           } else { 
             shapeInfo.uncScale[string("norm_ch2_effb_")+ chbin.Data()] = integral*0.06; 
-            shapeInfo.uncScale[string("norm_ch2_JES_")+ chbin.Data()] = integral*0.005; 
+	    //            shapeInfo.uncScale[string("norm_ch2_JES_")+ chbin.Data()] = integral*0.005; 
             shapeInfo.uncScale[string("norm_ch2_JER_")+ chbin.Data()] = integral*0.005; 
           } 
 	  
@@ -3610,15 +3611,15 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  // b-tagging uncertainty independed per process (same b-jet multiplicity) 
 	  
 	  if(chbin.Contains("SR" )) { 
-	    // if(correlatedLumi)
-	    shapeInfo.uncScale[string("norm_ch1_effb_")+ chbin.Data()] = integral*0.10; //0.09; 
-	    //	    if(correlatedLumi)shapeInfo.uncScale[string("norm_ch1_JES_")+chbin.Data()] = integral*0.008; 
-	    //	    if(correlatedLumi)shapeInfo.uncScale[string("norm_ch1_res_j_")+ chbin.Data()] = integral*0.005; 
+	    if(correlatedLumi)
+	      shapeInfo.uncScale[string("norm_ch1_effb_")+ chbin.Data()] = integral*0.10; //0.09; 
+	    //	    shapeInfo.uncScale[string("norm_ch1_JES_")+chbin.Data()] = integral*0.008; 
+	    //	    shapeInfo.uncScale[string("norm_ch1_JER_")+ chbin.Data()] = integral*0.005; 
 	  } else { 
-	    // if(correlatedLumi)
-	    shapeInfo.uncScale[string("norm_ch1_effb_")+ chbin.Data()] = integral*0.08; //0.06; 
-	    //	    if(correlatedLumi)shapeInfo.uncScale[string("norm_ch1_JES_")+chbin.Data()] = integral*0.005; 
-	    //	    if(correlatedLumi)shapeInfo.uncScale[string("norm_ch1_res_j_")+ chbin.Data()] = integral*0.001; 
+	    if(correlatedLumi)
+	      shapeInfo.uncScale[string("norm_ch1_effb_")+ chbin.Data()] = integral*0.08; //0.06; 
+	    //	    shapeInfo.uncScale[string("norm_ch1_JES_")+chbin.Data()] = integral*0.005; 
+	    //	    shapeInfo.uncScale[string("norm_ch1_JER_")+ chbin.Data()] = integral*0.005; 
 	  } 
 	  
 
@@ -3655,7 +3656,183 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  }
 	}
 	*/
+	if(runZh) { // Zh channel:
+	  if (it->second.shortName.find("wh")!=string::npos) {
+	    shapeInfo.uncScale[string("norm_pu_")+iyear.Data()] = integral*0.01; 
+	    if(chbin.Contains("SR" )) {        
+	      shapeInfo.uncScale[string("norm_SR_ch2_effc_")+iyear.Data()] = integral*0.008; 
+	      shapeInfo.uncScale[string("norm_SR_ch2_effmistag_")+iyear.Data()] = integral*0.006; 
+	    } else {
+	      shapeInfo.uncScale[string("norm_CR_ch2_effmistag_")+iyear.Data()] = integral*0.001;   
+	    }
+	  }
 
+	  if(it->second.shortName.find("otherbkg")!=string::npos){ 
+	    shapeInfo.uncScale[string("norm_pu_")+iyear.Data()] = integral*0.02;   
+	    if(chbin.Contains("SR" )) { 
+	      shapeInfo.uncScale[string("norm_SR_ch2_effc_")+iyear.Data()] = integral*0.06; 
+	      shapeInfo.uncScale[string("norm_SR_ch2_effmistag_")+iyear.Data()] = integral*0.05; 
+	    } else {
+	      shapeInfo.uncScale[string("norm_CR_ch2_effc_")+iyear.Data()] = integral*0.008; 
+	      shapeInfo.uncScale[string("norm_CR_ch2_effmistag_")+iyear.Data()] = integral*0.002; 
+	    }
+	  }
+
+	  if(it->second.shortName.find("ttbarbba")!=string::npos){
+	    shapeInfo.uncScale[string("norm_pu_")+iyear.Data()] = integral*0.01;       
+	    if(chbin.Contains("SR" )) {  
+	      shapeInfo.uncScale[string("norm_SR_ch2_effmistag_")+iyear.Data()] = integral*0.01; 
+	      shapeInfo.uncScale[string("norm_SR_ch2_effc_")+iyear.Data()] = integral*0.015; 
+	      //      shapeInfo.uncScale["norm_SR_ch2_effb"] = integral*0.07; 
+	    }else{
+	      shapeInfo.uncScale[string("norm_CR_ch2_effmistag_")+iyear.Data()] = integral*0.001; 
+	      shapeInfo.uncScale[string("norm_CR_ch2_effc_")+iyear.Data()] = integral*0.002; 
+	    }
+	  }
+
+	  if(it->second.shortName.find("ttbarcba")!=string::npos){
+	    shapeInfo.uncScale[string("norm_pu_")+iyear.Data()] = integral*0.01;  
+	    if(chbin.Contains("SR" )) {         
+	      shapeInfo.uncScale[string("norm_SR_ch2_effmistag_")+iyear.Data()] = integral*0.03;//0.03; 
+	      shapeInfo.uncScale[string("norm_SR_ch2_effc_")+iyear.Data()] = integral*0.12; //0.12; 
+	    }else{   
+	      shapeInfo.uncScale[string("norm_CR_ch2_effmistag_")+iyear.Data()] = integral*0.001; 
+	      shapeInfo.uncScale[string("norm_CR_ch2_effc_")+iyear.Data()] = integral*0.015; 
+	      //      shapeInfo.uncScale["norm_ch2_CR_toppt"] = integral*0.01;
+	    }
+	  } 
+
+	  if(it->second.shortName.find("ttbarlig")!=string::npos){
+	    shapeInfo.uncScale[string("norm_pu_")+iyear.Data()] = integral*0.01;      
+	    if(chbin.Contains("SR" )) { 
+	      shapeInfo.uncScale[string("norm_SR_ch2_effmistag_")+iyear.Data()] = integral*0.06; 
+	      shapeInfo.uncScale[string("norm_SR_ch2_effc_")+iyear.Data()] = integral*0.005; 
+	      //      shapeInfo.uncScale["norm_ch2_SR_toppt"] = integral*0.02; 
+	    }else{   
+	      shapeInfo.uncScale[string("norm_CR_ch2_effmistag_")+iyear.Data()] = integral*0.005; 
+	      shapeInfo.uncScale[string("norm_CR_ch2_effc_")+iyear.Data()] = integral*0.005; 
+	      //shapeInfo.uncScale["norm_ch2_CR_toppt"] = integral*0.006; 
+	    }
+	  }
+
+	  // Still on zll:
+	  if(it->second.shortName.find("zll")!=string::npos){
+	    shapeInfo.uncScale[string("norm_pu_")+iyear.Data()] = integral*0.02;
+	    if(chbin.Contains("SR" )) { // SRs
+	      shapeInfo.uncScale[string("norm_SR_ch2_effmistag_")+iyear.Data()] = integral*0.05; 
+	      shapeInfo.uncScale[string("norm_SR_ch2_effc_")+iyear.Data()] = integral*0.04; 
+
+	    } else { // CRs
+	      shapeInfo.uncScale[string("norm_CR_ch2_effmistag_")+iyear.Data()] = integral*0.01; 
+	      shapeInfo.uncScale[string("norm_CR_ch2_effc_")+iyear.Data()] = integral*0.015;
+	    }
+	  }// end zll process
+
+	} else { // Wh channel:
+
+ 	  if (it->second.shortName.find("wh")!=string::npos) { 
+	    shapeInfo.uncScale[string("norm_pu_")+iyear.Data()] = integral*0.01;
+
+	    if(chbin.Contains("SR" )) { 
+	      shapeInfo.uncScale[string("norm_SR_ch1_effc_")+iyear.Data()] = integral*0.002; 
+	      shapeInfo.uncScale[string("norm_SR_ch1_effmistag_")+iyear.Data()] = integral*0.002; 
+	      //      shapeInfo.uncScale["norm_ch1_SR_scalejes"] = integral*0.006; 
+            } else { 
+
+	    }
+
+          }
+	  if(it->second.shortName.find("otherbkg")!=string::npos){  
+	    shapeInfo.uncScale[string("norm_pu_")+iyear.Data()] = integral*0.05; 
+	    shapeInfo.uncScale[string("norm_umet_")+iyear.Data()] = integral*0.003; 
+
+	    if(chbin.Contains("SR" )) {
+	      shapeInfo.uncScale[string("norm_SR_ch1_effc_")+iyear.Data()] = integral*0.04; 
+	      shapeInfo.uncScale[string("norm_SR_ch1_effmistag_")+iyear.Data()] = integral*0.02; 
+	    } else {
+	      shapeInfo.uncScale[string("norm_CR_ch1_effc_")+iyear.Data()] = integral*0.008; 
+	      shapeInfo.uncScale[string("norm_CR_ch1_effmistag_")+iyear.Data()] = integral*0.003; 
+
+	    }
+
+	  } // end otherbkg
+
+	  if(it->second.shortName.find("ttbarbba")!=string::npos){
+	    shapeInfo.uncScale[string("norm_pu_")+iyear.Data()] = integral*0.01; 
+	    shapeInfo.uncScale[string("norm_umet_")+iyear.Data()] = integral*0.003;          
+
+	    if(chbin.Contains("SR" )) { //SRs
+	      shapeInfo.uncScale[string("norm_SR_ch1_effc_")+iyear.Data()] = integral*0.015;
+	      shapeInfo.uncScale[string("norm_SR_ch1_effmistag_")+iyear.Data()] = integral*0.01; 
+
+	      shapeInfo.uncScale["norm_ch1_SR_toppt"] = integral*0.02;     
+	      //      shapeInfo.uncScale[string("norm_ch1_toppt_")+ chbin.Data()]  = integral*0.02;  
+	    } else { // CRs
+	      shapeInfo.uncScale[string("norm_CR_ch1_effc_")+iyear.Data()] = integral*0.002;
+	      shapeInfo.uncScale[string("norm_CR_ch1_effmistag_")+iyear.Data()] = integral*0.001;   
+
+	      shapeInfo.uncScale["norm_ch1_CR_toppt"] = integral*0.01;   
+	    }
+
+	  } // end tt+bb
+
+	  if(it->second.shortName.find("ttbarcba")!=string::npos){       
+	    shapeInfo.uncScale[string("norm_pu_")+iyear.Data()] = integral*0.008;  
+	    shapeInfo.uncScale[string("norm_umet_")+iyear.Data()] = integral*0.003;          
+
+	    if(chbin.Contains("SR" )) {   
+	      //      shapeInfo.uncScale[string("norm_ch1_effc_")+ chbin.Data()] = integral*0.06;    
+	      shapeInfo.uncScale[string("norm_SR_ch1_effc_")+iyear.Data()] = integral*0.06; 
+	      shapeInfo.uncScale[string("norm_SR_ch1_effmistag_")+iyear.Data()] = integral*0.005; 
+
+	      shapeInfo.uncScale["norm_ch1_SR_toppt"] = integral*0.02;   
+
+            }else{
+	      shapeInfo.uncScale[string("norm_CR_ch1_effc_")+iyear.Data()] = integral*0.015; 
+	      shapeInfo.uncScale[string("norm_CR_ch1_effmistag_")+iyear.Data()] = integral*0.001; 
+
+	      shapeInfo.uncScale["norm_ch1_CR_toppt"] = integral*0.01;   
+
+            } 
+
+	  }// end tt+cc
+
+	  if(it->second.shortName.find("ttbarlig")!=string::npos){  
+	    shapeInfo.uncScale[string("norm_pu_")+iyear.Data()] = integral*0.008; 
+	    shapeInfo.uncScale[string("norm_umet_")+iyear.Data()] = integral*0.003;          
+
+	    if(chbin.Contains("SR" )) {
+	      shapeInfo.uncScale[string("norm_SR_ch1_effc_")+iyear.Data()] = integral*0.06; 
+	      shapeInfo.uncScale[string("norm_SR_ch1_effmistag_")+iyear.Data()] = integral*0.05;
+
+	      shapeInfo.uncScale["norm_ch1_SR_toppt"] = integral*0.03;   
+
+            }else{
+	      shapeInfo.uncScale[string("norm_CR_ch1_effc_")+iyear.Data()] = integral*0.015; 
+	      shapeInfo.uncScale[string("norm_CR_ch1_effmistag_")+iyear.Data()] = integral*0.001; 
+
+	      shapeInfo.uncScale["norm_ch1_CR_toppt"] = integral*0.01;   
+
+            }         
+	  } // end tt+light
+
+	  // wlnu process
+	  if(it->second.shortName.find("wlnu")!=string::npos){
+	    shapeInfo.uncScale[string("norm_pu_")+iyear.Data()] = integral*0.05;      
+	    shapeInfo.uncScale[string("norm_umet_")+iyear.Data()] = integral*0.015;          
+
+	    if(chbin.Contains("SR" )) {
+	      shapeInfo.uncScale[string("norm_SR_ch1_effc_")+iyear.Data()] = integral*0.05; 
+	      shapeInfo.uncScale[string("norm_SR_ch1_effmistag_")+iyear.Data()] = integral*0.04;
+
+            }else{
+	      shapeInfo.uncScale[string("norm_CR_ch1_effc_")+iyear.Data()] = integral*0.035; 
+	      shapeInfo.uncScale[string("norm_CR_ch1_effmistag_")+iyear.Data()] = integral*0.02; 
+
+            }         
+	  } // end W+jet
+
+	}
 		
         //Normalization uncertainties (THEORY)
         if(it->second.shortName.find("otherbkg")!=string::npos){shapeInfo.uncScale["norm_otherbkgds"] = integral*0.27;} 
@@ -3828,34 +4005,36 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if ( noCorrelatedStatUnc && U->first.find("CMS_haa4b_stat_") !=string::npos ) {
            if ( verbose ) { printf(" --- verbose : AllInfo_t::buildDataCards :   noCorrelatedStatUnc set to true.  Skipping this one.\n") ; }
 	   continue;
-	   //	   if(C->first.find("CR")!=string::npos) continue ;
         }
 	if( U->first.find("CMS_haa4b_pdf") !=string::npos) continue; // skip shape PDF uncertainty    
 
-	//	if( U->first.find("CMS_haa4b_toppt") !=string::npos) continue;  // skip shape umet   }
+	if( U->first.find("CMS_haa4b_toppt") !=string::npos) continue;  // skip shape umet   }
 
-	//	if( U->first.find("CMS_haa4b_pu") !=string::npos) continue; // skip shape pu uncertainty
-	//	if( U->first.find("CMS_haa4b_umet") !=string::npos) continue; // skip shape umet
+	if( U->first.find("CMS_ch1_pu") !=string::npos) continue; 
+	if( U->first.find("CMS_ch1_umet") !=string::npos) continue; 
+
+	if( U->first.find("CMS_ch2_pu") !=string::npos) continue; // skip shape pu uncertainty
+	if( U->first.find("CMS_ch2_umet") !=string::npos) continue; // skip shape umet
 	
 	//if( U->first.find("CMS_haa4b_resRho_e") !=string::npos) continue; // skip shape e
-	//	if( U->first.find("CMS_haa4b_sys_e") !=string::npos) continue; // skip shape e
+	if( U->first.find("CMS_ch1_sys_e") !=string::npos) continue; // skip shape e
+	if( U->first.find("CMS_ch2_sys_e") !=string::npos) continue; // skip shape e  
 
-	//	if( U->first.find("CMS_haa4b_nloEWK") !=string::npos) continue; // skip shape nloEWK, its negligible..
-	/*
-	if( U->first.find("CMS_ch1_eff_c") !=string::npos) continue; 
+	if( U->first.find("CMS_haa4b_nloEWK") !=string::npos) continue; // skip shape nloEWK, its negligible..
+	
+	if( U->first.find("CMS_ch1_eff_C") !=string::npos) continue; 
 	if( U->first.find("CMS_ch1_eff_mistag") !=string::npos) continue; 
-	
-	if( U->first.find("CMS_ch2_eff_c") !=string::npos) continue; // skip shape eff_c
+	if( U->first.find("CMS_ch2_eff_C") !=string::npos) continue; // skip shape eff_c
 	if( U->first.find("CMS_ch2_eff_mistag") !=string::npos) continue; // skip shape eff mistag
-	*/
 	
-	//	if(correlatedLumi)
-	if( U->first.find("CMS_ch1_eff_B") !=string::npos) continue; // skip shape eff_b 
+	if(correlatedLumi)
+	  if( U->first.find("CMS_ch1_eff_B") !=string::npos) continue; // skip shape eff_b 
+
 	if( U->first.find("CMS_ch2_eff_B") !=string::npos) continue; // skip shape eff_b 
 
 	if(runZh) { // UPDATE TESTs: 090123
-	  if( U->first.find("_JES") !=string::npos) continue; // skip shape JEC
-	  if( U->first.find("_JER") !=string::npos) continue; // skip shape res_j  
+	  //	  if( U->first.find("_jes") !=string::npos) continue; // skip shape JEC
+	  if( U->first.find("_res_j") !=string::npos) continue; // skip shape res_j  
 	} 
 	
 	
@@ -4224,10 +4403,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if(varName==""){//does nothing
 
 	    //	  }else if(varName.EndsWith("_jes")){
-	  }else if(varName.BeginsWith("_jes")){ // CHECK!!!    
+	  }else if(varName.EndsWith("_jes")){ // CHECK!!!    
 	    //varName.ReplaceAll("_jes","_CMS_scale_j");
-	    if(runZh) { varName.ReplaceAll("_jes",string("_CMS_ch2_JES_")+iyear.Data());  }  
-	    else { varName.ReplaceAll("_jes",string("_CMS_ch1_JES_")+iyear.Data());  }  
+	    if(runZh) { varName.ReplaceAll("_jes",string("_CMS_ch2_jes_")+iyear.Data());  }  
+	    else { varName.ReplaceAll("_jes",string("_CMS_ch1_jes_")+iyear.Data());  }  
 	  } else if(varName.BeginsWith("_pu")){
 	    if(runZh) { varName.ReplaceAll("_pu",string("_CMS_ch2_pu_")+iyear.Data());  }
 	    else { varName.ReplaceAll("_pu",string("_CMS_ch1_pu_")+iyear.Data());  }     
@@ -4242,8 +4421,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    else { varName.ReplaceAll("_umet",string("_CMS_ch1_umet_")+iyear.Data());  }
 	  }else if(varName.BeginsWith("_jer")){ 
 	    //varName.ReplaceAll("_jer","_CMS_res_j"); //+iyear.Data());
-	    if(runZh) { varName.ReplaceAll("_jer",string("_CMS_ch2_JER_")+iyear.Data());  }     
-	    else { varName.ReplaceAll("_jer",string("_CMS_ch1_JER_")+iyear.Data());  }     
+	    if(runZh) { varName.ReplaceAll("_jer",string("_CMS_ch2_res_j_")+iyear.Data());  }     
+	    else { varName.ReplaceAll("_jer",string("_CMS_ch1_res_j_")+iyear.Data());  }     
           }else if(varName.BeginsWith("_les")){
             continue; // skip this one for now
             //      if(ch.Contains("e"  ))varName.ReplaceAll("_les","_CMS_scale_e");
@@ -4335,11 +4514,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    }else if(jetBin.Contains("4b")){ 
 	      //-----------------
 	      if(!runZh) {
-	      //double xbins[] = {-0.31, -0.13, -0.07, 0.05, 0.15, 0.35};  
-		double xbins[] = {-0.31, -0.13, -0.07, 0.05, 0.19, 0.35};  // july 21, new trial bins
-		//		xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.07;xbins[3]=0.01;xbins[4]=0.11;xbins[5]=0.35;  
-	      
-		//	      double xbins[] = {-0.31, -0.13, -0.07, 0.07, 0.35}; // sep 23, georgia for unblinding
+
+		//		double xbins[] = {-0.31, -0.13, -0.07, 0.05, 0.19, 0.35};  // july 21, new trial bins
+		double xbins[] = {-0.31, -0.13, -0.07, 0.07,  0.35}; 
+		/*
 		if(inFileUrl.Contains("2016"))  {
 		  xbins[0]=-0.31;xbins[1]=-0.19;xbins[2]=-0.13;xbins[3]=-0.05;xbins[4]=0.09; xbins[5]=0.35;
 		}
@@ -4349,9 +4527,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		}
 		if(inFileUrl.Contains("2018"))  {
 		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.07;xbins[3]=0.03;xbins[4]=0.17; xbins[5]=0.35;     
-		  //xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.07;xbins[3]=-0.01;xbins[4]=0.09; xbins[5]=0.35;  
 		}
-		
+		*/
 
 		int nbins=sizeof(xbins)/sizeof(double);
 		unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
@@ -4359,21 +4536,29 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 	      } else { // runZH
 
-		double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.07, 0.35}; // 0.03-->0.01 (Apr 19) -- Apr 5, 2023, georgia after Jan noticed
-		
+		//		double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.07, 0.35}; // 0.03-->0.01 (Apr 19) -- Apr 5, 2023, georgia after Jan noticed
+		if(inFileUrl.Contains("2016")) { // ehm.. 4 bins in 2016 ZH due to fit failing in the e-channel  
+		  double xbins[] = {-0.31, -0.15, -0.09, -0.05, 0.35}; 
+
+		  int nbins=sizeof(xbins)/sizeof(double);
+		  unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);  
+		  utils::root::fixExtremities(unc->second, false, true);
+		} else {
+		  double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.07, 0.35};
+		/*
 		if(inFileUrl.Contains("2016")) {    
-		  //		  xbins[0]=-0.31; xbins[1]=-0.15; xbins[2]=-0.09; xbins[3]=-0.03; xbins[4]=0.05; xbins[5]=0.35;
-		  //		  if(jetBin.Contains("e")) {
-		  xbins[0]=-0.31; xbins[1]=-0.15; xbins[2]=-0.09; xbins[3]=-0.05; xbins[4]=-0.01; xbins[5]=0.35; 
-		    //		    xbins[0]=-0.31; xbins[1]=-0.15; xbins[2]=-0.09; xbins[3]=-0.05; xbins[4]=0.01; xbins[5]=0.35; // THATS QUITE GOOD
-		  //} 
+		  if(jetBin.Contains("e")) {
+		    xbins[] = {-0.31, -0.15, -0.09, -0.05, 0.35};
+		  } else {
+		    xbins[0]=-0.31; xbins[1]=-0.15; xbins[2]=-0.09; xbins[3]=-0.05; xbins[4]=-0.01; xbins[5]=0.35; 
+		  } 
 		}
-		// -0.09 --> -0.07, -0.03 --> -0.01
-		
+		*/
 		int nbins=sizeof(xbins)/sizeof(double);
 		unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
 		utils::root::fixExtremities(unc->second, false, true); 
-	      }
+		}
+	      } // end Zh
 	    } // 4b category
 
         }
