@@ -1625,7 +1625,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     //    if(chData->first.find("_B_")!=string::npos) {if(procName.Contains("W#rightarrow"))continue;}
     //    if(chData->first.find("_D_")!=string::npos) {if(procName.Contains("W#rightarrow"))continue;}    
     
-    if(inFileUrl.Contains("2018") || inFileUrl.Contains("2016")){
+    if(inFileUrl.Contains("2018") ){ // || inFileUrl.Contains("2016")){
       //  if(!correlatedLumi) 
       if(procName.Contains("W#rightarrow"))continue; // in regions B,D, skip W sample from non-QCD processes  
     }
@@ -4517,8 +4517,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		utils::root::fixExtremities(unc->second, false, true);
 
 	      } else { // runZH
-
+		double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.35};   
 		//		double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.07, 0.35}; // 0.03-->0.01 (Apr 19) -- Apr 5, 2023, georgia after Jan noticed
+		/*
 		if(inFileUrl.Contains("2016")) { // ehm.. 4 bins in 2016 ZH due to fit failing in the e-channel  
 		  double xbins[] = {-0.31, -0.15, -0.09, -0.05, 0.35}; 
 
@@ -4527,19 +4528,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		  utils::root::fixExtremities(unc->second, false, true);
 		} else {
 		  double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.07, 0.35};
-		/*
-		if(inFileUrl.Contains("2016")) {    
-		  if(jetBin.Contains("e")) {
-		    xbins[] = {-0.31, -0.15, -0.09, -0.05, 0.35};
-		  } else {
-		    xbins[0]=-0.31; xbins[1]=-0.15; xbins[2]=-0.09; xbins[3]=-0.05; xbins[4]=-0.01; xbins[5]=0.35; 
-		  } 
-		}
 		*/
 		int nbins=sizeof(xbins)/sizeof(double);
 		unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
 		utils::root::fixExtremities(unc->second, false, true); 
-		}
+	      
 	      } // end Zh
 	    } // 4b category
 
