@@ -3574,8 +3574,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	if(runZh) {
 	  
 	  // b-tagging uncertainty independed per process (same b-jet multiplicity) 
-	  shapeInfo.uncScale[string("norm_ch2_effb_")+ chbin.Data()] = integral*0.085; 
-	  //            shapeInfo.uncScale[string("norm_ch2_JES_")+ chbin.Data()] = integral*0.008; 
+
+	  if(correlatedLumi)
+	    shapeInfo.uncScale[string("norm_ch2_effb_")+ chbin.Data()] = integral*0.085; 
+	  //	  shapeInfo.uncScale[string("norm_ch2_JES_")+ chbin.Data()] = integral*0.008; 
 	  shapeInfo.uncScale[string("norm_ch2_JER_")+ chbin.Data()] = integral*0.005; 
 	  
 	  // Add correlation terms in btagSFbc/light, JES/JER: 
@@ -3604,7 +3606,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	} else { // Wh channel
 	  // b-tagging uncertainty independed per process (same b-jet multiplicity) 
 	  
-	  shapeInfo.uncScale[string("norm_ch1_effb_")+ chbin.Data()] = integral*0.10; //0.09; 
+	  if(correlatedLumi)     
+	    shapeInfo.uncScale[string("norm_ch1_effb_")+ chbin.Data()] = integral*0.10; //0.09; 
 
 	  // Add correlation terms in btagSFbc/light, JES/JER:    
 	  /*
@@ -3666,7 +3669,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    if(chbin.Contains("SR" )) {  
 	      shapeInfo.uncScale[string("norm_SR_ch2_effmistag_")+iyear.Data()] = integral*0.01; 
 	      shapeInfo.uncScale[string("norm_SR_ch2_effc_")+iyear.Data()] = integral*0.015; 
-	      //      shapeInfo.uncScale["norm_SR_ch2_effb"] = integral*0.07; 
 	    }else{
 	      shapeInfo.uncScale[string("norm_CR_ch2_effmistag_")+iyear.Data()] = integral*0.001; 
 	      shapeInfo.uncScale[string("norm_CR_ch2_effc_")+iyear.Data()] = integral*0.002; 
@@ -3823,17 +3825,16 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if(runZh) {
           if(it->second.shortName.find("wlnu")!=string::npos){shapeInfo.uncScale["norm_wjet"] = integral*0.02;}
 
-	  if(it->second.shortName.find("ttbarbba")!=string::npos){shapeInfo.uncScale["norm_ch2_ttbb"] = integral*0.50;}
-	  if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_ch2_ttcc"] = integral*0.50;}
+	  //	  if(it->second.shortName.find("ttbarbba")!=string::npos){shapeInfo.uncScale["norm_ch2_ttbb"] = integral*0.50;}
+	  //	  if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_ch2_ttcc"] = integral*0.50;}
 
         } else {
 	  if(it->second.shortName.find("zll")!=string::npos){shapeInfo.uncScale["norm_zll"] = integral*0.02;}
-	  if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_ch1_ttcc"] = integral*0.50;} 
+	  //	  if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_ch1_ttcc"] = integral*0.50;} 
 
 	}
 
         if(it->second.shortName.find("ttbarlig")!=string::npos){shapeInfo.uncScale["norm_toplight"] = integral*0.06;} 
-	//	if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_topcc"] = integral*0.50;} 
 
         if (!subFake){
           if(it->second.shortName.find("qcd")!=string::npos){shapeInfo.uncScale["norm_qcd"] = integral*0.50;} 
@@ -3999,7 +4000,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	if( U->first.find("CMS_ch2_pu") !=string::npos) continue; // skip shape pu uncertainty
 	if( U->first.find("CMS_ch2_umet") !=string::npos) continue; // skip shape umet
 	
-	//if( U->first.find("CMS_haa4b_resRho_e") !=string::npos) continue; // skip shape e
+	if( U->first.find("CMS_ch1_resRho_e") !=string::npos) continue; // skip shape e
+	if( U->first.find("CMS_ch2_resRho_e") !=string::npos) continue; // skip shape e    
+
 	if( U->first.find("CMS_ch1_sys_e") !=string::npos) continue; // skip shape e
 	if( U->first.find("CMS_ch2_sys_e") !=string::npos) continue; // skip shape e  
 
@@ -4010,9 +4013,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	if( U->first.find("CMS_ch2_eff_C") !=string::npos) continue; // skip shape eff_c
 	if( U->first.find("CMS_ch2_eff_mistag") !=string::npos) continue; // skip shape eff mistag
 	
-	//	if(correlatedLumi)
-	if( U->first.find("CMS_ch1_eff_B") !=string::npos) continue; // skip shape eff_b 
-	if( U->first.find("CMS_ch2_eff_B") !=string::npos) continue; // skip shape eff_b 
+	if(correlatedLumi) { // separate years:
+	  if( U->first.find("CMS_ch1_eff_B") !=string::npos) continue; // skip shape eff_b 
+	  if( U->first.find("CMS_ch2_eff_B") !=string::npos) continue; // skip shape eff_b 
+	}
 
 	if(runZh) { // UPDATE TESTs: 090123
 	  //	  if( U->first.find("_jes") !=string::npos) continue; // skip shape JEC
@@ -4042,16 +4046,23 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       if(runZh) { // ZH channel:
 	if(C->first.find("ee" )!=string::npos) {         
-	  //	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  
-	  // fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  
+	    fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())   
+	    fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarcba 1 [0.1,4.0]\n",year.Data());    
+
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){  
 	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_e%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
 	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_e%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
 	  }
 	  
         } else if (C->first.find("mumu" )!=string::npos) {  
-	  //	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  
-	  //fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  
+	    fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end()) 
+	    fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarcba 1 [0.1,4.0]\n",year.Data());    
+	  
+
           if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){
             if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_mu%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
             if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_mu%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
@@ -4061,11 +4072,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       } else { // WH channel:
 	if(C->first.find("e" )!=string::npos) {             
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarcba 1 [0.1,4.0]\n",year.Data());    
+ 
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_e%s rateParam bin1 wlnu 1 [0.1,4.0] \n",year.Data());
 	  
         } else if (C->first.find("mu" )!=string::npos) {    
-	  
           if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
+	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarcba 1 [0.1,4.0]\n",year.Data());    
+	  
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_mu%s rateParam bin1 wlnu 1 [0.1,4.0]\n",year.Data()); 
         }                  
 	
@@ -4517,12 +4531,15 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		utils::root::fixExtremities(unc->second, false, true);
 
 	      } else { // runZH
-		double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.35};   
+		//		double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.35};   
 		//		double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.07, 0.35}; // 0.03-->0.01 (Apr 19) -- Apr 5, 2023, georgia after Jan noticed
-		/*
-		if(inFileUrl.Contains("2016")) { // ehm.. 4 bins in 2016 ZH due to fit failing in the e-channel  
-		  double xbins[] = {-0.31, -0.15, -0.09, -0.05, 0.35}; 
+		double xbins[] = {-0.31, -0.15, -0.09, -0.05, 0.35};     
 
+		//		if(inFileUrl.Contains("2016")) { // ehm.. 4 bins in 2016 ZH due to fit failing in the e-channel  
+		//		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.09;xbins[3]=-0.05;xbins[4]=0.35;   
+		  //double xbins[] = {-0.31, -0.15, -0.09, -0.05, 0.35}; 
+		//		}
+		/*
 		  int nbins=sizeof(xbins)/sizeof(double);
 		  unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);  
 		  utils::root::fixExtremities(unc->second, false, true);
@@ -4587,21 +4604,21 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       if(runZh) { // ZH channel:
 
 	procWeight_2016.insert({"Other Bkgds", 3.23}); 
-	procWeight_2016.insert({"W#rightarrow l#nu", 10.68}); //25.70}); 
+	procWeight_2016.insert({"W#rightarrow l#nu", 7.51}); //10.68}); //25.70}); 
 	procWeight_2016.insert({"Z#rightarrow ll", 3.44});  
 	procWeight_2016.insert({"t#bar{t} + b#bar{b}", 5.57 });
 	procWeight_2016.insert({"t#bar{t} + c#bar{c}", 5.57 });  
 	procWeight_2016.insert({"t#bar{t} + light", 0.45 });
 
 	procWeight_2017.insert({"Other Bkgds", 2.28}); 
-	procWeight_2017.insert({"W#rightarrow l#nu", 27.11}); //38.93});
+	procWeight_2017.insert({"W#rightarrow l#nu", 5.91}); //27.11}); //38.93});
 	procWeight_2017.insert({"Z#rightarrow ll", 5.06});
 	procWeight_2017.insert({"t#bar{t} + b#bar{b}", 12.16 });    
 	procWeight_2017.insert({"t#bar{t} + c#bar{c}", 1.97 });
 	procWeight_2017.insert({"t#bar{t} + light", 1.05 }); 
 
 	procWeight_2018.insert({"Other Bkgds", 2.60});   
-	procWeight_2018.insert({"W#rightarrow l#nu", 51.90}); //69.48});
+	procWeight_2018.insert({"W#rightarrow l#nu", 8.79}); //51.90}); //69.48});
 	procWeight_2018.insert({"Z#rightarrow ll", 6.86 });     
 	procWeight_2018.insert({"t#bar{t} + b#bar{b}", 4.27 }); 
 	procWeight_2018.insert({"t#bar{t} + c#bar{c}", 1.91 }); 
@@ -4610,7 +4627,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       } else { // WH channel:
 
 	procWeight_2016.insert({"Other Bkgds", 3.23});
-	procWeight_2016.insert({"W#rightarrow l#nu", 10.68}); //25.70});
+	procWeight_2016.insert({"W#rightarrow l#nu", 7.51}); //10.68}); //25.70});
 	procWeight_2016.insert({"Z#rightarrow ll", 3.44});
 	procWeight_2016.insert({"t#bar{t} + b#bar{b}", 4.87 });
 	procWeight_2016.insert({"t#bar{t} + c#bar{c}", 1.15 });
@@ -4618,7 +4635,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	procWeight_2016.insert({"QCD", 1. });
 
 	procWeight_2017.insert({"Other Bkgds", 2.28});     
-	procWeight_2017.insert({"W#rightarrow l#nu", 27.11}); //38.93});  
+	procWeight_2017.insert({"W#rightarrow l#nu", 5.91}); //27.11}); //38.93});  
 	procWeight_2017.insert({"Z#rightarrow ll", 5.06});  
 	procWeight_2017.insert({"t#bar{t} + b#bar{b}", 6.46 });   
 	procWeight_2017.insert({"t#bar{t} + c#bar{c}", 1.72 }); 
@@ -4626,7 +4643,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	procWeight_2017.insert({"QCD", 1. }); 
 
 	procWeight_2018.insert({"Other Bkgds", 2.60});    
-	procWeight_2018.insert({"W#rightarrow l#nu", 51.90}); //69.48});
+	procWeight_2018.insert({"W#rightarrow l#nu", 8.79}); //51.90}); //69.48});
 	procWeight_2018.insert({"Z#rightarrow ll", 6.86});   
 	procWeight_2018.insert({"t#bar{t} + b#bar{b}", 3.14 }); 
 	procWeight_2018.insert({"t#bar{t} + c#bar{c}", 1.45 });
