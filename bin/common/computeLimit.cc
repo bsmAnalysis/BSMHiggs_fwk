@@ -4533,8 +4533,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	      } else { // runZH
 		//		double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.35};   
 		//		double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.07, 0.35}; // 0.03-->0.01 (Apr 19) -- Apr 5, 2023, georgia after Jan noticed
-		double xbins[] = {-0.31, -0.15, -0.09, -0.05, 0.35};     
-
+		//		double xbins[] = {-0.31, -0.15, -0.09, -0.05, 0.35};     
+		double xbins[] = {-0.31, -0.15, -0.05, 0.35};   
 		//		if(inFileUrl.Contains("2016")) { // ehm.. 4 bins in 2016 ZH due to fit failing in the e-channel  
 		//		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.09;xbins[3]=-0.05;xbins[4]=0.35;   
 		  //double xbins[] = {-0.31, -0.15, -0.09, -0.05, 0.35}; 
