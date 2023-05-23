@@ -2494,13 +2494,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
     for(std::map<string, std::map<string, double> >::iterator p = map_yields.begin();p!=map_yields.end();p++){
       for(std::map<string, double>::iterator ch = p->second.begin();ch!=p->second.end();ch++){
 	
-	if(p->first.find("t#bar{t} + light")<std::string::npos)continue;//never drop this background  
+	//	if(p->first.find("t#bar{t} + light")<std::string::npos)continue;//never drop this background  
 	if(p->first.find("t#bar{t} + b#bar{b}")<std::string::npos)continue;//never drop this background  
 	if(p->first.find("t#bar{t} + c#bar{c}")<std::string::npos)continue;//never drop this background      
 	if(p->first.find("Other Bkgds")<std::string::npos)continue;//never drop this background    
 	if(p->first.find("Z#rightarrow ll")<std::string::npos)continue;//never drop this background   
 
 	if(!runZh) { //Wh channel   
+	  if(p->first.find("t#bar{t} + light")<std::string::npos)continue;//never drop this background 
 	  if(p->first.find("W#rightarrow l#nu")<std::string::npos)continue;//never drop this background      
 	}
         double tot = total_yields[ch->first];
@@ -3506,11 +3507,10 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
   void AllInfo_t::addHardCodedUncertainties(string histoName){
     
     // set year                                                                                                                                                       
-    TString iyear("");                                                                                                                                                
-    if(inFileUrl.Contains("2016")){  iyear="2016"; }                                                                                                                  
-    else  if(inFileUrl.Contains("2017")){  iyear="2017";}                                                                                                             
-    else  if(inFileUrl.Contains("2018")){  iyear="2018";}     
-
+    TString iyear("");            
+    if(inFileUrl.Contains("2016")){  iyear="2016"; }
+    else  if(inFileUrl.Contains("2017")){  iyear="2017";} 
+    else  if(inFileUrl.Contains("2018")){  iyear="2018";}
 
     for(unsigned int p=0;p<sorted_procs.size();p++){
       string procName = sorted_procs[p];
@@ -3545,8 +3545,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 	//Id+Trigger efficiencies combined
 	if( (!it->second.isData) ) {// && (it->second.shortName.find("ddqcd")==string::npos) ){
-
-
 	  if(runZh){
 	    if(chbin.Contains("e" ))  shapeInfo.uncScale[string("CMS_ch2_eff_e_")+iyear.Data()] = integral*0.04; //0.072124;
 	    if(chbin.Contains("mu"))  shapeInfo.uncScale[string("CMS_ch2_eff_m_")+iyear.Data()] = integral*0.04; //0.061788;
@@ -3577,7 +3575,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 	  if(correlatedLumi)
 	    shapeInfo.uncScale[string("norm_ch2_effb_")+ chbin.Data()] = integral*0.085; 
-	  //	  shapeInfo.uncScale[string("norm_ch2_JES_")+ chbin.Data()] = integral*0.008; 
+	  
+	  //shapeInfo.uncScale[string("norm_ch2_JES_")+ chbin.Data()] = integral*0.008; 
 	  shapeInfo.uncScale[string("norm_ch2_JER_")+ chbin.Data()] = integral*0.005; 
 	  
 	  // Add correlation terms in btagSFbc/light, JES/JER: 
@@ -3643,6 +3642,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	}
 	*/
 	if(runZh) { // Zh channel:
+
 	  if (it->second.shortName.find("wh")!=string::npos) {
 	    shapeInfo.uncScale[string("norm_ch2_pu_")+iyear.Data()] = integral*0.01; 
 	    if(chbin.Contains("SR" )) {        
@@ -3664,6 +3664,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	    }
 	  }
 
+	  
 	  if(it->second.shortName.find("ttbarbba")!=string::npos){
 	    shapeInfo.uncScale[string("norm_ch2_pu_")+iyear.Data()] = integral*0.01;       
 	    if(chbin.Contains("SR" )) {  
@@ -4012,7 +4013,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	if( U->first.find("CMS_ch1_eff_mistag") !=string::npos) continue; 
 	if( U->first.find("CMS_ch2_eff_C") !=string::npos) continue; // skip shape eff_c
 	if( U->first.find("CMS_ch2_eff_mistag") !=string::npos) continue; // skip shape eff mistag
-	
+
 	if(correlatedLumi) { // separate years:
 	  if( U->first.find("CMS_ch1_eff_B") !=string::npos) continue; // skip shape eff_b 
 	  if( U->first.find("CMS_ch2_eff_B") !=string::npos) continue; // skip shape eff_b 
@@ -4483,8 +4484,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.15;xbins[4]=0.21;xbins[5]=0.35; 
 		}
 		if(inFileUrl.Contains("2018")){     
-		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.15;xbins[4]=0.21;xbins[5]=0.35;      
-		  //xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.13;xbins[4]=0.17;xbins[5]=0.35;   
+		  //		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.15;xbins[4]=0.21;xbins[5]=0.35;      
+		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.13;xbins[4]=0.17;xbins[5]=0.35;   
 		}
 		
 		int nbins=sizeof(xbins)/sizeof(double);   
@@ -4533,13 +4534,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	      } else { // runZH
 		//		double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.35};   
 		//		double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.07, 0.35}; // 0.03-->0.01 (Apr 19) -- Apr 5, 2023, georgia after Jan noticed
-		//		double xbins[] = {-0.31, -0.15, -0.09, -0.05, 0.35};     
-		double xbins[] = {-0.31, -0.15, -0.05, 0.35};   
-		//		if(inFileUrl.Contains("2016")) { // ehm.. 4 bins in 2016 ZH due to fit failing in the e-channel  
-		//		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.09;xbins[3]=-0.05;xbins[4]=0.35;   
-		  //double xbins[] = {-0.31, -0.15, -0.09, -0.05, 0.35}; 
-		//		}
+		//		double xbins[] = {-0.31, -0.15, -0.09, -0.05, 0.35};     //4bins
+		double xbins[] = {-0.31, -0.15, -0.09, -0.01, 0.35};     //4bins         v2
+		//		double xbins[] = {-0.31, -0.11, -0.01, 0.35};   //or 3bins?
 		/*
+		if(inFileUrl.Contains("2016")) { // ehm.. 4 bins in 2016 ZH due to fit failing in the e-channel  
+		  xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.09;xbins[3]=-0.01;xbins[4]=0.35;   
+		}
+		
 		  int nbins=sizeof(xbins)/sizeof(double);
 		  unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);  
 		  utils::root::fixExtremities(unc->second, false, true);
