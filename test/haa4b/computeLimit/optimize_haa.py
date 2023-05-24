@@ -91,6 +91,9 @@ CWD=os.getcwd()
 QCDinputFile = "all_plotter_forLimits.root" 
 #QCDinputFile = "plotter_WH_2017_2020_02_05_forLimits.root" 
 
+
+rRange=" --rMin=-1 --rMax=5 "
+rRange_zh=" --rMin=0 --rMax=5 "  
 ### HERE SET blind = False TO MOVE TO UNBLINDING STAGE: ###
 blind = False
 
@@ -155,6 +158,7 @@ years = ["2016", "2017", "2018"]
 BESTDISCOVERYOPTIM=True #Set to True for best discovery optimization, Set to False for best limit optimization
 ASYMTOTICLIMIT=True #Set to True to compute asymptotic limits (faster) instead of toy based hybrid-new limits
 #BINS = ["3b","4b","3b,4b"] # list individual analysis bins to consider as well as combined bins (separated with a coma but without space)
+#BINS=["3b"]
 BINS = ["3b,4b"] # list individual analysis bins to consider as well as combined bins (separated with a coma but without space)
 #BINS = ["3b+4b"] # list individual analysis bins to consider as well as combined bins (separated with a coma but without space)
 
@@ -542,7 +546,7 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("\ntext2workspace.py card_combined_wh.dat -o workspace-wh-first.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-first.log \n")  
            #compute pvalue
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace-wh-first.root >& COMB-signif-first.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace-wh-first.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0 --rMin=-1 --rMax=5 --stepSize=0.05 --robustFit 1  >& log-first.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace-wh-first.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0 " + rRange + " --stepSize=0.05 --robustFit 1  >& log-first.txt \n") 
 
            SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics-first.root\n\n\n")
            SCRIPT.writelines("mkdir datacards-wh-first-pass\n") ;
@@ -565,7 +569,7 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("\ntext2workspace.py "+ datacard + " -o workspace.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-second.log \n")  
               #compute pvalue
               SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace.root >& COMB-signif-second.log;\n")
-              SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0 --rMin=-1 --rMax=5 --stepSize=0.05 --robustFit 1  >& log.txt \n") 
+              SCRIPT.writelines("combine -M FitDiagnostics workspace.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0 " + rRange + " --stepSize=0.05 --robustFit 1  >& log.txt \n") 
               # save likelihood fit info
               SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+".txt \n")
               SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +".txt\n")
@@ -576,7 +580,7 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("tt_mu=`cat simfit_m"+ str(m) +".txt | grep 'tt_norm_mu' | awk '{print $4;}'`;\n")
 	      SCRIPT.writelines("v_e=`cat simfit_m"+ str(m) +".txt | grep 'w_norm_e' | awk '{print $4;}'`;\n")
 	      SCRIPT.writelines("v_mu=`cat simfit_m"+ str(m) +".txt | grep 'w_norm_mu' | awk '{print $4;}'`;\n")
-              SCRIPT.writelines("combine -M AsymptoticLimits   -v 2  --rMin=-1 --rMax=5  -m " +  str(m) + " workspace.root " + bonly_asimov + " --setParameters tt_norm_e=$tt_e,w_norm_e=$v_e,tt_norm_mu=$tt_mu,w_norm_mu=$v_mu >& COMB.log;\n")
+              SCRIPT.writelines("combine -M AsymptoticLimits   -v 2  " + rRange + "  -m " +  str(m) + " workspace.root " + bonly_asimov + " --setParameters tt_norm_e=$tt_e,w_norm_e=$v_e,tt_norm_mu=$tt_mu,w_norm_mu=$v_mu >& COMB.log;\n")
               SCRIPT.writelines("mv higgsCombineTest.AsymptoticLimits.mH" + str(m) +".root higgsCombineTest.AsymptoticLimits.mH" + str(m) +"-all.root\n")
 
 
@@ -692,7 +696,7 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_e_zh.dat".format(thredMCstat))
            SCRIPT.writelines("\ntext2workspace.py card_e_zh.dat -o workspace_e.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e.log \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_e.root >& COMB-signif-e.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0 --rMin=-1 --rMax=5 --stepSize=0.05 --robustFit 1  >& log_e.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0 " + rRange_zh + " --stepSize=0.05 --robustFit 1  >& log_e.txt \n") 
            SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_e.txt \n")
 	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_e.txt\n")
 	   SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_e.root\n")
@@ -701,7 +705,7 @@ for signalSuffix in signalSuffixVec :
 	      SCRIPT.writelines("\nsed -i '$a*	   autoMCStats	   {}' card_mu_zh.dat".format(thredMCstat))
            SCRIPT.writelines("\ntext2workspace.py card_mu_zh.dat -o workspace_mu.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu.log \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_mu.root > COMB-signif-mu.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  --rMin=-1 --rMax=5 --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  " + rRange_zh + " --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
            SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_mu.txt \n")
 	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_mu.txt\n")
 	   SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_mu.root\n")
@@ -723,7 +727,7 @@ for signalSuffix in signalSuffixVec :
                   SCRIPT.writelines("rm workspace.root; mv workspace_e.root workspace.root\n")
               if args.onlymuLimit : 
                  SCRIPT.writelines("rm workspace.root; mv workspace_mu.root workspace.root\n")  
-              SCRIPT.writelines("combine -M AsymptoticLimits --rMin=-1 --rMax=5  -v 2  -m " +  str(m) + " workspace.root "+ bonly_asimov +"  --setParameters z_norm_3b_e=$v_3b_e,z_norm_4b_e=$v_4b_e,z_norm_3b_mu=$v_3b_mu,z_norm_4b_mu=$v_4b_mu,tt_norm_e=$tt_e,tt_norm_mu=$tt_mu >& COMB.log;\n") 
+              SCRIPT.writelines("combine -M AsymptoticLimits " + rRange_zh + "  -v 2  -m " +  str(m) + " workspace.root "+ bonly_asimov +"  --setParameters z_norm_3b_e=$v_3b_e,z_norm_4b_e=$v_4b_e,z_norm_3b_mu=$v_3b_mu,z_norm_4b_mu=$v_4b_mu,tt_norm_e=$tt_e,tt_norm_mu=$tt_mu >& COMB.log;\n") 
               SCRIPT.writelines("mv higgsCombineTest.AsymptoticLimits.mH" + str(m) +".root higgsCombineTest.AsymptoticLimits.mH" + str(m) +"-all.root\n")
 
            else:
@@ -833,7 +837,7 @@ for signalSuffix in signalSuffixVec :
            SCRIPT.writelines("sh combineCards_wh.sh;\n"); 
 #           SCRIPT.writelines("sh combineCards_{}_wh.sh;\n".format(year_to_run))     
            SCRIPT.writelines("text2workspace.py card_combined_wh.dat -o workspace-wh-first.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-wh-first.log \n")  
-           SCRIPT.writelines("combine -M FitDiagnostics workspace-wh-first.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  --rMin=-1 --rMax=5 --stepSize=0.05 --robustFit 1  >& log-wh-first.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace-wh-first.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  " + rRange + " --stepSize=0.05 --robustFit 1  >& log-wh-first.txt \n") 
 
            SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics-wh-first.root\n\n\n")
            SCRIPT.writelines("mkdir datacards-wh-first-pass\n") ;
@@ -862,7 +866,7 @@ for signalSuffix in signalSuffixVec :
 
            SCRIPT.writelines("\ntext2workspace.py card_e.dat -o workspace_e.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-e.log  \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_e.root >& COMB_e.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3      --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  --rMin=-1 --rMax=5 --stepSize=0.05 --robustFit 1  >& log_e.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace_e.root -m " +  str(m) + " -v 3      --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  " + rRange + " --stepSize=0.05 --robustFit 1  >& log_e.txt \n") 
            SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_e.txt \n")
 	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_e.txt\n")
 	   SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_e.root\n\n")
@@ -872,7 +876,7 @@ for signalSuffix in signalSuffixVec :
 
            SCRIPT.writelines("\ntext2workspace.py card_mu.dat -o workspace_mu.root --PO verbose --channel-masks  --PO \'ishaa\' --PO m=\'" + str(m) + "\' >& t2w-mu.log  \n")  
            SCRIPT.writelines("combine -M Significance --signif --pvalue -m " +  str(m) + " workspace_mu.root > COMB_mu.log;\n")
-           SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  --rMin=-1 --rMax=5 --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
+           SCRIPT.writelines("combine -M FitDiagnostics workspace_mu.root -m " +  str(m) + " -v 3     --saveNormalizations --saveShapes --saveWithUncertainties --saveNLL --ignoreCovWarning --cminDefaultMinimizerStrategy 0  " + rRange + " --stepSize=0.05 --robustFit 1  >& log_mu.txt \n") 
            SCRIPT.writelines("python " + CMSSW_BASE + "/src/UserCode/bsmhiggs_fwk/test/haa4b/computeLimit/print.py -u fitDiagnosticsTest.root > simfit_m"+ str(m)+"_mu.txt \n")
 	   SCRIPT.writelines("python " + CMSSW_BASE + "/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a fitDiagnosticsTest.root -g Nuisance_CrossCheck.root >> simfit_m"+ str(m) +"_mu.txt\n")
 	   SCRIPT.writelines("mv fitDiagnosticsTest.root fitDiagnostics_mu.root\n\n")
@@ -898,7 +902,7 @@ for signalSuffix in signalSuffixVec :
                  SCRIPT.writelines("rm workspace.root ; mv workspace_mu.root workspace.root\n") 
                  
                  # removed --freezeParameters tt_norm_e,tt_norm_mu
-              SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  --rMin=-1 --rMax=5  -m " +  str(m) + " workspace.root "+ bonly_asimov+" --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$z_3b_e,z_norm_4b_e=$z_4b_e,w_norm_e=$w_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$z_3b_mu,z_norm_4b_mu=$z_4b_mu,w_norm_mu=$w_mu >& COMB.log;\n")  
+              SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  " + rRange + "  -m " +  str(m) + " workspace.root "+ bonly_asimov+" --setParameters tt_norm_e=$tt_e,z_norm_3b_e=$z_3b_e,z_norm_4b_e=$z_4b_e,w_norm_e=$w_e,tt_norm_mu=$tt_mu,z_norm_3b_mu=$z_3b_mu,z_norm_4b_mu=$z_4b_mu,w_norm_mu=$w_mu >& COMB.log;\n")  
               SCRIPT.writelines("mv higgsCombineTest.AsymptoticLimits.mH" + str(m) +".root higgsCombineTest.AsymptoticLimits.mH" + str(m) +"-all.root\n")
 
            else:
@@ -1058,7 +1062,7 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("fi\n")
               SCRIPT.writelines("printf \" 2018,   tt_e = %s , tt_mu = %s , w_e = %s , w_mu = %s\\n\" $tt_e_2018, $tt_mu_2018, $v_e_2018, $v_mu_2018\n\n")
 
-	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2 --rMin=-1 --rMax=5  -m " +  str(m) + " workspace.root "+ bonly_asimov+" --setParameters tt_norm_e_2016=$tt_e_2016,w_norm_e_2016=$v_e_2016,tt_norm_mu_2016=$tt_mu_2016,w_norm_mu_2016=$v_mu_2016,tt_norm_e_2017=$tt_e_2017,w_norm_e_2017=$v_e_2017,tt_norm_mu_2017=$tt_mu_2017,w_norm_mu_2017=$v_mu_2017,tt_norm_e_2018=$tt_e_2018,w_norm_e_2018=$v_e_2018,tt_norm_mu_2018=$tt_mu_2018,w_norm_mu_2018=$v_mu_2018 >& COMB.log;\n")
+	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2 " + rRange + "  -m " +  str(m) + " workspace.root "+ bonly_asimov+" --setParameters tt_norm_e_2016=$tt_e_2016,w_norm_e_2016=$v_e_2016,tt_norm_mu_2016=$tt_mu_2016,w_norm_mu_2016=$v_mu_2016,tt_norm_e_2017=$tt_e_2017,w_norm_e_2017=$v_e_2017,tt_norm_mu_2017=$tt_mu_2017,w_norm_mu_2017=$v_mu_2017,tt_norm_e_2018=$tt_e_2018,w_norm_e_2018=$v_e_2018,tt_norm_mu_2018=$tt_mu_2018,w_norm_mu_2018=$v_mu_2018 >& COMB.log;\n")
 
            else:
 	      print("Do not support this mode!!!")
@@ -1243,7 +1247,7 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("fi\n")
               SCRIPT.writelines("printf \" 2018, mu:  tt = %s , v_3b = %s , v_4b = %s\\n\" $tt_mu_2018, $v_3b_mu_2018, $v_4b_mu_2018\n\n")
 
-	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2 --rMin=-1 --rMax=5  -m " +  str(m) + " workspace.root "+ bonly_asimov+"  --setParameters tt_norm_e_2016=$tt_e_2016,tt_norm_mu_2016=$tt_mu_2016,tt_norm_e_2017=$tt_e_2017,tt_norm_mu_2017=$tt_mu_2017,tt_norm_e_2018=$tt_e_2018,tt_norm_mu_2018=$tt_mu_2018,z_norm_3b_e_2016=$v_3b_e_2016,z_norm_4b_e_2016=$v_4b_e_2016,z_norm_3b_mu_2016=$v_3b_mu_2016,z_norm_4b_mu_2016=$v_4b_mu_2016,z_norm_3b_e_2017=$v_3b_e_2017,z_norm_4b_e_2017=$v_4b_e_2017,z_norm_3b_mu_2017=$v_3b_mu_2017,z_norm_4b_mu_2017=$v_4b_mu_2017,z_norm_3b_e_2018=$v_3b_e_2018,z_norm_4b_e_2018=$v_4b_e_2018,z_norm_3b_mu_2018=$v_3b_mu_2018,z_norm_4b_mu_2018=$v_4b_mu_2018 >& COMB.log;\n") 
+	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2 " + rRange + "  -m " +  str(m) + " workspace.root "+ bonly_asimov+"  --setParameters tt_norm_e_2016=$tt_e_2016,tt_norm_mu_2016=$tt_mu_2016,tt_norm_e_2017=$tt_e_2017,tt_norm_mu_2017=$tt_mu_2017,tt_norm_e_2018=$tt_e_2018,tt_norm_mu_2018=$tt_mu_2018,z_norm_3b_e_2016=$v_3b_e_2016,z_norm_4b_e_2016=$v_4b_e_2016,z_norm_3b_mu_2016=$v_3b_mu_2016,z_norm_4b_mu_2016=$v_4b_mu_2016,z_norm_3b_e_2017=$v_3b_e_2017,z_norm_4b_e_2017=$v_4b_e_2017,z_norm_3b_mu_2017=$v_3b_mu_2017,z_norm_4b_mu_2017=$v_4b_mu_2017,z_norm_3b_e_2018=$v_3b_e_2018,z_norm_4b_e_2018=$v_4b_e_2018,z_norm_3b_mu_2018=$v_3b_mu_2018,z_norm_4b_mu_2018=$v_4b_mu_2018 >& COMB.log;\n") 
 
            else:
 	      print("Do not support this mode!!!")
@@ -1478,7 +1482,7 @@ for signalSuffix in signalSuffixVec :
               SCRIPT.writelines("printf \" 2018, mu:  tt = %s , z_3b = %s , z_4b = %s\\n\" $tt_mu_2018, $z_3b_mu_2018, $z_4b_mu_2018\n\n")
 
               # Removed: --freezeParameters tt_norm_e_2016,tt_norm_mu_2016,tt_norm_e_2017,tt_norm_mu_2017,tt_norm_e_2018,tt_norm_mu_2018
-	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  --rMin=-1 --rMax=5  -m " +  str(m) + " workspace.root "+ bonly_asimov+" --setParameters tt_norm_e_2016=$tt_e_2016,z_norm_3b_e_2016=$z_3b_e_2016,z_norm_4b_e_2016=$z_4b_e_2016,w_norm_e_2016=$w_e_2016,tt_norm_mu_2016=$tt_mu_2016,z_norm_3b_mu_2016=$z_3b_mu_2016,z_norm_4b_mu_2016=$z_4b_mu_2016,w_norm_mu_2016=$w_mu_2016,tt_norm_e_2017=$tt_e_2017,z_norm_3b_e_2017=$z_3b_e_2017,z_norm_4b_e_2017=$z_4b_e_2017,w_norm_e_2017=$w_e_2017,tt_norm_mu_2017=$tt_mu_2017,z_norm_3b_mu_2017=$z_3b_mu_2017,z_norm_4b_mu_2017=$z_4b_mu_2017,w_norm_mu_2017=$w_mu_2017,tt_norm_e_2018=$tt_e_2018,z_norm_3b_e_2018=$z_3b_e_2018,z_norm_4b_e_2018=$z_4b_e_2018,w_norm_e_2018=$w_e_2018,tt_norm_mu_2018=$tt_mu_2018,z_norm_3b_mu_2018=$z_3b_mu_2018,z_norm_4b_mu_2018=$z_4b_mu_2018,w_norm_mu_2018=$w_mu_2018  >& COMB.log;\n") 
+	      SCRIPT.writelines("combine -M AsymptoticLimits  -v 2  " + rRange + "  -m " +  str(m) + " workspace.root "+ bonly_asimov+" --setParameters tt_norm_e_2016=$tt_e_2016,z_norm_3b_e_2016=$z_3b_e_2016,z_norm_4b_e_2016=$z_4b_e_2016,w_norm_e_2016=$w_e_2016,tt_norm_mu_2016=$tt_mu_2016,z_norm_3b_mu_2016=$z_3b_mu_2016,z_norm_4b_mu_2016=$z_4b_mu_2016,w_norm_mu_2016=$w_mu_2016,tt_norm_e_2017=$tt_e_2017,z_norm_3b_e_2017=$z_3b_e_2017,z_norm_4b_e_2017=$z_4b_e_2017,w_norm_e_2017=$w_e_2017,tt_norm_mu_2017=$tt_mu_2017,z_norm_3b_mu_2017=$z_3b_mu_2017,z_norm_4b_mu_2017=$z_4b_mu_2017,w_norm_mu_2017=$w_mu_2017,tt_norm_e_2018=$tt_e_2018,z_norm_3b_e_2018=$z_3b_e_2018,z_norm_4b_e_2018=$z_4b_e_2018,w_norm_e_2018=$w_e_2018,tt_norm_mu_2018=$tt_mu_2018,z_norm_3b_mu_2018=$z_3b_mu_2018,z_norm_4b_mu_2018=$z_4b_mu_2018,w_norm_mu_2018=$w_mu_2018  >& COMB.log;\n") 
 
            else:
 	      print("Do not support this mode!!!")
