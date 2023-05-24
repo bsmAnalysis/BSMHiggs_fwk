@@ -156,7 +156,7 @@ std::vector<string> keywords;
 int indexvbf = -1;
 int massL=-1, massR=-1;
 
-double dropBckgBelow=0.01; //0001; 
+double dropBckgBelow=0.1; //0.001; 
 
 /*
  *Case Sensitive Implementation of startsWith()
@@ -2496,11 +2496,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	
 	//	if(p->first.find("t#bar{t} + light")<std::string::npos)continue;//never drop this background  
 	if(p->first.find("t#bar{t} + b#bar{b}")<std::string::npos)continue;//never drop this background  
-	if(p->first.find("t#bar{t} + c#bar{c}")<std::string::npos)continue;//never drop this background      
+	//	if(p->first.find("t#bar{t} + c#bar{c}")<std::string::npos)continue;//never drop this background      
 	if(p->first.find("Other Bkgds")<std::string::npos)continue;//never drop this background    
 	if(p->first.find("Z#rightarrow ll")<std::string::npos)continue;//never drop this background   
 
 	if(!runZh) { //Wh channel   
+	  if(p->first.find("t#bar{t} + c#bar{c}")<std::string::npos)continue;//never drop this background      
 	  if(p->first.find("t#bar{t} + light")<std::string::npos)continue;//never drop this background 
 	  if(p->first.find("W#rightarrow l#nu")<std::string::npos)continue;//never drop this background      
 	}
@@ -3524,6 +3525,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
         TH1* h=shapeInfo.histo(); if (h) integral=h->Integral();
 	
+	if( (it->second.shortName.find("qcd")==string::npos) &&  (it->second.shortName.find("ttbarbba")==string::npos) &&
+	    (it->second.shortName.find("zll")==string::npos) ) {
+	    
 	//lumi
 	if(!it->second.isData && systpostfix.Contains('3')) {
 	  if(inFileUrl.Contains("2016")) shapeInfo.uncScale["lumi_13TeV_2016"] = integral*0.010; 
@@ -3554,6 +3558,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  }
 
 	}
+
+	} // end rateparams
 	  
 	  // PDF + alpha_s + QCD scale uncertainties (both ZH and WH): 
 	if( (it->second.shortName.find("wh")==string::npos) && (it->second.shortName.find("ddqcd")==string::npos) ){ 
@@ -3576,7 +3582,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  if(correlatedLumi)
 	    shapeInfo.uncScale[string("norm_ch2_effb_")+ chbin.Data()] = integral*0.085; 
 	  
-	  //shapeInfo.uncScale[string("norm_ch2_JES_")+ chbin.Data()] = integral*0.008; 
+	  //shapeInfo.uncScale[string("norm_ch2_JES_")+ chbin.Data()] = integral*0.01; // 0.008 
 	  shapeInfo.uncScale[string("norm_ch2_JER_")+ chbin.Data()] = integral*0.005; 
 	  
 	  // Add correlation terms in btagSFbc/light, JES/JER: 
@@ -4007,7 +4013,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	if( U->first.find("CMS_ch1_sys_e") !=string::npos) continue; // skip shape e
 	if( U->first.find("CMS_ch2_sys_e") !=string::npos) continue; // skip shape e  
 
-	if( U->first.find("CMS_haa4b_nloEWK") !=string::npos) continue; // skip shape nloEWK, its negligible..
+	//	if( U->first.find("CMS_haa4b_nloEWK") !=string::npos) continue; // skip shape nloEWK, its negligible..
 	
 	if( U->first.find("CMS_ch1_eff_C") !=string::npos) continue; 
 	if( U->first.find("CMS_ch1_eff_mistag") !=string::npos) continue; 
@@ -4018,6 +4024,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  if( U->first.find("CMS_ch1_eff_B") !=string::npos) continue; // skip shape eff_b 
 	  if( U->first.find("CMS_ch2_eff_B") !=string::npos) continue; // skip shape eff_b 
 	}
+	//	if( U->first.find("CMS_ch2_eff_B") !=string::npos) continue; // skip shape eff_b 
 
 	if(runZh) { // UPDATE TESTs: 090123
 	  //	  if( U->first.find("_jes") !=string::npos) continue; // skip shape JEC
@@ -4534,9 +4541,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	      } else { // runZH
 		//		double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.35};   
 		//		double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.07, 0.35}; // 0.03-->0.01 (Apr 19) -- Apr 5, 2023, georgia after Jan noticed
-		//		double xbins[] = {-0.31, -0.15, -0.09, -0.05, 0.35};     //4bins
-		double xbins[] = {-0.31, -0.15, -0.09, -0.01, 0.35};     //4bins         v2
-		//		double xbins[] = {-0.31, -0.11, -0.01, 0.35};   //or 3bins?
+
+		double xbins[] = {-0.31, -0.15, -0.07, -0.01, 0.35};     //4bins
 		/*
 		if(inFileUrl.Contains("2016")) { // ehm.. 4 bins in 2016 ZH due to fit failing in the e-channel  
 		  xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.09;xbins[3]=-0.01;xbins[4]=0.35;   
@@ -4661,7 +4667,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	//if(procName!="FakeLep")continue; //only do this for the FakeLepbackground right now 
 	std::map<string, ProcessInfo_t>::iterator it=procs.find(procName); 
 	if(it==procs.end())continue; 
-	if(it->second.isData || it->second.isSign)continue; //only do this for background MC
+	if(it->second.isData ) continue; //|| it->second.isSign)continue; //only do this for background MC
 
         for(std::map<string, ChannelInfo_t>::iterator ch = it->second.channels.begin(); ch!=it->second.channels.end(); ch++){
 	  TString chbin = ch->first;
@@ -4678,7 +4684,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           for(int binx=1;binx<=histo->GetNbinsX();binx++){
             if(histo->GetBinContent(binx)<=0){ // georgia, Apr 21, 2023: account for limited MC statistics, large weights
 	      histo->SetBinContent(binx, 1E-6); //histo->SetBinError(binx, 1E-6);  }
-	      histo->SetBinError(binx, procWeight); 
+	      // Add treatment for empty bins in Signal process:
+	      if(it->second.isSign) {  histo->SetBinError(binx,1E-6);  } 
+	      else { histo->SetBinError(binx, procWeight);  }
 
 	      // What if QCD?? Add 100% uncertainty
 	      if (verbose ) {
