@@ -39,7 +39,7 @@ if use_prefit:
    dir1 = "shapes_prefit"
 else:
    print("\n\n Will use fit_b histograms\n\n")
-   dir1="shapes_fit_b"
+   dir1="shapes_fit_s"
 
 print("\n\n dir1 = ", dir1, "\n\n")
 
@@ -63,7 +63,8 @@ proc_tex = { "otherbkg" : "Other Bkgs",
              "data"     : "Data"
            }
 
-bin_group_list = [ {"first":1, "last":3, "blind":False}, {"first":4, "last":4, "blind":False}, {"first":5, "last":5, "blind":False} ]
+bin_group_list_3b = [ {"first":1, "last":3, "blind":False}, {"first":4, "last":4, "blind":False}, {"first":5, "last":5, "blind":False} ]
+bin_group_list_4b = [ {"first":1, "last":3, "blind":False}, {"first":4, "last":4, "blind":False} ]
 
 if "2016" in limit_dir: year = "2016"
 if "2017" in limit_dir: year = "2017"
@@ -89,6 +90,11 @@ else:
 
 for chan in chans:
 
+   if "3b" in chan:
+      bin_group_list = bin_group_list_3b
+   if "4b" in chan:
+      bin_group_list = bin_group_list_4b 
+
    tex_file_name = "{}/yield-table-in-bdt-bins-{}.tex".format(limit_dir, chan)
    print("\n\n Opening output tex file: {}\n".format(tex_file_name) )
    tex_file = open( tex_file_name, "w" )
@@ -109,7 +115,10 @@ for chan in chans:
    tex_file.write("}\n")
 
    tex_file.write("\\hline\n")
-   tex_file.write( "\\multicolumn{{13}}{{||c||}}{{ \\bf {} : {}, {} }} \\\\ \n".format( year, wz_label, chan_label[chan] ) )
+   if "3b" in chan:     
+      tex_file.write( "\\multicolumn{{13}}{{||c||}}{{ \\bf {} : {}, {} }} \\\\ \n".format( year, wz_label, chan_label[chan] ) )
+   if "4b" in chan:     
+      tex_file.write( "\\multicolumn{{9}}{{||c||}}{{ \\bf {} : {}, {} }} \\\\ \n".format( year, wz_label, chan_label[chan] ) )    
    tex_file.write("\\hline\n")
 
 
@@ -290,8 +299,11 @@ for chan in chans:
 
            #printline += " ------------------------------------------------------------------------------- "
             printline += "                                                                                 "
-            texline   += "     & \\multicolumn{6}{c||}{ }                                                           "
-
+            if "3b" in chan:  
+               texline   += "     & \\multicolumn{6}{c||}{ }                                                           "
+            if "3b" in chan:  
+               texline   += "     & \\multicolumn{4}{c||}{ }                                                           "   
+               
          root_file.Close()
 
          printline += "|"
