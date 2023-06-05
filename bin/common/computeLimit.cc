@@ -3608,7 +3608,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  }
 	  */
 	} else { // Wh channel
-	  // b-tagging uncertainty independed per process (same b-jet multiplicity) 
+	  // b-tagging uncertainty independent per process (same b-jet multiplicity) 
 	  
 	  if(correlatedLumi)     
 	    shapeInfo.uncScale[string("norm_ch1_effb_")+ chbin.Data()] = integral*0.10; //0.09; 
@@ -3834,12 +3834,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         if(runZh) {
           if(it->second.shortName.find("wlnu")!=string::npos){shapeInfo.uncScale["norm_wjet"] = integral*0.02;}
 
-	  //	  if(it->second.shortName.find("ttbarbba")!=string::npos){shapeInfo.uncScale["norm_ch2_ttbb"] = integral*0.50;} 
-	  //	  if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_ch2_ttcc"] = integral*0.50;}
+	  if(it->second.shortName.find("ttbarbba")!=string::npos){shapeInfo.uncScale["norm_ch2_ttbb"] = integral*0.50;} 
+	  if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_ch2_ttcc"] = integral*0.50;}
 
         } else {
 	  if(it->second.shortName.find("zll")!=string::npos){shapeInfo.uncScale["norm_zll"] = integral*0.02;}
-	  //	  if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_ch1_ttcc"] = integral*0.50;} 
+	  if(it->second.shortName.find("ttbarcba")!=string::npos){shapeInfo.uncScale["norm_ch1_ttcc"] = integral*0.50;} 
 	}
 
         if(it->second.shortName.find("ttbarlig")!=string::npos){shapeInfo.uncScale["norm_toplight"] = integral*0.06;} 
@@ -4033,7 +4033,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  if( U->first.find("_jes") !=string::npos) continue; // skip shape JEC      
 	  if( U->first.find("_res_j") !=string::npos) continue; // skip shape res_j  
 	} else {
-	  if(inFileUrl.Contains("2016")) 
+	  if(inFileUrl.Contains("2016"))
 	    if( U->first.find("_jes") !=string::npos) continue; // skip shape JEC       
 	}
 	
@@ -4060,24 +4060,24 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
       if(runZh) { // ZH channel:
 	if(C->first.find("ee" )!=string::npos) {         
-
+	  /*
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  
 	    fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())   
 	    fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarcba 1 [0.1,4.0]\n",year.Data());    
-
+	  */
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){  
 	    if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_e%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
 	    if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_e%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
 	  }
 	  
         } else if (C->first.find("mumu" )!=string::npos) {  
-
+	  /*
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  
 	    fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end()) 
 	    fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarcba 1 [0.1,4.0]\n",year.Data());    
-
+	  */
           if(std::find(valid_procs.begin(), valid_procs.end(), "Z#rightarrow ll")!=valid_procs.end()){
             if (C->first.find("3b")!=string::npos) fprintf(pFile,"z_norm_3b_mu%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
             if (C->first.find("4b")!=string::npos) fprintf(pFile,"z_norm_4b_mu%s rateParam bin1 zll 1 [0.1,4.0]\n",year.Data());
@@ -4087,13 +4087,13 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       } else { // WH channel:
 	if(C->first.find("e" )!=string::npos) {             
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
-	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarcba 1 [0.1,4.0]\n",year.Data()); 
+	  //	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_e%s rateParam bin1 ttbarcba 1 [0.1,4.0]\n",year.Data()); 
  
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_e%s rateParam bin1 wlnu 1 [0.1,4.0] \n",year.Data());
 	  
         } else if (C->first.find("mu" )!=string::npos) {    
           if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + b#bar{b}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarbba 1 [0.1,4.0]\n",year.Data()); 
-	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarcba 1 [0.1,4.0]\n",year.Data()); 
+	  //	  if(std::find(valid_procs.begin(), valid_procs.end(), "t#bar{t} + c#bar{c}")!=valid_procs.end())  fprintf(pFile,"tt_norm_mu%s rateParam bin1 ttbarcba 1 [0.1,4.0]\n",year.Data()); 
 	  
 	  if(std::find(valid_procs.begin(), valid_procs.end(), "W#rightarrow l#nu")!=valid_procs.end())  fprintf(pFile,"w_norm_mu%s rateParam bin1 wlnu 1 [0.1,4.0]\n",year.Data()); 
         }                  
