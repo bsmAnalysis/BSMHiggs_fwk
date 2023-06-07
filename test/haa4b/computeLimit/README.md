@@ -234,7 +234,7 @@ sh run-impacts-batch.sh cards_SB13TeV_SM_Zh_2018_noSoftb 3
 Under the directory Unblinding/Stage3 you may find the scripts:
 
 sh run-impacts.sh
-sh run-goftest.sh
+sh run-goftest.sh , run-goftest-2.sh
 
 ### Redoing the BDT binning optimization
 
