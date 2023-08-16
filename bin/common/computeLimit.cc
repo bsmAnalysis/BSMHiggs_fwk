@@ -377,12 +377,7 @@ class ShapeData_t
 	   TString hname( TString(h->GetName())+"StatU" ) ;
 	   printf(" --- verbose : makeStatUnc : making clones 4.  name = %s\n", hname.Data() ) ; fflush(stdout) ;
 	 }
-	 /*
-	 // MAke a map with the event weights for processes W/DY and TT, and Other bkg.
-	 std::map<string, double> hmap_wgt;
-	 hmap_wgt["otherbkg"] = ; hmap_wgt["ttbarbba"] =; hmap_wgt["ttbarcba"] = ; hmap_wgt["ttbarlig"] = ;
-	 hmap_wgt["zll"] = ; hmap_wgt["wlnu"] = ;
-	 */
+
 	 TH1* statU=(TH1 *)h->Clone(TString(h->GetName())+"StatU");
 	 TH1* statD=(TH1 *)h->Clone(TString(h->GetName())+"StatD");
 	 for(int ibin=1; ibin<=statU->GetXaxis()->GetNbins(); ibin++){
@@ -568,9 +563,6 @@ class ProcessInfo_t
         JSONWrapper::Object jsonObj;
 
         ProcessInfo_t(){xsec=0;isSign=false;
-	  // MAke a map with the event weights for processes W/DY and TT, and Other bkg. 
-	  //	  hmap_wgt["otherbkg"] = ; hmap_wgt["ttbarbba"] =; hmap_wgt["ttbarcba"] = ; hmap_wgt["ttbarlig"] = ; 
-	  // hmap_wgt["zll"] = ; hmap_wgt["wlnu"] = ; 
 	}
         ~ProcessInfo_t(){}
 
@@ -1336,8 +1328,7 @@ int main(int argc, char* argv[])
   if ( verbose ) { printf("\n  --- verbose : main :    calling   allInfo.addHardCodedUncertainties(histo.Data()); \n") ; fflush(stdout) ; }
 
   //add by hand the hard coded uncertainties
-  allInfo.addHardCodedUncertainties(histo.Data());
-
+  if( runSystematics ) allInfo.addHardCodedUncertainties(histo.Data());
 
 
   if ( verbose ) { printf("\n  --- verbose : main :    calling allInfo.getYieldsFromShape(pFile, selCh, histo.Data(), pFileInc); \n") ; fflush(stdout) ; }
@@ -1626,7 +1617,6 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     //    if(chData->first.find("_D_")!=string::npos) {if(procName.Contains("W#rightarrow"))continue;}    
     
     if(inFileUrl.Contains("2018") ){ // || inFileUrl.Contains("2016")){
-      //  if(!correlatedLumi) 
       if(procName.Contains("W#rightarrow"))continue; // in regions B,D, skip W sample from non-QCD processes  
     }
     
@@ -2499,6 +2489,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	if(p->first.find("t#bar{t} + c#bar{c}")<std::string::npos)continue;//never drop this background      
 	if(p->first.find("Other Bkgds")<std::string::npos)continue;//never drop this background    
 	if(p->first.find("Z#rightarrow ll")<std::string::npos)continue;//never drop this background   
+	//	if(p->first.find("Four-top (TTTT)")<std::string::npos)continue;//never drop this background  
 
 	if(!runZh) { //Wh channel   
 	  //  if(p->first.find("t#bar{t} + c#bar{c}")<std::string::npos)continue;//never drop this background      
@@ -3140,7 +3131,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
         Label->SetFillColor(0);  Label->SetFillStyle(0);  Label->SetLineColor(0); Label->SetBorderSize(0);  Label->SetTextAlign(31);
         TString LabelText = ch->second.channel+"  -  "+ch->second.bin;
         LabelText.ReplaceAll("eq","="); LabelText.ReplaceAll("l=","#leq");LabelText.ReplaceAll("g=","#geq"); 
-        LabelText.ReplaceAll("_OS","OS "); LabelText.ReplaceAll("el","e"); LabelText.ReplaceAll("mu","#mu");  LabelText.ReplaceAll("ha","#tau_{had}");
+	//        LabelText.ReplaceAll("_OS","OS "); LabelText.ReplaceAll("el","e"); LabelText.ReplaceAll("mu","#mu");  LabelText.ReplaceAll("ha","#tau_{had}");
         Label->AddText(LabelText);  Label->Draw();
 
         TLine* line = new TLine(axis->GetXaxis()->GetXmin(), 1.0, axis->GetXaxis()->GetXmax(), 1.0);
@@ -3563,11 +3554,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  // PDF + alpha_s + QCD scale uncertainties (both ZH and WH): 
 	if( (it->second.shortName.find("wh")==string::npos) && (it->second.shortName.find("ddqcd")==string::npos) ){ 
 	  if(chbin.Contains("SR" )) {
-	    shapeInfo.uncScale["norm_SR_pdf"] = integral*0.20; // 0.20 originally for Jan
-	    shapeInfo.uncScale["norm_SR_qcdscale"] = integral*0.20; 
+	    shapeInfo.uncScale["norm_SR_pdfqcdscale"] = integral*0.20; // 0.20 originally for Jan
+	    //	    shapeInfo.uncScale["norm_SR_qcdscale"] = integral*0.20; 
 	  } else {
-	    shapeInfo.uncScale["norm_CR_pdf"] = integral*0.10; // 0.10 originally 
-	    shapeInfo.uncScale["norm_CR_qcdscale"] = integral*0.20; //0.20? 
+	    shapeInfo.uncScale["norm_CR_pdfqcdscale"] = integral*0.10; // 0.10 originally 
+	    //	    shapeInfo.uncScale["norm_CR_qcdscale"] = integral*0.20; //0.20? 
 	  } 
 	}
 	//	}
@@ -3579,7 +3570,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	  // b-tagging uncertainty independed per process (same b-jet multiplicity) 
 
 	  //if(correlatedLumi)
-	  shapeInfo.uncScale[string("norm_ch2_effb_")+ chbin.Data()] = integral*0.085; 
+	  //	  shapeInfo.uncScale[string("norm_ch2_effb_")+ chbin.Data()] = integral*0.085; 
 	  
 	  shapeInfo.uncScale[string("norm_ch2_JES_")+ chbin.Data()] = integral*0.01; // 0.008 
 	  shapeInfo.uncScale[string("norm_ch2_JER_")+ chbin.Data()] = integral*0.005; 
@@ -3610,11 +3601,12 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	} else { // Wh channel
 	  // b-tagging uncertainty independent per process (same b-jet multiplicity) 
 	  
-	  if(correlatedLumi)     
-	    shapeInfo.uncScale[string("norm_ch1_effb_")+ chbin.Data()] = integral*0.10; //0.09; 
+	  // if(correlatedLumi)     
+	  // shapeInfo.uncScale[string("norm_ch1_effb_")+ chbin.Data()] = integral*0.10; //0.09; 
 
-	  if(inFileUrl.Contains("2016")) shapeInfo.uncScale[string("norm_ch1_JES_")+ chbin.Data()] = integral*0.01; 
-	  //	  shapeInfo.uncScale[string("norm_ch1_JER_")+ chbin.Data()] = integral*0.008; 
+	  if(inFileUrl.Contains("2016")) 
+	    shapeInfo.uncScale[string("norm_ch1_JES_")+ chbin.Data()] = integral*0.01; 
+	  //shapeInfo.uncScale[string("norm_ch1_JER_")+ chbin.Data()] = integral*0.008; 
 
 	  // Add correlation terms in btagSFbc/light, JES/JER:    
 	  /*
@@ -3829,7 +3821,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	}
 		
         //Normalization uncertainties (THEORY)
-        if(it->second.shortName.find("otherbkg")!=string::npos){shapeInfo.uncScale["norm_otherbkgds"] = integral*0.27;} 
+        if(it->second.shortName.find("otherbkg")!=string::npos){shapeInfo.uncScale["norm_otherbkgds"] = integral*0.53;} //0.27;} 
+	//	if(it->second.shortName.find("four-top")!=string::npos){shapeInfo.uncScale["norm_tttt"] = integral*0.46;}     
 
         if(runZh) {
           if(it->second.shortName.find("wlnu")!=string::npos){shapeInfo.uncScale["norm_wjet"] = integral*0.02;}
@@ -4021,17 +4014,19 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	if( U->first.find("CMS_ch2_eff_C") !=string::npos) continue; // skip shape eff_c
 	if( U->first.find("CMS_ch2_eff_mistag") !=string::npos) continue; // skip shape eff mistag
 
-	if(correlatedLumi) { // separate years:
-	  if( U->first.find("CMS_ch1_eff_B") !=string::npos) continue; // skip shape eff_b 
+	//	if(correlatedLumi) { // separate years:
+	//  if( U->first.find("CMS_ch1_eff_B") !=string::npos) continue; // skip shape eff_b 
 	  //	  if( U->first.find("CMS_ch2_eff_B") !=string::npos) continue; // skip shape eff_b 
-	}
-	if( U->first.find("CMS_ch2_eff_B") !=string::npos) continue; // skip shape eff_b   
+	//	}
+	//	if( U->first.find("CMS_ch2_eff_B") !=string::npos) continue; // skip shape eff_b   
 
 	//	if(runZh) { // UPDATE TESTs: 090123
 	//	if( U->first.find("_jes") !=string::npos) continue; // skip shape JEC
+	//	if( U->first.find("_res_j") !=string::npos) continue; // skip shape res_j  
+	
 	if(runZh) {
+	  if( U->first.find("_res_j") !=string::npos) continue; // skip shape res_j       
 	  if( U->first.find("_jes") !=string::npos) continue; // skip shape JEC      
-	  if( U->first.find("_res_j") !=string::npos) continue; // skip shape res_j  
 	} else {
 	  if(inFileUrl.Contains("2016"))
 	    if( U->first.find("_jes") !=string::npos) continue; // skip shape JEC       
@@ -4203,9 +4198,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       if(isSignal && mass>0 && proc.Contains("Wh")) proc = TString("Wh")  +procMassStr;
       //      else if(isSignal && mass>0 && proc.Contains("qqH") && proc.Contains("ZZ"))proc = TString("qqH")  +procMassStr;
 
-      //      if(skipGGH && isSignal && mass>0 && proc.Contains("ggH") )continue;
-      ///      if(skipQQH && isSignal && mass>0 && (proc.Contains("qqH") || proc.Contains("VBF")) )continue;
-
       TString shortName = proc;
       shortName.ToLower();
       shortName.ReplaceAll(procMassStr,"");
@@ -4214,8 +4206,8 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       shortName.ReplaceAll("#rightarrow","");
       shortName.ReplaceAll("(",""); shortName.ReplaceAll(")","");    shortName.ReplaceAll("+","");    shortName.ReplaceAll(" ","");   shortName.ReplaceAll("/","");  shortName.ReplaceAll("#",""); 
       shortName.ReplaceAll("=",""); shortName.ReplaceAll(".","");    shortName.ReplaceAll("^","");    shortName.ReplaceAll("}","");   shortName.ReplaceAll("{","");  shortName.ReplaceAll(",","");
-      shortName.ReplaceAll("ggh", "ggH");
-      shortName.ReplaceAll("qqh", "qqH");
+      //      shortName.ReplaceAll("ggh", "ggH");
+      //      shortName.ReplaceAll("qqh", "qqH");
       if(shortName.Length()>8)shortName.Resize(8);
 
       if(procs.find(proc.Data())==procs.end()){sorted_procs.push_back(proc.Data());}
@@ -4490,7 +4482,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
              //-----------------
 	      if (!runZh) {
 		double xbins[] = {-0.31, -0.13,  -0.01, 0.19, 0.25, 0.35};  // original/optimal binning (pre-approval)
-		//double xbins[] = {-0.31, -0.13,  -0.01, 0.15, 0.21, 0.35};   // july 22, new trial bins
+
 		if(inFileUrl.Contains("2016")){
 		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.13;xbins[4]=0.17;xbins[5]=0.35;
 		}
@@ -4498,7 +4490,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.15;xbins[4]=0.21;xbins[5]=0.35; 
 		}
 		if(inFileUrl.Contains("2018")){     
-		  //		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.15;xbins[4]=0.21;xbins[5]=0.35;      
 		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.01;xbins[3]=0.13;xbins[4]=0.17;xbins[5]=0.35;   
 		}
 		
@@ -4528,18 +4519,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 		//		double xbins[] = {-0.31, -0.13, -0.07, 0.05, 0.19, 0.35};  // july 21, new trial bins
 		double xbins[] = {-0.31, -0.13, -0.07, 0.07,  0.35}; 
-		/*	
-		if(inFileUrl.Contains("2016"))  {
-		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.07;xbins[3]=0.05;xbins[4]=0.35; // xbins[5]=0.35;
-		}
-	       
-		if(inFileUrl.Contains("2017"))   {
-		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.07;xbins[3]=0.03;xbins[4]=0.17; xbins[5]=0.35;  
-		}
-		if(inFileUrl.Contains("2018"))  {
-		  xbins[0]=-0.31;xbins[1]=-0.13;xbins[2]=-0.07;xbins[3]=0.03;xbins[4]=0.17; xbins[5]=0.35;     
-		}
-		*/
 
 		int nbins=sizeof(xbins)/sizeof(double);
 		unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
@@ -4558,13 +4537,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		  xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.09;xbins[3]=-0.01;xbins[4]=0.35;           
 		  //		  xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.07;xbins[3]=0.01;xbins[4]=0.35; 
 		}
-		/*
-		  int nbins=sizeof(xbins)/sizeof(double);
-		  unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins);  
-		  utils::root::fixExtremities(unc->second, false, true);
-		} else {
-		  double xbins[] = {-0.31, -0.15, -0.07, 0.01, 0.07, 0.35};
-		*/
+
 		int nbins=sizeof(xbins)/sizeof(double);
 		unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
 		utils::root::fixExtremities(unc->second, false, true); 
@@ -4687,13 +4660,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           if(!histo){printf("Histo does not exist... skip it \n"); fflush(stdout); continue;}
 
 	  double procWeight(1E-6);            
+	  
 	  if(inFileUrl.Contains("2016")) procWeight=procWeight_2016[procName.c_str()]; 
 	  if(inFileUrl.Contains("2017")) procWeight=procWeight_2017[procName.c_str()];
 	  if(inFileUrl.Contains("2018")) procWeight=procWeight_2018[procName.c_str()];
-
+	  
           double StartIntegral = histo->Integral();
           for(int binx=1;binx<=histo->GetNbinsX();binx++){
-            if(histo->GetBinContent(binx)<=0){ // georgia, Apr 21, 2023: account for limited MC statistics, large weights
+            if(histo->GetBinContent(binx)<=1E-6){ //0.0){ // georgia, Apr 21, 2023: account for limited MC statistics, large weights
 	      histo->SetBinContent(binx, 1E-6); //histo->SetBinError(binx, 1E-6);  }
 	      // Add treatment for empty bins in Signal process:
 	      if(it->second.isSign) {  histo->SetBinError(binx,1E-6);  } 
@@ -4709,6 +4683,27 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 		printf(", weighted by = %.2f ", procWeight ); //[procName.c_str()].second ) ;
 		printf("\n") ; fflush(stdout) ;
 	      }
+	      /*
+	    } else { // if 2018 WH, add the W+jet MC uncertainty on the last two bins of BDT regardless...
+	      // GEORGIA , Jul 4, 2023:
+	      if(inFileUrl.Contains("2018")) {
+		//		if(procName.c_str()=="W#rightarrow l#nu") {//		if(!runZh) { // Wh channel
+		if( (it->first=="W#rightarrow l#nu") || (it->first=="Z#rightarrow ll") || (it->first=="t#bar{t} + b#bar{b}") ) {
+		  double err=histo->GetBinError(binx);
+		  histo->SetBinError(binx,sqrt(err*err + procWeight*procWeight));
+		  if(verbose){
+		    printf("--- verbose : AllInfo_t::HandleEmptyBins : found Wh bins on 2018, new error" ) ;       
+		    printf(" proc = %s ", procName.c_str() ) ; printf(", year = %s ", year.Data() ) ;   
+		    printf(" channel = %s ", chbin.Data() );    
+		    printf(",  histoName = %s ", histoName.c_str() ) ;  
+		    printf(" in bin: %i ", binx);  
+		    printf(", weighted by = %.2f ", procWeight );
+		    printf(", original error = %.2f ", err ); printf(", NEW error = %.2f ", sqrt(err*err + procWeight*procWeight) );     
+		    printf("\n") ; fflush(stdout) ;    
+		  }
+		} // Wh channel
+	      } // 2018 era
+	      */
 	    }
 	  }
           double EndIntegral = histo->Integral();                 
