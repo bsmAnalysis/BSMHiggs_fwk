@@ -102,8 +102,9 @@ struct btagsort: public std::binary_function<PhysicsObject_Jet, PhysicsObject_Je
 
 // Physics objects offline thresholds, default values for 2016 below. 2017 value is updated in code
 //const float lep_threshold_=25.; 
-float mu_threshold_=10.; //25.; 
-float ele_threshold_=15.; //30.; 
+float mu_threshold_=10.; //15.; //TEST FOR MARKO!!!! //10.; //25.; 
+float ele_threshold_=15.; // TEST FOR MARKO //15.; //30.; 
+
 const float jet_threshold_=20.; 
 
 //https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation76X
@@ -402,21 +403,23 @@ int main(int argc, char* argv[])
                       "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_Moriond17_B_H.csv";
       if(is2017data || is2017MC){
           csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
-                          "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_WP_V4_B_F.csv"; 
-          csv_file_path1 = std::string(std::getenv("CMSSW_BASE"))+
-                          "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V3_B.csv";       
-          csv_file_path2 = std::string(std::getenv("CMSSW_BASE"))+
-                          "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V3_C_E.csv";       
-          csv_file_path3 = std::string(std::getenv("CMSSW_BASE"))+
-                          "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V3_E_F.csv";       
+	    "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V4_B_F_YearCorrelation-V1.csv";  //DeepCSV_94XSF_WP_V4_B_F.csv"; 
+	  /*
+	    csv_file_path1 = std::string(std::getenv("CMSSW_BASE"))+
+	    "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V3_B.csv";       
+	    csv_file_path2 = std::string(std::getenv("CMSSW_BASE"))+
+	    "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V3_C_E.csv";       
+	    csv_file_path3 = std::string(std::getenv("CMSSW_BASE"))+
+	    "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_94XSF_V3_E_F.csv";       
+	  */ 
       }
       if(is2018data || is2018MC){
         csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
-                        "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_102XSF_WP_V1.csv";
+	  "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_102XSF_V1_YearCorrelation-V1.csv"; //DeepCSV_102XSF_WP_V1.csv";
       }
       if(is2016Signal || is2016Legacy){
 	csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
-			"/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_2016LegacySF_WP_V1.csv";
+	  "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_2016LegacySF_V1_YearCorrelation-V1.csv"; //DeepCSV_2016LegacySF_WP_V1.csv";
       }
       LooseWP = DeepCSVLooseWP;
       MediumWP = DeepCSVMediumWP;
@@ -425,11 +428,6 @@ int main(int argc, char* argv[])
     
     BTagCalibration btagCalib(b_tagging_name, csv_file_path);
     BTagCalibration btagCalib1, btagCalib2, btagCalib3;
-    // setup calibration readers 80X
-    //BTagCalibrationReader80X btagCal80X(BTagEntry::OP_LOOSE, "central", {"up", "down"});
-    //btagCal80X.load(btagCalib, BTagEntry::FLAV_B, "comb");
-    //btagCal80X.load(btagCalib, BTagEntry::FLAV_C, "comb");
-    //btagCal80X.load(btagCalib, BTagEntry::FLAV_UDSG, "incl");
 
     BTagCalibrationReader btagReaderLoose(BTagEntry::OP_LOOSE, "central", {"up", "down"});
     btagReaderLoose.load(btagCalib, BTagEntry::FLAV_B, "comb");
@@ -441,6 +439,7 @@ int main(int argc, char* argv[])
     btagReaderMedium.load(btagCalib, BTagEntry::FLAV_C, "comb");
     btagReaderMedium.load(btagCalib, BTagEntry::FLAV_UDSG, "incl");
 
+    /*
     BTagCalibrationReader btagReaderLoose1, btagReaderLoose2, btagReaderLoose3, btagReaderMedium1, btagReaderMedium2, btagReaderMedium3;
     if(is2017data || is2017MC){// b-tag SFs with period dependency for 2017
       btagCalib1 = BTagCalibration(b_tagging_name+"1", csv_file_path1);
@@ -457,6 +456,7 @@ int main(int argc, char* argv[])
       btagReaderMedium3.load(btagCalib3, BTagEntry::FLAV_B, "comb"); btagReaderMedium3.load(btagCalib3, BTagEntry::FLAV_C, "comb"); btagReaderMedium3.load(btagCalib3, BTagEntry::FLAV_UDSG, "incl");
 
     }
+    */
 
     //jet energy scale uncertainties
     TString jecDir = runProcess.getParameter<std::string>("jecDir");
@@ -1216,6 +1216,10 @@ int main(int argc, char* argv[])
     printf("Progressing Bar     :0%%       20%%       40%%       60%%       80%%       100%%\n");
     printf("Scanning the ntuple :");
 
+    // Vars for TTJets :
+    int nTot(0); 
+    int nFilt1(0); int nFilt4(0); int nFilt5(0); 
+
     for( int iev=evStart; iev<evEnd; iev++) 
     {
         if((iev-evStart)%treeStep==0) {
@@ -1850,7 +1854,7 @@ int main(int argc, char* argv[])
 	      if (!runZH && selLeptons[0].pt()<25.) continue; 
 	    }
 	    if(is2017data || is2017MC) {    
-	      if (runZH && selLeptons[0].pt()<20.) continue; 
+	      if (runZH && selLeptons[0].pt()<20.) continue; //TEST FOR MARCO!!!!!
 	      if (!runZH && selLeptons[0].pt()<30.) continue;     
 	    }		  
 	    if(is2018data || is2018MC) {    
@@ -1991,14 +1995,19 @@ int main(int argc, char* argv[])
 	    
 	  } // end corrJets
 
+	  nTot++;
+	  
 	  if(mctruthmode==5) { // only keep events with nHF>0.
-	    if (!(nHF>0)) continue;
+	    if (!(nHF>0)) { continue;}
+	    else { nFilt5++; }
 	  }
 	  if(mctruthmode==4) { //only keep events with nHFc>0 and nHF==0.
-	    if (!(nHFc>0 && nHF==0)) continue;
+	    if (!(nHFc>0 && nHF==0)) { continue; }
+	    else { nFilt4++; }
 	  }
 	  if(mctruthmode==1) {
-	    if (nHF>0 || (nHFc>0 && nHF==0)) continue;
+	    if (nHF>0 || (nHFc>0 && nHF==0)) { continue; }
+	    else { nFilt1++;}
 	  }
 	  
 	}
@@ -2513,6 +2522,7 @@ int main(int argc, char* argv[])
 		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_btagup") {
+		    /*
 		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
@@ -2523,14 +2533,16 @@ int main(int argc, char* argv[])
 		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		    }else{
-		      bSFLoose = btagReaderLoose.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
-		      bSFMedium = btagReaderMedium.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
-		    }
+		    */
+		    bSFLoose = btagReaderLoose.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
+		    bSFMedium = btagReaderMedium.eval_auto_bounds("up", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
+		      // }
 		    //btsfutil.modifyBTagsWithSF(hasCSVtagLUp  , btagReaderLoose.eval_auto_bounds("up", BTagEntry::FLAV_B ,
 		    //									  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtagL=hasCSVtagLUp;
 		    btsfutil.applySF2WPs(hasCSVtagLUp, hasCSVtagMUp, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		    hasCSVtagL=hasCSVtagLUp; hasCSVtagM=hasCSVtagMUp;
 		  } else if ( varNames[ivar]=="_btagdown") {
+		    /*
 		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
@@ -2541,14 +2553,16 @@ int main(int argc, char* argv[])
 		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		    }else{
-		      bSFLoose = btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
-		      bSFMedium = btagReaderMedium.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
-		    }
+		    */
+		    bSFLoose = btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
+		    bSFMedium = btagReaderMedium.eval_auto_bounds("down", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
+		    //}
 		    //btsfutil.modifyBTagsWithSF(hasCSVtagLDown, btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_B ,
 		    //									  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtagL=hasCSVtagLDown;
 		    btsfutil.applySF2WPs(hasCSVtagLDown, hasCSVtagMDown, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		    hasCSVtagL=hasCSVtagLDown; hasCSVtagM=hasCSVtagMDown;
 		  } else {
+		    /*
 		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
@@ -2559,9 +2573,10 @@ int main(int argc, char* argv[])
 		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		    }else{
-		      bSFLoose = btagReaderLoose.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
-		      bSFMedium = btagReaderMedium.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
-		    }
+		    */
+		    bSFLoose = btagReaderLoose.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
+		    bSFMedium = btagReaderMedium.eval_auto_bounds("central", BTagEntry::FLAV_B,vJets[ijet].eta(), vJets[ijet].pt());
+		      // }
 		    //btsfutil.modifyBTagsWithSF(hasCSVtagL , btagReaderLoose.eval_auto_bounds("central", BTagEntry::FLAV_B ,
 		    //								       vJets[ijet].eta(), vJets[ijet].pt()), beff); 
 		    btsfutil.applySF2WPs(hasCSVtagL, hasCSVtagM, bSFLoose, bSFMedium, beffLoose, beffMedium);
@@ -2577,6 +2592,7 @@ int main(int argc, char* argv[])
 		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_ctagup") {
+		    /*
 		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
@@ -2587,14 +2603,16 @@ int main(int argc, char* argv[])
 		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		    }else{
-		      bSFLoose = btagReaderLoose.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
-		      bSFMedium = btagReaderMedium.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
-		    }
+		    */
+		    bSFLoose = btagReaderLoose.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
+		    bSFMedium = btagReaderMedium.eval_auto_bounds("up", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
+		    //}
 		    //btsfutil.modifyBTagsWithSF(hasCSVtagLUp  , btagReaderLoose.eval_auto_bounds("up", BTagEntry::FLAV_C , 
 		    //									  vJets[ijet].eta(), vJets[ijet].pt()), beff);hasCSVtagL=hasCSVtagLUp;
 		    btsfutil.applySF2WPs(hasCSVtagLUp, hasCSVtagMUp, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		    hasCSVtagL=hasCSVtagLUp; hasCSVtagM=hasCSVtagMUp;
 		  } else if ( varNames[ivar]=="_ctagdown") {
+		    /*
 		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
@@ -2605,14 +2623,16 @@ int main(int argc, char* argv[])
 		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		    }else{
-		      bSFLoose = btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
-		      bSFMedium = btagReaderMedium.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
-		    }
+		    */
+		    bSFLoose = btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
+		    bSFMedium = btagReaderMedium.eval_auto_bounds("down", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
+		    //}
 		    //btsfutil.modifyBTagsWithSF(hasCSVtagLDown, btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_C , 
 		    //									  vJets[ijet].eta(), vJets[ijet].pt()), beff); hasCSVtagL=hasCSVtagLDown;
 		    btsfutil.applySF2WPs(hasCSVtagLDown, hasCSVtagMDown, bSFLoose, bSFMedium, beffLoose, beffMedium);
 		    hasCSVtagL=hasCSVtagLDown; hasCSVtagM=hasCSVtagMDown;
 		  } else {
+		    /*
 		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
@@ -2623,9 +2643,10 @@ int main(int argc, char* argv[])
 		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		    }else{
-		      bSFLoose = btagReaderLoose.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
-		      bSFMedium = btagReaderMedium.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
-		    }
+		    */
+		    bSFLoose = btagReaderLoose.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
+		    bSFMedium = btagReaderMedium.eval_auto_bounds("central", BTagEntry::FLAV_C,vJets[ijet].eta(), vJets[ijet].pt());
+		    //}
 		    //btsfutil.modifyBTagsWithSF(hasCSVtagL , btagReaderLoose.eval_auto_bounds("central", BTagEntry::FLAV_C ,
 		    //								       vJets[ijet].eta(), vJets[ijet].pt()), beff);
 		    btsfutil.applySF2WPs(hasCSVtagL, hasCSVtagM, bSFLoose, bSFMedium, beffLoose, beffMedium);
@@ -2640,6 +2661,7 @@ int main(int argc, char* argv[])
 		  }
 		  //  80X recommendation
 		  if (varNames[ivar]=="_ltagup") {
+		    /*
 		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
@@ -2650,14 +2672,16 @@ int main(int argc, char* argv[])
 		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		   }else{
-		      bSFLoose = btagReaderLoose.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
-		      bSFMedium = btagReaderMedium.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
-		    }
+		    */
+		    bSFLoose = btagReaderLoose.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
+		    bSFMedium = btagReaderMedium.eval_auto_bounds("up", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
+		    //}
 		    //btsfutil.modifyBTagsWithSF(hasCSVtagLUp  , btagReaderLoose.eval_auto_bounds("up", BTagEntry::FLAV_UDSG   , 
 		    // 								      vJets[ijet].eta(), vJets[ijet].pt()), leff);hasCSVtagL=hasCSVtagLUp;
 		    btsfutil.applySF2WPs(hasCSVtagLUp, hasCSVtagMUp, bSFLoose, bSFMedium, leffLoose, leffMedium);
 		    hasCSVtagL=hasCSVtagLUp; hasCSVtagM=hasCSVtagMUp;
 		  } else if ( varNames[ivar]=="_ltagdown") {
+		    /*
 		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
@@ -2667,15 +2691,17 @@ int main(int argc, char* argv[])
 				  btagReaderMedium3.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi3;
 		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
-		    }else{  
-		      bSFLoose = btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
-		      bSFMedium = btagReaderMedium.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
-		    }
+		    }else{
+		    */  
+		    bSFLoose = btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
+		    bSFMedium = btagReaderMedium.eval_auto_bounds("down", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
+		    //}
 		    //btsfutil.modifyBTagsWithSF(hasCSVtagLDown, btagReaderLoose.eval_auto_bounds("down", BTagEntry::FLAV_UDSG   , 
 		    //								      vJets[ijet].eta(), vJets[ijet].pt()), leff);hasCSVtagL=hasCSVtagLDown;
 		    btsfutil.applySF2WPs(hasCSVtagLDown, hasCSVtagMDown, bSFLoose, bSFMedium, leffLoose, leffMedium);
 		    hasCSVtagL=hasCSVtagLDown; hasCSVtagM=hasCSVtagMDown;
 		  } else {
+		    /*
 		    if(is2017MC){
 		      bSFLoose = btagReaderLoose1.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi1 + 
 				 btagReaderLoose2.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt())*bTag_lumi2 +
@@ -2686,9 +2712,10 @@ int main(int argc, char* argv[])
 		     bSFLoose /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		     bSFMedium /= (bTag_lumi1 + bTag_lumi2 + bTag_lumi3);
 		    }else{
-		      bSFLoose = btagReaderLoose.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
-		      bSFMedium = btagReaderMedium.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
-		    }
+		    */
+		    bSFLoose = btagReaderLoose.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
+		    bSFMedium = btagReaderMedium.eval_auto_bounds("central", BTagEntry::FLAV_UDSG,vJets[ijet].eta(), vJets[ijet].pt());
+		    //}
 		    //btsfutil.modifyBTagsWithSF(hasCSVtagL , btagReaderLoose.eval_auto_bounds("central", BTagEntry::FLAV_UDSG ,
 		    //								       vJets[ijet].eta(), vJets[ijet].pt()), leff);
 		    btsfutil.applySF2WPs(hasCSVtagL, hasCSVtagM, bSFLoose, bSFMedium, leffLoose, leffMedium);
@@ -3377,6 +3404,17 @@ int main(int argc, char* argv[])
 //    outUrl = outFileUrl + ".root";
     printf("Results saved in %s\n", outUrl.Data());
 
+    if (isMC_ttbar) { 
+
+      double cFilt1, cFilt4, cFilt5;
+      cFilt1=(double(nFilt1)/double(nTot));
+      cFilt4=(double(nFilt4)/double(nTot));
+      cFilt5=(double(nFilt5)/double(nTot));
+      
+      printf("From total = %i TTbar events ,  Found %.2f (filt1) , %.2f (filt4) , %.2f (filt5) \n\n", 
+	     nTot, cFilt1, cFilt4, cFilt5);
+    }
+
     //save all to the file
     int nTrial = 0;
     TFile *ofile=TFile::Open(outUrl, "recreate");
@@ -3525,24 +3563,29 @@ double get_csv_wgt(double jetPt, double JetEta, double csv, int flavor, int iSys
   else if ( jetAbsEta>=0.8 && jetAbsEta<1.6 )  iEta = 1;
   else if ( jetAbsEta>=1.6 && jetAbsEta<2.41 ) iEta = 2;
 
-  if (iPt < 0 || iEta < 0) std::cout << "Error, couldn't find Pt, Eta bins for this b-flavor jet, jetPt = " << jetPt << ", jetAbsEta = " << jetAbsEta << std::endl;
+  if (iPt < 0 || iEta < 0) {
+    std::cout << "Error, couldn't find Pt, Eta bins for this b-flavor jet, jetPt = " << jetPt << ", jetAbsEta = " << jetAbsEta << std::endl;
+  } else {
 
-  if(abs(flavor)==5){
-    int useCSVBin = (csv>=0.) ? h_csv_wgt_hf[iSysHF][iPt]->FindBin(csv) : 1;
-    double iCSVWgtHF = h_csv_wgt_hf[iSysHF][iPt]->GetBinContent(useCSVBin);
-    if( iCSVWgtHF!=0 ) csvWgtHF *= iCSVWgtHF;
+    if(abs(flavor)==5){
+      int useCSVBin = (csv>=0.) ? h_csv_wgt_hf[iSysHF][iPt]->FindBin(csv) : 1;
+      double iCSVWgtHF = h_csv_wgt_hf[iSysHF][iPt]->GetBinContent(useCSVBin);
+      if( iCSVWgtHF!=0 ) csvWgtHF *= iCSVWgtHF;
+    }
+    else if( abs(flavor) == 4 ){
+      int useCSVBin = (csv>=0.) ? c_csv_wgt_hf[iSysC][iPt]->FindBin(csv) : 1;
+      double iCSVWgtC = c_csv_wgt_hf[iSysC][iPt]->GetBinContent(useCSVBin);
+      if( iCSVWgtC!=0 ) csvWgtCF *= iCSVWgtC;
+    }
+    else{
+      if (iPt >=3) iPt=3;       /// [30-40], [40-60] and [60-10000] only 3 Pt bins for lf
+      int useCSVBin = (csv>=0.) ? h_csv_wgt_lf[iSysLF][iPt][iEta]->FindBin(csv) : 1;
+      double iCSVWgtLF = h_csv_wgt_lf[iSysLF][iPt][iEta]->GetBinContent(useCSVBin);
+      if( iCSVWgtLF!=0 ) csvWgtLF *= iCSVWgtLF;
+    }
+
   }
-  else if( abs(flavor) == 4 ){
-    int useCSVBin = (csv>=0.) ? c_csv_wgt_hf[iSysC][iPt]->FindBin(csv) : 1;
-    double iCSVWgtC = c_csv_wgt_hf[iSysC][iPt]->GetBinContent(useCSVBin);
-    if( iCSVWgtC!=0 ) csvWgtCF *= iCSVWgtC;
-  }
-  else{
-    if (iPt >=3) iPt=3;       /// [30-40], [40-60] and [60-10000] only 3 Pt bins for lf
-    int useCSVBin = (csv>=0.) ? h_csv_wgt_lf[iSysLF][iPt][iEta]->FindBin(csv) : 1;
-    double iCSVWgtLF = h_csv_wgt_lf[iSysLF][iPt][iEta]->GetBinContent(useCSVBin);
-    if( iCSVWgtLF!=0 ) csvWgtLF *= iCSVWgtLF;
-  }
+
   double csvWgtTotal = csvWgtHF * csvWgtCF * csvWgtLF;
   return csvWgtTotal;
 }
