@@ -123,6 +123,11 @@ TString sumFileUrl("") ;
 TString fdInputFile("") ;
 TString rfrInputFile("") ;
 
+TString inFileUrl17("/afs/cern.ch/work/g/georgia/BSMAnalysis/limits-combine-v8.1.0/CMSSW_10_2_13/src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_WH_2017_2020_02_05_forLimits.root");    
+//= std::string(std::getenv("CMSSW_BASE"))+"src/UserCode/bsmhiggs_fwk/test/haa4b/plotter_WH_2017_2020_02_05_forLimits.root";
+
+double wscale17=(59.7/41.5);
+
 double shapeMin =-9999;
 double shapeMax = 9999;
 double shapeMinVBF =-9999;
@@ -682,7 +687,7 @@ class AllInfo_t
     void buildDataCards(string histoName, TString url);
 
     // Load histograms from root file and json to memory
-    void getShapeFromFile(TFile* inF, std::vector<string> channelsAndShapes, int cutBin, JSONWrapper::Object &Root,  double minCut=0, double maxCut=9999, bool onlyData=false);
+  void getShapeFromFile(TFile* inF, std::vector<string> channelsAndShapes, int cutBin, JSONWrapper::Object &Root,  double minCut=0, double maxCut=9999, bool onlyData=false);
 
     // Rebin histograms to make sure that high mt/met region have no empty bins
     void rebinMainHisto(string histoName);
@@ -1177,7 +1182,7 @@ int main(int argc, char* argv[])
         printf("allInfo   : Adding shape %s\n",(ch[i]+TString(";")+AnalysisBins[b]+TString(";")+sh[j]).Data());
         if ( !sumFileUrl.IsNull() && inF_sum!=0x0 ) {
           //--- only need SR 4b for sum (used in DD QCD).
-           if ( ch[i].Contains("SR") && strcmp( AnalysisBins[b].c_str(), "4b" ) == 0 ) {
+	  if ( ch[i].Contains("SR") && strcmp( AnalysisBins[b].c_str(), "4b" ) == 0 ) {
               channelsAndShapesSum.push_back((ch[i]+TString(";")+AnalysisBins[b]+TString(";")+sh[j]).Data());
               printf("allInfoSum: Adding shape %s\n",(ch[i]+TString(";")+AnalysisBins[b]+TString(";")+sh[j]).Data());
            }
@@ -1185,8 +1190,8 @@ int main(int argc, char* argv[])
       }
     }
     double cutMin=shapeMin; double cutMax=shapeMax;
-    allInfo.getShapeFromFile(inF, channelsAndShapes, indexcutM[AnalysisBins[b]], Root, cutMin, cutMax   );     
-    if ( !sumFileUrl.IsNull() && inF_sum!=0x0 ) allInfoSum -> getShapeFromFile(inF_sum, channelsAndShapesSum, indexcutM[AnalysisBins[b]], Root, cutMin, cutMax   );     
+    allInfo.getShapeFromFile(inF, channelsAndShapes, indexcutM[AnalysisBins[b]], Root, cutMin, cutMax );     
+    if ( !sumFileUrl.IsNull() && inF_sum!=0x0 ) allInfoSum -> getShapeFromFile(inF_sum, channelsAndShapesSum, indexcutM[AnalysisBins[b]], Root, cutMin, cutMax );     
   }
 
 
@@ -1496,7 +1501,6 @@ void AllInfo_t::addProc(ProcessInfo_t& dest, ProcessInfo_t& src, bool computeSys
 
 //
 // Subtract nonQCD MC from A,C,D regions in QCD Analysis
-//
 void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,TString mainHisto, AllInfo_t* sumAllInfo) {
 
   if ( verbose ) { printf("\n\n --- verbose :  AllInfo_t::doBackgroundSubtraction : begin\n\n") ; }
@@ -1538,6 +1542,8 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
   double tt_norm_e_err(0.0) ;
   double tt_norm_mu_err(0.0) ;
 
+  
+
   if ( fdInputFile.Length() > 0 ) {
 
      TFile tf_fd( fdInputFile, "READ" ) ;
@@ -1550,33 +1556,21 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
      if ( rfr == 0x0 ) { printf("\n\n *** did not find fit_b RooFitResult in %s.  I quit.\n\n", fdInputFile.Data() ) ; gSystem -> Exit(-1) ; }
 
      RooRealVar* rrv_w_e = (RooRealVar*)(rfr -> floatParsFinal()).find( "w_norm_e" ) ;
-     if ( rrv_w_e == 0x0 ) { printf("\n\n *** did not find w_norm_e in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; }  //gSystem -> Exit(-1) ; } 
+     if ( rrv_w_e == 0x0 ) { printf("\n\n *** did not find w_norm_e in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; gSystem -> Exit(-1) ; } 
      else {w_norm_e_val = rrv_w_e -> getVal() ; w_norm_e_err = rrv_w_e -> getError() ; }
 
      RooRealVar* rrv_w_mu = (RooRealVar*)(rfr -> floatParsFinal()).find( "w_norm_mu" ) ;
-     if ( rrv_w_mu == 0x0 ) { printf("\n\n *** did not find w_norm_mu in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; } //gSystem -> Exit(-1) ; }
+     if ( rrv_w_mu == 0x0 ) { printf("\n\n *** did not find w_norm_mu in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; gSystem -> Exit(-1) ; }
      else {  w_norm_mu_val = rrv_w_mu -> getVal() ;  w_norm_mu_err = rrv_w_mu -> getError() ;}
 
      RooRealVar* rrv_tt_e = (RooRealVar*)(rfr -> floatParsFinal()).find( "tt_norm_e" ) ;
-     if ( rrv_tt_e == 0x0 ) { printf("\n\n *** did not find tt_norm_e in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; } //gSystem -> Exit(-1) ; }
+     if ( rrv_tt_e == 0x0 ) { printf("\n\n *** did not find tt_norm_e in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; gSystem -> Exit(-1) ; }
      else {  tt_norm_e_val = rrv_tt_e -> getVal() ;   tt_norm_e_err = rrv_tt_e -> getError() ;  }
 
      RooRealVar* rrv_tt_mu = (RooRealVar*)(rfr -> floatParsFinal()).find( "tt_norm_mu" ) ;
-     if ( rrv_tt_mu == 0x0 ) { printf("\n\n *** did not find tt_norm_mu in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; } //gSystem -> Exit(-1) ; }
+     if ( rrv_tt_mu == 0x0 ) { printf("\n\n *** did not find tt_norm_mu in fit_b in %s.  I quit.\n\n", fdInputFile.Data() ) ; gSystem -> Exit(-1) ; }
      else { tt_norm_mu_val = rrv_tt_mu -> getVal() ;  tt_norm_mu_err = rrv_tt_mu -> getError() ; }
-     /*
-     w_norm_e_val = rrv_w_e -> getVal() ;
-     w_norm_e_err = rrv_w_e -> getError() ;
 
-     w_norm_mu_val = rrv_w_mu -> getVal() ;
-     w_norm_mu_err = rrv_w_mu -> getError() ;
-
-     tt_norm_e_val = rrv_tt_e -> getVal() ;
-     tt_norm_e_err = rrv_tt_e -> getError() ;
-
-     tt_norm_mu_val = rrv_tt_mu -> getVal() ;
-     tt_norm_mu_err = rrv_tt_mu -> getError() ;
-     */
      if ( verbose ) {
          printf( "\n\n --- verbose :  AllInfo_t::doBackgroundSubtraction :  post-fit scale factors from %s\n", fdInputFile.Data() ) ;
          printf( "     w_norm_e = %6.3f +/- %6.3f ,    w_norm_mu = %6.3f +/- %6.3f\n", w_norm_e_val, w_norm_e_err, w_norm_mu_val, w_norm_mu_err ) ;
@@ -1616,10 +1610,12 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     //    if(chData->first.find("_B_")!=string::npos) {if(procName.Contains("W#rightarrow"))continue;}
     //    if(chData->first.find("_D_")!=string::npos) {if(procName.Contains("W#rightarrow"))continue;}    
     
+    /*
     if(inFileUrl.Contains("2018") ){ // || inFileUrl.Contains("2016")){
       if(procName.Contains("W#rightarrow"))continue; // in regions B,D, skip W sample from non-QCD processes  
     }
-    
+    */
+
     printf("Subtracting nonQCD process from data: %s, long name %s \n", it->second.shortName.c_str(), procName.Data() ); 
 
     if ( fdInputFile.Length() > 0 ) { // && (inFileUrl.Contains("2016")) ) {
@@ -1829,6 +1825,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     std::cout << "hDD_B hDD_C hDD_D hCtrl_SI hChan_SB hCtrl_SB" << std::endl;
     std::cout << (hDD_B!=NULL) << "     " << (hDD_C!=NULL) << "     " << (hDD_D!=NULL) << "     " << (hCtrl_SI!=NULL) << "        " << (hChan_SB!=NULL) << "        " << (hCtrl_SB!=NULL) << std::endl;
     hDD->Reset();
+    
     if ( sumAllInfo != 0x0 && ( startsWith( chData->first, "e_A_SR_4b") || startsWith( chData->first, "mu_A_SR_4b")  ) ) {
 
        printf("\n sumAllInfo set and this is a SR 4b channel: %s.  Will use sum for C/D ratio and B shape.\n", chData->first.c_str() ) ;
@@ -1989,9 +1986,7 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
 
        hDD -> Scale( sum_C_over_D_val ) ;
 
-
-
-    } else {
+    }  else {
 
        hDD->Add(hCtrl_SI , 1.0);
 
@@ -2025,10 +2020,9 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     //remove all syst uncertainty
     chDD->second.shapes[mainHisto.Data()].clearSyst();
     //add syst uncertainty
-    //chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_ddqcd_") + binName.Data() +"_"+chData->second.bin.c_str() + systpostfix.Data()] = valDD_err; //:1.8*valDD;
-    chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_ddqcd_") + binName.Data() +"_"+chData->second.bin.c_str() + year.Data() + systpostfix.Data()] = 
-      valDD*datadriven_qcd_Syst; 
-    
+    chDD->second.shapes[mainHisto.Data()].uncScale[string("CMS_haa4b_sys_ddqcd_") + binName.Data() +"_"+chData->second.bin.c_str() + year.Data() + systpostfix.Data()] = valDD*datadriven_qcd_Syst; 
+    // add shape uncertainty: 24.08.2023
+    //    chDD->second.shapes[mainHisto.Data()].makeStatUnc("_CMS_haa4b_ddqcd_", (TString("_")+binName+"_"+chData->second.bin+"_"+year+"_"+systpostfix).Data(),systpostfix.Data(), false, hDD );   
 
     //printout
     sprintf(Lcol    , "%s%s"  ,Lcol,    "|c");
@@ -4127,9 +4121,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
   //
   // Load histograms from root file and json to memory
   //
-  void AllInfo_t::getShapeFromFile(TFile* inF, std::vector<string> channelsAndShapes, int cutBin, JSONWrapper::Object &Root,  double minCut, double maxCut, bool onlyData){
+void AllInfo_t::getShapeFromFile(TFile* inF, std::vector<string> channelsAndShapes, int cutBin, JSONWrapper::Object &Root,  double minCut, double maxCut, bool onlyData ){
     std::vector<TString> BackgroundsInSignal;
 
+    // set year
+    TString iyear("");
+    if(inFileUrl.Contains("2016")){  iyear="2016"; }
+    else  if(inFileUrl.Contains("2017")){  iyear="2017";}
+    else  if(inFileUrl.Contains("2018")){  iyear="2018";}
 
     //iterate over the processes required
     std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
@@ -4150,8 +4149,27 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
       if(procSuffix!=""){dirName += "_" + procSuffix;}
       while(dirName.find("/")!=std::string::npos)dirName.replace(dirName.find("/"),1,"-");         
 
-      TDirectory *pdir = (TDirectory *)inF->Get(dirName.c_str());         
+      
+      TFile *inF17=NULL; TDirectory *pdir;
+      // if 2018 era, replace W process from 2017:     
+
+      // But if all_plotter file and "4b": do NOT replace
+      /*
+      if(sum) {
+	printf(" getShapeFromFile: do not replace W sample for all_plotters file!\n");
+	pdir = (TDirectory *)inF->Get(dirName.c_str()); 
+      } else
+      */
+      if(proc.Contains("W#rightarrow l#nu") && inFileUrl.Contains("2018") ) {
+	inF17 = TFile::Open(inFileUrl17);
+	if( !inF17 || inF17->IsZombie() ){ printf("Invalid file name for 2017 W sample replacement.\n");} 
+	pdir = (TDirectory *)inF17->Get(dirName.c_str());  
+      } else {
+	pdir = (TDirectory *)inF->Get(dirName.c_str());         
+      }
+      
       if(!pdir){printf("Directory (%s) for proc=%s is not in the file!\n", dirName.c_str(), proc.Data()); continue;}
+
 
       bool isData = Process[i].getBool("isdata", false);
       if(onlyData && !isData) { continue; }//just here to speedup the NRB prediction     
@@ -4320,6 +4338,9 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
             hshape->GetYaxis()->SetTitle("Entries");// (/25GeV)");
           }
           hshape->Scale(MCRescale);
+	  // And rescale W sample for 2018 after replacement from 2017 era sample:
+	  if(proc.Contains("W#rightarrow l#nu") && inFileUrl.Contains("2018")) {  hshape->Scale(wscale17); }
+
 	  /*
           if ( verbose ) {
              printf(" --- verbose : AllInfo_t::getShapeFromFile : " ) ;
@@ -4397,12 +4418,6 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           varName.ReplaceAll("down","Down");
           varName.ReplaceAll("up","Up");
 
-	  // set year
-	  TString iyear("");
-	  if(inFileUrl.Contains("2016")){  iyear="2016"; }
-	  else  if(inFileUrl.Contains("2017")){  iyear="2017";}
-	  else  if(inFileUrl.Contains("2018")){  iyear="2018";}
-
           if(varName==""){//does nothing
 
 	    //	  }else if(varName.EndsWith("_jes")){
@@ -4453,9 +4468,14 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
           }
         } // end ivar
       }
+
+      if(proc.Contains("W#rightarrow l#nu") && inFileUrl.Contains("2018")) {  
+	printf("Closing file used for W sample replacement in 2018.\n"); inF17->Close(); // close file used for W sample replacement in 2018
+      }
+
     }
 
-  } // getShapeFromFile
+} // getShapeFromFile
 
 
 
@@ -4519,7 +4539,11 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 
 		//		double xbins[] = {-0.31, -0.13, -0.07, 0.05, 0.19, 0.35};  // july 21, new trial bins
 		double xbins[] = {-0.31, -0.13, -0.07, 0.07,  0.35}; 
-
+		/*
+		if(inFileUrl.Contains("2018")) {  
+		  xbins[0]=-0.31;xbins[1]=-0.15;xbins[2]=-0.09;xbins[3]=-0.01;xbins[4]=0.35; 
+		}
+		*/
 		int nbins=sizeof(xbins)/sizeof(double);
 		unc->second = histo->Rebin(nbins-1, histo->GetName(), (double*)xbins); 
 		utils::root::fixExtremities(unc->second, false, true);
@@ -4610,7 +4634,7 @@ void AllInfo_t::getYieldsFromShape(FILE* pFile, std::vector<TString>& selCh, str
 	procWeight_2017.insert({"t#bar{t} + light", 1.05 }); 
 
 	procWeight_2018.insert({"Other Bkgds", 2.60});   
-	procWeight_2018.insert({"W#rightarrow l#nu", 8.79}); //51.90}); //69.48});
+	procWeight_2018.insert({"W#rightarrow l#nu", 5.91}); // 8.79}); //51.90}); //69.48});
 	procWeight_2018.insert({"Z#rightarrow ll", 6.86 });     
 	procWeight_2018.insert({"t#bar{t} + b#bar{b}", 4.27 }); 
 	procWeight_2018.insert({"t#bar{t} + c#bar{c}", 1.91 }); 
