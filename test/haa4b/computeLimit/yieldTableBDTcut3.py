@@ -51,8 +51,9 @@ chan_label = { "A_SR_3b" : "Signal region, 3b",
 
 a_mass_list = [ 20, 60 ]
 
-proc_list = [ "otherbkg", "ddqcd", "zll", "wlnu", "ttbarbba", "ttbarcba", "ttbarlig", "total_background", "data" ]
+proc_list = [ "otherbkg", "four-top", "ddqcd", "zll", "wlnu", "ttbarbba", "ttbarcba", "ttbarlig", "total_background", "data" ]
 proc_tex = { "otherbkg" : "Other Bkgs",
+             "four-top" : "$t\\bar{t}$t\\bar{t}",
              "ddqcd"    : "DD QCD",
              "zll"      : "$Z \\to \\ell\\ell$",
              "wlnu"     : "$W \\to \\ell\\nu$",

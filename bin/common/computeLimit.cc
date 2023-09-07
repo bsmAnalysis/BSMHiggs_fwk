@@ -1607,14 +1607,6 @@ void AllInfo_t::doBackgroundSubtraction(FILE* pFile,std::vector<TString>& selCh,
     TString procName = it->first.c_str();
 
     if(!(procName.Contains("Other Bkgds") || procName.Contains("Z#rightarrow") || procName.Contains("t#bar{t}") || procName.Contains("W#rightarrow")))continue;
-    //    if(chData->first.find("_B_")!=string::npos) {if(procName.Contains("W#rightarrow"))continue;}
-    //    if(chData->first.find("_D_")!=string::npos) {if(procName.Contains("W#rightarrow"))continue;}    
-    
-    /*
-    if(inFileUrl.Contains("2018") ){ // || inFileUrl.Contains("2016")){
-      if(procName.Contains("W#rightarrow"))continue; // in regions B,D, skip W sample from non-QCD processes  
-    }
-    */
 
     printf("Subtracting nonQCD process from data: %s, long name %s \n", it->second.shortName.c_str(), procName.Data() ); 
 
@@ -4151,15 +4143,7 @@ void AllInfo_t::getShapeFromFile(TFile* inF, std::vector<string> channelsAndShap
 
       
       TFile *inF17=NULL; TDirectory *pdir;
-      // if 2018 era, replace W process from 2017:     
-
-      // But if all_plotter file and "4b": do NOT replace
-      /*
-      if(sum) {
-	printf(" getShapeFromFile: do not replace W sample for all_plotters file!\n");
-	pdir = (TDirectory *)inF->Get(dirName.c_str()); 
-      } else
-      */
+      // if 2018 era, replace W process from 2017 -- // But if all_plotter file and "4b": do NOT replace
       if(proc.Contains("W#rightarrow l#nu") && inFileUrl.Contains("2018") ) {
 	inF17 = TFile::Open(inFileUrl17);
 	if( !inF17 || inF17->IsZombie() ){ printf("Invalid file name for 2017 W sample replacement.\n");} 
