@@ -2,9 +2,9 @@
 
 #------------
 
-    python yieldTableBDTcut3.py cards_SB13TeV_SM_Zh_2016_noSoftb
-    python yieldTableBDTcut3.py cards_SB13TeV_SM_Zh_2017_noSoftb
-    python yieldTableBDTcut3.py cards_SB13TeV_SM_Zh_2018_noSoftb
+    python yieldTableBDTcut3.py cards_SB13TeV_SM_Zh_2016_noSoftb $1
+    python yieldTableBDTcut3.py cards_SB13TeV_SM_Zh_2017_noSoftb $1
+    python yieldTableBDTcut3.py cards_SB13TeV_SM_Zh_2018_noSoftb $1
 
 
 
@@ -33,9 +33,9 @@
 
 #------------
 
-    python yieldTableBDTcut3.py cards_SB13TeV_SM_Wh_2016_noSoftb
-    python yieldTableBDTcut3.py cards_SB13TeV_SM_Wh_2017_noSoftb
-    python yieldTableBDTcut3.py cards_SB13TeV_SM_Wh_2018_noSoftb
+    python yieldTableBDTcut3.py cards_SB13TeV_SM_Wh_2016_noSoftb $1
+    python yieldTableBDTcut3.py cards_SB13TeV_SM_Wh_2017_noSoftb $1
+    python yieldTableBDTcut3.py cards_SB13TeV_SM_Wh_2018_noSoftb $1
 
 
     mv cards_SB13TeV_SM_Wh_2016_noSoftb//yield-table-in-bdt-bins-A_SR_3b.tex \
