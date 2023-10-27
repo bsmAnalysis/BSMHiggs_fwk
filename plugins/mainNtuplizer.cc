@@ -693,8 +693,8 @@ mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSetup)
        int bi(0);
        for (auto & it : b_hadrons) {
        //       for ( int bi=0; bi<b_hadrons.size(); bi++ ) {
-	 printf( " %2d %p : ID=%6d : m=%6.2f : pt=%6.1f, eta=%7.3f, phi=%7.3f\n",
-                 bi, it, it.pdgId(), it.mass(), it.pt(), it.eta(), it.phi()) ;
+	 printf( " %2d  : ID=%6d : m=%6.2f : pt=%6.1f, eta=%7.3f, phi=%7.3f\n",
+                 bi, it.pdgId(), it.mass(), it.pt(), it.eta(), it.phi()) ;
 	 bi++;
        } // bi
        printf("\n\n") ;

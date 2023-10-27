@@ -4,7 +4,7 @@
 #include <map>
 
 #include "FWCore/FWLite/interface/FWLiteEnabler.h"
-#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
+#include "FWCore/PythonParameterSet/interface/MakePyBind11ParameterSets.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "UserCode/bsmhiggs_fwk/interface/PatUtils.h"
@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
     FWLiteEnabler::enable();
 
     //configure the process
-    const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
+    const edm::ParameterSet &runProcess = edm::cmspybind11::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
 
     bool runZH = runProcess.getParameter<bool>("runZH");
   
@@ -426,7 +426,7 @@ int main(int argc, char* argv[])
       TightWP = DeepCSVTightWP;
     }
     
-    BTagCalibration btagCalib(b_tagging_name, csv_file_path);
+    BTagCalibration btagCalib(b_tagging_name, csv_file_path,true); //bool validate
     BTagCalibration btagCalib1, btagCalib2, btagCalib3;
 
     BTagCalibrationReader btagReaderLoose(BTagEntry::OP_LOOSE, "central", {"up", "down"});

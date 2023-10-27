@@ -15,7 +15,7 @@
 
 
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
-#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
+#include "FWCore/PythonParameterSet/interface/MakePyBind11ParameterSets.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/RegexMatch.h"
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"

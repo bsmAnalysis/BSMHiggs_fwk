@@ -17,7 +17,7 @@
 
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
+#include "FWCore/PythonParameterSet/interface/MakePyBind11ParameterSets.h"
 
 #include "TSystem.h"
 #include "TFile.h"
