@@ -1,3 +1,29 @@
+# Installation for CMSSW_10_6_30 (latest UL/2016,2017,2018/twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/PdmVRun2LegacyAnalysis )
+```bash
+scram arch   -- see what architecture you have
+export SCRAM_ARCH=slc7_amd64_gcc700
+
+cmsrel CMSSW_10_6_30
+cd CMSSW_10_6_30/src
+cmsenv
+git cms-init
+
+#clone repository
+git clone https://github.com/esiam/BSMHiggs_fwk.git -b new_ul_branch UserCode/bsmhiggs_fwk
+
+cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
+git checkout -b <new branch name>   #copy the branch to a new one to host future modifications (ease pull request and code merging)
+
+#Switch CMSSW_80X to CMSSW_10X by running: (without this compile fails)
+cd test/haa4b
+sh ./converter.sh # input 1 when you are prompted to select
+
+cd $CMSSW_BASE/src
+
+#And compile
+scram b -j 4
+```
+
 # Run limits
 ```bash
 export SCRAM_ARCH=slc7_amd64_gcc700
