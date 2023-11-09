@@ -117,7 +117,7 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
     }
 
     // fat Jet
-    /*
+    //
     size_t nfatjet(0);
     for(Int_t i=0; i<ev.fjet; i++) {
       LorentzVector P4( ev.fjet_px[i],ev.fjet_py[i],ev.fjet_pz[i],ev.fjet_en[i] );
@@ -132,10 +132,10 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
 	nfatjet++;
       }
     }
-    */
+    //
 
     // secondary vertices 
-    /*
+    //
     size_t nsv(0);
     for (Int_t i=0; i<ev.sv; i++) {
       LorentzVector P4( ev.sv_px[i], ev.sv_py[i], ev.sv_pz[i], ev.sv_en[i] );
@@ -147,7 +147,7 @@ PhysicsEvent_t getPhysicsEventFrom(DataEvtSummary_t &ev)
 	nsv++;
       }
     }
-    */
+    //
 
     //generator level particles
     for(Int_t ipart=0; ipart<ev.nmcparticles; ipart++) {

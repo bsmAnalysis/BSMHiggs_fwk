@@ -199,7 +199,7 @@ public :
     Float_t genPt;
 
 };
-/*
+//fatjet
 class PhysicsObject_FatJet : public LorentzVector {
  public:
  PhysicsObject_FatJet(LorentzVector vec) :
@@ -225,7 +225,7 @@ class PhysicsObject_FatJet : public LorentzVector {
     for (int i=0; i<2; i++) {
       LorentzVector subjet;
       subjet.SetPxPyPzE(subjet_px_[i], subjet_py_[i], subjet_pz_[i], subjet_en_[i]);
-      if (subjet.Pt()>20) { subjets.push_back(subjet); }
+      if (subjet.Pt()>5) { subjets.push_back(subjet); }
     }
 
   }
@@ -253,9 +253,9 @@ class PhysicsObject_FatJet : public LorentzVector {
   Float_t parton_px, parton_py, parton_pz, parton_en;
 
 };
-*/
 
-/*
+
+
 class PhysicsObject_SV : public LorentzVector {
  public:
  PhysicsObject_SV(LorentzVector vec, Float_t chi2_, Float_t ndof_) :
@@ -286,13 +286,13 @@ class PhysicsObject_SV : public LorentzVector {
   Int_t sv_mc_nbh_moms, sv_mc_nbh_daus, sv_mc_mcbh_ind;
 
 };
-*/
+
 
 typedef std::vector<PhysicsObject>        PhysicsObjectCollection;
 typedef std::vector<PhysicsObject_Lepton> PhysicsObjectLeptonCollection;
 typedef std::vector<PhysicsObject_Jet>    PhysicsObjectJetCollection;
-//typedef std::vector<PhysicsObject_FatJet> PhysicsObjectFatJetCollection;
-//typedef std::vector<PhysicsObject_SV>     PhysicsObjectSVCollection;
+typedef std::vector<PhysicsObject_FatJet> PhysicsObjectFatJetCollection;
+typedef std::vector<PhysicsObject_SV>     PhysicsObjectSVCollection;
 
 
 //
@@ -302,8 +302,8 @@ struct PhysicsEvent_t {
   
   PhysicsObjectLeptonCollection leptons;
   PhysicsObjectJetCollection jets;
-  //  PhysicsObjectFatJetCollection fatjets;
-  //  PhysicsObjectSVCollection svs;
+  PhysicsObjectFatJetCollection fatjets;
+  PhysicsObjectSVCollection svs;
   LorentzVector met, metNoHF;
   LorentzVector imet[11];
   LorentzVectorCollection variedMet;

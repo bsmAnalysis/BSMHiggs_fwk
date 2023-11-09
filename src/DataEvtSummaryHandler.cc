@@ -271,7 +271,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("jet_genpt",             evSummary_.jet_genpt,               "jet_genpt[jet]/F");
     
 
-    /*
+    //
     //sv : Inclusive Secondary Vertices from slimmedSecondaryVertices
     t_->Branch("sv"              , &evSummary_.sv              , "sv/I" ) ;
     t_->Branch("sv_px"           , evSummary_.sv_px            , "sv_px[sv]/F" ) ;
@@ -288,11 +288,12 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("sv_mc_nbh_moms"  , evSummary_.sv_mc_nbh_moms   , "sv_mc_nbh_moms[sv]/I" ) ;
     t_->Branch("sv_mc_nbh_daus"  , evSummary_.sv_mc_nbh_daus   , "sv_mc_nbh_daus[sv]/I" ) ;
 //    t_->Branch("sv_mc_mcbh_ind"  , evSummary_.sv_mc_mcbh_ind   , "sv_mc_mcbh_ind[sv]/I" ) ;
-*/
+//
 
     //fjet (ak8PFJetsCHS)
-    /*
+    //
     t_->Branch("fjet",                    &evSummary_.fjet,                   "fjet/I");
+    t_->Branch("fjet_pt",                 evSummary_.fjet_pt,                 "fjet_pt[fjet]/F");
     t_->Branch("fjet_px",                 evSummary_.fjet_px,                 "fjet_px[fjet]/F");
     t_->Branch("fjet_py",                 evSummary_.fjet_py,                 "fjet_py[fjet]/F");
     t_->Branch("fjet_pz",                 evSummary_.fjet_pz,                 "fjet_pz[fjet]/F");
@@ -319,8 +320,9 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("fjet_subjets_px",         &evSummary_.fjet_subjets_px,        "fjet_subjets_px[fjet][2]/F");
     t_->Branch("fjet_subjets_py",         &evSummary_.fjet_subjets_py,        "fjet_subjets_py[fjet][2]/F");
     t_->Branch("fjet_subjets_pz",         &evSummary_.fjet_subjets_pz,        "fjet_subjets_pz[fjet][2]/F"); 
-    t_->Branch("fjet_subjets_en",         &evSummary_.fjet_subjets_en,        "fjet_subjets_en[fjet][2]/F"); 
-    */
+    t_->Branch("fjet_subjets_en",         &evSummary_.fjet_subjets_en,        "fjet_subjets_en[fjet][2]/F");
+    t_->Branch("fjet_subjets_btag",       &evSummary_.fjet_subjets_btag,      "fjet_subjets_btag[fjet][2]/F"); 
+    //
     //met
     t_->Branch("imet_pt",                &evSummary_.imet_pt,                 "imet_pt[11]/F");    
     t_->Branch("imet_phi",               &evSummary_.imet_phi,                "imet_phi[11]/F");      
@@ -614,7 +616,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("jet_parton_en",           evSummary_.jet_parton_en);
     t_->SetBranchAddress("jet_genpt",               evSummary_.jet_genpt);
 
-    /*
+    
     //sv : Inclusive Secondary Vertices from slimmedSecondaryVertices
     t_->SetBranchAddress("sv"              , &evSummary_.sv               ) ;
     t_->SetBranchAddress("sv_px"           , evSummary_.sv_px             ) ;
@@ -631,7 +633,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("sv_mc_nbh_moms"  , evSummary_.sv_mc_nbh_moms    ) ;
     t_->SetBranchAddress("sv_mc_nbh_daus"  , evSummary_.sv_mc_nbh_daus    ) ;
 //    t_->SetBranchAddress("sv_mc_mcbh_ind"  , evSummary_.sv_mc_mcbh_ind    ) ;
-*/
+
 
     /*
     //pjet: slimmedJetsPuppi
@@ -655,7 +657,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     */
 
     //fjet (ak8PFJetsCHS)
-    /*
+    
     t_->SetBranchAddress("fjet",                    &evSummary_.fjet);
     t_->SetBranchAddress("fjet_px",                 evSummary_.fjet_px);
     t_->SetBranchAddress("fjet_py",                 evSummary_.fjet_py);
@@ -684,7 +686,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("fjet_subjets_py",         &evSummary_.fjet_subjets_py);
     t_->SetBranchAddress("fjet_subjets_pz",         &evSummary_.fjet_subjets_pz);
     t_->SetBranchAddress("fjet_subjets_en",         &evSummary_.fjet_subjets_en);
-    */
+    
     //met
     t_->SetBranchAddress("imet_pt",                  &evSummary_.imet_pt);
     t_->SetBranchAddress("imet_phi",                 &evSummary_.imet_phi); 
