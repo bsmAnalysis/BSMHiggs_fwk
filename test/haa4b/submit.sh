@@ -72,18 +72,18 @@ GOLDENJSON=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/json/
 RESULTSDIR=$MAINDIR/results_$YEAR$SUFFIX 
 
 if [[ $arguments == *"crab3"* ]]; then STORAGEDIR='';
-else STORAGEDIR=/eos/cms/store/user/georgia/results$SUFFIX ; fi
+else STORAGEDIR=/eos/cms/store/user/e/esiamark/results$SUFFIX ; fi
 
 PLOTSDIR=$MAINDIR/plots_${CHANNEL}_${YEAR}${SUFFIX}
 PLOTTER=$MAINDIR/plotter_${CHANNEL}_${YEAR}${SUFFIX}
  
 ####################### Settings for Ntuple Analysis ##################
 if [[ $YEAR == "2016" ]]; then
-    NTPL_INPUT=/eos/user/g/georgia/results_2016$SUFFIX
+    NTPL_INPUT=/eos/user/e/esiamark/results_2016$SUFFIX
 elif [[ $YEAR == "2017" ]]; then
-    NTPL_INPUT=/eos/cms/store/user/georgia/results_2017$SUFFIX 
+    NTPL_INPUT=/eos/cms/store/user/e/esiamark/results_2017$SUFFIX 
 elif [[ $YEAR == "2018" ]]; then
-    NTPL_INPUT=/eos/cms/store/user/georgia/results_2018$SUFFIX   
+    NTPL_INPUT=/eos/cms/store/user/e/esiamark/results_2018$SUFFIX   
 fi
 
 ZPtSF_OUT=$MAINDIR/VPtSF_${CHANNEL}_$YEAR$SUFFIX
