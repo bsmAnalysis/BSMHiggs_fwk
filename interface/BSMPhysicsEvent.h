@@ -246,7 +246,7 @@ class PhysicsObject_FatJet : public LorentzVector {
   Float_t tau1, tau2, tau3;
 
   Int_t nSubj;
-  //  Float_t subjet_px[2], subjet_py[2], subjet_pz[2], subjet_en[2];
+  Float_t subjet_px[2], subjet_py[2], subjet_pz[2], subjet_en[2];
   std::vector<LorentzVector> subjets;
 
   Int_t flavid, partonid, motherid;
