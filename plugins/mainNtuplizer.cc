@@ -226,6 +226,8 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
   bool is2017;
   bool is2018;
   bool is2017BC;
+  bool is2016preVFP;
+  bool is2016postVFP;
   bool isPrint_ = false;
   
   //BTagging
@@ -350,6 +352,8 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   is2017BC   	= (string(proc_.c_str()).find("2017B") != string::npos || string(proc_.c_str()).find("2017C") != string::npos);
   is2018     	= (string(proc_.c_str()).find("2018") != string::npos);
   is2016Legacy 	= is2016Legacy || is2016Signal;
+  is2016PreVFP  = string(proc_.c_str()).find("2016_preVFP") != string::npos;
+  is2016PostVFP = ( is2016 && !(is2016PreVFP) );
   
   printf("Definition of plots\n");
   h_nevents = fs->make< TH1F>("nevents",";nevents; nevents",1,-0.5,0.5);
@@ -758,10 +762,10 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
   else if(is2017) //https://btv-wiki.docs.cern.ch/ScaleFactors/UL2017/
     {DeepCSVLooseWP = 0.1355; DeepCSVMediumWP = 0.4506; DeepCSVTightWP = 0.7738;}
     // {DeepJetLooseWP = 0.0532; DeepJetMediumWP = 0.3040; DeepJetTightWP = 0.7476;}
-  else if(is2016Legacy) //https://btv-wiki.docs.cern.ch/ScaleFactors/UL2016preVFP/
+  else if(is2016PreVFP) //https://btv-wiki.docs.cern.ch/ScaleFactors/UL2016preVFP/
     {DeepCSVLooseWP = 0.2027; DeepCSVMediumWP = 0.6001; DeepCSVTightWP = 0.8819;}    //preVFP
    // {DeepJetLooseWP = 0.0508; DeepJetMediumWP = 0.2598; DeepJetTightWP = 0.6502;}  //preVFP
-  else                  //https://btv-wiki.docs.cern.ch/ScaleFactors/UL2016postVFP/
+  else if(is2016PostVFP) //https://btv-wiki.docs.cern.ch/ScaleFactors/UL2016postVFP/
     {DeepCSVLooseWP = 0.1918;  DeepCSVMediumWP = 0.5847; DeepCSVTightWP = 0.8767;}
    // {DeepJetLooseWP = 0.0408; DeepJetMediumWP = 0.2489; DeepJetTightWP = 0.6377;}  //postVFP
 
@@ -772,7 +776,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
   if(isMC_){
     for (pat::Jet &j : jets) {
       Float_t btag_dsc;
-      if(is2017 || is2018 || is2016Legacy)  
+      if(is2017 || is2018 || is2016Legacy|| is2016PreVFP || is2016PostVFP)  
         btag_dsc = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
         //btag_dsc = j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
       else
@@ -1194,7 +1198,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	 ev.en++;
        } // el
        
-       int nlep=(ev.en+ev.mn);
+       //int nlep=(ev.en+ev.mn);
       // if(nlep<1) return; //require one lepton 
           //
        // jet selection (ak4PFJetsCHS)
@@ -1252,13 +1256,13 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	   //btag1=j.bDiscriminator("pfDeepFlabourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
 	   //nDeepLtags += (btag1>0.0532);  
 	 //	   ev.jet_btag1[ev.jet] = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
-	 } else if(is2016Legacy){
+	 } else if(is2016PreVFP){
 	   btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
 	   nCSVLtags += (btag1>0.1918);
 	   //btag1=j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
 	   //nDeepLtags += (btag1>0.0508);   //pre
 	 }
-	 else{    //postVFP
+	 else if(is2016PostVFP){    //postVFP
 	   btag1=j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb"); 
 	   nCSVLtags += (btag1>0.2219);  
 	   //btag1=j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
