@@ -209,20 +209,21 @@ class PhysicsObject_FatJet : public LorentzVector {
     btag0=btag0_;
   }
 
-  void setSubjetInfo(Float_t prunedM_, Float_t softdropM_, Float_t tau1_, Float_t tau2_, Float_t tau3_)
+  void setSubjetInfo(Float_t prunedM_, Float_t softdropM_, Float_t tau1_, Float_t tau2_, Float_t tau3_, Float tau4_)
   {
     prunedM=prunedM_;
     softdropM=softdropM_;
     tau1=tau1_;
     tau2=tau2_;
     tau3=tau3_;
+    tau4=tau4_;
   }
 
-  void setSubjets(Int_t nSubj_, Float_t subjet_px_[2], Float_t subjet_py_[2], Float_t subjet_pz_[2], Float_t subjet_en_[2])
+  void setSubjets(Int_t nSubj_, Float_t subjet_px_[5], Float_t subjet_py_[5], Float_t subjet_pz_[5], Float_t subjet_en_[5])
   {
     nSubj=nSubj_;
 
-    for (int i=0; i<2; i++) {
+    for (int i=0; i<5; i++) {
       LorentzVector subjet;
       subjet.SetPxPyPzE(subjet_px_[i], subjet_py_[i], subjet_pz_[i], subjet_en_[i]);
       if (subjet.Pt()>5) { subjets.push_back(subjet); }
@@ -243,10 +244,10 @@ class PhysicsObject_FatJet : public LorentzVector {
 
   Float_t btag0;
   Float_t prunedM, softdropM;
-  Float_t tau1, tau2, tau3;
+  Float_t tau1, tau2, tau3, tau4;
 
   Int_t nSubj;
-  Float_t subjet_px[2], subjet_py[2], subjet_pz[2], subjet_en[2];
+  Float_t subjet_px[5], subjet_py[5], subjet_pz[5], subjet_en[5];
   std::vector<LorentzVector> subjets;
 
   Int_t flavid, partonid, motherid;

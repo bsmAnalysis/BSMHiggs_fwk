@@ -308,6 +308,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("fjet_tau1",               evSummary_.fjet_tau1,               "fjet_tau1[fjet]/F");
     t_->Branch("fjet_tau2",               evSummary_.fjet_tau2,               "fjet_tau2[fjet]/F");
     t_->Branch("fjet_tau3",               evSummary_.fjet_tau3,               "fjet_tau3[fjet]/F");
+    t_->Branch("fjet_tau4",               evSummary_.fjet_tau4,               "fjet_tau4[fjet]/F");
     t_->Branch("fjet_mother_id",          evSummary_.fjet_mother_id,          "fjet_mother_id[fjet]/I"); 
     t_->Branch("fjet_parton_px",          evSummary_.fjet_parton_px,          "fjet_parton_px[fjet]/F");
     t_->Branch("fjet_parton_py",          evSummary_.fjet_parton_py,          "fjet_parton_py[fjet]/F");
@@ -317,11 +318,11 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("fjet_hadronFlavour",      evSummary_.fjet_hadronFlavour,      "fjet_hadronFlavour[fjet]/I");
 
     t_->Branch("fjet_subjet_count",       evSummary_.fjet_subjet_count,       "fjet_subjet_count[fjet]/I");
-    t_->Branch("fjet_subjets_px",         &evSummary_.fjet_subjets_px,        "fjet_subjets_px[fjet][2]/F");
-    t_->Branch("fjet_subjets_py",         &evSummary_.fjet_subjets_py,        "fjet_subjets_py[fjet][2]/F");
-    t_->Branch("fjet_subjets_pz",         &evSummary_.fjet_subjets_pz,        "fjet_subjets_pz[fjet][2]/F"); 
-    t_->Branch("fjet_subjets_en",         &evSummary_.fjet_subjets_en,        "fjet_subjets_en[fjet][2]/F");
-    t_->Branch("fjet_subjets_btag",       &evSummary_.fjet_subjets_btag,      "fjet_subjets_btag[fjet][2]/F"); 
+    t_->Branch("fjet_subjets_px",         &evSummary_.fjet_subjets_px,        "fjet_subjets_px[fjet][5]/F");
+    t_->Branch("fjet_subjets_py",         &evSummary_.fjet_subjets_py,        "fjet_subjets_py[fjet][5]/F");
+    t_->Branch("fjet_subjets_pz",         &evSummary_.fjet_subjets_pz,        "fjet_subjets_pz[fjet][5]/F"); 
+    t_->Branch("fjet_subjets_en",         &evSummary_.fjet_subjets_en,        "fjet_subjets_en[fjet][5]/F");
+    t_->Branch("fjet_subjets_btag",       &evSummary_.fjet_subjets_btag,      "fjet_subjets_btag[fjet][5]/F"); 
     //
     //met
     t_->Branch("imet_pt",                &evSummary_.imet_pt,                 "imet_pt[11]/F");    
@@ -673,6 +674,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("fjet_tau1",               evSummary_.fjet_tau1);
     t_->SetBranchAddress("fjet_tau2",               evSummary_.fjet_tau2);
     t_->SetBranchAddress("fjet_tau3",               evSummary_.fjet_tau3);
+    t_->SetBranchAddress("fjet_tau4",               evSummary_.fjet_tau4);
     t_->SetBranchAddress("fjet_mother_id",          evSummary_.fjet_mother_id);
     t_->SetBranchAddress("fjet_partonFlavour",      evSummary_.fjet_partonFlavour);
     t_->SetBranchAddress("fjet_hadronFlavour",      evSummary_.fjet_hadronFlavour); 
@@ -686,7 +688,8 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("fjet_subjets_py",         &evSummary_.fjet_subjets_py);
     t_->SetBranchAddress("fjet_subjets_pz",         &evSummary_.fjet_subjets_pz);
     t_->SetBranchAddress("fjet_subjets_en",         &evSummary_.fjet_subjets_en);
-    
+    t_->SetBranchAddress("fjet_subjets_btag",       &evSummary_.fjet_subjets_btag);
+
     //met
     t_->SetBranchAddress("imet_pt",                  &evSummary_.imet_pt);
     t_->SetBranchAddress("imet_phi",                 &evSummary_.imet_phi); 

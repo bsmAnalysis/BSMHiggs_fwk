@@ -226,8 +226,8 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
   bool is2017;
   bool is2018;
   bool is2017BC;
-  bool is2016preVFP;
-  bool is2016postVFP;
+  bool is2016PreVFP;
+  bool is2016PostVFP;
   bool isPrint_ = false;
   
   //BTagging
@@ -776,7 +776,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
   if(isMC_){
     for (pat::Jet &j : jets) {
       Float_t btag_dsc;
-      if(is2017 || is2018 || is2016Legacy|| is2016PreVFP || is2016PostVFP)  
+      if(is2017 || is2018 || is2016Legacy || is2016PreVFP || is2016PostVFP)  
         btag_dsc = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
         //btag_dsc = j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
       else
@@ -1198,9 +1198,9 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	 ev.en++;
        } // el
        
-       //int nlep=(ev.en+ev.mn);
-      // if(nlep<1) return; //require one lepton 
-          //
+	//int nlep=(ev.en+ev.mn);
+	// if(nlep<1) return; //require one lepton 
+	//       
        // jet selection (ak4PFJetsCHS)
        //
 //       pat::JetCollection jets;
@@ -1258,13 +1258,13 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	 //	   ev.jet_btag1[ev.jet] = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
 	 } else if(is2016PreVFP){
 	   btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
-	   nCSVLtags += (btag1>0.1918);
+	   nCSVLtags += (btag1>0.2027);   //preVFP
 	   //btag1=j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
-	   //nDeepLtags += (btag1>0.0508);   //pre
+	   //nDeepLtags += (btag1>0.0508);   
 	 }
 	 else if(is2016PostVFP){    //postVFP
-	   btag1=j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb"); 
-	   nCSVLtags += (btag1>0.2219);  
+	   btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+	   nCSVLtags += (btag1>0.1918);  
 	   //btag1=j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
            //nDeepLtags += (btag1>0.0408);  
 	 }
@@ -1343,8 +1343,8 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
        //
        // jet selection (AK8Jets)
        //
-  //Ak8--Jets substructure
-  if(!(is2017 && is2018)){//disable fatjet for 2017
+  //Ak8--Jets substructure  for all years 2016, '17, '18
+  //if(!(is2017 && is2018)){//disable fatjet for 2017
        pat::JetCollection fatjets; 
        edm::Handle< pat::JetCollection > jetsAK8Handle; 
        event.getByToken(fatjetTag_, jetsAK8Handle);
@@ -1373,25 +1373,15 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 		  ) ;
          }  
 	 
-	 if(is2017 || is2018){
-//	   ev.fjet_prunedM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSValueMap:ak8PFJetsCHSPrunedMass");
-	   ev.fjet_softdropM[ev.fjet] = (float) j.userFloat("ak8PFJetsPuppiSoftDropMass"); //"ak8PFJetsCHSValueMap:ak8PFJetsCHSSoftDropMass");
-	   ev.fjet_tau1[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau1");        //ak8PFJetsCHSValueMap:NjettinessAK8CHSTau1");
-	   ev.fjet_tau2[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau2");        //ak8PFJetsCHSValueMap:NjettinessAK8CHSTau2");
-	   ev.fjet_tau3[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau3");        //ak8PFJetsCHSValueMap:NjettinessAK8CHSTau3");
-	 }else{//2016
-
-//	   ev.fjet_prunedM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSPrunedMass");
-	   ev.fjet_softdropM[ev.fjet] = (float) j.userFloat("ak8PFJetsPuppiSoftDropMass");
-	   //	 ev.fjet_filteredM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSFilteredLinks");
-	   ev.fjet_tau1[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau1");
-	   ev.fjet_tau2[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau2");
-	   ev.fjet_tau3[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau3");
-	 }
+//	ev.fjet_prunedM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSPrunedMass");           //"ak8PFJetsCHSValueMap:ak8PFJetsCHSPrunedMass");
+	ev.fjet_softdropM[ev.fjet] = (float) j.userFloat("ak8PFJetsPuppiSoftDropMass");     //"ak8PFJetsCHSValueMap:ak8PFJetsCHSSoftDropMass");
+//	ev.fjet_filteredM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSFilteredLinks");
+	ev.fjet_tau1[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau1");	    //ak8PFJetsCHSValueMap:NjettinessAK8CHSTau1");
+	ev.fjet_tau2[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau2");            //ak8PFJetsCHSValueMap:NjettinessAK8CHSTau2");
+	ev.fjet_tau3[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau3");            //ak8PFJetsCHSValueMap:NjettinessAK8CHSTau3");
+        ev.fjet_tau4[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau4");
 	 
-
 	 // Add soft drop subjets
-
 	 if ( verbose_ ) {
 	   printf("\n   This AK8 jet has N = %3d subjet collections\n",j.nSubjetCollections());
 
@@ -1403,32 +1393,44 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	 }
 
    std::string subjet_label;
-   if(is2017 || is2018)
-      subjet_label = "SoftDropPuppi";
-   else
-      subjet_label = "SoftDropPuppi";
+   subjet_label = "SoftDropPuppi";
 
    int nSub((j.subjets("SoftDropPuppi")).size());
    //cout<< "nSub "<< nSub<<endl;
 
-   for (int k=0; k<2; k++) { // store up to 2 subjets for each AK8 jet ?
+   for (int k=0; k<5; k++) { // store up to 5 subjets for each AK8 jet ?
       ev.fjet_subjets_btag[ev.fjet][k] = 0.;
+     // ev.fjet_subjets_btag[ev.fjet][k] = (j.subjets("SoftDropPuppi"))[k]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets("SoftDropPuppi"))[k]->bDiscriminator("pfDeepCSVJetTags:probbb");
     }
+
+  // for (int k=0; k<5; k++) { // store up to 5 subjets for each AK8 jet ?
+   // ev.fjet_subjets_btag[ev.fjet][k] = 0.;
+   // ev.fjet_subjets_btag[ev.fjet][k] = (j.subjets("SoftDropPuppi"))[k]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets("SoftDropPuppi"))[k]->bDiscriminator("pfDeepCSVJetTags:probbb");
+  // }
+
 
    if(nSub >0 ){
       ev.fjet_subjets_btag[ev.fjet][0] = (j.subjets("SoftDropPuppi"))[0]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets("SoftDropPuppi"))[0]->bDiscriminator("pfDeepCSVJetTags:probbb");
     }
    if(nSub >1 ){
       ev.fjet_subjets_btag[ev.fjet][1] = (j.subjets("SoftDropPuppi"))[1]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets("SoftDropPuppi"))[1]->bDiscriminator("pfDeepCSVJetTags:probbb");
-     }
+     } 
+   if(nSub >2 ){
+      ev.fjet_subjets_btag[ev.fjet][2] = (j.subjets("SoftDropPuppi"))[2]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets("SoftDropPuppi"))[2]->bDiscriminator("pfDeepCSVJetTags:probbb");
+    }
+   if(nSub >3 ){
+      ev.fjet_subjets_btag[ev.fjet][3] = (j.subjets("SoftDropPuppi"))[3]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets("SoftDropPuppi"))[3]->bDiscriminator("pfDeepCSVJetTags:probbb");
+     } 
+   if(nSub >4 ){
+      ev.fjet_subjets_btag[ev.fjet][4] = (j.subjets("SoftDropPuppi"))[4]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets("SoftDropPuppi"))[4]->bDiscriminator("pfDeepCSVJetTags:probbb");
+    }
+
 	 auto const & sdSubjets = j.subjets(subjet_label); 
 	 //The Soft Drop Subjets are stored in positions 0, 1  in the subjet collection list.
 	 int count_subj(0);
-
          
-
 	 std::vector<TLorentzVector> softdrop_subjets; 
-	 for ( auto const & it : sdSubjets ) {
+	 for ( auto const & it : sdSubjets ) { //subjets
 
 	   TLorentzVector softdrop_subjet;
 	   softdrop_subjet.SetPtEtaPhiM(it->correctedP4(0).pt(), it->correctedP4(0).eta(), it->correctedP4(0).phi(), it->correctedP4(0).mass()); 
@@ -1449,7 +1451,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	   }
 	 } // subjets
 
-	 for (int i=0; i<2; i++) { // store up to 4 subjets for each AK8 jet ?
+	 for (int i=0; i<5; i++) { // store up to 5 subjets for each AK8 jet ?
 	   ev.fjet_subjets_px[ev.fjet][i] = 0.;
 	   ev.fjet_subjets_py[ev.fjet][i] = 0.;
 	   ev.fjet_subjets_pz[ev.fjet][i] = 0.;
@@ -1458,8 +1460,8 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
        
 	 int csb(0);
 	 for ( auto & it : softdrop_subjets ) {
-	   if (csb>1) break; // up to 2 subjets  
-	   //	   if (it.Pt()>20.) { // only store subjets above 20 GeV 
+	   // if (csb>4) break; // up to 4 subjets  
+	   // if (it.Pt()>20.) { // only store subjets above 20 GeV 
 	   ev.fjet_subjets_px[ev.fjet][csb] = it.Px();
 	   ev.fjet_subjets_py[ev.fjet][csb] = it.Py();
 	   ev.fjet_subjets_pz[ev.fjet][csb] = it.Pz();
@@ -1508,7 +1510,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	 ev.fjet++;
 	 ifjet++;
        }
-  }
+      //}
   //end ak8 substructure     
      pat::METCollection mets;
      edm::Handle< pat::METCollection > metsHandle;
