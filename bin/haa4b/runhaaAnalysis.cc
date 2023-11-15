@@ -415,7 +415,8 @@ int main(int argc, char* argv[])
       }
       if(is2018data || is2018MC){
         csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
-	  "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_102XSF_V1_YearCorrelation-V1.csv"; //DeepCSV_102XSF_WP_V1.csv";
+	  "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_102XSF_WP_V1.csv"; 
+	//	  "/src/UserCode/bsmhiggs_fwk/data/weights/DeepCSV_102XSF_V1_YearCorrelation-V1.csv"; //DeepCSV_102XSF_WP_V1.csv";
       }
       if(is2016Signal || is2016Legacy){
 	csv_file_path = std::string(std::getenv("CMSSW_BASE"))+
