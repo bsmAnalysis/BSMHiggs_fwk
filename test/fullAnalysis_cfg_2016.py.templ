@@ -36,10 +36,9 @@ updateJetCollection(
 # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
 )  
 
-glob_tag=@gtag
 from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
 from RecoJets.JetProducers.PileupJetID_cfi import pileupJetId
-if 'preVFP' in glob_tag:  #check if you are preVFP
+if 'preVFP' in '@gtag':  #check if you are preVFP
    #re-run the Pileup Jet ID
    #https://twiki.cern.ch/twiki/bin/view/CMS/PileupJetIDUL#Recommendations_for_2016_UL_data
    from RecoJets.JetProducers.PileupJetID_cfi import _chsalgos_106X_UL16APV   #(_chsalgos_106X_UL16APV for APV samples)

@@ -240,7 +240,7 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
     config_file.write('config.JobType.pluginName = \'Analysis\'\n')
     config_file.write('config.JobType.psetName = "'+Jobs_CRABcfgFile+'"\n')
 #    config_file.write('config.JobType.scriptExe = "%s"\n' % exePath)
-    config_file.write('config.JobType.sendPythonFolder = True\n')
+#    config_file.write('config.JobType.sendPythonFolder = True\n')
     config_file.write('config.JobType.inputFiles = ["'+os.path.expanduser(Jobs_ProxyDir+"/x509_proxy")+'"]\n')
 #, os.environ["CMSSW_BASE"]+"/bin/"+os.environ["SCRAM_ARCH"]+"/'+Jobs_CRABexe+'","'+fwkPath'"]\n')
     config_file.write('config.JobType.outputFiles = ["analysis.root"]\n')

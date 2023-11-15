@@ -48,23 +48,16 @@ else doQCD=False ; fi
 if [[ $CHANNEL == "ZH" ]]; then doZH=True ; 
 else doZH=False ; fi
 
-if [[ $YEAR == "2016" ]]; then SUFFIX=_2020_06_19 
+if [[ $YEAR == "2016" ]]; then SUFFIX=_2023_11_15 
 else SUFFIX=_2020_02_05 ; fi
 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
 
-# Json and python template for 2016
-if [[ $YEAR == "2016" ]]; then
-    JSON=$MAINDIR/samples2016_legacy.json
-    NTPL_JSON=$MAINDIR/samples2016_legacy.json
-    FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_2016Legacy.py.templ
-    RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_2016Legacy.py.templ  # to be added later
-else
-    JSON=$MAINDIR/samples$YEAR.json
-    NTPL_JSON=$MAINDIR/samples$YEAR.json
-    FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_$YEAR.py.templ
-    RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_$YEAR.py.templ
-fi
+# Json and python template for all years
+JSON=$MAINDIR/samples$YEAR.json
+NTPL_JSON=$MAINDIR/samples$YEAR.json
+FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_$YEAR.py.templ
+RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_$YEAR.py.templ
     
 #SUFFIX=$(date +"_%Y_%m_%d") 
 GOLDENJSON=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/json/

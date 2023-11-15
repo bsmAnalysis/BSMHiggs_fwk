@@ -1658,12 +1658,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-12_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass12_2016_preVFP",
-                    "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
-                    "nevts": 12500,
-                    "resonance": 12,
-                    "tag": "Wh (12)",
+                    ],	                       
+		    "gtag": "106X_mcRun2_asymptotic_preVFP_v11",  
+		    "dtag": "MC13TeV_Wh_amass12_2016_preVFP",                
+                    "nevts": 12500,                  
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -1672,12 +1670,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-12_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass12_2016",
+                    ],                  
                     "gtag": "106X_mcRun2_asymptotic_v17",
-                    "nevts": 12500,
-                    "resonance": 12,
-                    "tag": "Wh (12)",
+		    "dtag": "MC13TeV_Wh_amass12_2016",
+                    "nevts": 12500,                    
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -1686,12 +1682,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-12_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass12_2016_preVFP",
+                    ],                
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
-                    "nevts": 12500,
-                    "resonance": 12,
-                    "tag": "Zh (12)",
+		    "dtag": "MC13TeV_Zh_amass12_2016_preVFP",
+                    "nevts": 12500,                
                     "xsec": "0.8839*0.7435*1.0474"
                 },
                 {
@@ -1700,12 +1694,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-12_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass12_2016",
+                    ],                 
                     "gtag": "106X_mcRun2_asymptotic_v17",
-                    "nevts": 12500,
-                    "resonance": 12,
-                    "tag": "Zh (12)",
+		    "dtag": "MC13TeV_Zh_amass12_2016",
+                    "nevts": 12500,                   
                     "xsec": "0.8839*0.7435*1.0474"
                 }
             ],
@@ -1733,12 +1725,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-15_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass15_2016_preVFP",
+                    ],                  
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
-                    "nevts": 12500,
-                    "resonance": 15,
-                    "tag": "Wh (15)",
+		    "dtag": "MC13TeV_Wh_amass15_2016_preVFP",
+                    "nevts": 12500,                   
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -1747,12 +1737,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-15_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass15_2016",
+                    ],                
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Wh_amass15_2016",
                     "nevts": 12500,
-                    "resonance": 15,
-                    "tag": "Wh (15)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -1761,12 +1749,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-15_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass15_2016_preVFP",
+                    ],                    
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Zh_amass15_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 15,
-                    "tag": "Zh (15)",
                     "xsec": "0.8839*0.7435*1.0474"
                 },
                 {
@@ -1775,12 +1761,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-15_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass15_2016",
+                    ],                  
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Zh_amass15_2016",
                     "nevts": 12500,
-                    "resonance": 15,
-                    "tag": "Zh (15)",
                     "xsec": "0.8839*0.7435*1.0474"
                 }
             ],
@@ -1808,12 +1792,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-20_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass20_2016_preVFP",
+                    ],           
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Wh_amass20_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 20,
-                    "tag": "Wh (20)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -1822,12 +1804,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-20_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass20_2016",
+                    ],              
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Wh_amass20_2016",
                     "nevts": 12500,
-                    "resonance": 20,
-                    "tag": "Wh (20)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -1836,12 +1816,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-20_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass20_2016_preVFP",
+                    ],                
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Zh_amass20_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 20,
-                    "tag": "Zh (20)",
                     "xsec": "0.8839*0.7435*1.0474"
                 },
                 {
@@ -1850,12 +1828,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-20_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass20_2016",
+                    ],                   
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Zh_amass20_2016",
                     "nevts": 12500,
-                    "resonance": 20,
-                    "tag": "Zh (20)",
                     "xsec": "0.8839*0.7435*1.0474"
                 }
             ],
@@ -1883,12 +1859,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-25_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass25_2016_preVFP",
+                    ],                 
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Wh_amass25_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 25,
-                    "tag": "Wh (25)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -1897,12 +1871,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-25_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass25_2016",
+                    ],                  
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Wh_amass25_2016",
                     "nevts": 12500,
-                    "resonance": 25,
-                    "tag": "Wh (25)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -1911,12 +1883,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-25_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass25_2016_preVFP",
+                    ],               
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Zh_amass25_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 25,
-                    "tag": "Zh (25)",
                     "xsec": "0.8839*0.7435*1.0474"
                 },
                 {
@@ -1925,12 +1895,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-25_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass25_2016",
+                    ],                 
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Zh_amass25_2016",
                     "nevts": 12500,
-                    "resonance": 25,
-                    "tag": "Zh (25)",
                     "xsec": "0.8839*0.7435*1.0474"
                 }
             ],
@@ -1958,12 +1926,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-30_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass30_2016_preVFP",
+                    ],                   
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Wh_amass30_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 30,
-                    "tag": "Wh (30)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -1972,12 +1938,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-30_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass30_2016",
+                    ],                  
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Wh_amass30_2016",
                     "nevts": 12500,
-                    "resonance": 30,
-                    "tag": "Wh (30)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -1986,12 +1950,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-30_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass30_2016_preVFP",
+                    ],                   
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Zh_amass30_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 30,
-                    "tag": "Zh (30)",
                     "xsec": "0.8839*0.7435*1.0474"
                 },
                 {
@@ -2000,12 +1962,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-30_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass30_2016",
+                    ],            
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Zh_amass30_2016",
                     "nevts": 12500,
-                    "resonance": 30,
-                    "tag": "Zh (30)",
                     "xsec": "0.8839*0.7435*1.0474"
                 }
             ],
@@ -2033,12 +1993,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-35_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass35_2016_preVFP",
+                    ],                  
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Wh_amass35_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 35,
-                    "tag": "Wh (35)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -2047,12 +2005,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-35_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass35_2016",
+                    ],              
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Wh_amass35_2016",
                     "nevts": 12500,
-                    "resonance": 35,
-                    "tag": "Wh (35)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -2061,12 +2017,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-35_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass35_2016_preVFP",
+                    ],                  
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Zh_amass35_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 35,
-                    "tag": "Zh (35)",
                     "xsec": "0.8839*0.7435*1.0474"
                 },
                 {
@@ -2075,12 +2029,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-35_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass35_2016",
+                    ],                  
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Zh_amass35_2016",
                     "nevts": 12500,
-                    "resonance": 35,
-                    "tag": "Zh (35)",
                     "xsec": "0.8839*0.7435*1.0474"
                 }
             ],
@@ -2096,9 +2048,9 @@
             "lcolor": 2,
             "lstyle": 7,
             "lwidth": 3,
-            "resonance": 40,
+            "resonance": 35,
             "spimpose": false,
-            "tag": "Wh (40)"
+            "tag": "Wh (35)"
         },
         {
             "data": [
@@ -2108,12 +2060,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-40_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass40_2016_preVFP",
+                    ],                 
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Wh_amass40_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 40,
-                    "tag": "Wh (40)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -2122,12 +2072,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-40_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass40_2016",
+                    ],              
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Wh_amass40_2016",
                     "nevts": 12500,
-                    "resonance": 40,
-                    "tag": "Wh (40)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -2136,12 +2084,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-40_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass40_2016_preVFP",
+                    ],                
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Zh_amass40_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 40,
-                    "tag": "Zh (40)",
                     "xsec": "0.8839*0.7435*1.0474"
                 },
                 {
@@ -2150,12 +2096,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-40_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass40_2016",
+                    ],                 
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Zh_amass40_2016",
                     "nevts": 12500,
-                    "resonance": 40,
-                    "tag": "Zh (40)",
                     "xsec": "0.8839*0.7435*1.0474"
                 }
             ],
@@ -2171,9 +2115,9 @@
             "lcolor": 2,
             "lstyle": 2,
             "lwidth": 3,
-            "resonance": 50,
+            "resonance": 40,
             "spimpose": false,
-            "tag": "Wh (50)"
+            "tag": "Wh (40)"
         },
         {
             "data": [
@@ -2183,12 +2127,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-45_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass45_2016_preVFP",
+                    ],               
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Wh_amass45_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 45,
-                    "tag": "Wh (45)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -2197,12 +2139,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-45_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass45_2016",
+                    ],            
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Wh_amass45_2016",
                     "nevts": 12500,
-                    "resonance": 45,
-                    "tag": "Wh (45)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -2211,12 +2151,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-45_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass45_2016_preVFP",
+                    ],                  
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Zh_amass45_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 45,
-                    "tag": "Zh (45)",
                     "xsec": "0.8839*0.7435*1.0474"
                 },
                 {
@@ -2225,12 +2163,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-45_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass45_2016",
+                    ],                 
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Zh_amass45_2016",
                     "nevts": 12500,
-                    "resonance": 45,
-                    "tag": "Zh (45)",
                     "xsec": "0.8839*0.7435*1.0474"
                 }
             ],
@@ -2246,9 +2182,9 @@
             "lcolor": 1,
             "lstyle": 1,
             "lwidth": 3,
-            "resonance": 60,
+            "resonance": 45,
             "spimpose": true,
-            "tag": "Wh (60)"
+            "tag": "Wh (45)"
         },
         {
             "data": [
@@ -2258,12 +2194,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-50_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass50_2016_preVFP",
+                    ],                 
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Wh_amass50_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 50,
-                    "tag": "Wh (50)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -2272,12 +2206,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-50_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass50_2016",
+                    ],                 
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Wh_amass50_2016",
                     "nevts": 12500,
-                    "resonance": 50,
-                    "tag": "Wh (50)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -2286,12 +2218,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-50_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass50_2016_preVFP",
+                    ],                
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Zh_amass50_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 50,
-                    "tag": "Zh (50)",
                     "xsec": "0.8839*0.7435*1.0474"
                 },
                 {
@@ -2300,12 +2230,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-50_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass50_2016",
+                    ],                
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Zh_amass50_2016",
                     "nevts": 12500,
-                    "resonance": 50,
-                    "tag": "Zh (50)",
                     "xsec": "0.8839*0.7435*1.0474"
                 }
             ],
@@ -2321,9 +2249,9 @@
             "lcolor": 1,
             "lstyle": 1,
             "lwidth": 3,
-            "resonance": 60,
+            "resonance": 50,
             "spimpose": true,
-            "tag": "Wh (60)"
+            "tag": "Wh (50)"
         },
         {
             "data": [
@@ -2333,12 +2261,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-55_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass55_2016_preVFP",
+                    ],                 
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Wh_amass55_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 55,
-                    "tag": "Wh (55)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -2347,12 +2273,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-55_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass55_2016",
+                    ],                  
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Wh_amass55_2016",
                     "nevts": 12500,
-                    "resonance": 55,
-                    "tag": "Wh (55)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -2361,12 +2285,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-55_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass55_2016_preVFP",
+                    ],                   
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Zh_amass55_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 55,
-                    "tag": "Zh (55)",
                     "xsec": "0.8839*0.7435*1.0474"
                 },
                 {
@@ -2375,12 +2297,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-55_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass55_2016",
+                    ],                    
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Zh_amass55_2016",
                     "nevts": 12500,
-                    "resonance": 55,
-                    "tag": "Zh (55)",
                     "xsec": "0.8839*0.7435*1.0474"
                 }
             ],
@@ -2396,9 +2316,9 @@
             "lcolor": 1,
             "lstyle": 1,
             "lwidth": 3,
-            "resonance": 60,
+            "resonance": 55,
             "spimpose": true,
-            "tag": "Wh (60)"
+            "tag": "Wh (55)"
         },
         {
             "data": [
@@ -2408,12 +2328,10 @@
                     ],
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-60_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass60_2016_preVFP",
+                    ],                   
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Wh_amass60_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 60,
-                    "tag": "Wh (60)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -2423,11 +2341,10 @@
                     "dset": [
                         "/SUSY_WH_WToAll_HToAATo4B_M-60_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
                     ],
-                    "dtag": "MC13TeV_Wh_amass60_2016",
+                    
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Wh_amass60_2016",
                     "nevts": 12500,
-                    "resonance": 60,
-                    "tag": "Wh (60)",
                     "xsec": "1.37*0.61*1.076"
                 },
                 {
@@ -2436,12 +2353,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-60_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODAPVv2-106X_mcRun2_asymptotic_preVFP_v11-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass60_2016_preVFP",
+                    ],                  
                     "gtag": "106X_mcRun2_asymptotic_preVFP_v11",
+		    "dtag": "MC13TeV_Zh_amass60_2016_preVFP",
                     "nevts": 12500,
-                    "resonance": 60,
-                    "tag": "Zh (60)",
                     "xsec": "0.8839*0.7435*1.0474"
                 },
                 {
@@ -2450,12 +2365,10 @@
                     ],
                     "dset": [
                         "/SUSY_ZH_ZToAll_HToAATo4B_M-60_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL16MiniAODv2-106X_mcRun2_asymptotic_v17-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass60_2016",
+                    ],                   
                     "gtag": "106X_mcRun2_asymptotic_v17",
+		    "dtag": "MC13TeV_Zh_amass60_2016",
                     "nevts": 12500,
-                    "resonance": 60,
-                    "tag": "Zh (60)",
                     "xsec": "0.8839*0.7435*1.0474"
                 }
             ],

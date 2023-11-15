@@ -209,7 +209,7 @@ class PhysicsObject_FatJet : public LorentzVector {
     btag0=btag0_;
   }
 
-  void setSubjetInfo(Float_t prunedM_, Float_t softdropM_, Float_t tau1_, Float_t tau2_, Float_t tau3_, Float tau4_)
+  void setSubjetInfo(Float_t prunedM_, Float_t softdropM_, Float_t tau1_, Float_t tau2_, Float_t tau3_, Float_t tau4_)
   {
     prunedM=prunedM_;
     softdropM=softdropM_;
