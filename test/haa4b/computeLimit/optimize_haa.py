@@ -1529,7 +1529,7 @@ for signalSuffix in signalSuffixVec :
       if year_to_run == "2018":
          integrated_luminosity =  59740.565
       if year_to_run == "all":
-         integrated_luminosity =  138000.0 # 7183.86
+         integrated_luminosity =  138000 # 7183.86
 
       output_dir_allemu = "all_"
       if args.onlyeLimit == True : output_dir_allemu = "onlye_"

@@ -22,9 +22,15 @@
 #include "TGraphAsymmErrors.h"
 #include "TMultiGraph.h"
 #include "TPaveText.h"
+#include "Math/Interpolator.h"
+#include "TSpline.h"
 
-#include "UserCode/bsmhiggs_fwk/interface/tdrstyle.h"
-#include "UserCode/bsmhiggs_fwk/src/tdrstyle.C"
+#include "CMS_lumi.C"
+#include "tdrstyle.C"
+
+
+//#include "UserCode/bsmhiggs_fwk/interface/tdrstyle.h"
+//#include "UserCode/bsmhiggs_fwk/src/tdrstyle.C"
 #include "UserCode/bsmhiggs_fwk/interface/RootUtils.h"
 
 //tree variables
@@ -101,11 +107,15 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
    gStyle->SetPalette(1);
    gStyle->SetNdivisions(505);
 
+   //   iPeriod = 4;
+   //   iPos = 11;
+
   //get the limits from the tree
   TFile* file = TFile::Open(inputs);
   printf("Looping on %s\n",inputs.Data());
   if(!file) return;
   if(file->IsZombie()) return;
+
   TTree* tree = (TTree*)file->Get("limit");
   tree->GetBranch("mh"              )->SetAddress(&Tmh      );
   tree->GetBranch("limit"           )->SetAddress(&Tlimit   );
@@ -151,21 +161,28 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
    string suffix = outputDir;
 
    Double_t mA[7]={15.,20.,25.,30.,40.,50.,60.};
-//   Double_t mA[8]={20.,25.,30.,40.,50.,60.};
-
-   TGraph* THXSec = new TGraph(999); int N=7;
-   for (int i=0; i<N; i++) {
-     THXSec->SetPoint(i,mA[i],1.37);
-   }
+   //Double_t mA[6]={20.,25.,30.,40.,50.,60.};
 
   string prod = "pp";
   if(outputDir.find("GGF")!=std::string::npos)prod="gg";
   if(outputDir.find("VBF")!=std::string::npos)prod="qq";
-  //  if(outputDir.find("Wh")!=std::string::npos)prod="Wh";
   
+  if(outputDir.find("all")!=std::string::npos)prod="all";    
+  if(outputDir.find("Wh")!=std::string::npos)prod="wh";
+  if(outputDir.find("Zh")!=std::string::npos)prod="zh";        
+  //  if(outputDir.find("all")!=std::string::npos)prod="all";     
+
   strengthLimit = false;
   if(prod=="pp")strengthLimit=true;
  
+  TGraph* THXSec = new TGraph(999); int N=7;     
+  for (int i=0; i<N; i++) { 
+    if (prod=="wh") THXSec->SetPoint(i,mA[i],(1.37*1.076*0.3257));  
+    if (prod=="zh") THXSec->SetPoint(i,mA[i],(0.8839*1.0474*0.10099));  
+    if (prod=="all") THXSec->SetPoint(i,mA[i],(1.37*1.076*0.3257+0.8839*1.0474*0.10099));   
+  }
+
+
   if (!strengthLimit) {
     multiplyGraph(   ObsLimit, THXSec);
     multiplyGraph( ExpLimitm2, THXSec);
@@ -198,8 +215,8 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
 
   //limits in terms of signal strength
   TCanvas* c = new TCanvas("c", "c",1000,700);
-  c->SetGridx();
-  c->SetGridy();
+  //  c->SetGridx();
+  //  c->SetGridy();
 //  TH1F* framework = new TH1F(inputs.Data(),"Graph",1,12,60); //3000);
   TH1F* framework = new TH1F(inputs.Data(),"Graph",1,15,60); //3000);
   framework->SetStats(false);
@@ -209,7 +226,7 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   if(strengthLimit){
     framework->GetYaxis()->SetTitle("#mu = #sigma_{95%} / #sigma_{th}");
     if(logY){
-      framework->GetYaxis()->SetRangeUser(1E-2,1E2);
+      framework->GetYaxis()->SetRangeUser(1E-1,1E2);
       c->SetLogy(true);
       outputDir += "log/";
     }else{
@@ -256,7 +273,13 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   TGObsLimit->SetLineWidth(2);  TGObsLimit->SetMarkerStyle(20);
   TGExpLimit2S->Draw("fc same");
   TGExpLimit1S->Draw("fc same");
-  if(!blind) TGObsLimit->Draw("same P");
+
+  TSpline3 *s = new TSpline3("grs",TGObsLimit); 
+  if(!blind){
+    s->SetLineWidth(2);
+    s->Draw("same"); TGObsLimit->Draw("same P");
+  }
+
   TGExpLimit->Draw("same c");
 
   
@@ -271,21 +294,28 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
     THXSec->Draw("same C");
   }
 
-  utils::root::DrawPreliminary(luminosity, energy, c);
-
-  
+  // HERE:
+  //  utils::root::DrawPreliminary(luminosity, energy, c);
+  //TLegend* LEG = new TLegend(0.55,0.7,0.85,0.95);   
   TLegend* LEG = new TLegend(0.55,0.75,0.85,0.95);
   LEG->SetHeader("");
   LEG->SetFillColor(0);
   LEG->SetFillStyle(0);
   LEG->SetTextFont(42);
+  //  LEG->SetTextSize(0.1);
   LEG->SetBorderSize(0);
   //LEG->AddEntry(THXSec  , "Th prediction"  ,"L");
   LEG->AddEntry(TGExpLimit  , "median expected"  ,"L");
   LEG->AddEntry(TGExpLimit1S  , "expected #pm 1#sigma"  ,"F");
   LEG->AddEntry(TGExpLimit2S  , "expected #pm 2#sigma"  ,"F");
+  //if(!blind) LEG->AddEntry(s , "observed"  ,"L");    
   if(!blind) LEG->AddEntry(TGObsLimit  , "observed"  ,"LP");
   LEG->Draw();
+
+
+  // writing the lumi information and the CMS "logo"
+  CMS_lumi( c, 4, 11 ); //iPeriod, iPos );
+
   c->RedrawAxis();
   c->SaveAs((outputDir+"Limit.png").c_str());
   c->SaveAs((outputDir+"Limit.C").c_str());
@@ -304,8 +334,14 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   pFileSum = fopen((outputDir+"LimitRange").c_str(),"w");
   fprintf(pFileSum, "EXPECTED LIMIT --> ");                   printLimits(pFileSum,TGExpLimit, TGExpLimit->GetX()[0], TGExpLimit->GetX()[TGExpLimit->GetN()-1]);
   if(!blind) fprintf(pFileSum, "OBSERVED LIMIT --> ");        printLimits(pFileSum,TGObsLimit, TGObsLimit->GetX()[0], TGObsLimit->GetX()[TGObsLimit->GetN()-1]);
-  fprintf(pFileSum, "Exp Limits for Model are: ");              for(int i=0;i<TGExpLimit->GetN();i++){if(int(TGExpLimit->GetX()[i])%50==0) fprintf(pFileSum, "%f+-%f ",TGExpLimit->GetY()[i], (ExpLimitp1->GetY()[i]-ExpLimitm1->GetY()[i])/2.0);}fprintf(pFileSum,"\n");
-  if(!blind) { fprintf(pFileSum, "Obs Limits for Model are: "); for(int i=0;i<TGObsLimit->GetN();i++){if(int(TGObsLimit->GetX()[i])%50==0) fprintf(pFileSum, "%f ",TGObsLimit->GetY()[i]);}fprintf(pFileSum,"\n"); }
+     
+  fprintf(pFileSum, "Exp Limits for Model are: "); for(int i=0;i<TGExpLimit->GetN();i++){
+    //if(int(TGExpLimit->GetX()[i])%50==0) 
+    fprintf(pFileSum, "%f+-%f ",TGExpLimit->GetY()[i], (ExpLimitp1->GetY()[i]-ExpLimitm1->GetY()[i])/2.0);
+  }fprintf(pFileSum,"\n");
+  if(!blind) { fprintf(pFileSum, "Obs Limits for Model are: "); for(int i=0;i<TGObsLimit->GetN();i++){
+      //if(int(TGObsLimit->GetX()[i])%50==0) 
+      fprintf(pFileSum, "%f ",TGObsLimit->GetY()[i]);}fprintf(pFileSum,"\n"); }
   fclose(pFileSum); 
 }
 
