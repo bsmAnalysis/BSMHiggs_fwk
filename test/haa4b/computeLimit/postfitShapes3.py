@@ -30,18 +30,14 @@ limit_dir = args.limit_dir
 iblind=-1
 #iblind=4
 
-
 # Picks up the pre-fit BDT:
 #dir1="shapes_prefit"
 
 #Picks up the b post-fit BDT:
-dir1="shapes_fit_s"
+#dir1="shapes_fit_b"
 
 #Picks up the s+b post-fit BDT:
-#dir1="shapes_fit_s"
-
-#wz = "zh"
-#wz = "wh"
+dir1="shapes_fit_s"
 
 wz = args.prodmode
 if ( not (wz == "wh" or wz == "zh" )):
@@ -67,15 +63,13 @@ try:
 except:
         print("\n\n problem making %s" % outdir ) ;
 
-
 if wz=="wh":
-  #channels = ["mu_A_CR5j_3b", "mu_A_CR5j_4b", "mu_A_CR_3b", "mu_A_CR_4b", "mu_A_SR_3b", "mu_A_SR_4b", "e_A_CR5j_3b", "e_A_CR5j_4b", "e_A_CR_3b", "e_A_CR_4b", "e_A_SR_3b", "e_A_SR_4b"]
   channels = ["mu_A_CR_3b", "mu_A_CR_4b", "mu_A_SR_3b", "mu_A_SR_4b", "e_A_CR_3b", "e_A_CR_4b", "e_A_SR_3b", "e_A_SR_4b"]
   e_mu = [""]
 elif wz=="zh":
   channels = ["mumu_A_CR_3b", "mumu_A_CR_4b", "mumu_A_SR_3b", "mumu_A_SR_4b", "ee_A_CR_3b", "ee_A_CR_4b", "ee_A_SR_3b", "ee_A_SR_4b"]
   e_mu = ["e", "mu"]
-#CRs = ["mumu_A_CR_3b", "mumu_A_CR_4b","emu_A_CR_3b", "emu_A_CR_4b", "emu_A_SR_3b", "emu_A_SR_4b", "ee_A_CR_3b", "ee_A_CR_4b", "mu_A_CR5j_3b", "mu_A_CR5j_4b", "mu_A_CR_3b", "mu_A_CR_4b", "e_A_CR5j_3b", "e_A_CR5j_4b", "e_A_CR_3b", "e_A_CR_4b"]
+
 CRs = ["mumu_A_CR_3b", "mumu_A_CR_4b", "ee_A_CR_3b", "ee_A_CR_4b",  "mu_A_CR_3b", "mu_A_CR_4b", "e_A_CR_3b", "e_A_CR_4b"]
 
 verbose = True
@@ -186,6 +180,7 @@ for ch in e_mu:
   if ( verbose ) : print("\n\n verbose: file = ", file.GetName(),"\n" )
 
   inf = rt.TFile(limit_dir+"haa4b_60_13TeV_{}.root".format(wz),"READ")
+  inf2 = rt.TFile(limit_dir+"haa4b_20_13TeV_{}.root".format(wz),"READ")  
 
   if ( verbose ) : print("\n\n verbose inf = ", inf.GetName(), "\n" )
 
@@ -226,7 +221,7 @@ for ch in e_mu:
     canvas.SetTickx(0)
     canvas.SetTicky(0)
     
-    h =  rt.TH1F("h","h; BDT; Events",5, 0, 5)
+    h =  rt.TH1F("h","h; BDT; Events / bin",5, 0, 5)
     
     xAxis = h.GetXaxis()
     xAxis.SetNdivisions(6,5,0)
@@ -264,15 +259,29 @@ for ch in e_mu:
     else:
        sig = file.Get(dir+"wh")
 
-
     if sig:
       sig = convertXRange(sig, "wh", edges)
       sig.SetLineColor(rt.kRed+4)
       #sig.SetLineWidth(2)
       sig.SetLineWidth(4)
       sig.SetLineStyle(2)
-#      if((dir1 == "shapes_fit_s") and (dir2 not in CRs)): sig.Scale(10)
-#      if ( wz == "zh" ): sig.Scale(100)
+      if((dir1 == "shapes_fit_s") and (dir2 not in CRs)): 
+         if ( wz == "wh" ): sig.Scale(100)
+#            if ("3b" in dir2): sig.Scale(200)
+#            if ("4b" in dir2): sig.Scale(100)     
+         if ( wz == "zh" ): sig.Scale(100)
+#            if ("3b" in dir2): sig.Scale(100)
+#            if ("4b" in dir2): sig.Scale(40)  
+
+### mA=20 signal point for illustration (normalize shape to m60)
+    sig2 = inf2.Get(dir2+"/wh")     
+    if sig2:      
+       sig2 = convertXRange(sig2, "wh", edges)  
+       sig2.SetLineColor(rt.kBlue+2)   
+       sig2.SetLineWidth(4)    
+       sig2.SetLineStyle(3)  
+       sig2.Scale(100) #sig.Integral()/sig2.Integral())
+       
 
     otherbkg = file.Get(dir+"otherbkg")
     if otherbkg:
@@ -354,7 +363,7 @@ for ch in e_mu:
     t1.SetLeftMargin(0.10)
     t1.SetRightMargin(0.05)
     t1.SetTopMargin(0.05)
-    t1.SetBottomMargin(0.10)
+    t1.SetBottomMargin(0.01) #0.10)
     t1.SetFrameFillStyle(0)
     t1.SetFrameBorderMode(0)
     t1.SetFrameFillStyle(0)
@@ -378,27 +387,27 @@ for ch in e_mu:
     MC.GetYaxis().SetLabelFont(42);
     MC.GetYaxis().SetLabelOffset(0.007);
     MC.GetYaxis().SetLabelSize(0.04);
-    MC.GetYaxis().SetTitleOffset(1.35);
+    MC.GetYaxis().SetTitleOffset(1.2) #1.3);
     MC.GetYaxis().SetTitleFont(42);
     MC.GetYaxis().SetTitleSize(0.04);
     MC.GetYaxis().SetMaxDigits(3);
 
-    MC.GetYaxis().SetTitle("Events");
-    MC.GetXaxis().SetTitle("BDT");
+    MC.GetYaxis().SetTitle("Events / bin");
+#    MC.GetXaxis().SetTitle("BDT score");
 
     t1.Update()          
 
     if sig: 
       sig.Draw("histsame")
-      if ( wz == "wh" ): sig.Scale(100)
-      if ( wz == "zh" ):
-         if ("3b" in dir2): sig.Scale(100)
-         if ("4b" in dir2): sig.Scale(40)
-
+    if sig2:     
+       sig2.Draw("histsame")
+   
 #    hdata.SetMaximum(1.5*max(hdata.GetMaximum(), MC.GetMaximum()))
-    MC.SetMinimum(0.1)
+#    MC.SetMinimum(0.1)
     hmax = max(hdata.GetMaximum(), MC.GetMaximum())
     if ( not do_liny ) :
+       MC.SetMinimum(0.5)
+       if (wz == "wh"):  MC.SetMinimum(0.7)     
        if hmax > 50000:
            MC.SetMaximum(1000*hmax)
        elif hmax > 10000:
@@ -444,6 +453,7 @@ for ch in e_mu:
     
     hdata.Draw("e0psame0")   
     hdata.Draw("e1same")
+    hdata.SetLineColor(1)
 
     #set the colors and size for the legend
     histLineColor = rt.kOrange+7
@@ -508,9 +518,14 @@ for ch in e_mu:
     printEvtYields(hdata, "data")
     if sig: 
        if ( wz == "zh" ): 
-          if ("3b" in dir2): legend.AddEntry(sig,"Signal ZH (60GeV), (x100)","L") 
-          if ("4b" in dir2): legend.AddEntry(sig,"Signal ZH (60GeV), (x40)","L")  
-       if ( wz == "wh" ): legend.AddEntry(sig,"Signal WH (60GeV), (x100)","L")  
+#          if ("3b" in dir2): 
+          legend.AddEntry(sig,"ZH^{60GeV}(x100)","L") 
+          #legend.AddEntry(sig2,"ZH^{20GeV}(norm. to 100xZH^{60 GeV} yield)","L") 
+          legend.AddEntry(sig2,"ZH^{20GeV}(x100)","L")    
+       if ( wz == "wh" ): 
+          legend.AddEntry(sig,"WH^{60GeV}(x100)","L")  
+#          legend.AddEntry(sig2,"WH^{20GeV}(norm. to 100xWH^{60 GeV} yield)","L") 
+          legend.AddEntry(sig2,"WH^{20GeV}(x100)","L") 
        printEvtYields(sig, "signal")
     
     #legend.AddEntry(wlnu,"W#rightarrow l#nu","LF")
@@ -547,7 +562,7 @@ for ch in e_mu:
     t2.SetLeftMargin(0.10)
     t2.SetRightMargin(0.05)
     t2.SetTopMargin(0.0)
-    t2.SetBottomMargin(0.20)
+    t2.SetBottomMargin(0.30) #0.20)
     t2.SetFrameFillStyle(0)
     t2.SetFrameBorderMode(0)
     t2.SetFrameFillStyle(0)
@@ -555,7 +570,7 @@ for ch in e_mu:
     t2.Draw()
     t2.cd()
     t2.SetGridy(1)
-    t2.SetPad(0,0.0,1.0,0.2)
+#    t2.SetPad(0,0.0,1.0,0.2)
     
     
     hMCtotal = htotal.Clone("mcrelunc")  
@@ -588,31 +603,41 @@ for ch in e_mu:
     hMCtotal.Reset("ICE")
     hMCtotal.SetTitle("") 
     hMCtotal.SetStats(0)
-    hMCtotal.Draw()  
+    hMCtotal.Draw() 
+    hMCtotal.SetLineColor(1)
     gtotal.Draw("2 0 same")
 
     yscale = (1.0-0.2)/(0.2)
     hMCtotal.GetYaxis().SetTitle("Data/#Sigma Bkg.") 
-    hMCtotal.GetXaxis().SetTitle() # drop the title to gain space
-    hMCtotal.SetMinimum(0.2) 
-    hMCtotal.SetMaximum(1.8) 
+#    hMCtotal.GetXaxis().SetTitle("BDT score") # drop the title to gain space
 
-    if "CR" in dir2: 
-        hMCtotal.SetMinimum(0.4) 
-        hMCtotal.SetMaximum(1.6) 
+    if ( wz == "zh" ):  
+       if ("3b" in dir2): hMCtotal.GetXaxis().SetTitle("BDT score (3b, #geq3j)")
+       if ("4b" in dir2): hMCtotal.GetXaxis().SetTitle("BDT score (4b, #geq4j)")  
+    if ( wz == "wh" ):  
+       if ("3b" in dir2): hMCtotal.GetXaxis().SetTitle("BDT score (3b, 3-4j)")
+       if ("4b" in dir2): hMCtotal.GetXaxis().SetTitle("BDT score (4b, 4j)") 
+
+    hMCtotal.SetMinimum(0.65) #0.2) 
+    hMCtotal.SetMaximum(1.35) #1.8) 
+
+#    if "CR" in dir2: 
+#        hMCtotal.SetMinimum(0.6) 
+#        hMCtotal.SetMaximum(1.4) 
 
     hMCtotal.GetXaxis().SetLabelFont(42) 
     hMCtotal.GetXaxis().SetLabelOffset(0.007) 
     hMCtotal.GetXaxis().SetLabelSize(0.04 * yscale) 
     hMCtotal.GetXaxis().SetTitleFont(42) 
     hMCtotal.GetXaxis().SetTitleSize(0.035 * yscale) 
-    hMCtotal.GetXaxis().SetTitleOffset(0.8) 
+    hMCtotal.GetXaxis().SetTitleOffset(1.0) 
     hMCtotal.GetYaxis().SetLabelFont(42) 
     hMCtotal.GetYaxis().SetLabelOffset(0.007) 
-    hMCtotal.GetYaxis().SetLabelSize(0.03 * yscale) 
+    hMCtotal.GetYaxis().SetLabelSize(0.035 * yscale) 
     hMCtotal.GetYaxis().SetTitleFont(42) 
     hMCtotal.GetYaxis().SetTitleSize(0.035 * yscale) 
     hMCtotal.GetYaxis().SetTitleOffset(0.3)
+    hMCtotal.GetYaxis().SetNdivisions(505);
 
     #add comparisons
     dataToObsH=hdata.Clone("myratio")  
@@ -635,7 +660,7 @@ for ch in e_mu:
 
 #    dataToObs = rt.TGraphErrors(dataToObsH)  
     dataToObsH.Draw("e0psame0")
-    dataToObsH.Draw("e1same")
+    dataToObsH.Draw("e1same") # was "e1same"
 #    dataToObs.SetMarkerColor(dataToObsH.GetMarkerColor())   
 #    dataToObs.SetMarkerStyle(dataToObsH.GetMarkerStyle())
 #    dataToObs.SetMarkerSize(dataToObsH.GetMarkerSize())
@@ -654,6 +679,7 @@ for ch in e_mu:
     line.SetLineColor(rt.kBlack)
     line.Draw("same")
     
+    t2.RedrawAxis()
     t2.Update()
     
     canvas.cd()
