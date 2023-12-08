@@ -139,7 +139,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
       static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
       const reco::Candidate* findFirstMotherWithDifferentID(const reco::Candidate *particle);
       bool isAncestor( const reco::Candidate& ancestor, const reco::Candidate& daughter );
-
+    
   private:
 
     edm::EDGetTokenT<reco::VertexCollection> vtxTag_;
@@ -152,16 +152,15 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
     // edm::EDGetTokenT<pat::TauCollection> tauTag_;
     // edm::EDGetTokenT<pat::PhotonCollection> photonTag_;
     edm::EDGetTokenT<pat::JetCollection> jetTag_;  //chs
-    // edm::EDGetTokenT<pat::JetCollection> jetPuppiTag_; //puppi
-    edm::EDGetTokenT<pat::JetCollection> fatjetTag_;   //ak8 puppi 
+    // edm::EDGetTokenT<pat::JetCollection> jetPuppiTag_; 
+    edm::EDGetTokenT<pat::JetCollection> fatjetTag_;   //ak8  
     edm::EDGetTokenT<pat::METCollection> metTag_;
     edm::EDGetTokenT<pat::METCollection> metTagData_;
     edm::EDGetTokenT<pat::METCollection> metNoHFTag_;
-    edm::EDGetTokenT<pat::METCollection> metPuppiTag_;  //puppi
-
+    edm::EDGetTokenT<pat::METCollection> metPuppiTag_;  
+    
     edm::EDGetTokenT<edm::TriggerResults> metFilterBitsTag_;
-    edm::EDGetTokenT< bool > ecalBadCalibFilterUpdate_token;
-
+    //edm::EDGetTokenT< bool > ecalBadCalibFilterUpdate_token;
     edm::EDGetTokenT<reco::VertexCompositePtrCandidateCollection> svTag_;  //secondary vertex
   
     edm::EDGetTokenT<edm::View<reco::GenParticle> > prunedGenTag_;
@@ -169,7 +168,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
 
     edm::EDGetTokenT<GenEventInfoProduct> genInfoTag_;
     edm::EDGetTokenT<edm::View<pat::PackedGenParticle> > packedGenTag_;
-    // edm::EDGetTokenT<edm::View<reco::GenJet> > genjetTag_;
+    //edm::EDGetTokenT<edm::View<reco::GenJet> > genjetTag_;
     edm::EDGetTokenT<LHEEventProduct> lheEventToken_;     //lhe event
     edm::InputTag lheRunInfoTag_;                         //lhe run tag 
     edm::EDGetTokenT<LHERunInfoProduct> lheRunInfoToken_; //lhe run token
@@ -214,6 +213,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
   TH1F * h_pileup, * h_pileuptrue;
   TH1F * h_sumWeights, * h_sumScaleWeights , * h_sumPdfWeights ,* h_sumAlphasWeights; 
   TH1F * h_metFilter;
+
 
   TH2F *h2_BTaggingEff_Denom_b, *h2_BTaggingEff_Denom_c, *h2_BTaggingEff_Denom_udsg;
   TH2F *h2_LooseBTaggingEff_Num_b, *h2_LooseBTaggingEff_Num_c, *h2_LooseBTaggingEff_Num_udsg;
@@ -287,15 +287,15 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
     metPuppiTag_(       consumes<pat::METCollection>(iConfig.getParameter<edm::InputTag>("metsPuppiTag"))               ),
 
     metFilterBitsTag_(	consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("metFilterBitsTag"))		),
-  //  ecalBadCalibFilterUpdate_token(consumes< bool >(edm::InputTag("ecalBadCalibReducedMINIAODFilter"))			),
+  // ecalBadCalibFilterUpdate_token(consumes< bool >(edm::InputTag("ecalBadCalibReducedMINIAODFilter"))			),
     svTag_(		consumes<reco::VertexCompositePtrCandidateCollection>(iConfig.getParameter<edm::InputTag>("svTag"))			),
     prunedGenTag_(	consumes<edm::View<reco::GenParticle> >(iConfig.getParameter<edm::InputTag>("prunedTag"))	),
     puInfoTag_(         consumes<std::vector<PileupSummaryInfo> >(iConfig.getParameter<edm::InputTag>("puInfoTag"))     ),
-
+  
     genInfoTag_(        consumes<GenEventInfoProduct>(iConfig.getParameter<edm::InputTag>("genInfoTag"))                ),
     packedGenTag_(	consumes<edm::View<pat::PackedGenParticle> >(iConfig.getParameter<edm::InputTag>("packedTag"))	),
-    // genjetTag_(	consumes<edm::View<reco::GenJet> >(iConfig.getParameter<edm::InputTag>("genJetsTag"))		),
-    //lheEventToken_(	consumes<LHEEventProduct> ( iConfig.getParameter<InputTag>("LHELabel"))				),
+    //genjetTag_(	consumes<edm::View<reco::GenJet> >(iConfig.getParameter<edm::InputTag>("genJetsTag"))		),
+  
     lheEventToken_(	consumes<LHEEventProduct,edm::InEvent> ( iConfig.getParameter<InputTag>("LHELabel"))		),
     lheRunInfoTag_(     iConfig.getParameter<edm::InputTag>("lheInfo")                                                  ),
     lheRunInfoToken_(   consumes<LHERunInfoProduct,edm::InRun>(lheRunInfoTag_)						),
@@ -390,16 +390,16 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
 
   h_metFilter = fs->make<TH1F>( "metFilter",";metEventflow",20,0,20);
   h_metFilter->GetXaxis()->SetBinLabel(1,"raw");
-  h_metFilter->GetXaxis()->SetBinLabel(2,"globalTightHalo2016Filter");
-  h_metFilter->GetXaxis()->SetBinLabel(3,"goodVertices");
-  h_metFilter->GetXaxis()->SetBinLabel(4,"eeBadScFilter");
-  h_metFilter->GetXaxis()->SetBinLabel(5,"EcalDeadCellTriggerPrimitiveFilter");
-  h_metFilter->GetXaxis()->SetBinLabel(6,"HBHENoiseFilter");
-  h_metFilter->GetXaxis()->SetBinLabel(7,"HBHENoiseIsoFilter");
+  h_metFilter->GetXaxis()->SetBinLabel(2,"goodVertices");
+  h_metFilter->GetXaxis()->SetBinLabel(3,"eeBadScFilter");
+  h_metFilter->GetXaxis()->SetBinLabel(4,"HBHENoiseFilter");
+  h_metFilter->GetXaxis()->SetBinLabel(5,"HBHENoiseIsoFilter");
+  h_metFilter->GetXaxis()->SetBinLabel(6,"globalTightHalo2016Filter");
+  h_metFilter->GetXaxis()->SetBinLabel(7,"EcalDeadCellTriggerPrimitiveFilter");
   h_metFilter->GetXaxis()->SetBinLabel(8,"BadPFMuonFilter");
-  h_metFilter->GetXaxis()->SetBinLabel(9,"BadChargedCandidateFilte");
-  h_metFilter->GetXaxis()->SetBinLabel(10,"badMuonHIPFilter");
-  h_metFilter->GetXaxis()->SetBinLabel(11,"duplicateMuonHIPFilter");  //add recommended met filters
+  h_metFilter->GetXaxis()->SetBinLabel(9,"BadPFMuonDzFilter");
+  h_metFilter->GetXaxis()->SetBinLabel(10,"EcalBadCalibFilter");
+  h_metFilter->GetXaxis()->SetBinLabel(11,"hfNoisyHitsFilter");  //add recommended met filters
 
   // patUtils::MetFilter metFilter;
   // MET CORRection level
@@ -776,11 +776,11 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
   if(isMC_){
     for (pat::Jet &j : jets) {
       Float_t btag_dsc;
-      if(is2017 || is2018 || is2016Legacy || is2016PreVFP || is2016PostVFP)  
-        btag_dsc = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+      // if(is2017 || is2018 || is2016Legacy || is2016PreVFP || is2016PostVFP)  
+      btag_dsc = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
         //btag_dsc = j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
-      else
-        btag_dsc = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
+     // else
+       // btag_dsc = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
         //btag_dsc = j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
       int partonFlavor = j.partonFlavour();
       if( fabs(partonFlavor)==5 ){
@@ -951,49 +951,62 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
      | ( emuTrigger2 << 10 );
    
    //if(!isMC__ && !ev.hasTrigger) return; // skip the event if no trigger, only for Data
-   //if(!ev.hasTrigger) return; // skip the event if no trigger, for both Data and MC
+   if(!ev.hasTrigger) return; // skip the event if no trigger, for both Data and MC
    
    //##############################################   EVENT PASSED THE TRIGGER   ######################################
    //met filters
    //https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2
+    h_metFilter->Fill(0.);
     edm::Handle<edm::TriggerResults> metFilterBits;
     event.getByToken(metFilterBitsTag_, metFilterBits);
     const edm::TriggerNames &metNames = event.triggerNames(*metFilterBits);
     bool passMETFilters(true);
+    bool passMETFilter_i[10];
+    for(int r=0; r<10; r++){
+       passMETFilter_i[r]=true;
+     }
     for(unsigned int i = 0, n = metFilterBits->size(); i < n; ++i) {
         if(strcmp(metNames.triggerName(i).c_str(), 	 "Flag_goodVertices") == 0){
             passMETFilters &= metFilterBits->accept(i);
-	    //	}else if(strcmp(metNames.triggerName(i).c_str(), "Flag_eeBadScFilter") == 0){
-	    //           passMETFilters &= metFilterBits->accept(i);
+            passMETFilter_i[0] = passMETFilters;
+	}else if(strcmp(metNames.triggerName(i).c_str(), "Flag_eeBadScFilter") == 0){
+	    passMETFilters &= metFilterBits->accept(i);
+            passMETFilter_i[1] = passMETFilters;
 	}else if(strcmp(metNames.triggerName(i).c_str(), "Flag_HBHENoiseFilter") == 0){
             passMETFilters &= metFilterBits->accept(i);
+            passMETFilter_i[2] = passMETFilters;
         }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_HBHENoiseIsoFilter") == 0){
             passMETFilters &= metFilterBits->accept(i);
+            passMETFilter_i[3] = passMETFilters;
         }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_globalSuperTightHalo2016Filter") == 0){
             passMETFilters &= metFilterBits->accept(i);
+            passMETFilter_i[4] = passMETFilters;
         }else if(strcmp(metNames.triggerName(i).c_str(), "Flag_EcalDeadCellTriggerPrimitiveFilter") == 0){
             passMETFilters &= metFilterBits->accept(i);
-	//}else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadChargedCandidateFilter") == 0){
-        //    passMETFilters &= metFilterBits->accept(i);
+  	    passMETFilter_i[5] = passMETFilters;
 	}else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadPFMuonFilter") == 0){
             passMETFilters &= metFilterBits->accept(i);
-	}else if(strcmp(metNames.triggerName(i).c_str() ,"Flag_ecalBadCalibFilter") == 0){
+            passMETFilter_i[6] = passMETFilters;
+	}else if(strcmp(metNames.triggerName(i).c_str(), "Flag_BadPFMuonDzFilter") == 0){
             passMETFilters &= metFilterBits->accept(i);
-        }
+            passMETFilter_i[7] = passMETFilters;
+	}else if(strcmp(metNames.triggerName(i).c_str() ,"Flag_ecalBadCalibFilter") == 0){
+            passMETFilters &= metFilterBits->accept(i); 
+            passMETFilter_i[8] = passMETFilters;
+        }else if(strcmp(metNames.triggerName(i).c_str() ,"Flag_hfNoisyHitsFilter") == 0){
+            passMETFilter_i[9] &= metFilterBits->accept(i);
+	}
 	
     }
- 
-    if(is2017 || is2018){
-	//edm::Handle< bool > passecalBadCalibFilterUpdate;
-//	event.getByToken(ecalBadCalibFilterUpdate_token,passecalBadCalibFilterUpdate);
-//	passMETFilters &= (*passecalBadCalibFilterUpdate);
-    }
-  
+    for(int r=0; r<10; r++){
+       if(passMETFilter_i[r]){
+          h_metFilter->Fill(r+1.);
+ 	}
+     }
+   
     if(!passMETFilters) return;
    //   if( metFilterValue!=0 ) continue;	 //Note this must also be applied on MC
    
-   // Apply Bad Charged Hadron and Bad Muon Filters from MiniAOD (for Run II 2016 only )
-    //   if (!filterbadPFMuon || !filterbadChCandidate) return;
    //##############################################   EVENT PASSED MET FILTER   #######################################
    
   
@@ -1198,11 +1211,12 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	 ev.en++;
        } // el
        
-	//int nlep=(ev.en+ev.mn);
-	// if(nlep<1) return; //require one lepton 
+	//request at least 1 lepton in the event
+	int nlep=(ev.en+ev.mn);
+ 	if(nlep<1) return; //require one lepton 
 	//       
-       // jet selection (ak4PFJetsCHS)
-       //
+        // jet selection (ak4PFJetsCHS)
+        //
 //       pat::JetCollection jets;
 //       edm::Handle< pat::JetCollection > jetsHandle;
 //       event.getByToken(jetTag_, jetsHandle);
@@ -1268,7 +1282,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	   //btag1=j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
            //nDeepLtags += (btag1>0.0408);  
 	 }
-	   //	   ev.jet_btag1[ev.jet] = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
+	 // ev.jet_btag1[ev.jet] = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
 	 // ev.jet_btag1[ev.jet] = j.bDiscriminator("pfJetBProbabilityBJetTags");
 	 // ev.jet_btag2[ev.jet] = j.bDiscriminator("pfJetProbabilityBJetTags");
 	 // ev.jet_btag3[ev.jet] = j.bDiscriminator("pfTrackCountingHighPurBJetTags");
@@ -1336,15 +1350,15 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	 
 	 ev.jet++;
          ijet++ ;
-       }
-
+       }	
+       //request at least 2 jets in the event
        if((ijet2<2)) return;
-       //       if(nCSVLtags<2) return;
+       //if(nCSVLtags<2) return;
        //
        // jet selection (AK8Jets)
        //
-  //Ak8--Jets substructure  for all years 2016, '17, '18
-  //if(!(is2017 && is2018)){//disable fatjet for 2017
+       //Ak8--Jets substructure  for all years 2016, '17, '18
+       //if(!(is2017 && is2018)){//disable fatjet for 2017
        pat::JetCollection fatjets; 
        edm::Handle< pat::JetCollection > jetsAK8Handle; 
        event.getByToken(fatjetTag_, jetsAK8Handle);
@@ -1353,14 +1367,22 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
        ev.fjet=0;
        
        if ( verbose_ ) printf("\n\n ----- Reconstructed AK8 jets : %lu\n", fatjets.size() ) ;  
-
+     
        int ifjet(0) ; 
        for (const pat::Jet &j : fatjets) {
-         ev.fjet_pt[ev.fjet] = j.correctedP4(0).pt();
 	 ev.fjet_px[ev.fjet] = j.correctedP4(0).px();
 	 ev.fjet_py[ev.fjet] = j.correctedP4(0).py();
 	 ev.fjet_pz[ev.fjet] = j.correctedP4(0).pz();
-	 ev.fjet_en[ev.fjet] = j.correctedP4(0).energy(); //.correctedP4().
+	 ev.fjet_en[ev.fjet] = j.correctedP4(0).energy(); 
+         //------
+         ev.fjet_chf[ev.fjet] = j.chargedHadronEnergyFraction();
+ 	 ev.fjet_nhf[ev.fjet] = j.neutralHadronEnergyFraction();
+	 ev.fjet_phf[ev.fjet] = j.photonEnergyFraction(); //.neutralEmEnergyFraction();
+	 ev.fjet_muf[ev.fjet] = j.muonEnergyFraction();
+	 ev.fjet_elf[ev.fjet] = j.electronEnergyFraction(); //.chargedEmEnergyFraction();
+	 //------
+	 ev.fjet_ecfB1N2[ev.fjet] = (float) j.userFloat("ak8PFJetsPuppiSoftDropValueMap:nb1AK8PuppiSoftDropN2");
+	 ev.fjet_ecfB1N3[ev.fjet] = (float) j.userFloat("ak8PFJetsPuppiSoftDropValueMap:nb1AK8PuppiSoftDropN3");
 
 	 ev.fjet_btag0[ev.fjet] = j.bDiscriminator("pfBoostedDoubleSecondaryVertexAK8BJetTags");
 	 ev.fjet_btag1[ev.fjet] = j.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
@@ -1369,18 +1391,21 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	   printf("\n    %3d : pt=%6.1f, eta=%7.3f, phi=%7.3f : boostedSV=%7.3f, combinedSV=%7.3f\n", 
 		  ifjet, j.pt(), j.eta(), j.phi(),
 		  j.bDiscriminator("pfBoostedDoubleSecondaryVertexAK8BJetTags"),
-      j.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags")
+		  j.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags")
 		  ) ;
          }  
-	 
-//	ev.fjet_prunedM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSPrunedMass");           //"ak8PFJetsCHSValueMap:ak8PFJetsCHSPrunedMass");
-	ev.fjet_softdropM[ev.fjet] = (float) j.userFloat("ak8PFJetsPuppiSoftDropMass");     //"ak8PFJetsCHSValueMap:ak8PFJetsCHSSoftDropMass");
-//	ev.fjet_filteredM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSFilteredLinks");
-	ev.fjet_tau1[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau1");	    //ak8PFJetsCHSValueMap:NjettinessAK8CHSTau1");
-	ev.fjet_tau2[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau2");            //ak8PFJetsCHSValueMap:NjettinessAK8CHSTau2");
-	ev.fjet_tau3[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau3");            //ak8PFJetsCHSValueMap:NjettinessAK8CHSTau3");
-        ev.fjet_tau4[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau4");
-	 
+
+
+        
+         ev.fjet_prunedM[ev.fjet] = (float) j.userFloat("ak8PFJetsPuppiPrunedMass");   
+	 ev.fjet_softdropM[ev.fjet] = (float) j.userFloat("ak8PFJetsPuppiSoftDropMass");
+//	 ev.fjet_filteredM[ev.fjet] = (float) j.userFloat("ak8PFJetsCHSFilteredLinks");
+	 ev.fjet_tau1[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau1");
+	 ev.fjet_tau2[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau2");
+	 ev.fjet_tau3[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau3");
+	 ev.fjet_tau4[ev.fjet] =  (float) j.userFloat("NjettinessAK8Puppi:tau4");
+
+
 	 // Add soft drop subjets
 	 if ( verbose_ ) {
 	   printf("\n   This AK8 jet has N = %3d subjet collections\n",j.nSubjetCollections());
@@ -1391,46 +1416,36 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	   } 
 	   printf("\n") ; 
 	 }
-
+  
+   
    std::string subjet_label;
-   subjet_label = "SoftDropPuppi";
-
-   int nSub((j.subjets("SoftDropPuppi")).size());
-   //cout<< "nSub "<< nSub<<endl;
-
-   for (int k=0; k<5; k++) { // store up to 5 subjets for each AK8 jet ?
-      ev.fjet_subjets_btag[ev.fjet][k] = 0.;
-     // ev.fjet_subjets_btag[ev.fjet][k] = (j.subjets("SoftDropPuppi"))[k]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets("SoftDropPuppi"))[k]->bDiscriminator("pfDeepCSVJetTags:probbb");
-    }
-
-  // for (int k=0; k<5; k++) { // store up to 5 subjets for each AK8 jet ?
-   // ev.fjet_subjets_btag[ev.fjet][k] = 0.;
-   // ev.fjet_subjets_btag[ev.fjet][k] = (j.subjets("SoftDropPuppi"))[k]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets("SoftDropPuppi"))[k]->bDiscriminator("pfDeepCSVJetTags:probbb");
-  // }
-
-
-   if(nSub >0 ){
-      ev.fjet_subjets_btag[ev.fjet][0] = (j.subjets("SoftDropPuppi"))[0]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets("SoftDropPuppi"))[0]->bDiscriminator("pfDeepCSVJetTags:probbb");
-    }
-   if(nSub >1 ){
-      ev.fjet_subjets_btag[ev.fjet][1] = (j.subjets("SoftDropPuppi"))[1]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets("SoftDropPuppi"))[1]->bDiscriminator("pfDeepCSVJetTags:probbb");
-     } 
-   if(nSub >2 ){
-      ev.fjet_subjets_btag[ev.fjet][2] = (j.subjets("SoftDropPuppi"))[2]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets("SoftDropPuppi"))[2]->bDiscriminator("pfDeepCSVJetTags:probbb");
-    }
-   if(nSub >3 ){
-      ev.fjet_subjets_btag[ev.fjet][3] = (j.subjets("SoftDropPuppi"))[3]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets("SoftDropPuppi"))[3]->bDiscriminator("pfDeepCSVJetTags:probbb");
-     } 
-   if(nSub >4 ){
-      ev.fjet_subjets_btag[ev.fjet][4] = (j.subjets("SoftDropPuppi"))[4]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets("SoftDropPuppi"))[4]->bDiscriminator("pfDeepCSVJetTags:probbb");
-    }
-
-	 auto const & sdSubjets = j.subjets(subjet_label); 
-	 //The Soft Drop Subjets are stored in positions 0, 1  in the subjet collection list.
+   //subjet_label = "SoftDropPuppi";
+   subjet_label = "SoftDrop";
+	 auto const & sdSubjets = j.subjets(subjet_label);
+	 int nSub(sdSubjets.size());
+	 //The Soft Drop Subjets are stored in positions 0,1  in the subjet collection list.
 	 int count_subj(0);
-         
-	 std::vector<TLorentzVector> softdrop_subjets; 
-	 for ( auto const & it : sdSubjets ) { //subjets
+	
+	 for (int k=0; k<2; k++) { // store up to 2 subjets for each AK8 jet 
+		ev.fjet_subjets_btag[ev.fjet][k] = 0.;
+		// ev.fjet_subjets_partonFlavour[ev.fjet][k] = 0.;
+		// ev.fjet_subjets_hadronFlavour[ev.fjet][k] = 0.;
+	}
+
+	
+	if(nSub >0 ){
+		ev.fjet_subjets_btag[ev.fjet][0] = (j.subjets("SoftDrop"))[0]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets("SoftDrop"))[0]->bDiscriminator("pfDeepCSVJetTags:probbb");
+     		// ev.fjet_subjets_partonFlavour[ev.fjet][0] = (j.subjets("SoftDropPuppi"))[0]->partonFlavour();
+     	 	// ev.fjet_subjets_hadronFlavour[ev.fjet][0] = (j.subjets("SoftDropPuppi"))[0]->hadronFlavour();
+     	 }
+	if(nSub >1 ){
+		ev.fjet_subjets_btag[ev.fjet][1] = (j.subjets("SoftDrop"))[1]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets("SoftDrop"))[1]->bDiscriminator("pfDeepCSVJetTags:probbb");
+		// ev.fjet_subjets_partonFlavour[ev.fjet][1] = (j.subjets("SoftDropPuppi"))[1]->partonFlavour();
+		// ev.fjet_subjets_hadronFlavour[ev.fjet][1] = (j.subjets("SoftDropPuppi"))[1]->hadronFlavour();
+	 }
+	
+   	 std::vector<TLorentzVector> softdrop_subjets; 
+	 for ( auto const & it : sdSubjets ) {
 
 	   TLorentzVector softdrop_subjet;
 	   softdrop_subjet.SetPtEtaPhiM(it->correctedP4(0).pt(), it->correctedP4(0).eta(), it->correctedP4(0).phi(), it->correctedP4(0).mass()); 
@@ -1450,8 +1465,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 
 	   }
 	 } // subjets
-
-	 for (int i=0; i<5; i++) { // store up to 5 subjets for each AK8 jet ?
+	 for (int i=0; i<2; i++) { // store up to 2 subjets for each AK8 jet 
 	   ev.fjet_subjets_px[ev.fjet][i] = 0.;
 	   ev.fjet_subjets_py[ev.fjet][i] = 0.;
 	   ev.fjet_subjets_pz[ev.fjet][i] = 0.;
@@ -1460,8 +1474,8 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
        
 	 int csb(0);
 	 for ( auto & it : softdrop_subjets ) {
-	   // if (csb>4) break; // up to 4 subjets  
-	   // if (it.Pt()>20.) { // only store subjets above 20 GeV 
+	   if (csb>1) break; // up to 2 subjets 
+		  //	   if (it.Pt()>20.) { // only store subjets above 20 GeV ?
 	   ev.fjet_subjets_px[ev.fjet][csb] = it.Px();
 	   ev.fjet_subjets_py[ev.fjet][csb] = it.Py();
 	   ev.fjet_subjets_pz[ev.fjet][csb] = it.Pz();
@@ -1469,9 +1483,9 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	   
 	     csb++;
 	 }
-	 ev.fjet_subjet_count[ev.fjet] = nSub; //csb;
+	 ev.fjet_subjet_count[ev.fjet] = count_subj; //csb;
 
-
+	/*	
 	 ev.fjet_partonFlavour[ev.fjet] = 0;
 	 ev.fjet_hadronFlavour[ev.fjet] = 0;
 
@@ -1480,33 +1494,34 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	 ev.fjet_parton_px[ev.fjet] = 0.; 
 	 ev.fjet_parton_py[ev.fjet] = 0.; 
 	 ev.fjet_parton_pz[ev.fjet] = 0.; 
-	 ev.fjet_parton_en[ev.fjet] = 0.; 
-	 
-	 if (isMC_) {
-     //if(!(is2017 && is2018)){ //2016
-	     // const reco::GenParticle *pJet = j.genParton();
-	     // if (pJet) {
-	        //  const reco::Candidate* mom = findFirstMotherWithDifferentID(&(*pJet));
-	        //  if (mom) {
-	        //      ev.fjet_mother_id[ev.fjet] = mom->pdgId(); 
+	 ev.fjet_parton_en[ev.fjet] = 0.;   
+	 */
 
-	        //      ev.fjet_parton_px[ev.fjet] = pJet->px();
-	        //      ev.fjet_parton_py[ev.fjet] = pJet->py();
-	        //      ev.fjet_parton_pz[ev.fjet] = pJet->pz();
-	        //      ev.fjet_parton_en[ev.fjet] = pJet->energy();
-	       // } //mom
-	     // } //pJet
+	 /*if (isMC_) {
+     //if(!(is2017 && is2018)){ //2016
+	      const reco::GenParticle *pJet = j.genParton();
+	      if (pJet) {
+	          const reco::Candidate* mom = findFirstMotherWithDifferentID(&(*pJet));
+	          if (mom) {
+	              ev.fjet_mother_id[ev.fjet] = mom->pdgId(); 
+
+	              ev.fjet_parton_px[ev.fjet] = pJet->px();
+	              ev.fjet_parton_py[ev.fjet] = pJet->py();
+	              ev.fjet_parton_pz[ev.fjet] = pJet->pz();
+	              ev.fjet_parton_en[ev.fjet] = pJet->energy();
+	        } //mom
+	      } //pJet
     // }
 
-	   ev.fjet_partonFlavour[ev.fjet] = j.partonFlavour();
-	   ev.fjet_hadronFlavour[ev.fjet] = j.hadronFlavour();
+		ev.fjet_partonFlavour[ev.fjet] = j.partonFlavour();
+		ev.fjet_hadronFlavour[ev.fjet] = j.hadronFlavour();
 	   
-	   const reco::GenJet *gJet=j.genJet();
-	   if(gJet) ev.fjet_genpt[ev.fjet] = gJet->pt();
-	   else     ev.fjet_genpt[ev.fjet] = 0.;
+		const reco::GenJet *gJet=j.genJet();
+		if(gJet) ev.fjet_genpt[ev.fjet] = gJet->pt();
+		else     ev.fjet_genpt[ev.fjet] = 0.;
 	   
 	 } // isMC_
-
+		*/
 	 ev.fjet++;
 	 ifjet++;
        }
@@ -1827,7 +1842,6 @@ bool mainNtuplizer::isAncestor( const reco::Candidate& ancestor, const reco::Can
    return false ;
 
 } // isAncestor
-
 
 // // ------------ method called once each job just before starting event loop  ------------
 void 

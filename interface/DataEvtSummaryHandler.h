@@ -24,7 +24,7 @@
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
 typedef std::vector<LorentzVector> LorentzVectorCollection;
 
-const Int_t MAXSB = 5;
+const Int_t MAXSB = 2;
 
 //#define MAXSB 2
 #define MAXPARTICLES 50
@@ -166,7 +166,6 @@ struct DataEvtSummary_t {
     //fjet (ak8PFJetsCHS)
     //-- uncomment
     Int_t fjet;
-    Float_t fjet_pt[MAXPARTICLES];
     Float_t fjet_px[MAXPARTICLES],fjet_py[MAXPARTICLES],fjet_pz[MAXPARTICLES],fjet_en[MAXPARTICLES];
     Float_t fjet_btag0[MAXPARTICLES], fjet_btag1[MAXPARTICLES];
     Float_t fjet_prunedM[MAXPARTICLES], fjet_softdropM[MAXPARTICLES]; //fjet_trimmedM[MAXPARTICLES],fjet_filteredM[MAXPARTICLES];
@@ -174,6 +173,11 @@ struct DataEvtSummary_t {
     Float_t fjet_genpt[MAXPARTICLES];
     Int_t fjet_partonFlavour[MAXPARTICLES], fjet_hadronFlavour[MAXPARTICLES], fjet_mother_id[MAXPARTICLES];
     Float_t fjet_parton_px[MAXPARTICLES], fjet_parton_py[MAXPARTICLES], fjet_parton_pz[MAXPARTICLES], fjet_parton_en[MAXPARTICLES];
+    //----
+    Float_t fjet_chf[MAXPARTICLES], fjet_nhf[MAXPARTICLES], fjet_phf[MAXPARTICLES], fjet_muf[MAXPARTICLES], fjet_elf[MAXPARTICLES];
+    Float_t fjet_ecfB1N2[MAXPARTICLES], fjet_ecfB1N3[MAXPARTICLES]; 
+    //Float_t fjet_ecfB2N2[MAXPARTICLES], fjet_ecfB2N3[MAXPARTICLES];    
+    Float_t fjet_subjets_partonFlavour[MAXPARTICLES][MAXSB], fjet_subjets_hadronFlavour[MAXPARTICLES][MAXSB];
     Int_t fjet_subjet_count[MAXPARTICLES];
     Float_t fjet_subjets_btag[MAXPARTICLES][MAXSB];
     Float_t fjet_subjets_px[MAXPARTICLES][MAXSB], fjet_subjets_py[MAXPARTICLES][MAXSB], fjet_subjets_pz[MAXPARTICLES][MAXSB], fjet_subjets_en[MAXPARTICLES][MAXSB];

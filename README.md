@@ -20,8 +20,25 @@ sh ./converter.sh # input 1 when you are prompted to select
 
 cd $CMSSW_BASE/src
 
+#twiki: https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018#Scale_and_smearing_corrections_f
+#Recipe for running scales and smearings using EgammaPostRecoTools
+
+#WARNING In case you are checking out multiple packages, please always do git cms-init before checking out any packages - otherwise it can complain and create problems in checking out from git
+
+git cms-init  
+git cms-addpkg RecoEgamma/EgammaTools  #essentially just checkout the package from CMSSW
+git clone https://github.com/cms-egamma/EgammaPostRecoTools.git
+mv EgammaPostRecoTools/python/EgammaPostRecoTools.py RecoEgamma/EgammaTools/python/.
+git clone -b ULSSfiles_correctScaleSysMC https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data/
+git cms-addpkg EgammaAnalysis/ElectronTools
+
+#https://twiki.cern.ch/twiki/bin/view/CMS/PileupJetIDUL#Jet_identification_in_high_pile
+#To re-run the Pileup ID, install the following package:
+
+git cms-addpkg RecoJets/JetProducers
+
 #And compile
-scram b -j 4
+scram b -j 8
 ```
 
 # Run limits
