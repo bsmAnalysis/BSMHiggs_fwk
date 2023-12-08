@@ -293,7 +293,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     //fjet (ak8PFJetsCHS)
     //
     t_->Branch("fjet",                    &evSummary_.fjet,                   "fjet/I");
-    t_->Branch("fjet_pt",                 evSummary_.fjet_pt,                 "fjet_pt[fjet]/F");
+    //t_->Branch("fjet_pt",                 evSummary_.fjet_pt,                 "fjet_pt[fjet]/F");
     t_->Branch("fjet_px",                 evSummary_.fjet_px,                 "fjet_px[fjet]/F");
     t_->Branch("fjet_py",                 evSummary_.fjet_py,                 "fjet_py[fjet]/F");
     t_->Branch("fjet_pz",                 evSummary_.fjet_pz,                 "fjet_pz[fjet]/F");
@@ -325,8 +325,8 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
 
     t_->Branch("fjet_ecfB1N2",      	  evSummary_.fjet_ecfB1N2, 	     "fjet_ecfB1N2[fjet]/F");
     t_->Branch("fjet_ecfB1N3",            evSummary_.fjet_ecfB1N3,           "fjet_ecfB1N3[fjet]/F");
-    t_->Branch("fjet_ecfB2N2",            evSummary_.fjet_ecfB2N2,           "fjet_ecfB2N2[fjet]/F");
-    t_->Branch("fjet_ecfB2N3",            evSummary_.fjet_ecfB2N3,           "fjet_ecfB2N3[fjet]/F");
+    //t_->Branch("fjet_ecfB2N2",            evSummary_.fjet_ecfB2N2,           "fjet_ecfB2N2[fjet]/F");
+    //t_->Branch("fjet_ecfB2N3",            evSummary_.fjet_ecfB2N3,           "fjet_ecfB2N3[fjet]/F");
 
     t_->Branch("fjet_subjet_count",       evSummary_.fjet_subjet_count,       "fjet_subjet_count[fjet]/I");
     t_->Branch("fjet_subjets_px",         &evSummary_.fjet_subjets_px,        "fjet_subjets_px[fjet][2]/F");
