@@ -32,11 +32,6 @@ mv EgammaPostRecoTools/python/EgammaPostRecoTools.py RecoEgamma/EgammaTools/pyth
 git clone -b ULSSfiles_correctScaleSysMC https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data/
 git cms-addpkg EgammaAnalysis/ElectronTools
 
-#https://twiki.cern.ch/twiki/bin/view/CMS/PileupJetIDUL#Jet_identification_in_high_pile
-#To re-run the Pileup ID, install the following package:
-
-git cms-addpkg RecoJets/JetProducers
-
 #And compile
 scram b -j 8
 ```
