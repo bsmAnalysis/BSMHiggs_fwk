@@ -167,7 +167,13 @@ struct DataEvtSummary_t {
     //-- uncomment
     Int_t fjet;
     Float_t fjet_px[MAXPARTICLES],fjet_py[MAXPARTICLES],fjet_pz[MAXPARTICLES],fjet_en[MAXPARTICLES];
-    Float_t fjet_btag0[MAXPARTICLES], fjet_btag1[MAXPARTICLES];
+    Float_t fjet_btag0[MAXPARTICLES], fjet_btag1[MAXPARTICLES], fjet_btag2[MAXPARTICLES], fjet_btag3[MAXPARTICLES];
+    Float_t fjet_btag4[MAXPARTICLES], fjet_btag5[MAXPARTICLES], fjet_btag6[MAXPARTICLES], fjet_btag7[MAXPARTICLES];
+    Float_t fjet_btag8[MAXPARTICLES], fjet_btag9[MAXPARTICLES], fjet_btag10[MAXPARTICLES], fjet_btag11[MAXPARTICLES];
+    Float_t fjet_btag12[MAXPARTICLES], fjet_btag13[MAXPARTICLES], fjet_btag14[MAXPARTICLES], fjet_btag15[MAXPARTICLES];
+    Float_t fjet_btag16[MAXPARTICLES], fjet_btag17[MAXPARTICLES]; 
+
+
     Float_t fjet_prunedM[MAXPARTICLES], fjet_softdropM[MAXPARTICLES]; //fjet_trimmedM[MAXPARTICLES],fjet_filteredM[MAXPARTICLES];
     Float_t fjet_tau1[MAXPARTICLES],fjet_tau2[MAXPARTICLES],fjet_tau3[MAXPARTICLES],fjet_tau4[MAXPARTICLES];
     Float_t fjet_genpt[MAXPARTICLES];
@@ -175,7 +181,7 @@ struct DataEvtSummary_t {
     Float_t fjet_parton_px[MAXPARTICLES], fjet_parton_py[MAXPARTICLES], fjet_parton_pz[MAXPARTICLES], fjet_parton_en[MAXPARTICLES];
     //----
     Float_t fjet_chf[MAXPARTICLES], fjet_nhf[MAXPARTICLES], fjet_phf[MAXPARTICLES], fjet_muf[MAXPARTICLES], fjet_elf[MAXPARTICLES];
-    Float_t fjet_ecfB1N2[MAXPARTICLES], fjet_ecfB1N3[MAXPARTICLES]; 
+    //Float_t fjet_ecfB1N2[MAXPARTICLES], fjet_ecfB1N3[MAXPARTICLES]; 
     //Float_t fjet_ecfB2N2[MAXPARTICLES], fjet_ecfB2N3[MAXPARTICLES];    
     Float_t fjet_subjets_partonFlavour[MAXPARTICLES][MAXSB], fjet_subjets_hadronFlavour[MAXPARTICLES][MAXSB];
     Int_t fjet_subjet_count[MAXPARTICLES];

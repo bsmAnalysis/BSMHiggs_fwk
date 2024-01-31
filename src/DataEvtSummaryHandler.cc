@@ -300,6 +300,26 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("fjet_en",                 evSummary_.fjet_en,                 "fjet_en[fjet]/F");
     t_->Branch("fjet_btag0",              evSummary_.fjet_btag0,              "fjet_btag0[fjet]/F");  
     t_->Branch("fjet_btag1",              evSummary_.fjet_btag1,              "fjet_btag1[fjet]/F");  
+    t_->Branch("fjet_btag2",              evSummary_.fjet_btag2,              "fjet_btag2[fjet]/F");
+    t_->Branch("fjet_btag3",              evSummary_.fjet_btag3,              "fjet_btag3[fjet]/F");
+    t_->Branch("fjet_btag4",              evSummary_.fjet_btag4,              "fjet_btag4[fjet]/F");
+    t_->Branch("fjet_btag5",              evSummary_.fjet_btag5,              "fjet_btag5[fjet]/F");
+    t_->Branch("fjet_btag6",              evSummary_.fjet_btag6,              "fjet_btag6[fjet]/F");
+    t_->Branch("fjet_btag7",              evSummary_.fjet_btag7,              "fjet_btag7[fjet]/F");
+    t_->Branch("fjet_btag8",              evSummary_.fjet_btag8,              "fjet_btag8[fjet]/F");
+    t_->Branch("fjet_btag9",              evSummary_.fjet_btag9,              "fjet_btag9[fjet]/F");
+    t_->Branch("fjet_btag10",             evSummary_.fjet_btag10,             "fjet_btag10[fjet]/F");
+    t_->Branch("fjet_btag11",             evSummary_.fjet_btag11,             "fjet_btag11[fjet]/F");
+    t_->Branch("fjet_btag12",             evSummary_.fjet_btag12,             "fjet_btag12[fjet]/F");
+    t_->Branch("fjet_btag13",             evSummary_.fjet_btag13,             "fjet_btag13[fjet]/F");
+    t_->Branch("fjet_btag14",             evSummary_.fjet_btag14,             "fjet_btag14[fjet]/F");
+    t_->Branch("fjet_btag15",             evSummary_.fjet_btag15,             "fjet_btag15[fjet]/F");
+    t_->Branch("fjet_btag16",             evSummary_.fjet_btag16,             "fjet_btag16[fjet]/F");
+    t_->Branch("fjet_btag17",             evSummary_.fjet_btag17,             "fjet_btag17[fjet]/F");
+
+
+
+
     t_->Branch("fjet_genpt",              evSummary_.fjet_genpt,              "fjet_genpt[fjet]/F");
     t_->Branch("fjet_prunedM",            evSummary_.fjet_prunedM,            "fjet_prunedM[fjet]/F");
     t_->Branch("fjet_softdropM",          evSummary_.fjet_softdropM,          "fjet_softdropM[fjet]/F"); 
@@ -316,15 +336,15 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("fjet_parton_en",          evSummary_.fjet_parton_en,          "fjet_parton_en[fjet]/F");
     t_->Branch("fjet_partonFlavour",      evSummary_.fjet_partonFlavour,      "fjet_partonFlavour[fjet]/I");
     t_->Branch("fjet_hadronFlavour",      evSummary_.fjet_hadronFlavour,      "fjet_hadronFlavour[fjet]/I");
-    //----
+    
     t_->Branch("fjet_chf",  		  evSummary_.fjet_chf,		      "fjet_chf[fjet]/F");
     t_->Branch("fjet_nhf",                evSummary_.fjet_nhf,                "fjet_nhf[fjet]/F");
     t_->Branch("fjet_phf",                evSummary_.fjet_phf,                "fjet_phf[fjet]/F");
     t_->Branch("fjet_muf",                evSummary_.fjet_muf,                "fjet_muf[fjet]/F");
     t_->Branch("fjet_elf",                evSummary_.fjet_elf,                "fjet_elf[fjet]/F");
 
-    t_->Branch("fjet_ecfB1N2",      	  evSummary_.fjet_ecfB1N2, 	     "fjet_ecfB1N2[fjet]/F");
-    t_->Branch("fjet_ecfB1N3",            evSummary_.fjet_ecfB1N3,           "fjet_ecfB1N3[fjet]/F");
+    //t_->Branch("fjet_ecfB1N2",	    evSummary_.fjet_ecfB1N2,	       "fjet_ecfB1N2[fjet]/F");
+    //t_->Branch("fjet_ecfB1N3",            evSummary_.fjet_ecfB1N3,           "fjet_ecfB1N3[fjet]/F");
     //t_->Branch("fjet_ecfB2N2",            evSummary_.fjet_ecfB2N2,           "fjet_ecfB2N2[fjet]/F");
     //t_->Branch("fjet_ecfB2N3",            evSummary_.fjet_ecfB2N3,           "fjet_ecfB2N3[fjet]/F");
 
@@ -681,7 +701,25 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("fjet_pz",                 evSummary_.fjet_pz);
     t_->SetBranchAddress("fjet_en",                 evSummary_.fjet_en);
     t_->SetBranchAddress("fjet_btag0",              evSummary_.fjet_btag0);     
-    t_->SetBranchAddress("fjet_btag1",              evSummary_.fjet_btag1);     
+    t_->SetBranchAddress("fjet_btag1",              evSummary_.fjet_btag1);
+    t_->SetBranchAddress("fjet_btag2",              evSummary_.fjet_btag2);
+    t_->SetBranchAddress("fjet_btag3",              evSummary_.fjet_btag3);
+    t_->SetBranchAddress("fjet_btag4",              evSummary_.fjet_btag4);
+    t_->SetBranchAddress("fjet_btag5",              evSummary_.fjet_btag5);
+    t_->SetBranchAddress("fjet_btag6",              evSummary_.fjet_btag6);
+    t_->SetBranchAddress("fjet_btag7",              evSummary_.fjet_btag7);
+    t_->SetBranchAddress("fjet_btag8",              evSummary_.fjet_btag8);
+    t_->SetBranchAddress("fjet_btag9",              evSummary_.fjet_btag9);
+    t_->SetBranchAddress("fjet_btag10",             evSummary_.fjet_btag10);
+    t_->SetBranchAddress("fjet_btag11",             evSummary_.fjet_btag11);
+    t_->SetBranchAddress("fjet_btag12",             evSummary_.fjet_btag12);
+    t_->SetBranchAddress("fjet_btag13",             evSummary_.fjet_btag13);
+    t_->SetBranchAddress("fjet_btag14",             evSummary_.fjet_btag14);
+    t_->SetBranchAddress("fjet_btag15",             evSummary_.fjet_btag15);
+    t_->SetBranchAddress("fjet_btag16",             evSummary_.fjet_btag16);
+    t_->SetBranchAddress("fjet_btag17",             evSummary_.fjet_btag17);
+
+
     t_->SetBranchAddress("fjet_genpt",              evSummary_.fjet_genpt);
     t_->SetBranchAddress("fjet_prunedM",            evSummary_.fjet_prunedM);
     t_->SetBranchAddress("fjet_softdropM",          evSummary_.fjet_softdropM);
@@ -698,15 +736,15 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("fjet_parton_py",          evSummary_.fjet_parton_py);
     t_->SetBranchAddress("fjet_parton_pz",          evSummary_.fjet_parton_pz);
     t_->SetBranchAddress("fjet_parton_en",          evSummary_.fjet_parton_en);
-    //---
+    
     t_->SetBranchAddress("fjet_chf",                evSummary_.fjet_chf);
     t_->SetBranchAddress("fjet_nhf",                evSummary_.fjet_nhf);
     t_->SetBranchAddress("fjet_phf",                evSummary_.fjet_phf);
     t_->SetBranchAddress("fjet_muf",                evSummary_.fjet_muf);
     t_->SetBranchAddress("fjet_elf",                evSummary_.fjet_elf);
 
-    t_->SetBranchAddress("fjet_ecfB1N2",            evSummary_.fjet_ecfB1N2);
-    t_->SetBranchAddress("fjet_ecfB1N3",            evSummary_.fjet_ecfB1N3);
+    //t_->SetBranchAddress("fjet_ecfB1N2",            evSummary_.fjet_ecfB1N2);
+    //t_->SetBranchAddress("fjet_ecfB1N3",            evSummary_.fjet_ecfB1N3);
     //t_->SetBranchAddress("fjet_ecfB2N2",            evSummary_.fjet_ecfB2N2);
     //t_->SetBranchAddress("fjet_ecfB2N3",            evSummary_.fjet_ecfB2N3);
     
