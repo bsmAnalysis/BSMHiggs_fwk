@@ -257,12 +257,8 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
     if Jobs_CRABLFN == '':
         config_file.write('#config.Data.outLFNDirBase = \'/store/user/<username>/debug\'\n')
     else:
-        if(commands.getstatusoutput("whoami")[1]=='hwei'):
-          config_file.write('config.Data.outLFNDirBase = \'/store/user/hua/'+Jobs_CRABLFN+'\'\n')
-          print 'config.Data.outLFNDirBase = \'/store/user/hua/'+Jobs_CRABLFN+'\'\n'
-        else:
-          config_file.write('config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n')
-          print 'config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n'
+        config_file.write('config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n')
+#          print 'config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n'
     config_file.write('\n')
     config_file.write('config.Site.storageSite = \''+Jobs_CRABStorageSite+'\'\n')
     config_file.write('config.Site.whitelist = [\'T2_CH_CERN\',\'T2_US_UCSD\',\'T3_US_FNALLPC\']')
