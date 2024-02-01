@@ -951,7 +951,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
      | ( emuTrigger2 << 10 );
    
    //if(!isMC__ && !ev.hasTrigger) return; // skip the event if no trigger, only for Data
-   if(!ev.hasTrigger) return; // skip the event if no trigger, for both Data and MC
+   //if(!ev.hasTrigger) return; // skip the event if no trigger, for both Data and MC
    
    //##############################################   EVENT PASSED THE TRIGGER   ######################################
    //met filters
@@ -1212,8 +1212,8 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
        } // el
        
 	//request at least 1 lepton in the event
-	int nlep=(ev.en+ev.mn);
- 	if(nlep<1) return; //require one lepton 
+//	int nlep=(ev.en+ev.mn);
+// 	if(nlep<1) return; //require one lepton 
 	//       
         // jet selection (ak4PFJetsCHS)
         //
@@ -1240,7 +1240,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
          //double toRawSF=j.pt()/j.correctedJet("Uncorrected").pt(); 
          //LorentzVector rawJet(jet*toRawSF); 
 	 //	 std::cout << " Correction1 = " << jesCor->getCorrection() << " , correction2 = " << toRawSF << std::endl; //corrector->correction(j) << std::endl;
-	 if(j.pt() < 20 || fabs(j.eta())>2.5) continue;
+	 if(j.pt() < 20 || fabs(j.eta())>3.0) continue;
 	 
 	 //jet id
 	 //	 hasLooseId.set(false);
