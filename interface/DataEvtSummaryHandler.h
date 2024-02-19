@@ -140,8 +140,8 @@ struct DataEvtSummary_t {
     Bool_t jet_PFLoose[MAXPARTICLES], jet_PFTight[MAXPARTICLES];
     Int_t jet_partonFlavour[MAXPARTICLES], jet_hadronFlavour[MAXPARTICLES], jet_mother_id[MAXPARTICLES];
     Float_t jet_parton_px[MAXPARTICLES], jet_parton_py[MAXPARTICLES], jet_parton_pz[MAXPARTICLES], jet_parton_en[MAXPARTICLES];
-
-    //-- uncomment block
+   
+    /*
     //sv : Inclusive Secondary Vertices from slimmedSecondaryVertices
     Int_t sv ;
     Float_t sv_px[MAXPARTICLES], sv_py[MAXPARTICLES], sv_pz[MAXPARTICLES], sv_en[MAXPARTICLES] ;
@@ -152,7 +152,8 @@ struct DataEvtSummary_t {
     Int_t   sv_mc_nbh_moms[MAXPARTICLES] ;
     Int_t   sv_mc_nbh_daus[MAXPARTICLES] ;
     Int_t   sv_mc_mcbh_ind[MAXPARTICLES] ;
-    
+    */
+
     /*
     //jet (slimmedJetsPuppi)
     Int_t pjet;

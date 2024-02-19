@@ -271,7 +271,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("jet_genpt",             evSummary_.jet_genpt,               "jet_genpt[jet]/F");
     
 
-    //
+    /*
     //sv : Inclusive Secondary Vertices from slimmedSecondaryVertices
     t_->Branch("sv"              , &evSummary_.sv              , "sv/I" ) ;
     t_->Branch("sv_px"           , evSummary_.sv_px            , "sv_px[sv]/F" ) ;
@@ -288,7 +288,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("sv_mc_nbh_moms"  , evSummary_.sv_mc_nbh_moms   , "sv_mc_nbh_moms[sv]/I" ) ;
     t_->Branch("sv_mc_nbh_daus"  , evSummary_.sv_mc_nbh_daus   , "sv_mc_nbh_daus[sv]/I" ) ;
 //    t_->Branch("sv_mc_mcbh_ind"  , evSummary_.sv_mc_mcbh_ind   , "sv_mc_mcbh_ind[sv]/I" ) ;
-//
+    */
 
     //fjet (ak8PFJetsCHS)
     //
@@ -653,7 +653,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("jet_parton_en",           evSummary_.jet_parton_en);
     t_->SetBranchAddress("jet_genpt",               evSummary_.jet_genpt);
 
-    
+    /*   
     //sv : Inclusive Secondary Vertices from slimmedSecondaryVertices
     t_->SetBranchAddress("sv"              , &evSummary_.sv               ) ;
     t_->SetBranchAddress("sv_px"           , evSummary_.sv_px             ) ;
@@ -670,7 +670,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("sv_mc_nbh_moms"  , evSummary_.sv_mc_nbh_moms    ) ;
     t_->SetBranchAddress("sv_mc_nbh_daus"  , evSummary_.sv_mc_nbh_daus    ) ;
 //    t_->SetBranchAddress("sv_mc_mcbh_ind"  , evSummary_.sv_mc_mcbh_ind    ) ;
-
+    */
 
     /*
     //pjet: slimmedJetsPuppi
@@ -796,7 +796,7 @@ void DataEvtSummaryHandler::resetStruct()
     evSummary_.en=0;
     evSummary_.ta=0;
     evSummary_.jet=0;
-    evSummary_.sv=0;
+    // evSummary_.sv=0;
     ///// evSummary_.pjet=0;
     evSummary_.fjet=0;
     evSummary_.npdfs=0;

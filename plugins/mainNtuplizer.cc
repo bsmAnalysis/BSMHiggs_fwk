@@ -1212,8 +1212,8 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
        } // el
        
 	//request at least 1 lepton in the event
-//	int nlep=(ev.en+ev.mn);
-// 	if(nlep<1) return; //require one lepton 
+	//int nlep=(ev.en+ev.mn);
+ 	//if(nlep<1) return; //require one lepton 
 	//       
         // jet selection (ak4PFJetsCHS)
         //
@@ -1607,7 +1607,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
        }
        */
 
-       //-- Inclusive Secondary Vertices
+       /* -- Inclusive Secondary Vertices
        //add this info for secondary vertices
        reco::VertexCompositePtrCandidateCollection sec_vert ;
        edm::Handle< reco::VertexCompositePtrCandidateCollection > svHandle ;
@@ -1810,6 +1810,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 
        } // isv
        //end information of secondary vertices !!
+       */
         // Fill Tree
        summaryHandler_.fillTree();
  
