@@ -235,9 +235,9 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
   //2016 Btag Recommendation: https://btv-wiki.docs.cern.ch/ScaleFactors/UL2016preVFP/  (or UL2016postVFP/)
   //2017(2018) Btag Recommendation: https://btv-wiki.docs.cern.ch/ScaleFactors/UL2017/ (or UL2018/)
   //DeepCSV working points
-  float DeepCSVLooseWP;  float DeepCSVMediumWP; float DeepCSVTightWP;
+  //float DeepCSVLooseWP;  float DeepCSVMediumWP; float DeepCSVTightWP;
   //DeepJet working points
-  //float DeepJetLooseWP; float DeepJetMediumWP; float DeepJetTightWP;
+  float DeepJetLooseWP; float DeepJetMediumWP; float DeepJetTightWP;
 
 
   // BTagging efficiency Map bin configuration
@@ -445,7 +445,6 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 {
    using namespace edm;
 
-   //mon_.fillHisto("nevents","all",1.,1.); //increment event count
    h_nevents->Fill(0.);
    
    summaryHandler_.resetStruct();
@@ -536,7 +535,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
        if(EvtHandle.isValid() && EvtHandle->weights().size()>0)
        {   
 	for (unsigned int i=0; i<EvtHandle->weights().size(); i++) {
-           // std::cout << "Weight " << i << " ID: " << EvtHandle->weights()[i].id << " " <<  EvtHandle->weights()[i].wgt << std::endl;
+           if ( verbose_ ) { std::cout << "Weight " << i << " ID: " << EvtHandle->weights()[i].id << " " <<  EvtHandle->weights()[i].wgt << std::endl; }
            string wtid(EvtHandle->weights()[i].id);
            if ((stoi(wtid) > 1612 && stoi(wtid) <= 1712) ) {
                 ev.pdfWeights[ev.npdfs] = SignGenWeight * EvtHandle->weights()[i].wgt/EvtHandle->originalXWGTUP();
@@ -545,7 +544,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
                 ev.npdfs++;
 	    }
            if ((stoi(wtid) >= 1713 && stoi(wtid) <= 1714) ) {
-               // std::cout << "Weight " << i << " ID: " << EvtHandle->weights()[i].id << " " <<  EvtHandle->weights()[i].wgt << std::endl;                                          
+               if ( verbose_ ) { std::cout << "Weight " << i << " ID: " << EvtHandle->weights()[i].id << " " <<  EvtHandle->weights()[i].wgt << std::endl; }                                          
                 ev.alphaSWeights[ev.nalphaS] = SignGenWeight * EvtHandle->weights()[i].wgt/EvtHandle->originalXWGTUP();
                 h_sumAlphasWeights->Fill(double(ev.nalphaS), ev.alphaSWeights[ev.nalphaS]);
  		ev.nalphaS++;     
@@ -757,17 +756,17 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
    
   // Filling histograms for BTagging Efficiency
   if (is2018) //https://btv-wiki.docs.cern.ch/ScaleFactors/UL2018/
-    {DeepCSVLooseWP = 0.1208; DeepCSVMediumWP = 0.4168; DeepCSVTightWP = 0.7665;}
-   // {DeepJetLooseWP = 0.0490; DeepJetMediumWP = 0.2783; DeepJetTightWP = 0.7100;}
+    //{DeepCSVLooseWP = 0.1208; DeepCSVMediumWP = 0.4168; DeepCSVTightWP = 0.7665;}
+    {DeepJetLooseWP = 0.0490; DeepJetMediumWP = 0.2783; DeepJetTightWP = 0.7100;}
   else if(is2017) //https://btv-wiki.docs.cern.ch/ScaleFactors/UL2017/
-    {DeepCSVLooseWP = 0.1355; DeepCSVMediumWP = 0.4506; DeepCSVTightWP = 0.7738;}
-    // {DeepJetLooseWP = 0.0532; DeepJetMediumWP = 0.3040; DeepJetTightWP = 0.7476;}
+    // {DeepCSVLooseWP = 0.1355; DeepCSVMediumWP = 0.4506; DeepCSVTightWP = 0.7738;}
+    {DeepJetLooseWP = 0.0532; DeepJetMediumWP = 0.3040; DeepJetTightWP = 0.7476;}
   else if(is2016PreVFP) //https://btv-wiki.docs.cern.ch/ScaleFactors/UL2016preVFP/
-    {DeepCSVLooseWP = 0.2027; DeepCSVMediumWP = 0.6001; DeepCSVTightWP = 0.8819;}    //preVFP
-   // {DeepJetLooseWP = 0.0508; DeepJetMediumWP = 0.2598; DeepJetTightWP = 0.6502;}  //preVFP
+    // {DeepCSVLooseWP = 0.2027; DeepCSVMediumWP = 0.6001; DeepCSVTightWP = 0.8819;}    //preVFP
+    {DeepJetLooseWP = 0.0508; DeepJetMediumWP = 0.2598; DeepJetTightWP = 0.6502;}  //preVFP
   else if(is2016PostVFP) //https://btv-wiki.docs.cern.ch/ScaleFactors/UL2016postVFP/
-    {DeepCSVLooseWP = 0.1918;  DeepCSVMediumWP = 0.5847; DeepCSVTightWP = 0.8767;}
-   // {DeepJetLooseWP = 0.0408; DeepJetMediumWP = 0.2489; DeepJetTightWP = 0.6377;}  //postVFP
+    // {DeepCSVLooseWP = 0.1918;  DeepCSVMediumWP = 0.5847; DeepCSVTightWP = 0.8767;}
+    {DeepJetLooseWP = 0.0480; DeepJetMediumWP = 0.2489; DeepJetTightWP = 0.6377;}  //postVFP
 
   pat::JetCollection jets;
   edm::Handle< pat::JetCollection > jetsHandle;
@@ -776,47 +775,44 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
   if(isMC_){
     for (pat::Jet &j : jets) {
       Float_t btag_dsc;
-      // if(is2017 || is2018 || is2016Legacy || is2016PreVFP || is2016PostVFP)  
-      btag_dsc = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
-        //btag_dsc = j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
-     // else
-       // btag_dsc = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
-        //btag_dsc = j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
+      // DeepCSV
+      // btag_dsc = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+      // DeepJet
+      btag_dsc = j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
+    
       int partonFlavor = j.partonFlavour();
       if( fabs(partonFlavor)==5 ){
         h2_BTaggingEff_Denom_b->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepCSVLooseWP ) h2_LooseBTaggingEff_Num_b->Fill(j.pt(), j.eta());
-        //if( btag_dsc>DeepJetLooseWP ) h2_LooseBTaggingEff_Num_b->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepCSVMediumWP ) h2_MediumBTaggingEff_Num_b->Fill(j.pt(), j.eta());
-        //if( btag_dsc>DeepJetMediumWP ) h2_MediumBTaggingEff_Num_b->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepCSVTightWP ) h2_TightBTaggingEff_Num_b->Fill(j.pt(), j.eta());
-        //if( btag_dsc>DeepJetTightWP ) h2_TightBTaggingEff_Num_b->Fill(j.pt(), j.eta()); 
+        //if( btag_dsc>DeepCSVLooseWP ) h2_LooseBTaggingEff_Num_b->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepJetLooseWP ) h2_LooseBTaggingEff_Num_b->Fill(j.pt(), j.eta());
+        //if( btag_dsc>DeepCSVMediumWP ) h2_MediumBTaggingEff_Num_b->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepJetMediumWP ) h2_MediumBTaggingEff_Num_b->Fill(j.pt(), j.eta());
+        //if( btag_dsc>DeepCSVTightWP ) h2_TightBTaggingEff_Num_b->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepJetTightWP ) h2_TightBTaggingEff_Num_b->Fill(j.pt(), j.eta()); 
       }
       else if( fabs(partonFlavor)==4 ){
         h2_BTaggingEff_Denom_c->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepCSVLooseWP ) h2_LooseBTaggingEff_Num_c->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepCSVMediumWP ) h2_MediumBTaggingEff_Num_c->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepCSVTightWP ) h2_TightBTaggingEff_Num_c->Fill(j.pt(), j.eta());
-        //if( btag_dsc>DeepJetLooseWP ) h2_LooseBTaggingEff_Num_c->Fill(j.pt(), j.eta());
-        //if( btag_dsc>DeepJetMediumWP ) h2_MediumBTaggingEff_Num_c->Fill(j.pt(), j.eta());
-        //if( btag_dsc>DeepJetTightWP ) h2_TightBTaggingEff_Num_c->Fill(j.pt(), j.eta());
+        //if( btag_dsc>DeepCSVLooseWP ) h2_LooseBTaggingEff_Num_c->Fill(j.pt(), j.eta());
+        //if( btag_dsc>DeepCSVMediumWP ) h2_MediumBTaggingEff_Num_c->Fill(j.pt(), j.eta());
+        //if( btag_dsc>DeepCSVTightWP ) h2_TightBTaggingEff_Num_c->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepJetLooseWP ) h2_LooseBTaggingEff_Num_c->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepJetMediumWP ) h2_MediumBTaggingEff_Num_c->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepJetTightWP ) h2_TightBTaggingEff_Num_c->Fill(j.pt(), j.eta());
       }
       else{
         h2_BTaggingEff_Denom_udsg->Fill(j.pt(), j.eta());
-	if( btag_dsc>DeepCSVLooseWP ) h2_LooseBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepCSVMediumWP ) h2_MediumBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepCSVTightWP ) h2_TightBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
-        //if( btag_dsc>DeepJetLooseWP ) h2_LooseBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
-        //if( btag_dsc>DeepJetMediumWP ) h2_MediumBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
-        //if( btag_dsc>DeepJetTightWP ) h2_TightBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
+	//if( btag_dsc>DeepCSVLooseWP ) h2_LooseBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
+        //if( btag_dsc>DeepCSVMediumWP ) h2_MediumBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
+        //if( btag_dsc>DeepCSVTightWP ) h2_TightBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepJetLooseWP ) h2_LooseBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepJetMediumWP ) h2_MediumBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
+        if( btag_dsc>DeepJetTightWP ) h2_TightBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
       }
    }
   }
 
-
-
-       // Trigger
-       //
+   //----- Trigger -------
+       
    edm::Handle<edm::TriggerResults> triggerBits; 
    edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects; 
    edm::Handle<pat::PackedTriggerPrescales> triggerPrescales;
@@ -855,8 +851,10 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
    bool eeTrigger(false), eeTrigger2(false); 
    bool mumuTrigger(false), mumuTrigger2(false); 
    bool emuTrigger(false), emuTrigger2(false);
+   bool metTrigger(false), metTrigger2(false), metTrigger3(false);
    bool highPTeTrigger(false);
    
+   // 1-lepton (el/muon) 2-lepton (el/muon) --> add 0-lepton
    if(is2018){
       //https://twiki.cern.ch/twiki/bin/view/CMS/MuonHLT2018 
       mumuTrigger        = utils::passTriggerPatterns(tr,"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*");
@@ -869,9 +867,10 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
       eTrigger2          = utils::passTriggerPatterns(tr,"HLT Ele35 WPTight Gsf v*");
       //emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
       emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
-   }else if(is2017){
+      metTrigger         = utils::passTriggerPatterns(tr,"HLT_PFMET120_PFMHT120_IDTight_v*");
+   }else if(is2017){ 
       //https://indico.cern.ch/event/682891/contributions/2810364/attachments/1570825/2820752/20171206_CMSWeek_MuonHLTReport_KPLee_v3_4.pdf
-     mumuTrigger        = utils::passTriggerPatterns(tr,"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
+      mumuTrigger        = utils::passTriggerPatterns(tr,"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
       mumuTrigger2	 = utils::passTriggerPatterns(tr,"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*");
       muTrigger          = utils::passTriggerPatterns(tr,"HLT_IsoMu27_v*");
       muTrigger2	 = utils::passTriggerPatterns(tr,"HLT_IsoMu24_eta2p1_v*","HLT_IsoMu24_v*");
@@ -883,6 +882,8 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
       eTrigger2          = utils::passTriggerPatterns(tr,"HLT_Ele35_WPTight_Gsf_v*");
       emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
       emuTrigger2	 = utils::passTriggerPatterns(tr,"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*");
+      metTrigger	 = utils::passTriggerPatterns(tr,"HLT_PFMET120_PFMHT120_IDTight_v*");
+      metTrigger2	 = utils::passTriggerPatterns(tr,"HLT_PFMET120_PFMHT120_IDTight_PFHT60_v*");
    } else{
       mumuTrigger        = utils::passTriggerPatterns(tr, "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*" , "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
       //   muTrigger          = utils::passTriggerPatterns(tr, "HLT_IsoMu22_v*","HLT_IsoTkMu22_v*", "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*");
@@ -894,6 +895,9 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
       highPTeTrigger    = utils::passTriggerPatterns(tr, "HLT_Ele115_CaloIdVT_GsfTrkIdT_v*");
       eTrigger           = utils::passTriggerPatterns(tr, "HLT_Ele27_WPTight_Gsf_v*","HLT_Ele25_eta2p1_WPTight_Gsf_v*") ;
       emuTrigger         = utils::passTriggerPatterns(tr, "HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*" , "HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*") || utils::passTriggerPatterns(tr,"HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+      metTrigger         = utils::passTriggerPatterns(tr,"HLT_PFMET110_PFMHT110_IDTight_v*");
+      metTrigger2        = utils::passTriggerPatterns(tr,"HLT_PFMET120_PFMHT120_IDTight_v*");
+      metTrigger3        = utils::passTriggerPatterns(tr, "HLT_PFMET170_NoiseCleaned_v*", "HLT_PFMET170_BeamHaloCleaned_v*", "HLT_PFMET170_HBHECleaned_v*");
    }
    // special treatment for 2017 single electron triggers in RunB and C
    // requiring trigger object passing hltEle32L1DoubleEGWPTightGsfTrackIsoFilter to also pass hltEGL1SingleEGOrFilter
@@ -935,8 +939,8 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
    }
 #endif
 
-   ev.hasTrigger  = ( mumuTrigger||mumuTrigger2||muTrigger||muTrigger2||eeTrigger||eeTrigger2||highPTeTrigger||eTrigger||eTrigger2||emuTrigger||emuTrigger2 );
-   //ev.hasTrigger  = ( muTrigger||eTrigger||emuTrigger ); 
+   ev.hasTrigger  = ( mumuTrigger||mumuTrigger2||muTrigger||muTrigger2||eeTrigger||eeTrigger2||highPTeTrigger||eTrigger||eTrigger2||emuTrigger||emuTrigger2||metTrigger||metTrigger2||metTrigger3 );
+   // ev.hasTrigger  = ( muTrigger||eTrigger||emuTrigger ); 
    
    ev.triggerType = ( mumuTrigger  << 0 )
      | ( muTrigger  << 1 )
@@ -948,7 +952,10 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
      | ( eTrigger2 << 7 )
      | ( eeTrigger2 << 8 )
      | ( mumuTrigger2 << 9 )
-     | ( emuTrigger2 << 10 );
+     | ( emuTrigger2 << 10 )
+     | ( metTrigger << 11 ) 
+     | ( metTrigger2 << 12 ) 
+     | ( metTrigger3 << 13 );
    
    //if(!isMC__ && !ev.hasTrigger) return; // skip the event if no trigger, only for Data
    //if(!ev.hasTrigger) return; // skip the event if no trigger, for both Data and MC
@@ -1233,8 +1240,8 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
        
        //for (std::vector<pat::Jet >::const_iterator j = jets.begin(); j!=jets.end(); j++) 
        int ijet(0), ijet2(0);
-       int nCSVLtags(0);
-       //int nDeepLtags(0);
+       //int nCSVLtags(0);
+       int nDeepLtags(0);
        for (pat::Jet &j : jets) {
 
          //double toRawSF=j.pt()/j.correctedJet("Uncorrected").pt(); 
@@ -1259,28 +1266,28 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 
 	 double btag1=-1;
 	if(is2018){
-	  //btag1=j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
-	   btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
-	   nCSVLtags += (btag1>0.1208);
-	  //nDeepLtags += (btag1>0.0490);
+	   btag1=j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
+	   // btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+	   // nCSVLtags += (btag1>0.1208);
+	   nDeepLtags += (btag1>0.0490);
 	}
 	else if(is2017) {
-            btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
-	    nCSVLtags += (btag1>0.1355);  
-	   //btag1=j.bDiscriminator("pfDeepFlabourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
-	   //nDeepLtags += (btag1>0.0532);  
+            // btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+	    // nCSVLtags += (btag1>0.1355);  
+	    btag1=j.bDiscriminator("pfDeepFlabourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
+	    nDeepLtags += (btag1>0.0532);  
 	 //	   ev.jet_btag1[ev.jet] = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
 	 } else if(is2016PreVFP){
-	   btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
-	   nCSVLtags += (btag1>0.2027);   //preVFP
-	   //btag1=j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
-	   //nDeepLtags += (btag1>0.0508);   
+	   //btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+	   //nCSVLtags += (btag1>0.2027);   //preVFP
+	   btag1=j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
+	   nDeepLtags += (btag1>0.0508);   
 	 }
 	 else if(is2016PostVFP){    //postVFP
-	   btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
-	   nCSVLtags += (btag1>0.1918);  
-	   //btag1=j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
-           //nDeepLtags += (btag1>0.0408);  
+	   //btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+	   //nCSVLtags += (btag1>0.1918);  
+	   btag1=j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
+           nDeepLtags += (btag1>0.0480);  
 	 }
 	 // ev.jet_btag1[ev.jet] = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
 	 // ev.jet_btag1[ev.jet] = j.bDiscriminator("pfJetBProbabilityBJetTags");
