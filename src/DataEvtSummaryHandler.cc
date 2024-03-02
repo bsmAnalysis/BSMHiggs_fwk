@@ -70,7 +70,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("pdfWeights", evSummary_.pdfWeights, "pdfWeights[npdfs]/F");
     t_->Branch("nalphaS", &evSummary_.nalphaS, "nalphaS/I");
     t_->Branch("alphaSWeights", evSummary_.alphaSWeights, "alphaSWeights[nalphaS]/F");
-
+    /*
     //mc truth
     t_->Branch("nmcparticles",  &evSummary_.nmcparticles,   "nmcparticles/I");
     t_->Branch("mc_px",         evSummary_.mc_px,           "mc_px[nmcparticles]/F");
@@ -81,7 +81,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("mc_status",     evSummary_.mc_status,       "mc_status[nmcparticles]/I");
     t_->Branch("mc_mom",        evSummary_.mc_mom,          "mc_mom[nmcparticles]/I");
     t_->Branch("mc_momidx",     evSummary_.mc_momidx,       "mc_momidx[nmcparticles]/I");
-
+	*/
     //gen ground state B hadrons
 //    t_->Branch("mcbh",          &evSummary_.mcbh,           "mcbh/I");
 //    t_->Branch("mcbh_px",       evSummary_.mcbh_px,         "mcbh_px[mcbh]/F");
@@ -131,17 +131,17 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     */
     t_->Branch("mn_passId",             evSummary_.mn_passId,               "mn_passId[mn]/O");
     t_->Branch("mn_passIdLoose",        evSummary_.mn_passIdLoose,          "mn_passIdLoose[mn]/O");
-    t_->Branch("mn_passSoftMuon",       evSummary_.mn_passSoftMuon,         "mn_passSoftMuon[mn]/O");
+    ///t_->Branch("mn_passSoftMuon",       evSummary_.mn_passSoftMuon,         "mn_passSoftMuon[mn]/O");
     t_->Branch("mn_passIso",            evSummary_.mn_passIso,              "mn_passIso[mn]/O");
     t_->Branch("mn_relIso",             evSummary_.mn_relIso,               "mn_relIso[mn]/F");
     t_->Branch("mn_trkrelIso",          evSummary_.mn_trkrelIso,            "mn_trkrelIso[mn]/F");
 
     //    t_->Branch("mn_nMatches",                   evSummary_.mn_nMatches,                     "mn_nMatches[mn]/F");
     //t_->Branch("mn_nMatchedStations",           evSummary_.mn_nMatchedStations,             "mn_nMatchedStations[mn]/F");
-    t_->Branch("mn_validMuonHits",              evSummary_.mn_validMuonHits,                "mn_validMuonHits[mn]/F");
+    ///t_->Branch("mn_validMuonHits",              evSummary_.mn_validMuonHits,                "mn_validMuonHits[mn]/F");
     //    t_->Branch("mn_innerTrackChi2",             evSummary_.mn_innerTrackChi2,               "mn_innerTrackChi2[mn]/F");
-    t_->Branch("mn_trkLayersWithMeasurement",   evSummary_.mn_trkLayersWithMeasurement,     "mn_trkLayersWithMeasurement[mn]/F");
-    t_->Branch("mn_pixelLayersWithMeasurement", evSummary_.mn_pixelLayersWithMeasurement,   "mn_pixelLayersWithMeasurement[mn]/F");
+    ///t_->Branch("mn_trkLayersWithMeasurement",   evSummary_.mn_trkLayersWithMeasurement,     "mn_trkLayersWithMeasurement[mn]/F");
+    ///t_->Branch("mn_pixelLayersWithMeasurement", evSummary_.mn_pixelLayersWithMeasurement,   "mn_pixelLayersWithMeasurement[mn]/F");
 
 
     //electron
@@ -151,11 +151,11 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("en_pz",                 evSummary_.en_pz,                   "en_pz[en]/F");
     t_->Branch("en_en",                 evSummary_.en_en,                   "en_en[en]/F");
     t_->Branch("en_id",                 evSummary_.en_id,                   "en_id[en]/I");
-    t_->Branch("en_cor_en",                 evSummary_.en_cor_en,                   "en_cor_en[en]/F"); 
+    ///t_->Branch("en_cor_en",                 evSummary_.en_cor_en,                   "en_cor_en[en]/F"); 
     //    t_->Branch("en_scale_corr",                 evSummary_.en_scale_corr,                   "en_scale_corr[en]/F");  
-    t_->Branch("en_EtaSC",              evSummary_.en_EtaSC,                "en_EtaSC[en]/F");  
-    t_->Branch("en_R9",                 evSummary_.en_R9,                   "en_R9[en]/F"); 
-    t_->Branch("en_gainSeed",                 evSummary_.en_gainSeed,                   "en_gainSeed[en]/I");     
+    ///t_->Branch("en_EtaSC",              evSummary_.en_EtaSC,                "en_EtaSC[en]/F");  
+    ///t_->Branch("en_R9",                 evSummary_.en_R9,                   "en_R9[en]/F"); 
+    ///t_->Branch("en_gainSeed",                 evSummary_.en_gainSeed,                   "en_gainSeed[en]/I");     
     /*
     t_->Branch("en_d0",                 evSummary_.en_d0,                   "en_d0[en]/F");
     t_->Branch("en_dZ",                 evSummary_.en_dZ,                   "en_dZ[en]/F");
@@ -195,7 +195,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("en_passIdLoose",        evSummary_.en_passIdLoose,          "en_passIdLoose[en]/O"); 
     t_->Branch("en_passIso",            evSummary_.en_passIso,              "en_passIso[en]/O"); 
     t_->Branch("en_relIso",             evSummary_.en_relIso,               "en_relIso[en]/F");
-
+/*
 #ifdef YEAR_2017
     t_->Branch("en_enSigmaValue",       evSummary_.en_enSigmaValue,         "en_enSigmaValue[en]/F");
     t_->Branch("en_enScaleValue",       evSummary_.en_enScaleValue,         "en_enScaleValue[en]/F");
@@ -209,7 +209,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("en_enSigmaRhoDown",     evSummary_.en_enSigmaRhoDown,       "en_enSigmaRhoDown[en]/F");
     t_->Branch("en_enSigmaPhiDown",     evSummary_.en_enSigmaPhiDown,       "en_enSigmaPhiDown[en]/F");
 #endif
-
+*/
     /* tmp
     //tau
     t_->Branch("ta",                    &evSummary_.ta,                     "ta/I");
@@ -361,8 +361,8 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
 
     //
     //met
-    t_->Branch("imet_pt",                &evSummary_.imet_pt,                 "imet_pt[11]/F");    
-    t_->Branch("imet_phi",               &evSummary_.imet_phi,                "imet_phi[11]/F");      
+    ///t_->Branch("imet_pt",                &evSummary_.imet_pt,                 "imet_pt[11]/F");    
+    ///t_->Branch("imet_phi",               &evSummary_.imet_phi,                "imet_phi[11]/F");      
 
     t_->Branch("met_pt",                &evSummary_.met_pt,                 "met_pt/F");
     t_->Branch("met_phi",               &evSummary_.met_phi,                "met_phi/F");
@@ -449,7 +449,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("nalphaS", &evSummary_.nalphaS);
     t_->SetBranchAddress("alphaSWeights", evSummary_.alphaSWeights);
 
-
+	/*
     //mc truth
     t_->SetBranchAddress("nmcparticles",    &evSummary_.nmcparticles);
     t_->SetBranchAddress("mc_px",           evSummary_.mc_px);
@@ -460,7 +460,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("mc_status",       evSummary_.mc_status);
     t_->SetBranchAddress("mc_mom",          evSummary_.mc_mom);
     t_->SetBranchAddress("mc_momidx",       evSummary_.mc_momidx);
-
+	*/
 
     //gen ground state B hadrons
 //    t_->SetBranchAddress("mcbh",          &evSummary_.mcbh   );
@@ -514,16 +514,16 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     */
     t_->SetBranchAddress("mn_passId",  evSummary_.mn_passId);
     t_->SetBranchAddress("mn_passIdLoose",  evSummary_.mn_passIdLoose);
-    t_->SetBranchAddress("mn_passSoftMuon",  evSummary_.mn_passSoftMuon);
+    ///t_->SetBranchAddress("mn_passSoftMuon",  evSummary_.mn_passSoftMuon);
     t_->SetBranchAddress("mn_passIso",  evSummary_.mn_passIso);
     t_->SetBranchAddress("mn_relIso",  evSummary_.mn_relIso);
     t_->SetBranchAddress("mn_trkrelIso",  evSummary_.mn_trkrelIso);
     //    t_->SetBranchAddress("mn_nMatches",                   evSummary_.mn_nMatches);
     //t_->SetBranchAddress("mn_nMatchedStations",           evSummary_.mn_nMatchedStations);
-    t_->SetBranchAddress("mn_validMuonHits",              evSummary_.mn_validMuonHits);
+    ///t_->SetBranchAddress("mn_validMuonHits",              evSummary_.mn_validMuonHits);
     //    t_->SetBranchAddress("mn_innerTrackChi2",             evSummary_.mn_innerTrackChi2);
-    t_->SetBranchAddress("mn_trkLayersWithMeasurement",   evSummary_.mn_trkLayersWithMeasurement);
-    t_->SetBranchAddress("mn_pixelLayersWithMeasurement", evSummary_.mn_pixelLayersWithMeasurement);
+    ///t_->SetBranchAddress("mn_trkLayersWithMeasurement",   evSummary_.mn_trkLayersWithMeasurement);
+    ///t_->SetBranchAddress("mn_pixelLayersWithMeasurement", evSummary_.mn_pixelLayersWithMeasurement);
 
 
     //electron
@@ -533,11 +533,11 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("en_pz",                   evSummary_.en_pz);
     t_->SetBranchAddress("en_en",                   evSummary_.en_en);
     t_->SetBranchAddress("en_id",                   evSummary_.en_id);
-    t_->SetBranchAddress("en_cor_en",                   evSummary_.en_cor_en); 
+    ///t_->SetBranchAddress("en_cor_en",                   evSummary_.en_cor_en); 
     //    t_->SetBranchAddress("en_scale_corr",           evSummary_.en_scale_corr);  
-    t_->SetBranchAddress("en_EtaSC",                evSummary_.en_EtaSC);           
-    t_->SetBranchAddress("en_R9",                   evSummary_.en_R9);    
-    t_->SetBranchAddress("en_gainSeed",                   evSummary_.en_gainSeed); 
+    ///t_->SetBranchAddress("en_EtaSC",                evSummary_.en_EtaSC);           
+    ///t_->SetBranchAddress("en_R9",                   evSummary_.en_R9);    
+    ///t_->SetBranchAddress("en_gainSeed",                   evSummary_.en_gainSeed); 
 
     /*
     t_->SetBranchAddress("en_d0",                   evSummary_.en_d0);
@@ -578,7 +578,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("en_passIdLoose", evSummary_.en_passIdLoose);
     t_->SetBranchAddress("en_passIso", evSummary_.en_passIso);
     t_->SetBranchAddress("en_relIso", evSummary_.en_relIso);
-
+	/*
 #ifdef YEAR_2017
     t_->SetBranchAddress("en_enSigmaValue",       evSummary_.en_enSigmaValue);
     t_->SetBranchAddress("en_enScaleValue",       evSummary_.en_enScaleValue);
@@ -592,7 +592,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("en_enSigmaRhoDown",     evSummary_.en_enSigmaRhoDown);
     t_->SetBranchAddress("en_enSigmaPhiDown",     evSummary_.en_enSigmaPhiDown);
 #endif
-
+	*/
     /* tmp
     //tau
     t_->SetBranchAddress("ta",                      &evSummary_.ta);
@@ -759,8 +759,8 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
 
 
     //met
-    t_->SetBranchAddress("imet_pt",                  &evSummary_.imet_pt);
-    t_->SetBranchAddress("imet_phi",                 &evSummary_.imet_phi); 
+    ///t_->SetBranchAddress("imet_pt",                  &evSummary_.imet_pt);
+    ///t_->SetBranchAddress("imet_phi",                 &evSummary_.imet_phi); 
 
     t_->SetBranchAddress("met_pt",                  &evSummary_.met_pt);
     t_->SetBranchAddress("met_phi",                 &evSummary_.met_phi);
@@ -794,7 +794,7 @@ void DataEvtSummaryHandler::resetStruct()
     evSummary_.event=0;
     evSummary_.mn=0;
     evSummary_.en=0;
-    evSummary_.ta=0;
+    //evSummary_.ta=0;
     evSummary_.jet=0;
     // evSummary_.sv=0;
     ///// evSummary_.pjet=0;

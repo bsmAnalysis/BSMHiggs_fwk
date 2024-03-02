@@ -571,7 +571,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 
        }// EvtHandle.isValid
      }
-     
+     /*    
      //
      // gen particles
      //
@@ -713,7 +713,8 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
        } // bi
        printf("\n\n") ;
      }
-     
+     */ // remove mc particles to save space     
+
      // //
      // // gen jets
      // //
@@ -1056,10 +1057,11 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 
 
 	 bool passId;
-	 //if(is2017 || is2018) passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::Fall17v2);
+	 //if(is2017 || is2018) passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUt
 	 //else passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::ICHEP16Cut);
-	 if(is2016Legacy || is2017 || is2018) passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::Fall17v2);
-	 else passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::ICHEP16Cut);
+	 //if(is2016Legacy || is2017 || is2018) 
+	 passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::Fall17v2);
+	 //else passId=patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::ICHEP16Cut);
 	 if(!passId) continue;
 
 	 ev.mn_px[ev.mn] = mu.px();
@@ -1093,26 +1095,21 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	 ev.mn_nMatchedStations[ev.mn]           = mu.numberOfMatchedStations();
 	 ev.mn_validMuonHits[ev.mn]              = mu.isGlobalMuon() ? mu.globalTrack().hitPattern().numberOfValidMuonHits() : 0.;
 	 ev.mn_innerTrackChi2[ev.mn]             = mu.isTrackerMuon() ? mu.innerTrack().normalizedChi2() : 0.;
-	 */
+	 */ /*
 	 ev.mn_validMuonHits[ev.mn]              = mu.isGlobalMuon() ? mu.globalTrack()->hitPattern().numberOfValidMuonHits() : 0.;    
 	 ev.mn_trkLayersWithMeasurement[ev.mn]   = mu.isTrackerMuon() ? mu.innerTrack()->hitPattern().trackerLayersWithMeasurement() : 0.;
 	 ev.mn_pixelLayersWithMeasurement[ev.mn] = mu.isTrackerMuon() ? mu.innerTrack()->hitPattern().pixelLayersWithMeasurement() : 0.;
-
+	 */
 //	 bool passId(true);
 
          float relIso_mu = -1, trkrelIso = -1;
 	 if(is2016Legacy || is2017 || is2018){
 	   ev.mn_passId[ev.mn]  = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::Fall17v2);
 	   ev.mn_passIdLoose[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Medium, patUtils::CutVersion::Fall17v2);
-	   ev.mn_passSoftMuon[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Soft, patUtils::CutVersion::Fall17v2);
+	//   ev.mn_passSoftMuon[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Soft, patUtils::CutVersion::Fall17v2);
 	   ev.mn_passIso[ev.mn] = patUtils::passIso(mu, patUtils::llvvMuonIso::Tight, patUtils::CutVersion::Fall17v2, &relIso_mu, &trkrelIso);
 	 }
-	 else{//2016
-	   ev.mn_passId[ev.mn]  = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Tight, patUtils::CutVersion::ICHEP16Cut);
-	   ev.mn_passIdLoose[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Loose, patUtils::CutVersion::ICHEP16Cut);
-	   ev.mn_passSoftMuon[ev.mn] = patUtils::passId(mu, vtx[0], patUtils::llvvMuonId::Soft, patUtils::CutVersion::ICHEP16Cut);
-	   ev.mn_passIso[ev.mn] = patUtils::passIso(mu, patUtils::llvvMuonIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_mu, &trkrelIso);
-	 }
+
          ev.mn_relIso[ev.mn] = relIso_mu;
          ev.mn_trkrelIso[ev.mn] = trkrelIso;
 
@@ -1150,7 +1147,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	 bool passId;
 	 if(is2018) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v2, rho);
 	 else if(is2017 || is2016Legacy) passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v1, rho);
-	 else passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut, rho);
+	 else passId=patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v1, rho);
 	 if(!passId) continue;
 
 	 // Kinematics
@@ -1161,11 +1158,11 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	 ev.en_id[ev.en] = 11*el.charge();
 
 	 //	 float aeta = std::abs(el.superCluster()->eta());
-	 float cor_en = el.correctedEcalEnergy() ;           
+	/* float cor_en = el.correctedEcalEnergy() ;           
 
 	 ev.en_cor_en[ev.en] = cor_en;
 	 ev.en_EtaSC[ev.en] = el.superCluster()->eta(); 
-	 ev.en_R9[ev.en] = el.full5x5_r9();
+	 ev.en_R9[ev.en] = el.full5x5_r9(); */
 
 	 /*
 	 //Isolation
@@ -1184,23 +1181,20 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::Fall17v1, rho);
 	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::Fall17v1, rho);
 	   ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::Fall17v1, &relIso_el, is2016Legacy<<0|is2016<<1|is2017<<2|is2018<<3, rho) ;
-	 } else{ //2016
-	   ev.en_passId[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Tight, patUtils::CutVersion::ICHEP16Cut, rho);
-	   ev.en_passIdLoose[ev.en] = patUtils::passId(el, vtx[0], patUtils::llvvElecId::Loose, patUtils::CutVersion::ICHEP16Cut, rho);
-	   ev.en_passIso[ev.en] = patUtils::passIso(el, patUtils::llvvElecIso::Tight, patUtils::CutVersion::ICHEP16Cut, &relIso_el, is2016Legacy<<0|is2016<<1|is2017<<2|is2018<<3, rho) ;
-	 }
-         ev.en_relIso[ev.en] = relIso_el;
+	 } 
 
+         ev.en_relIso[ev.en] = relIso_el;
+	/*
 	 const EcalRecHitCollection* recHits = (el.isEB()) ? recHitCollectionEBHandle.product() : recHitCollectionEEHandle.product();
 	 unsigned int gainSeed = patUtils::GainSeed(el,recHits);
 
 	 ev.en_gainSeed[ev.en] = gainSeed;
-
+	
 #ifdef YEAR_2017
    ev.en_enSigmaValue[ev.en] = el.userFloat("energySigmaValue"); ev.en_enScaleValue[ev.en] = el.userFloat("energyScaleValue");
    ev.en_enScaleStatUp[ev.en] = el.userFloat("energyScaleStatUp"); ev.en_enScaleStatDown[ev.en] = el.userFloat("energyScaleStatDown"); ev.en_enScaleSystUp[ev.en] = el.userFloat("energyScaleSystUp"); ev.en_enScaleSystDown[ev.en] = el.userFloat("energyScaleSystDown"); ev.en_enScaleGainUp[ev.en] = el.userFloat("energyScaleGainUp"); ev.en_enScaleGainDown[ev.en] = el.userFloat("energyScaleGainDown"); ev.en_enSigmaRhoUp[ev.en] = el.userFloat("energySigmaRhoUp"); ev.en_enSigmaRhoDown[ev.en] = el.userFloat("energySigmaRhoDown"); ev.en_enSigmaPhiDown[ev.en] = el.userFloat("energySigmaPhiDown");
 #endif
-
+	*/
 	 /*
 	 if(isMC_){
 	   double sigma= eScaler_.getSmearingSigma(event.eventAuxiliary().run(),el.isEB(),el.full5x5_r9(), el.superCluster()->eta(), el.et(),gainSeed,0,0);
@@ -1560,7 +1554,8 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
      pat::MET met = mets[0];
 
      //       const pat::MET &met = mets.front();
-
+	
+	/*
        //MET CORRection level
        pat::MET::METCorrectionLevel metcor = pat::MET::METCorrectionLevel::Type1XY;
        //recompute MET with variation
@@ -1587,12 +1582,12 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
        ev.imet_phi[9] = met.shiftedP4(pat::MET::METUncertainty::ElectronEnUp      , metcor).phi(); 
        ev.imet_pt[10] = met.shiftedP4(pat::MET::METUncertainty::ElectronEnDown , metcor).pt();
        ev.imet_phi[10] = met.shiftedP4(pat::MET::METUncertainty::ElectronEnDown , metcor).phi();
-
+	*/
        //PF type-1 ETmiss
        ev.met_pt = met.pt();
        ev.met_phi = met.phi();
        ev.met_sumMET = met.sumEt();
-
+	/*
        // raw PF ETmiss
        ev.rawpfmet_pt = met.uncorPt();
        ev.rawpfmet_phi = met.uncorPhi();
@@ -1602,6 +1597,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
        ev.rawcalomet_pt = met.caloMETPt();
        ev.rawcalomet_phi = met.caloMETPhi();
        ev.rawcalomet_sumMET = met.caloMETSumEt();
+	*/
        /*
        // type1 PF MET but excluding HF
        edm::Handle<pat::METCollection> metsNoHF;
