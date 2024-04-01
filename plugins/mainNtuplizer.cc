@@ -354,8 +354,10 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   is2016Legacy 	= is2016Legacy || is2016Signal;
   is2016PreVFP  = string(proc_.c_str()).find("2016_preVFP") != string::npos;
   is2016PostVFP = ( is2016 && !(is2016PreVFP) );
-  
-  printf("Definition of plots\n");
+
+  if ( verbose_ ) {
+  	printf("Definition of plots\n");
+   }
   h_nevents = fs->make< TH1F>("nevents",";nevents; nevents",1,-0.5,0.5);
   h_negevents = fs->make< TH1F>("n_negevents",";n_negevents; n_negevents",1,-0.5,0.5);
   h_posevents = fs->make< TH1F>("n_posevents",";n_posevents; n_posevents",1,-0.5,0.5);
@@ -571,7 +573,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 
        }// EvtHandle.isValid
      }
-     /*    
+         
      //
      // gen particles
      //
@@ -712,8 +714,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	 bi++;
        } // bi
        printf("\n\n") ;
-     }
-     */ // remove mc particles to save space     
+     }  
 
      // //
      // // gen jets
@@ -780,7 +781,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
       // btag_dsc = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
       // DeepJet
       btag_dsc = j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
-    
+
       int partonFlavor = j.partonFlavour();
       if( fabs(partonFlavor)==5 ){
         h2_BTaggingEff_Denom_b->Fill(j.pt(), j.eta());
@@ -1257,30 +1258,31 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	 ev.jet_en[ev.jet] = j.energy(); //correctedP4(0).energy();
 
 	 ev.jet_btag0[ev.jet] = j.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-
-	 double btag1=-1;
+	
+	double btag1=-1.;
 	if(is2018){
-	   btag1=j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
 	   // btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
 	   // nCSVLtags += (btag1>0.1208);
+	   btag1 = j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
 	   nDeepLtags += (btag1>0.0490);
 	}
 	else if(is2017) {
             // btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
 	    // nCSVLtags += (btag1>0.1355);  
-	    btag1=j.bDiscriminator("pfDeepFlabourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
-	    nDeepLtags += (btag1>0.0532);  
+	    btag1 = j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
+	    nDeepLtags += (btag1>0.0532);
 	 //	   ev.jet_btag1[ev.jet] = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
-	 } else if(is2016PreVFP){
-	   //btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
-	   //nCSVLtags += (btag1>0.2027);   //preVFP
-	   btag1=j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
-	   nDeepLtags += (btag1>0.0508);   
+	 } 
+	else if(is2016PreVFP){
+	    //btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
+	    //nCSVLtags += (btag1>0.2027);   //preVFP
+	    btag1 = j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
+	    nDeepLtags += (btag1>0.0508);   
 	 }
 	 else if(is2016PostVFP){    //postVFP
 	   //btag1=j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
 	   //nCSVLtags += (btag1>0.1918);  
-	   btag1=j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
+	   btag1 = j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
            nDeepLtags += (btag1>0.0480);  
 	 }
 	 // ev.jet_btag1[ev.jet] = j.bDiscriminator("deepFlavourJetTags:probb") + j.bDiscriminator("deepFlavourJetTags:probbb");
@@ -1294,13 +1296,12 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	 // ev.jet_btag8[ev.jet] = j.bDiscriminator("pfCombinedSecondaryVertexV2BJetTags");
 	 // ev.jet_btag9[ev.jet] = j.bDiscriminator("pfCombinedSecondaryVertexSoftLeptonBJetTags");
 	 // ev.jet_btag10[ev.jet] = j.bDiscriminator("pfCombinedMVABJetTags");
-
 	 ev.jet_btag1[ev.jet] = btag1;
 
 	 ev.jet_mass[ev.jet] = j.mass(); //correctedP4(0).M();
-	 ev.jet_area[ev.jet] = j.jetArea();
-	 ev.jet_pu[ev.jet] = j.pileup();
-	 ev.jet_puId[ev.jet] = j.userFloat("pileupJetId:fullDiscriminant");
+	 //ev.jet_area[ev.jet] = j.jetArea();
+	 //ev.jet_pu[ev.jet] = j.pileup();
+	 //ev.jet_puId[ev.jet] = j.userFloat("pileupJetId:fullDiscriminant");
 
 	 if ( verbose_ ) {
             printf("    %2d : pt=%6.1f, eta=%7.3f, phi=%7.3f : ID=%s%s, bCSV=%7.3f, PUID=%7.3f\n",
@@ -1312,9 +1313,17 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
              ) ;
 
 	    printf("Uncorrected pt=%6.1f\n",j.correctedJet("Uncorrected").pt() ); // Uncorrected pt
+
+	    //std::cout<<"is2017 "<<is2017<<std::endl;
+	    //std::cout<<"is2018 "<<is2018<<std::endl;
+  	    //std::cout<<"is2016PreVFP "<<is2016PreVFP<<std::endl;
+	    //std::cout<<"is2016PostVFP "<<is2016PostVFP<<std::endl;
+	    //std::cout<<"#btags "<<nDeepLtags<<std::endl;
+	  
+	    printf("btag=%7.4f\n", btag1);
          }
 	 if(patUtils::passPFJetID("Loose", j, (is2017 << 0) | (is2018 << 1)))  ijet2++;
-
+	 /*remove to reduce space
 	 ev.jet_mother_id[ev.jet] = 0;
 	 
 	 ev.jet_parton_px[ev.jet] = 0.; 
@@ -1325,7 +1334,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	 ev.jet_partonFlavour[ev.jet] = 0;
 	 ev.jet_hadronFlavour[ev.jet] = 0;
 	 ev.jet_genpt[ev.jet] = 0.;
-	 
+	
 	 if (isMC_) {
 
 	   const reco::GenParticle *pJet = j.genParton();
@@ -1348,12 +1357,12 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	   if(gJet) ev.jet_genpt[ev.jet] = gJet->pt();
 	   else     ev.jet_genpt[ev.jet] = 0.;
 	 } // isMC_
-	 
+	 */
 	 ev.jet++;
          ijet++ ;
        }	
        //request at least 2 jets in the event
-       if((ijet2<2)) return;
+       //-- if((ijet2<2)) return; //-- remove for ak8 analysis
        //if(nCSVLtags<2) return;
        //
        // jet selection (AK8Jets)
@@ -1446,20 +1455,20 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	
 	 for (int k=0; k<2; k++) { // store up to 2 subjets for each AK8 jet 
 		ev.fjet_subjets_btag[ev.fjet][k] = 0.;
-		ev.fjet_subjets_partonFlavour[ev.fjet][k] = 0.;
-		ev.fjet_subjets_hadronFlavour[ev.fjet][k] = 0.;
+		//ev.fjet_subjets_partonFlavour[ev.fjet][k] = 0.;
+		//ev.fjet_subjets_hadronFlavour[ev.fjet][k] = 0.;
 	}
 
 	
 	if(nSub >0 ){
 		ev.fjet_subjets_btag[ev.fjet][0] = (j.subjets(subjet_label))[0]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets(subjet_label))[0]->bDiscriminator("pfDeepCSVJetTags:probbb");
-     		ev.fjet_subjets_partonFlavour[ev.fjet][0] = (j.subjets("SoftDropPuppi"))[0]->partonFlavour();
-     	 	ev.fjet_subjets_hadronFlavour[ev.fjet][0] = (j.subjets("SoftDropPuppi"))[0]->hadronFlavour();
+     		//ev.fjet_subjets_partonFlavour[ev.fjet][0] = (j.subjets("SoftDropPuppi"))[0]->partonFlavour();
+     	 	//ev.fjet_subjets_hadronFlavour[ev.fjet][0] = (j.subjets("SoftDropPuppi"))[0]->hadronFlavour();
      	 }
 	if(nSub >1 ){
 		ev.fjet_subjets_btag[ev.fjet][1] = (j.subjets(subjet_label))[1]->bDiscriminator("pfDeepCSVJetTags:probb") + (j.subjets(subjet_label))[1]->bDiscriminator("pfDeepCSVJetTags:probbb");
-		ev.fjet_subjets_partonFlavour[ev.fjet][1] = (j.subjets("SoftDropPuppi"))[1]->partonFlavour();
-		ev.fjet_subjets_hadronFlavour[ev.fjet][1] = (j.subjets("SoftDropPuppi"))[1]->hadronFlavour();
+		//ev.fjet_subjets_partonFlavour[ev.fjet][1] = (j.subjets("SoftDropPuppi"))[1]->partonFlavour();
+		//ev.fjet_subjets_hadronFlavour[ev.fjet][1] = (j.subjets("SoftDropPuppi"))[1]->hadronFlavour();
 	 }
 	
    	 std::vector<TLorentzVector> softdrop_subjets; 

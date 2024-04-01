@@ -41,10 +41,12 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     */
 
     //generator level info
+     
     t_->Branch("ngenITpu",      &evSummary_.ngenITpu,       "ngenITpu/I");
     t_->Branch("ngenOOTpu",     &evSummary_.ngenOOTpu,      "ngenOOTpu/I");
     t_->Branch("ngenOOTpum1",   &evSummary_.ngenOOTpum1,    "ngenOOTpum1/I");
     t_->Branch("ngenTruepu",    &evSummary_.ngenTruepu,     "ngenTruepu/I");
+    /*r
     t_->Branch("pthat",         &evSummary_.pthat,          "pthat/F");
     t_->Branch("genWeight",     &evSummary_.genWeight,      "genWeight/F");
     t_->Branch("qscale",        &evSummary_.qscale,         "qscale/F");
@@ -52,6 +54,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("x2",            &evSummary_.x2,             "x2/F");
     t_->Branch("id1",           &evSummary_.id1,            "id1/I");
     t_->Branch("id2",           &evSummary_.id2,            "id2/I");
+	*/
     t_->Branch("lheHt",      &evSummary_.lheHt,       "lheHt/F");     
     t_->Branch("lheNJets",      &evSummary_.lheNJets,       "lheNJets/I");
     /*
@@ -70,7 +73,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("pdfWeights", evSummary_.pdfWeights, "pdfWeights[npdfs]/F");
     t_->Branch("nalphaS", &evSummary_.nalphaS, "nalphaS/I");
     t_->Branch("alphaSWeights", evSummary_.alphaSWeights, "alphaSWeights[nalphaS]/F");
-    /*
+    
     //mc truth
     t_->Branch("nmcparticles",  &evSummary_.nmcparticles,   "nmcparticles/I");
     t_->Branch("mc_px",         evSummary_.mc_px,           "mc_px[nmcparticles]/F");
@@ -81,7 +84,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("mc_status",     evSummary_.mc_status,       "mc_status[nmcparticles]/I");
     t_->Branch("mc_mom",        evSummary_.mc_mom,          "mc_mom[nmcparticles]/I");
     t_->Branch("mc_momidx",     evSummary_.mc_momidx,       "mc_momidx[nmcparticles]/I");
-	*/
+	
     //gen ground state B hadrons
 //    t_->Branch("mcbh",          &evSummary_.mcbh,           "mcbh/I");
 //    t_->Branch("mcbh_px",       evSummary_.mcbh_px,         "mcbh_px[mcbh]/F");
@@ -256,11 +259,14 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("jet_btag10",            evSummary_.jet_btag10,              "jet_btag10[jet]/F");
     */
     t_->Branch("jet_mass",              evSummary_.jet_mass,                "jet_mass[jet]/F");
+    /* ///
     t_->Branch("jet_area",              evSummary_.jet_area,                "jet_area[jet]/F");
     t_->Branch("jet_pu",                evSummary_.jet_pu,                  "jet_pu[jet]/F");
     t_->Branch("jet_puId",              evSummary_.jet_puId,                "jet_puId[jet]/F");
+	*/
     t_->Branch("jet_PFLoose",           evSummary_.jet_PFLoose,             "jet_PFLoose[jet]/O");
     t_->Branch("jet_PFTight",           evSummary_.jet_PFTight,             "jet_PFTight[jet]/O");
+    /*
     t_->Branch("jet_partonFlavour",     evSummary_.jet_partonFlavour,       "jet_partonFlavour[jet]/I");
     t_->Branch("jet_hadronFlavour",     evSummary_.jet_hadronFlavour,       "jet_hadronFlavour[jet]/I");
     t_->Branch("jet_mother_id",         evSummary_.jet_mother_id,           "jet_mother_id[jet]/I");
@@ -269,7 +275,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("jet_parton_pz",         evSummary_.jet_parton_pz,        "jet_parton_pz[jet]/F");
     t_->Branch("jet_parton_en",         evSummary_.jet_parton_en,        "jet_parton_en[jet]/F");
     t_->Branch("jet_genpt",             evSummary_.jet_genpt,               "jet_genpt[jet]/F");
-    
+    */
 
     /*
     //sv : Inclusive Secondary Vertices from slimmedSecondaryVertices
@@ -321,7 +327,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
 
 
     t_->Branch("fjet_genpt",              evSummary_.fjet_genpt,              "fjet_genpt[fjet]/F");
-    t_->Branch("fjet_prunedM",            evSummary_.fjet_prunedM,            "fjet_prunedM[fjet]/F");
+    ///t_->Branch("fjet_prunedM",            evSummary_.fjet_prunedM,            "fjet_prunedM[fjet]/F");
     t_->Branch("fjet_softdropM",          evSummary_.fjet_softdropM,          "fjet_softdropM[fjet]/F"); 
     //t_->Branch("fjet_trimmeen_dM",         evSummary_.fjet_trimmedM,           "fjet_trimmedM[fjet]/F");
     //t_->Branch("fjet_filteredM",        evSummary_.fjet_filteredM,          "fjet_filteredM[fjet]/F");
@@ -354,8 +360,8 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("fjet_subjets_pz",         &evSummary_.fjet_subjets_pz,        "fjet_subjets_pz[fjet][2]/F"); 
     t_->Branch("fjet_subjets_en",         &evSummary_.fjet_subjets_en,        "fjet_subjets_en[fjet][2]/F");
     t_->Branch("fjet_subjets_btag",       &evSummary_.fjet_subjets_btag,      "fjet_subjets_btag[fjet][2]/F"); 
-    t_->Branch("fjet_subjets_partonFlavour",       &evSummary_.fjet_subjets_partonFlavour,      "fjet_subjets_partonFlavour[fjet][2]/I");
-    t_->Branch("fjet_subjets_hadronFlavour",       &evSummary_.fjet_subjets_hadronFlavour,      "fjet_subjets_hadronFlavour[fjet][2]/I");
+    ///t_->Branch("fjet_subjets_partonFlavour",       &evSummary_.fjet_subjets_partonFlavour,      "fjet_subjets_partonFlavour[fjet][2]/I");
+    ///t_->Branch("fjet_subjets_hadronFlavour",       &evSummary_.fjet_subjets_hadronFlavour,      "fjet_subjets_hadronFlavour[fjet][2]/I");
 
 
 
@@ -423,6 +429,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("ngenOOTpu",       &evSummary_.ngenOOTpu);
     t_->SetBranchAddress("ngenOOTpum1",     &evSummary_.ngenOOTpum1);
     t_->SetBranchAddress("ngenTruepu",      &evSummary_.ngenTruepu);
+    /*
     t_->SetBranchAddress("pthat",           &evSummary_.pthat);
     t_->SetBranchAddress("genWeight",       &evSummary_.genWeight);
     t_->SetBranchAddress("qscale",          &evSummary_.qscale);
@@ -430,6 +437,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("x2",              &evSummary_.x2);
     t_->SetBranchAddress("id1",             &evSummary_.id1);
     t_->SetBranchAddress("id2",             &evSummary_.id2);
+	*/
     t_->SetBranchAddress("lheHt",           &evSummary_.lheHt);  
     t_->SetBranchAddress("lheNJets",        &evSummary_.lheNJets);
     /*
@@ -449,7 +457,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("nalphaS", &evSummary_.nalphaS);
     t_->SetBranchAddress("alphaSWeights", evSummary_.alphaSWeights);
 
-	/*
+	
     //mc truth
     t_->SetBranchAddress("nmcparticles",    &evSummary_.nmcparticles);
     t_->SetBranchAddress("mc_px",           evSummary_.mc_px);
@@ -460,7 +468,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("mc_status",       evSummary_.mc_status);
     t_->SetBranchAddress("mc_mom",          evSummary_.mc_mom);
     t_->SetBranchAddress("mc_momidx",       evSummary_.mc_momidx);
-	*/
+	
 
     //gen ground state B hadrons
 //    t_->SetBranchAddress("mcbh",          &evSummary_.mcbh   );
@@ -639,11 +647,14 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("jet_btag10",               evSummary_.jet_btag10);
     */
     t_->SetBranchAddress("jet_mass",                evSummary_.jet_mass);
+    /*///
     t_->SetBranchAddress("jet_area",                evSummary_.jet_area);
     t_->SetBranchAddress("jet_pu",                  evSummary_.jet_pu);
     t_->SetBranchAddress("jet_puId",                evSummary_.jet_puId);
+	*/
     t_->SetBranchAddress("jet_PFLoose",             evSummary_.jet_PFLoose);
     t_->SetBranchAddress("jet_PFTight",             evSummary_.jet_PFTight);
+    /*
     t_->SetBranchAddress("jet_mother_id",           evSummary_.jet_mother_id);
     t_->SetBranchAddress("jet_partonFlavour",       evSummary_.jet_partonFlavour);
     t_->SetBranchAddress("jet_hadronFlavour",       evSummary_.jet_hadronFlavour);
@@ -652,6 +663,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("jet_parton_pz",           evSummary_.jet_parton_pz);
     t_->SetBranchAddress("jet_parton_en",           evSummary_.jet_parton_en);
     t_->SetBranchAddress("jet_genpt",               evSummary_.jet_genpt);
+	*/
 
     /*   
     //sv : Inclusive Secondary Vertices from slimmedSecondaryVertices
