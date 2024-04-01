@@ -3,7 +3,9 @@ import FWCore.ParameterSet.Config as cms
 from UserCode.bsmhiggs_fwk.mainNtuplizer_cfi import *
 
 #from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
+#from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
 from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection 
 
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
 
@@ -32,6 +34,14 @@ process.options   = cms.untracked.PSet(
    allowUnscheduled = cms.untracked.bool(True),
    SkipEvent = cms.untracked.vstring('ProductNotFound')
 )
+
+updateJetCollection(                                                                                                                                                                              
+   process,                                                                                                                                                                                       
+   jetSource = cms.InputTag('slimmedJets'),                                                                                                                                                       
+   labelName = 'UpdatedJEC',                                                                                                                                                                      
+   jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')  # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual orrections (always set to 1)
+)     
+
 
 #declare producer for ecalBadCalibReducedMINIAODFilter
 #https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2
@@ -85,7 +95,8 @@ process.mainNtuplizer.isMC = cms.bool(False)
 process.mainNtuplizer.dtag = cms.string("DATA13TeV_SingleElectron_2018B")
 process.mainNtuplizer.xsec = cms.double(1.0)
 process.mainNtuplizer.mctruthmode = cms.int32(0)
-process.mainNtuplizer.verbose = cms.bool(False)
+process.mainNtuplizer.verbose = cms.bool(True)
+process.mainNtuplizer.jetsTag = cms.InputTag('updatedPatJetsUpdatedJEC')
 #process.mainNtuplizer.verbose = cms.bool(True)
 #process.mainNtuplizer.jetsTag = cms.InputTag('selectedUpdatedPatJets')
 #process.mainNtuplizer.verticesTag = cms.InputTag("offlineSlimmedPrimaryVertices")
@@ -97,6 +108,7 @@ process.mainNtuplizer.verbose = cms.bool(False)
 process.mainNtuplizer.metFilterBitsTag = cms.InputTag('TriggerResults','','HLT')
 #process.mainNtuplizer.metsTag = cms.InputTag("slimmedMETsModifiedMET","","bsmAnalysis")
 #process.mainNtuplizer.bits = cms.InputTag('TriggerResultsTest','','HLT')
+process.mainNtuplizer.Legacy2016 = cms.bool(False)
 
 process.source = cms.Source("PoolSource",
              fileNames = cms.untracked.vstring("/store/data/Run2018C/EGamma/MINIAOD/17Sep2018-v1/70000/25C41660-D0D7-CF46-A544-D9DE8231BA59.root"),
@@ -111,7 +123,7 @@ process.source = cms.Source("PoolSource",
 
 process.TFileService = cms.Service("TFileService",
 #			fileName = cms.string("analysis_MC_2J_woFJ.root")
-			fileName = cms.string("analysisMC.root")
+			fileName = cms.string("analysis_data2018.root")
 )
 
 process.dump = cms.EDAnalyzer("EventContentAnalyzer")  
@@ -122,6 +134,8 @@ process.dump = cms.EDAnalyzer("EventContentAnalyzer")
 #process.p = cms.Path(process.dump)
 process.p = cms.Path( 
     process.ecalBadCalibReducedMINIAODFilter *
+    process.patJetCorrFactorsUpdatedJEC *  
+    process.updatedPatJetsUpdatedJEC *
 #    process.fullPatMetSequenceTEST *
     process.fullPatMetSequence *
 #    process.fullPatMetSequenceModifiedMET *

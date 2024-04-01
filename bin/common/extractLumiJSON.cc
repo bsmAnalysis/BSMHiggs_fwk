@@ -8,7 +8,7 @@
 
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
+#include "FWCore/PythonParameterSet/interface/MakePyBind11ParameterSets.h"
 
 #include "DataFormats/FWLite/interface/LuminosityBlock.h"
 #include "DataFormats/FWLite/interface/Run.h"
@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
   AutoLibraryLoader::enable();
   
   // configure the process
-  const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
+  const edm::ParameterSet &runProcess = edm::cmspybind11::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
   bool isMC = runProcess.getParameter<bool>("isMC");
   if(isMC) return 0;
 

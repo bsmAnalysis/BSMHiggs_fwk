@@ -2,19 +2,19 @@
 # Note: this script is designed to be run under the folder: test/haa4b
 
 echo "Please select what you want to do:"
-echo "1. Switch 2016 to 2017   2. Switch 2017 to 2016"
+echo "1. Switch CMSSW_80X to CMSSW_94X(_10X)   2. Switch CMSSW_94X(_10X) to CMSSW_80X"
 read select
 
 if [ ${select} -eq 1 ]
 then
-    echo "Switching 2016 to 2017..."
+    echo "Switching CMSSW_80X to CMSSW_94X(_10X)..."
     com='/#define YEAR_2017/{s/.*YEAR_2017/#define YEAR_2017/g}'
 elif [ ${select} -eq 2 ]
 then
-    echo "Switching 2017 to 2016..."
+    echo "Switching CMSSW_94X(_10X) to CMSSW_80X..."
     com='s/#define YEAR_2017/\/\/#define YEAR_2017/g'
 else
-    echo "Input invalid, exsting..."
+    echo "Input invalid, exiting..."
     exit 0
 fi
 

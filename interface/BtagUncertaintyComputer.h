@@ -66,6 +66,7 @@ BTagSFUtil::~BTagSFUtil() {
 
 void BTagSFUtil::SetSeed( int seed ) {
 
+  if ( rand_ != 0x0 ) delete rand_ ; // owen: sept 26, 2020: plug memory leak.
   rand_ = new TRandom3(seed);
 
 }

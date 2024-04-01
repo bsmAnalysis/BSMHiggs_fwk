@@ -240,7 +240,7 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
     config_file.write('config.JobType.pluginName = \'Analysis\'\n')
     config_file.write('config.JobType.psetName = "'+Jobs_CRABcfgFile+'"\n')
 #    config_file.write('config.JobType.scriptExe = "%s"\n' % exePath)
-    config_file.write('config.JobType.sendPythonFolder = True\n')
+#    config_file.write('config.JobType.sendPythonFolder = True\n')
     config_file.write('config.JobType.inputFiles = ["'+os.path.expanduser(Jobs_ProxyDir+"/x509_proxy")+'"]\n')
 #, os.environ["CMSSW_BASE"]+"/bin/"+os.environ["SCRAM_ARCH"]+"/'+Jobs_CRABexe+'","'+fwkPath'"]\n')
     config_file.write('config.JobType.outputFiles = ["analysis.root"]\n')
@@ -257,12 +257,8 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
     if Jobs_CRABLFN == '':
         config_file.write('#config.Data.outLFNDirBase = \'/store/user/<username>/debug\'\n')
     else:
-        if(commands.getstatusoutput("whoami")[1]=='hwei'):
-          config_file.write('config.Data.outLFNDirBase = \'/store/user/hua/'+Jobs_CRABLFN+'\'\n')
-          print 'config.Data.outLFNDirBase = \'/store/user/hua/'+Jobs_CRABLFN+'\'\n'
-        else:
-          config_file.write('config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n')
-          print 'config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n'
+        config_file.write('config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n')
+#          print 'config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n'
     config_file.write('\n')
     config_file.write('config.Site.storageSite = \''+Jobs_CRABStorageSite+'\'\n')
     config_file.write('config.Site.whitelist = [\'T2_CH_CERN\',\'T2_US_UCSD\',\'T3_US_FNALLPC\']')
@@ -334,11 +330,16 @@ def CreateTheCmdFile():
         cmd_file.write('error                   = $(log).err\n')
         cmd_file.write('log                     = $(log).out\n')
         cmd_file.write('request_cpus            = 2\n')
-        cmd_file.write('+JobFlavour             = "microcentury"\n')
+        #cmd_file.write('+JobFlavour             = "microcentury"\n')
+        cmd_file.write('+JobFlavour             = "workday"\n')
 	cmd_file.write('queue exe,log from ' + HtCondor_Sub)
     else:
         cmd_file.write(CopyRights + '\n')
     cmd_file.close()
+    #-- owen: check if HtCondor_Sub already exists.  If it does, move it out of the way to avoid duplicate entries.
+    if os.path.exists( HtCondor_Sub ):
+       print("\n\n Found an existing HtCondor_Sub file with name " + HtCondor_Sub + "\n\n Moving it out of the way.\n\n")
+       os.rename( HtCondor_Sub, HtCondor_Sub+"-old" )
 
 def AddJobToCmdFile():
     global subTool

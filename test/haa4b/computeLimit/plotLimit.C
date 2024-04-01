@@ -42,7 +42,7 @@ TGraph* getLimitGraph(TTree* tree, float Quantil){
      if(TquantExp==Quantil){
         //printf("Quantil = %f - mH=%f --> %f\n",TquantExp,Tmh,Tlimit);
         //
-  //      if(Tmh>1000)continue;
+        if(Tmh<15) continue;
         toReturn->SetPoint(i, Tmh, Tlimit);
         i++;
      }
@@ -150,9 +150,10 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   //make TH Cross-sections
    string suffix = outputDir;
 
-   Double_t mA[8]={12.,15.,20.,25.,30.,40.,50.,60.};
+   Double_t mA[7]={15.,20.,25.,30.,40.,50.,60.};
+//   Double_t mA[8]={20.,25.,30.,40.,50.,60.};
 
-   TGraph* THXSec = new TGraph(999); int N=8;
+   TGraph* THXSec = new TGraph(999); int N=7;
    for (int i=0; i<N; i++) {
      THXSec->SetPoint(i,mA[i],1.37);
    }
@@ -199,7 +200,8 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   TCanvas* c = new TCanvas("c", "c",1000,700);
   c->SetGridx();
   c->SetGridy();
-  TH1F* framework = new TH1F(inputs.Data(),"Graph",1,10,60); //3000);
+//  TH1F* framework = new TH1F(inputs.Data(),"Graph",1,12,60); //3000);
+  TH1F* framework = new TH1F(inputs.Data(),"Graph",1,15,60); //3000);
   framework->SetStats(false);
   framework->SetTitle("");
   framework->GetXaxis()->SetTitle("M_{a} [GeV]");
@@ -207,38 +209,40 @@ void plotLimit(string outputDir="./", TString inputs="", TString inputXSec="", b
   if(strengthLimit){
     framework->GetYaxis()->SetTitle("#mu = #sigma_{95%} / #sigma_{th}");
     if(logY){
-      framework->GetYaxis()->SetRangeUser(1E-1,1E3);
+      framework->GetYaxis()->SetRangeUser(1E-2,1E2);
       c->SetLogy(true);
       outputDir += "log/";
     }else{
-      framework->GetYaxis()->SetRangeUser(1E-2,5);
+      framework->GetYaxis()->SetRangeUser(0,4.0);
+      //framework->GetYaxis()->SetRangeUser(0,2.5);
       c->SetLogy(false);
       outputDir += "linear/";
     }
   }else{
     framework->GetYaxis()->SetTitle((string("#sigma_{95%} (") + prod +") x BR (pb)").c_str());
     if(logY){
-      framework->GetYaxis()->SetRangeUser(1E-1,1E3);
+      framework->GetYaxis()->SetRangeUser(1E-2,1E2);
       c->SetLogy(true);
       outputDir += "log/";
     }else{
-      framework->GetYaxis()->SetRangeUser(1E-2,5);
+      framework->GetYaxis()->SetRangeUser(0,4.0);
+      //framework->GetYaxis()->SetRangeUser(0,2.5);
       c->SetLogy(false);
       outputDir += "linear/";
     }
   }
   system(string("mkdir -p " + outputDir).c_str());
   framework->GetXaxis()->SetLabelOffset(0.007);
-  framework->GetXaxis()->SetLabelSize(0.03);
-  framework->GetXaxis()->SetTitleOffset(1.0);
+  framework->GetXaxis()->SetLabelSize(0.045);
+  framework->GetXaxis()->SetTitleOffset(1.1);
   framework->GetXaxis()->SetTitleFont(42);
-  framework->GetXaxis()->SetTitleSize(0.035);
+  framework->GetXaxis()->SetTitleSize(0.05);
   framework->GetYaxis()->SetLabelFont(42);
   framework->GetYaxis()->SetLabelOffset(0.007);
-  framework->GetYaxis()->SetLabelSize(0.03);
-  framework->GetYaxis()->SetTitleOffset(1.3);
+  framework->GetYaxis()->SetLabelSize(0.045);
+  framework->GetYaxis()->SetTitleOffset(1.1);
   framework->GetYaxis()->SetTitleFont(42);
-  framework->GetYaxis()->SetTitleSize(0.035);
+  framework->GetYaxis()->SetTitleSize(0.05);
   framework->Draw();
 
   

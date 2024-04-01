@@ -1,22 +1,92 @@
-# Installation for 102X (2018) 
+# Installation for CMSSW_10_6_30 (latest UL/2016,2017,2018/twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/PdmVRun2LegacyAnalysis )
 ```bash
-export SCRAM_ARCH=slc6_amd64_gcc700
-#or
-setenv  SCRAM_ARCH slc6_amd64_gcc700
-cmsrel CMSSW_10_2_10
-cd CMSSW_10_2_10/src
+scram arch   -- see what architecture you have
+export SCRAM_ARCH=slc7_amd64_gcc700
+
+cmsrel CMSSW_10_6_30
+cd CMSSW_10_6_30/src
 cmsenv
 git cms-init
 
-# checkout Gamma Preliminary Energy Corrections
-# https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPostRecoRecipes
-git cms-merge-topic cms-egamma:EgammaPostRecoTools #just adds in an extra file to have a setup function to make things easier
-git cms-merge-topic cms-egamma:PhotonIDValueMapSpeedup1029 #optional but speeds up the photon ID value module so things fun faster
-git cms-merge-topic cms-egamma:slava77-btvDictFix_10210 #fixes the Run2018D dictionary issue, see https://github.com/cms-sw/cmssw/issues/26182
-#now to add the scale and smearing for 2018 (eventually this will not be necessary in later releases but is harmless to do regardless)
+#clone repository
+git clone https://github.com/esiam/BSMHiggs_fwk.git -b new_ul_branch UserCode/bsmhiggs_fwk
+
+cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
+git checkout -b <new branch name>   #copy the branch to a new one to host future modifications (ease pull request and code merging)
+
+#Switch CMSSW_80X to CMSSW_10X by running: (without this compile fails)
+cd test/haa4b
+sh ./converter.sh # input 1 when you are prompted to select
+
+cd $CMSSW_BASE/src
+
+#twiki: https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018#Scale_and_smearing_corrections_f
+#Recipe for running scales and smearings using EgammaPostRecoTools
+
+#WARNING In case you are checking out multiple packages, please always do git cms-init before checking out any packages - otherwise it can complain and create problems in checking out from git
+
+git cms-init  
+git cms-addpkg RecoEgamma/EgammaTools  #essentially just checkout the package from CMSSW
+git clone https://github.com/cms-egamma/EgammaPostRecoTools.git
+mv EgammaPostRecoTools/python/EgammaPostRecoTools.py RecoEgamma/EgammaTools/python/.
+git clone -b ULSSfiles_correctScaleSysMC https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data/
 git cms-addpkg EgammaAnalysis/ElectronTools
-rm EgammaAnalysis/ElectronTools/data -rf
-git clone git@github.com:cms-data/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data
+
+#And compile
+scram b -j 8
+```
+
+# Run limits
+```bash
+export SCRAM_ARCH=slc7_amd64_gcc700
+cmsrel CMSSW_10_2_13
+cd CMSSW_10_2_13/src
+cmsenv
+
+# download the Higgs Combine tool
+
+# download the Higgs Combine tool
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+cd HiggsAnalysis/CombinedLimit
+# Update to a reccomended tag - currently the reccomended tag is v8.1.0
+git fetch origin
+git checkout v8.1.0
+scramv1 b clean; scramv1 b # always make a clean build
+cd $CMSSW_BASE/src
+
+# download Haa4b analysis code
+git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
+cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
+git checkout -b modified
+#Switching from CMSSW8_X version to CMSSW10_X version by running:
+cd test/haa4b
+sh ./converter.sh # input 1 when you are prompted to select
+cd $CMSSW_BASE/src
+
+scram b -j 4
+```
+
+# Installation for 102X (2018) 
+```bash
+setenv SCRAM_ARCH slc7_amd64_gcc700
+cmsrel CMSSW_10_2_15
+cd CMSSW_10_2_15/src
+cmsenv
+git cms-init
+
+# https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPostRecoRecipes#102X
+git cms-merge-topic cms-egamma:EgammaPostRecoTools
+# OR:
+git cms-merge-topic cms-egamma:PhotonIDValueMapSpeedup1029 #optional but speeds up the photon ID value module so things run faster
+#now build everything
+scram b -j 8
+#now add in E/gamma Post reco tools
+git clone git@github.com:cms-egamma/EgammaPostRecoTools.git  EgammaUser/EgammaPostRecoTools
+cd  EgammaUser/EgammaPostRecoTools
+git checkout master
+cd -
+echo $CMSSW_BASE
+cd $CMSSW_BASE/src
 scram b -j 8
 
 # get code to run ecalBadCalibReducedMINIAODFilter on MiniAOD
@@ -31,6 +101,12 @@ git checkout -b modified
 cd test/haa4b
 sh ./converter.sh # input 1 when you are prompted to select
 cd $CMSSW_BASE/src
+
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+cd HiggsAnalysis/CombinedLimit
+git fetch origin
+git checkout v8.0.1
+scramv1 b clean; scramv1 b # always make a clean build
 
 #And compile
 scram b -j 4
@@ -81,6 +157,27 @@ cd $CMSSW_BASE/src
 # https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2
 git cms-addpkg RecoMET/METFilters
 scram b
+
+git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
+cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
+git checkout -b modified #copy the branch to a new one to host future modifications (ease pull request and code merging)
+#Switching from 2016 version to 2017 by running:
+cd test/haa4b
+sh ./converter.sh # input 1 when you are prompted to select
+cd $CMSSW_BASE/src
+
+#And compile
+scram b -j 4
+```
+# Installation for 94X (2016 Legacy)
+```bash
+export SCRAM_ARCH=slc6_amd64_gcc630
+#or
+setenv SCRAM_ARCH slc6_amd64_gcc630
+cmsrel CMSSW_9_4_9
+cd CMSSW_9_4_9/src
+cmsenv
+git cms-init
 
 git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
 cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
@@ -223,11 +320,7 @@ runLocalAnalysisOverSamples.py -e my_exe -j data/my_samples.json -d my_input_dir
  UserCode/bsmhiggs_fwk/test/haa4b/bin directory (also add it to the
  Buildfile there)
 
-# NTuple locations (29 Aug 2019 Updated)
-- 2016 DATA  and  MC Samples: ```/eos/cms/store/user/georgia/results_2019_07_10```
-
-  2016 MC New Signal Samples: ```/eos/cms/store/user/yuanc/results_2019_08_09```
-
-  2016 MC AMC NLO DY Samples: ```/eos/cms/store/user/yuanc/results_2019_08_23```
-- 2017 DATA  and  MC Samples: ```/eos/cms/store/user/zhangyi/results_2019_08_12```
-- 2018 DATA  and  MC Samples: ```/eos/cms/store/user/yuanc/results_2019_08_08```
+# Ntuple locations (July 2022 Updated)
+- 2016 DATA  and  MC Samples: ```/eos/user/g/georgia/results_2016_2020_06_19```
+- 2017 DATA  and  MC Samples: ```/eos/cms/store/user/georgia/results_2017_2020_02_05```
+- 2018 DATA  and  MC Samples: ```/eos/user/g/georgia/results_2018_2020_02_05```

@@ -14,11 +14,11 @@ namespace utils
       
       //order matters: L1 -> L2 -> L3 (-> Residuals)
       std::vector<std::string> jetCorFiles;
-      std::cout << baseDir+"/"+pf+"_L1FastJet_AK4PFchs.txt" << std::endl;
-      jetCorFiles.push_back((baseDir+"/"+pf+"_L1FastJet_AK4PFchs.txt").Data());
-      jetCorFiles.push_back((baseDir+"/"+pf+"_L2Relative_AK4PFchs.txt").Data());
-      jetCorFiles.push_back((baseDir+"/"+pf+"_L3Absolute_AK4PFchs.txt").Data());
-      if(!isMC) jetCorFiles.push_back((baseDir+"/"+pf+"_L2L3Residual_AK4PFchs.txt").Data());
+      //      std::cout << baseDir+pf+"_L1FastJet_AK4PFchs.txt" << std::endl;
+      jetCorFiles.push_back((baseDir+pf+"_L1FastJet_AK4PFchs.txt").Data());
+      jetCorFiles.push_back((baseDir+pf+"_L2Relative_AK4PFchs.txt").Data());
+      jetCorFiles.push_back((baseDir+pf+"_L3Absolute_AK4PFchs.txt").Data());
+      if(!isMC) jetCorFiles.push_back((baseDir+pf+"_L2L3Residual_AK4PFchs.txt").Data());
      
       //init the parameters for correction
       std::vector<JetCorrectorParameters> corSteps;
@@ -319,14 +319,15 @@ namespace utils
     //
     Float_t getEffectiveArea(int id,float eta,Int_t yearBits,TString isoSum)
     {
-      bool is2017 = yearBits & 0x01;
-      bool is2018 = (yearBits >> 1) & 0x01;
-      bool is2016 = !(is2017 || is2018);
+      bool is2016Legacy = yearBits & 0x01;
+      bool is2016nonLegacy = !is2016Legacy && ((yearBits >> 1) & 0x01);
+      bool is2017 = (yearBits >> 2) & 0x01;
+      bool is2018 = (yearBits >> 3) & 0x01;
       Float_t Aeff(1.0);
 
       if(abs(id)==11){ // electron
 	//Summer16 EA (Recommended for Moriond) : https://indico.cern.ch/event/482673/contributions/2187022/attachments/1282446/1905912/talk_electron_ID_spring16.pdf
-	if(is2016){
+	if(is2016nonLegacy){
           if(fabs(eta)<1.0)				Aeff=0.1703;
 	  else if(fabs(eta)>1.0 && fabs(eta)<1.479)	Aeff=0.1715;
           else if(fabs(eta)>1.479 && fabs(eta)<2.0)	Aeff=0.1213;
@@ -336,7 +337,7 @@ namespace utils
           else						Aeff=0.2393;
 	}
 	//https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_94X.txt
-        else if(is2017 || is2018){
+        else if(is2016Legacy || is2017 || is2018){
           if(fabs(eta)<1.0)				Aeff=0.1440;
 	  else if(fabs(eta)>1.0 && fabs(eta)<1.479)	Aeff=0.1562;
           else if(fabs(eta)>1.479 && fabs(eta)<2.0)	Aeff=0.1032;

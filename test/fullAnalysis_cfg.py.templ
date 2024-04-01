@@ -34,10 +34,11 @@ bTagDiscriminators = [
 ]
 from PhysicsTools.PatAlgos.tools.jetTools import *
 ## Update the slimmedJets in miniAOD: corrections from the chosen Global Tag are applied and the b-tag discriminators are re-evaluated
+# https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#CorrPatJets
 updateJetCollection(
     process,
     jetSource = cms.InputTag('slimmedJets'),
-    jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
+    jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute','L2L3Residual']), 'None'), # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual corrections (always set to 1)
     btagDiscriminators = bTagDiscriminators
 )
 
@@ -54,9 +55,11 @@ else:
 process.mainNtuplizer.isMC = cms.bool(@isMC)
 process.mainNtuplizer.dtag = cms.string("@dtag")
 process.mainNtuplizer.xsec = cms.double(@xsec)
+process.mainNtuplizer.nevts = cms.double(@nevts)
 process.mainNtuplizer.mctruthmode = cms.int32(@mctruthmode)
 process.mainNtuplizer.verbose = cms.bool(@verbose)
 process.mainNtuplizer.jetsTag = cms.InputTag('selectedUpdatedPatJets')
+process.mainNtuplizer.Legacy2016 = cms.bool(False)
 #process.mainNtuplizer.fatjetsTag = cms.InputTag('packedPatJetsAK8PFCHSSoftDrop')
 
 process.source = cms.Source("PoolSource",

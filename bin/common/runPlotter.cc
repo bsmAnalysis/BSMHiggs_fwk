@@ -38,6 +38,8 @@
 #include "UserCode/bsmhiggs_fwk/interface/th1fmorph.h"
 //#include "UserCode/bsmhiggs_fwk/interface/th1fmorph.h"
 
+#include <dirent.h>
+
 using namespace std;
 
 int cutIndex=-1;
@@ -165,18 +167,35 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
 
               int split = Samples[id].getInt("split", -1);               
               int fileProcessed=0;
-              for(int s=0; s<(split>0?split:999); s++){                 
-                 char buf[255]; sprintf(buf,"_%i",s); string segmentExt = buf;                 
-		 //                 string FileName = RootDir + dtag +  suffix + segmentExt + filtExt; 
-		 string FileName;
-		 if(isData) FileName = RootDir + "DATA/" + dtag +  suffix + filtExt + segmentExt;
-		 else	    FileName = RootDir + "MC/" + dtag +  suffix + filtExt + segmentExt;
 
-                 if(split<0){ //autosplitting --> check if there is a cfg file before checking if there is a .root file
-                    FILE* pFile = fopen((FileName+"_cfg.py").c_str(), "r");
-                    if(!pFile){break;}else{fclose(pFile);}
-                 }
-                 FileName += ".root";
+	      DIR           *dirp;
+	      struct dirent *directory;
+              string path = RootDir + "DATA/";
+	      if(!isData) path = RootDir + "MC/";
+	      dirp = opendir(path.c_str());
+	      if(!dirp) {std::cout << "Cannot open the folder: " << path << std::endl; continue;}
+	      while((directory = readdir(dirp)) != NULL){
+//	      for(int s=0; s<(split>0?split:999); s++){                 
+                 //char buf[255]; sprintf(buf,"_%i",s); string segmentExt = buf;                 
+		 string FileName;
+		 //if(isData) FileName = RootDir + "DATA/" + dtag +  suffix + filtExt + segmentExt;
+		 //else	    FileName = RootDir + "MC/" + dtag +  suffix + filtExt + segmentExt;
+
+                 //if(split<0){ //autosplitting --> check if there is a cfg file before checking if there is a .root file
+                 //   FILE* pFile = fopen((FileName+"_cfg.py").c_str(), "r");
+                 //   if(!pFile){continue;}else{fclose(pFile);}
+                 //}
+                 //FileName += ".root";
+		 FileName = directory->d_name;
+		 string toMatch = dtag +  suffix + filtExt;
+		 if(FileName.find(toMatch) == string::npos || FileName.find("_cfg.py") == string::npos) continue;
+                 //if(split<0){ //autosplitting --> check if there is a cfg file before checking if there is a .root file
+                 //   string cfg_path = FileName.substr(0, FileName.length()-5);
+		 //   cfg_path =  path + cfg_path + "_cfg.py";
+		 //   FILE* pFile = fopen(cfg_path.c_str(), "r");
+                 //   if(!pFile){continue;}else{fclose(pFile);}
+                 //}
+		 FileName = path + FileName.substr(0, FileName.length()-7) + ".root";
 
                  FILE* pFile = fopen(FileName.c_str(), "r");  //check if the file exist
                  if(!pFile){MissingFiles[dtag].push_back(FileName); continue;}else{fclose(pFile);}
@@ -192,7 +211,7 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
                  if(fileProcessed%5!=0){File->Close();fileProcessed++;continue;} //only consider 1file every 5 of each sample to get the list of object 
  
                  //just to make it faster, only consider the first 3 sample of a same kind
-                 if(fileProcessed==0 && isData){if(dataProcessed>=20 ){ File->Close(); continue;}else{dataProcessed++;}}
+                 if(fileProcessed==0 && isData){if(dataProcessed>=40 ){ File->Close(); continue;}else{dataProcessed++;}}
                  if(fileProcessed==0 && isSign){if(signProcessed>=20 ){ File->Close(); continue;}else{signProcessed++;}}
                  if(fileProcessed==0 && isMC  ){if(bckgProcessed>=20 ){ File->Close(); continue;}else{bckgProcessed++;}}
                  fileProcessed++;
@@ -201,6 +220,7 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
                  GetListOfObject(Root,RootDir,histlist,"", (TDirectory*)File );
                  File->Close();
                }
+	       closedir(dirp);
             }          
       }
 
@@ -568,8 +588,9 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, TFile* OutputF
    int IndexFiles = 0;
    int NFilesStep = 0;  
    for(std::unordered_map<string, std::vector<string> >::iterator it = DSetFiles.begin(); it!=DSetFiles.end(); it++){NFilesStep+=it->second.size();} 
-   NFilesStep=std::max(1, NFilesStep/50); 
-   printf("Processing input root files  :"); 
+   printf("Total number of files to be processed  : %d\n", NFilesStep); 
+//   NFilesStep=std::max(1, NFilesStep/50); 
+//   printf("Processing input root files  :"); 
    for(unsigned int i=0;i<Process.size();i++){
       
       if(Process[i].isTag("interpollation") || Process[i].isTag("mixing") || Process[i].isTag("nosample"))continue; //treated in a specific function after the loop on Process
@@ -601,20 +622,23 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, TFile* OutputF
       for(unsigned int j=0;j<Samples.size();j++){
          std::vector<string>& fileList = DSetFiles[(Samples[j])["dtag"].toString()+filtExt];
          if(!Process[i].getBoolFromKeyword(matchingKeyword, "isdata", false) && !Process[i].getBoolFromKeyword(matchingKeyword, "isdatadriven", false)){
-	   Weight=iLumi/fileList.size();
+
+	   Weight=iLumi;
+	   // owen, Sept 19, 2020: Now the total number of events is in the previous step.  No need to divide by number of files.
+	       
 	   // Overwrite weight for W+Nj and DY+Nj samples
-	   if (dirProc.find("W#rightarrow l#nu")!=std::string::npos) Weight=iLumi;
+	   // comment the following line only when you use the WJets HTBinned samples
+//	   if (dirProc.find("W#rightarrow l#nu")!=std::string::npos  && (Samples[j])["dtag"].toString().find("amcNLO")==std::string::npos) Weight=iLumi;
 	   if (dirProc.find("Z#rightarrow ll")!=std::string::npos && (Samples[j])["dtag"].toString().find("amcNLO")==std::string::npos) {
 	     if ((Samples[j])["dtag"].toString().find("10to50")!=std::string::npos && 
 		  ( (Samples[j])["dtag"].toString().find("2017")!=std::string::npos || (Samples[j])["dtag"].toString().find("2018")!=std::string::npos) );
 	     else Weight=iLumi;
 	   }
-	   //	   if (Process[i].getStringFromKeyword(matchingKeyword, "tag", "W#rightarrow l#nu")) Weight=iLumi;
 	 } else {Weight=1.0;}  
 	 //	 {Weight= iLumi/fileList.size();}else{Weight=1.0;}
-
          for(int f=0;f<fileList.size();f++){
-           if(IndexFiles%NFilesStep==0){printf(".");fflush(stdout);} IndexFiles++;
+//           if(IndexFiles%NFilesStep==0){printf(".");fflush(stdout);} IndexFiles++;
+	   IndexFiles++;printf("\r %d%%(%d/%d)",100*IndexFiles/NFilesStep,IndexFiles,NFilesStep);fflush(stdout);
            TFile* File = new TFile(fileList[f].c_str());
 
            for(std::list<NameAndType>::iterator it= histlist.begin(); it!= histlist.end(); it++){

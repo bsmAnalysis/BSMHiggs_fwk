@@ -110,7 +110,7 @@ namespace patUtils
     return id(el, event);
   }
 
-  bool passId(pat::Electron& el,  reco::Vertex& vtx, int IdLevel, int cutVersion, bool is2016){
+  bool passId(pat::Electron& el,  reco::Vertex& vtx, int IdLevel, int cutVersion, double rho, bool is2016){
 
     //for electron Id look here: //https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Spring15_selection_25ns
     //for the meaning of the different cuts here: https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification
@@ -122,6 +122,7 @@ namespace patUtils
 //    float sigmaletaleta  = el.sigmaIetaIeta();
     float sigmaletaleta  = el.full5x5_sigmaIetaIeta();
     float hem            = el.hadronicOverEm();
+    float energy	 = el.superCluster()->energy();
     double resol         = fabs((1/el.ecalEnergy())-(el.eSuperClusterOverP()/el.ecalEnergy()));
     double dxy           = fabs(el.gsfTrack()->dxy(vtx.position()));
     double dz            = fabs(el.gsfTrack()->dz(vtx.position()));
@@ -367,6 +368,125 @@ namespace patUtils
             }
       break;
 
+    case CutVersion::Fall17v1 :
+    case CutVersion::Fall17v2 :
+
+            switch(IdLevel){
+            case llvvElecId::Veto :
+                 if(barrel                   &&
+                 dEtaln        < 0.00463  &&
+                 dPhiln        < 0.148    &&
+                 sigmaletaleta < 0.0126   &&
+                 hem           < 0.05+1.16/energy+0.0324*rho/energy    &&
+                 //dxy           < 0.050    &&
+                 //dz            < 0.10     &&
+                 resol         < 0.209    &&
+                 mHits         <=2        &&
+                 conversionVeto            )
+        	return true;
+                 if(endcap                   &&
+                 dEtaln        < 0.00814  &&
+                 dPhiln        < 0.19    &&
+                 sigmaletaleta < 0.0457    &&
+                 hem           < 0.05+2.54/energy+0.183*rho/energy     &&
+                 //dxy           < 0.10     &&
+                 //dz            < 0.20     &&
+                 resol         < 0.132     &&
+                 mHits <= 3               &&
+                 conversionVeto            )
+                return true;
+        	break;
+
+              case llvvElecId::Loose :
+              if(barrel                   &&
+                 dEtaln        < 0.00377  &&
+                 dPhiln        < 0.0884   &&
+                 sigmaletaleta < 0.0112    &&
+                 hem           < 0.05+1.16/energy+0.0324*rho/energy     &&
+                 //dxy           < 0.05     &&
+                 //dz            < 0.10     &&
+                 resol         < 0.193    &&
+                 mHits         <= 1       &&
+                 conversionVeto            )
+                return true;
+              if(endcap                   &&
+                 dEtaln        < 0.00674  &&
+                 dPhiln        < 0.169    &&
+                 sigmaletaleta < 0.0425   &&
+                 hem           < 0.0441+2.54/energy+0.183*rho/energy     &&
+                 //dxy           < 0.10     &&
+                 //dz            < 0.20     &&
+                 resol         < 0.111     &&
+                 mHits         <= 1       &&
+                 conversionVeto            )
+                return true;
+              break;
+
+            case llvvElecId::Medium :
+              if(barrel                     &&
+                 dEtaln          < 0.0032  &&
+                 dPhiln          < 0.0547    &&
+                 sigmaletaleta   < 0.0106  &&
+                 hem             < 0.046+1.16/energy+0.0324*rho/energy     &&
+                 //dxy             < 0.05     &&
+                 //dz              < 0.10     &&
+                 resol           < 0.184    &&
+                 mHits           <= 1       &&
+                 conversionVeto             )
+                return true;
+              if(endcap                     &&
+                 dEtaln          < 0.00632  &&
+                 dPhiln          < 0.0394    &&
+                 sigmaletaleta   < 0.0387   &&
+                 hem             < 0.0275+2.52/energy+0.183*rho/energy    &&
+                 //dxy             < 0.10     &&
+                 //dz              < 0.20     &&
+                 resol           < 0.0721     &&
+                 mHits            <= 1      &&
+                 conversionVeto             )
+                return true;
+              break;
+
+            case llvvElecId::Tight :
+              if(barrel                     &&
+                 dEtaln          < 0.00255  &&
+                 dPhiln          < 0.022    &&
+                 sigmaletaleta   < 0.0104  &&
+                 hem             < 0.026+1.15/energy+0.0324*rho/energy    &&
+                 //dxy             < 0.05     &&
+                 //dz              < 0.10     &&
+                 resol           < 0.159   &&
+                 mHits           <= 1       &&
+                 conversionVeto             )
+                return true;
+              if(endcap                     &&
+                 dEtaln          < 0.00501  &&
+                 dPhiln          < 0.0236   &&
+                 sigmaletaleta   < 0.0353   &&
+                 hem             < 0.0188+2.06/energy+0.183*rho/energy    &&
+                 //dxy             < 0.10     &&
+                 //dz              < 0.20     &&
+                 resol           < 0.0197   &&
+                 mHits           <= 1       &&
+                 conversionVeto             )
+                return true;
+              break;
+
+            case llvvElecId::LooseMVA :
+            case llvvElecId::MediumMVA :
+            case llvvElecId::TightMVA :
+              printf("FIXME: MVA ID not yet implemented for the electron\n");
+              return false;
+                          break;
+
+            default:
+              printf("FIXME ElectronId llvvElecId::%i is unkown\n", IdLevel);
+              return false;
+              break;
+            }
+      break;
+
+/*
     //https://twiki.cern.ch/twiki/bin/view/CMS/EgammaRunIIRecommendations#Example_accessing_IDs
     case CutVersion::Fall17v1 :
 	switch(IdLevel){
@@ -425,7 +545,7 @@ namespace patUtils
 	    break;
 	}
 	break;
-
+*/
     default:
       printf("FIXME CutVersion::%i is unkown\n", cutVersion);
       return false;
@@ -438,6 +558,7 @@ namespace patUtils
     //for muon Id look here: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId#LooseMuon
 
     // Spring15 selection
+    bool goodGlob = mu.isGlobalMuon() && mu.globalTrack()->normalizedChi2() < 3 && mu.combinedQuality().chi2LocalPosition < 12 && mu.combinedQuality().trkKink < 20;
     switch(cutVersion){
     case CutVersion::Spring15Cut25ns :
 
@@ -490,6 +611,10 @@ namespace patUtils
               if(muon::isGoodMuon(mu, muon::TMOneStationTight) && mu.innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5 && mu.innerTrack()->hitPattern().pixelLayersWithMeasurement() > 0 &&
                  fabs(mu.innerTrack()->dxy(vtx.position())) < 0.3 && fabs(mu.innerTrack()->dz(vtx.position())) < 20.) return true;
               break;
+	
+	    case llvvMuonId::Medium :
+	      if (muon::isLooseMuon(mu) && mu.innerTrack()->validFraction() > 0.8 &&  muon::segmentCompatibility(mu) > (goodGlob ? 0.303 : 0.451)) return true;
+	      break;
 
             case llvvMuonId::Tight :
               if( mu.isPFMuon() && mu.isGlobalMuon() && mu.globalTrack()->normalizedChi2() < 10. && mu.globalTrack()->hitPattern().numberOfValidMuonHits() > 0. && mu.numberOfMatchedStations() > 1 &&
@@ -788,7 +913,38 @@ namespace patUtils
                 }
              break;
 
-          default:
+          case CutVersion::Fall17v1 :
+          case CutVersion::Fall17v2 :
+      	  // ICHEP16 or Moriond17 selection, conditions: PU20 bx25
+               switch(IsoLevel){
+                     case llvvElecIso::Veto :
+                        if( barrel && relIso < 0.198+0.506/el.pt()    ) return true;
+                        if( endcap && relIso < 0.203+0.963/el.pt()    ) return true;
+                        break;
+
+                     case llvvElecIso::Loose :
+                        if( barrel && relIso < 0.112+0.506/el.pt()   ) return true;
+                        if( endcap && relIso < 0.108+0.963/el.pt()    ) return true;
+                        break;
+
+                     case llvvElecIso::Medium :
+                        if( barrel && relIso < 0.0478+0.506/el.pt()   ) return true;
+                        if( endcap && relIso < 0.0658+0.963/el.pt()   ) return true;
+                        break;
+
+                     case llvvElecIso::Tight :
+                        if( barrel && relIso < 0.0287+0.506/el.pt()   ) return true;
+                        if( endcap && relIso < 0.0445+0.963/el.pt()   ) return true;
+                        break;
+
+                     default:
+                        printf("FIXME ElectronIso llvvElectronIso::%i is unkown\n", IsoLevel);
+                        return false;
+                        break;
+                }
+             break;
+          
+	  default:
              printf("FIXME ElectronIsolation  CutVersion::%i is unkown\n", cutVersion);
              return false;
              break;
