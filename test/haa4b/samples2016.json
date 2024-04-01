@@ -2378,7 +2378,7 @@
             "issignal": true,
             "keys": [
                 "haa_prod",
-                "haa_signal",
+                "haa_signal_1",
                 "haa_mcbased"
             ],
             "lcolor": 1,
