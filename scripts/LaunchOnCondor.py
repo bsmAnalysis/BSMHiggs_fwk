@@ -258,7 +258,6 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
         config_file.write('config.Data.outLFNDirBase = \'/store/user/<username>/debug\'\n')
     else:
         config_file.write('config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n')  
-##'/store/user/ataxeidi/Ntuples'+'/'+Jobs_CRABLFN+'\'\n')
 #          print 'config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n'
     config_file.write('\n')
     config_file.write('config.Site.storageSite = \''+Jobs_CRABStorageSite+'\'\n')
