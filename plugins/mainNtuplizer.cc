@@ -1242,7 +1242,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
          //double toRawSF=j.pt()/j.correctedJet("Uncorrected").pt(); 
          //LorentzVector rawJet(jet*toRawSF); 
 	 //	 std::cout << " Correction1 = " << jesCor->getCorrection() << " , correction2 = " << toRawSF << std::endl; //corrector->correction(j) << std::endl;
-	 if(j.pt() < 20 || fabs(j.eta())>3.0) continue;
+	 if(j.pt() < 20 || fabs(j.eta())>4.8) continue;
 	 
 	 //jet id
 	 //	 hasLooseId.set(false);
@@ -1362,7 +1362,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
          ijet++ ;
        }	
        //request at least 2 jets in the event
-       //-- if((ijet2<2)) return; //-- remove for ak8 analysis
+       if((ijet2<2)) return;
        //if(nCSVLtags<2) return;
        //
        // jet selection (AK8Jets)
