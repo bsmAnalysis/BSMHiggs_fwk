@@ -9,7 +9,7 @@ cmsenv
 git cms-init
 
 #clone repository
-git clone https://github.com/esiam/BSMHiggs_fwk.git -b new_ul_branch UserCode/bsmhiggs_fwk
+git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git -b new_ul_branch UserCode/bsmhiggs_fwk
 
 cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
 git checkout -b <new branch name>   #copy the branch to a new one to host future modifications (ease pull request and code merging)
