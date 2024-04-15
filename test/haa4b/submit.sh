@@ -36,7 +36,7 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 # Global Variables
 #--------------------------------------------------
 
-YEAR=2018
+YEAR=2017
 CHANNEL=WH
 
 do_syst=True # Always run with Systematics, unless its QCD mode
@@ -48,23 +48,16 @@ else doQCD=False ; fi
 if [[ $CHANNEL == "ZH" ]]; then doZH=True ; 
 else doZH=False ; fi
 
-if [[ $YEAR == "2016" ]]; then SUFFIX=_2020_06_19 
-else SUFFIX=_2020_02_05 ; fi
+if [[ $YEAR == "2016" ]]; then SUFFIX=_2024_01_15 
+else SUFFIX=_2024_03_04 ; fi
 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
 
-# Json and python template for 2016
-if [[ $YEAR == "2016" ]]; then
-    JSON=$MAINDIR/samples2016_legacy.json
-    NTPL_JSON=$MAINDIR/samples2016_legacy.json
-    FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_2016Legacy.py.templ
-    RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_2016Legacy.py.templ  # to be added later
-else
-    JSON=$MAINDIR/samples$YEAR.json
-    NTPL_JSON=$MAINDIR/samples$YEAR.json
-    FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_$YEAR.py.templ
-    RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_$YEAR.py.templ
-fi
+# Json and python template for all years
+JSON=$MAINDIR/samples$YEAR.json
+NTPL_JSON=$MAINDIR/samples$YEAR.json
+FULLANALYSISCFG=$MAINDIR/../fullAnalysis_cfg_$YEAR.py.templ
+RUNNTPLANALYSISCFG=$MAINDIR/../runNtplAnalysis_cfg_$YEAR.py.templ
     
 #SUFFIX=$(date +"_%Y_%m_%d") 
 GOLDENJSON=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/json/
@@ -72,18 +65,18 @@ GOLDENJSON=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/json/
 RESULTSDIR=$MAINDIR/results_$YEAR$SUFFIX 
 
 if [[ $arguments == *"crab3"* ]]; then STORAGEDIR='';
-else STORAGEDIR=/eos/cms/store/user/georgia/results$SUFFIX ; fi
+else STORAGEDIR=/eos/user/a/ataxeidi/results$SUFFIX ; fi
 
 PLOTSDIR=$MAINDIR/plots_${CHANNEL}_${YEAR}${SUFFIX}
 PLOTTER=$MAINDIR/plotter_${CHANNEL}_${YEAR}${SUFFIX}
  
 ####################### Settings for Ntuple Analysis ##################
 if [[ $YEAR == "2016" ]]; then
-    NTPL_INPUT=/eos/user/g/georgia/results_2016$SUFFIX
+    NTPL_INPUT=/eos/user/a/ataxeidi/results_2016$SUFFIX
 elif [[ $YEAR == "2017" ]]; then
-    NTPL_INPUT=/eos/cms/store/user/georgia/results_2017$SUFFIX 
+    NTPL_INPUT=/eos/user/a/ataxeidi/results_2017$SUFFIX 
 elif [[ $YEAR == "2018" ]]; then
-    NTPL_INPUT=/eos/cms/store/user/georgia/results_2018$SUFFIX   
+    NTPL_INPUT=/eos/user/a/ataxeidi/results_2018$SUFFIX   
 fi
 
 ZPtSF_OUT=$MAINDIR/VPtSF_${CHANNEL}_$YEAR$SUFFIX
@@ -132,7 +125,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "JOB SUBMISSION for Ntuplization using full CMSSW fwk"
        echo -e "Input: " $JSON "\nOutput: " $RESULTSDIR
        #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -s crab 
-       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $FULLANALYSISCFG -l results_$YEAR$SUFFIX -p "@verbose=False" --key haa_prod -s crab
+       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $FULLANALYSISCFG -l results_$YEAR$SUFFIX -p "@verbose=False" --key haa_prod_TT -s crab
        # Ntuplize 2016 signal samples under 94X:
        #runAnalysisOverSamples.py -j $MAINDIR/samples2016.json -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg_2016Signal.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_signal  -s crab
    fi    

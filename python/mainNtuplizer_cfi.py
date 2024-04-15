@@ -13,6 +13,7 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True),
 
 process.mainNtuplizer = cms.EDAnalyzer('mainNtuplizer',
 
+    LHELabel = cms.InputTag("externalLHEProducer"),
     lheInfo = cms.InputTag("externalLHEProducer"),
 
     beamSpotTag = cms.InputTag("offlineBeamSpot"),

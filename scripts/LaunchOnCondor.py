@@ -240,7 +240,7 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
     config_file.write('config.JobType.pluginName = \'Analysis\'\n')
     config_file.write('config.JobType.psetName = "'+Jobs_CRABcfgFile+'"\n')
 #    config_file.write('config.JobType.scriptExe = "%s"\n' % exePath)
-    config_file.write('config.JobType.sendPythonFolder = True\n')
+#    config_file.write('config.JobType.sendPythonFolder = True\n')
     config_file.write('config.JobType.inputFiles = ["'+os.path.expanduser(Jobs_ProxyDir+"/x509_proxy")+'"]\n')
 #, os.environ["CMSSW_BASE"]+"/bin/"+os.environ["SCRAM_ARCH"]+"/'+Jobs_CRABexe+'","'+fwkPath'"]\n')
     config_file.write('config.JobType.outputFiles = ["analysis.root"]\n')
@@ -255,17 +255,13 @@ def CreateCrabConfig(crabWorkDir, crabConfigPath, exePath, cfgPath):
     config_file.write('config.Data.ignoreLocality = True\n')
     config_file.write('config.Data.allowNonValidInputDataset = True\n')
     if Jobs_CRABLFN == '':
-        config_file.write('#config.Data.outLFNDirBase = \'/store/user/<username>/debug\'\n')
+        config_file.write('config.Data.outLFNDirBase = \'/store/user/<username>/debug\'\n')
     else:
-        if(commands.getstatusoutput("whoami")[1]=='hwei'):
-          config_file.write('config.Data.outLFNDirBase = \'/store/user/hua/'+Jobs_CRABLFN+'\'\n')
-          print 'config.Data.outLFNDirBase = \'/store/user/hua/'+Jobs_CRABLFN+'\'\n'
-        else:
-          config_file.write('config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n')
-          print 'config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n'
+        config_file.write('config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n')  
+#          print 'config.Data.outLFNDirBase = \'/store/user/'+commands.getstatusoutput("whoami")[1]+'/'+Jobs_CRABLFN+'\'\n'
     config_file.write('\n')
     config_file.write('config.Site.storageSite = \''+Jobs_CRABStorageSite+'\'\n')
-    config_file.write('config.Site.whitelist = [\'T2_CH_CERN\',\'T2_US_UCSD\',\'T3_US_FNALLPC\']')
+    config_file.write('config.Site.whitelist = [\'T2_CH_CERN\',\'T3_US_FNALLPC\']')
     config_file.close()
 
 
