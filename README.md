@@ -1,3 +1,41 @@
+# Installation for CMSSW_10_6_30 (latest UL/2016,2017,2018/twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/PdmVRun2LegacyAnalysis )
+```bash
+scram arch   -- see what architecture you have
+export SCRAM_ARCH=slc7_amd64_gcc700
+
+cmsrel CMSSW_10_6_30
+cd CMSSW_10_6_30/src
+cmsenv
+git cms-init
+
+#clone repository
+git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git -b ul_run2_branch UserCode/bsmhiggs_fwk
+
+cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
+git checkout -b <new branch name>   #copy the branch to a new one to host future modifications (ease pull request and code merging)
+
+#Switch CMSSW_80X to CMSSW_10X by running: (without this compile fails)
+cd test/haa4b
+sh ./converter.sh # input 1 when you are prompted to select
+
+cd $CMSSW_BASE/src
+
+#twiki: https://twiki.cern.ch/twiki/bin/view/CMS/EgammaUL2016To2018#Scale_and_smearing_corrections_f
+#Recipe for running scales and smearings using EgammaPostRecoTools
+
+#WARNING In case you are checking out multiple packages, please always do git cms-init before checking out any packages - otherwise it can complain and create problems in checking out from git
+
+git cms-init  
+git cms-addpkg RecoEgamma/EgammaTools  #essentially just checkout the package from CMSSW
+git clone https://github.com/cms-egamma/EgammaPostRecoTools.git
+mv EgammaPostRecoTools/python/EgammaPostRecoTools.py RecoEgamma/EgammaTools/python/.
+git clone -b ULSSfiles_correctScaleSysMC https://github.com/jainshilpi/EgammaAnalysis-ElectronTools.git EgammaAnalysis/ElectronTools/data/
+git cms-addpkg EgammaAnalysis/ElectronTools
+
+#And compile
+scram b -j 8
+```
+
 # Run limits
 ```bash
 export SCRAM_ARCH=slc7_amd64_gcc700

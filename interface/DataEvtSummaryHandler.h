@@ -67,7 +67,7 @@ struct DataEvtSummary_t {
     Float_t alphaSWeights[MAXLHEWEIGHTS];
     //lhe njet
     Int_t lheNJets;
-  Float_t lheHt;
+    Float_t lheHt;
 
     //gen level event
     Int_t nmcparticles, nmcjparticles;
@@ -97,14 +97,14 @@ struct DataEvtSummary_t {
 
     //electron
     Int_t en;
-  Float_t en_px[MAXPARTICLES],en_py[MAXPARTICLES],en_pz[MAXPARTICLES],en_en[MAXPARTICLES],en_cor_en[MAXPARTICLES];
+    Float_t en_px[MAXPARTICLES],en_py[MAXPARTICLES],en_pz[MAXPARTICLES],en_en[MAXPARTICLES],en_cor_en[MAXPARTICLES];
     Int_t en_id[MAXPARTICLES];
-  Int_t en_gainSeed[MAXPARTICLES]; 
-  //  Float_t en_scale_corr[MAXPARTICLES];
-    //Float_t en_d0[MAXPARTICLES],en_dZ[MAXPARTICLES];
-  Float_t en_EtaSC[MAXPARTICLES];
+    Int_t en_gainSeed[MAXPARTICLES]; 
+    //  Float_t en_scale_corr[MAXPARTICLES];
+    // Float_t en_d0[MAXPARTICLES],en_dZ[MAXPARTICLES];
+    Float_t en_EtaSC[MAXPARTICLES];
 
-  Float_t en_dEtaIn[MAXPARTICLES],en_dPhiIn[MAXPARTICLES],en_hOverE[MAXPARTICLES],en_R9[MAXPARTICLES],en_sigmaIetaIeta[MAXPARTICLES],en_sigmaIetaIeta5x5[MAXPARTICLES],en_ooEmooP[MAXPARTICLES];
+    Float_t en_dEtaIn[MAXPARTICLES],en_dPhiIn[MAXPARTICLES],en_hOverE[MAXPARTICLES],en_R9[MAXPARTICLES],en_sigmaIetaIeta[MAXPARTICLES],en_sigmaIetaIeta5x5[MAXPARTICLES],en_ooEmooP[MAXPARTICLES];
     Float_t en_pileupIso[MAXPARTICLES],en_chargedIso[MAXPARTICLES],en_photonIso[MAXPARTICLES],en_neutralHadIso[MAXPARTICLES];
     Float_t en_relIsoWithEA[MAXPARTICLES],en_relIsoWithDBeta[MAXPARTICLES],en_MissingHits[MAXPARTICLES],en_passConversionVeto[MAXPARTICLES];
     Bool_t en_passVeto[MAXPARTICLES],en_passLoose[MAXPARTICLES],en_passMedium[MAXPARTICLES],en_passTight[MAXPARTICLES],en_passHEEP[MAXPARTICLES];
@@ -140,8 +140,8 @@ struct DataEvtSummary_t {
     Bool_t jet_PFLoose[MAXPARTICLES], jet_PFTight[MAXPARTICLES];
     Int_t jet_partonFlavour[MAXPARTICLES], jet_hadronFlavour[MAXPARTICLES], jet_mother_id[MAXPARTICLES];
     Float_t jet_parton_px[MAXPARTICLES], jet_parton_py[MAXPARTICLES], jet_parton_pz[MAXPARTICLES], jet_parton_en[MAXPARTICLES];
-
-  /*
+   
+    /*
     //sv : Inclusive Secondary Vertices from slimmedSecondaryVertices
     Int_t sv ;
     Float_t sv_px[MAXPARTICLES], sv_py[MAXPARTICLES], sv_pz[MAXPARTICLES], sv_en[MAXPARTICLES] ;
@@ -152,7 +152,8 @@ struct DataEvtSummary_t {
     Int_t   sv_mc_nbh_moms[MAXPARTICLES] ;
     Int_t   sv_mc_nbh_daus[MAXPARTICLES] ;
     Int_t   sv_mc_mcbh_ind[MAXPARTICLES] ;
-  */
+    */
+
     /*
     //jet (slimmedJetsPuppi)
     Int_t pjet;
@@ -164,20 +165,32 @@ struct DataEvtSummary_t {
     */
 
     //fjet (ak8PFJetsCHS)
-  /*
+    //-- uncomment
     Int_t fjet;
     Float_t fjet_px[MAXPARTICLES],fjet_py[MAXPARTICLES],fjet_pz[MAXPARTICLES],fjet_en[MAXPARTICLES];
-    Float_t fjet_btag0[MAXPARTICLES], fjet_btag1[MAXPARTICLES];
+    Float_t fjet_btag0[MAXPARTICLES], fjet_btag1[MAXPARTICLES], fjet_btag2[MAXPARTICLES], fjet_btag3[MAXPARTICLES];
+    Float_t fjet_btag4[MAXPARTICLES], fjet_btag5[MAXPARTICLES], fjet_btag6[MAXPARTICLES], fjet_btag7[MAXPARTICLES];
+    Float_t fjet_btag8[MAXPARTICLES], fjet_btag9[MAXPARTICLES], fjet_btag10[MAXPARTICLES], fjet_btag11[MAXPARTICLES];
+    Float_t fjet_btag12[MAXPARTICLES], fjet_btag13[MAXPARTICLES], fjet_btag14[MAXPARTICLES], fjet_btag15[MAXPARTICLES];
+    Float_t fjet_btag16[MAXPARTICLES], fjet_btag17[MAXPARTICLES]; 
+
+
     Float_t fjet_prunedM[MAXPARTICLES], fjet_softdropM[MAXPARTICLES]; //fjet_trimmedM[MAXPARTICLES],fjet_filteredM[MAXPARTICLES];
-    Float_t fjet_tau1[MAXPARTICLES],fjet_tau2[MAXPARTICLES],fjet_tau3[MAXPARTICLES];
+    Float_t fjet_tau1[MAXPARTICLES],fjet_tau2[MAXPARTICLES],fjet_tau3[MAXPARTICLES],fjet_tau4[MAXPARTICLES];
     Float_t fjet_genpt[MAXPARTICLES];
     Int_t fjet_partonFlavour[MAXPARTICLES], fjet_hadronFlavour[MAXPARTICLES], fjet_mother_id[MAXPARTICLES];
     Float_t fjet_parton_px[MAXPARTICLES], fjet_parton_py[MAXPARTICLES], fjet_parton_pz[MAXPARTICLES], fjet_parton_en[MAXPARTICLES];
+    //----
+    Float_t fjet_chf[MAXPARTICLES], fjet_nhf[MAXPARTICLES], fjet_phf[MAXPARTICLES], fjet_muf[MAXPARTICLES], fjet_elf[MAXPARTICLES];
+    //Float_t fjet_ecfB1N2[MAXPARTICLES], fjet_ecfB1N3[MAXPARTICLES]; 
+    //Float_t fjet_ecfB2N2[MAXPARTICLES], fjet_ecfB2N3[MAXPARTICLES];    
+    Float_t fjet_subjets_partonFlavour[MAXPARTICLES][MAXSB], fjet_subjets_hadronFlavour[MAXPARTICLES][MAXSB];
     Int_t fjet_subjet_count[MAXPARTICLES];
+    Float_t fjet_subjets_btag[MAXPARTICLES][MAXSB];
     Float_t fjet_subjets_px[MAXPARTICLES][MAXSB], fjet_subjets_py[MAXPARTICLES][MAXSB], fjet_subjets_pz[MAXPARTICLES][MAXSB], fjet_subjets_en[MAXPARTICLES][MAXSB];
-  */
+  
     //met
-  Float_t imet_pt[11], imet_phi[11];
+    Float_t imet_pt[11], imet_phi[11];
     Float_t met_pt,met_phi,met_sumMET;
     Float_t metNoHF_pt,metNoHF_phi,metNoHF_sumMET;
     Float_t metPuppi_pt,metPuppi_phi,metPuppi_sumMET;
