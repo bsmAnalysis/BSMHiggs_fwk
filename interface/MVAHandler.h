@@ -25,29 +25,48 @@
 struct MVAEvtContainer
 {
   //catagory type
-  bool isEven = false;
-  bool is3b = false, is4b = false; 
-  //W boson related only related var
-  float WpT = -1.0;
-  //Higgs boson related only var
-  float Hmass = -1.0, HpT = -1.0;
-  float bbdRAve = -1.0, bbdMMin = -1.0;
-  float HHt = -1.0;
-  //dr W and Higgs 
-  float WHdR = -1.0;
-  float lepPt = -1.0;
-  float pfMET = -1.0; float MTw = -1.0;
-  float ljDR = -1.0;
-  //weight
-  float weight = -1.0; float xsecWeight = 1.0;
-  //AUX
-  int lheNJets = -1;
+  bool isSR1=false;
+  bool isSR2=false;
+  bool isSR3=false;
+  float m4b=-1;
+  float pt4b=-1;
+   float m4b_SR1=-1;
+  float pt4b_SR1=-1;
+  float ptf1=-1;
+  float sd_mass1=-1;
+  float ht=-1;
+  float met=-1;
+  float ht_SR1=-1;
+  float met_SR1=-1;
+  float xbb1=-2;
+  float xbbccqq1=-2;
+  float ptb1=-1;
+  float ptb1_SR1=-1;
+  float ptb2=-1;
+  float n_ad_j=-1;
+  float n_ad_j_SR1=-1;
+  float btag1=-1;
+  float btag3=-1;
+  float drjj=-1;
+  float dphi_met_j=-1;
+  float dilep_pt=-1;
+  float drll=-1;
+  float dphiHZ=-1;
+  float dphi_met_l=-1;
+  float btag3_SR1=-1;
+  float drjj_SR1=-1;
+  float dphi_met_j_SR1=-1;
+  float dilep_pt_SR1=-1;
+  float drll_SR1=-1;
+  float dphiHZ_SR1=-1;
+  float dphi_met_l_SR1=-1;
+  float weight=0;
 };
 
 class MVAHandler 
 {
  public:
-  //
+  
   MVAHandler();
   ~MVAHandler();
 
@@ -57,26 +76,52 @@ class MVAHandler
 
   //read mode, from calculated var
   void resetStruct();
-  void getEntry(
-		bool isEven, 
-                bool is3b, bool is4b,
-                float Wpt, //W only
-                float Hmass, float HpT, float bbdRAve, float bbdMMin, float HHt, //Higgs only
-                float WHdR, //W and H
-		float lepPt, float pfMET, float MTw,
-		float ljDR,
-                float weight, float xsecWeight,
-                int lheNJets
-               );
-
+  void getEntry(bool isSR1,
+		bool isSR2,
+		bool isSR3,
+		float m4b,
+		float pt4b,
+		float m4b_SR1,
+		float pt4b_SR1,
+		float ptf1,
+		float sd_mass1,
+		float ht,
+		float met,
+		float ht_SR1,
+		float met_SR1,
+		float xbb1,
+		float xbbccqq1,
+		float ptb1,
+		float ptb1_SR1,
+		float ptb2,
+		float n_ad_j,
+		float n_ad_j_SR1,
+		float btag1,
+		float btag3,
+		float drjj,
+		float dphi_met_j,
+		float dilep_pt,
+		float drll,
+		float dphiHZ,
+		float dphi_met_l,
+		float btag3_SR1,
+		float drjj_SR1,
+		float dphi_met_j_SR1,
+		float dilep_pt_SR1,
+		float drll_SR1,
+		float dphiHZ_SR1,
+		float dphi_met_l_SR1,
+	        float weight);
+	       
   //write mode, to mva tree
+  
   TFile* MVAofile;
-  //the tree, 2 for 3b 4b separately
-  TTree *to3b_e, *to4b_e, *toSignal_e;
-  TTree *to3b_o, *to4b_o, *toSignal_o;
-  bool initTree(TString mvaout);
+  TTree *t1;
+  TTree *t2;
+  TTree *t3;
+  bool initTree();
   void fillTree();
-  void writeTree();
+  void writeTree(TString mvaout);
  private:
 };
 #endif
