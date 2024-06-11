@@ -15,12 +15,12 @@
 <use name="FWCore/Services"/> 
 <use name="FWCore/ServiceRegistry"/>
 <use name="RecoJets/JetProducers"/>
-<use name="HiggsAnalysis/CombinedLimit"/>
+
 <use name="RecoEgamma/ElectronIdentification"/>
 <use name="EgammaAnalysis/ElectronTools"/>
 <use name="SimDataFormats/GeneratorProducts"/>
 <use name="RecoBTag/SecondaryVertex"/>
-
+<use name="HiggsAnalysis/CombinedLimit"/>
 <environment>
 <!-- Common tools and examples -->
   <bin name="extractLumiJSON"             file="common/extractLumiJSON.cc"></bin>
@@ -31,8 +31,8 @@
 
 <!-- Analysis specific code (please keep that in subdirectories and refer to test/<subdir> for instructions) -->
 <!--  <bin name="runNtuplizer"                file="common/runNtuplizer.cc"></bin> --> 
-  <bin name="runhaaAnalysis"              file="haa4b/runhaaAnalysis.cc"></bin>  
-<!--  <bin name="BTaggingEffAnalyzer"              file="haa4b/BTaggingEffAnalyzer.cc"></bin> --> 
+    
+  <bin name="runZHanalysis"              file="haa4b/runZHanalysis.cc"></bin>  
   <bin name="genParticleDump"                file="common/genParticleDump.cc"></bin>
 </environment>
 

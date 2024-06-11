@@ -1,6 +1,5 @@
 #include "UserCode/bsmhiggs_fwk/interface/MVAHandler.h"
-
-//
+bool run0lep(false);
 MVAHandler::MVAHandler()
 {
 }
@@ -8,182 +7,221 @@ MVAHandler::MVAHandler()
 //
 MVAEvtContainer &MVAHandler::getEvent()
 {
+ 
   return evSummary_;
 }
 
 //
 void MVAHandler::resetStruct()
 {
-  //catagory type
-  evSummary_.isEven = false;
-  //  evSummary_.isOdd = false;
-  evSummary_.is3b = false;
-  evSummary_.is4b = false; 
-  //W boson related only related var
-  evSummary_.WpT = -1.0;
-  //Higgs boson related only var
-  evSummary_.Hmass = -1.0; 
-  evSummary_.HpT = -1.0; 
-  evSummary_.bbdRAve = -1.0; 
-  evSummary_.bbdMMin = -1.0;
-  evSummary_.HHt = -1.0;
-  //dr W and Higgs 
-  evSummary_.WHdR = -1.0;
-  evSummary_.lepPt = -1.0;
-  evSummary_.pfMET = -1.0;
-  evSummary_.MTw = -1.0;
-  evSummary_.ljDR = -1.0;
-  //weight
-  evSummary_.weight = 0.0;
-  evSummary_.xsecWeight = 1.0;
-  evSummary_.lheNJets = -1;
+  evSummary_.isSR1=false;
+  evSummary_.isSR2=false;
+  evSummary_.isSR3=false;
+  evSummary_.m4b=-1;
+  evSummary_.pt4b=-1;
+  evSummary_.m4b_SR1=-1;
+  evSummary_.pt4b_SR1=-1;
+  evSummary_.ptf1=-1;
+  evSummary_.sd_mass1=-1;
+  evSummary_.ht=-1;
+  evSummary_.met=-1;
+  evSummary_.ht_SR1=-1;
+  evSummary_.met_SR1=-1;
+  evSummary_.xbb1=-2;
+  evSummary_.xbbccqq1=-2;
+  evSummary_.ptb1=-1;
+  evSummary_.ptb1_SR1=-1;
+  evSummary_.ptb2=-1;
+  evSummary_.n_ad_j=-1;
+  evSummary_.n_ad_j_SR1=-1;
+  evSummary_.btag1=-1;
+  evSummary_.btag3=-1;
+  evSummary_.drjj=-1;
+  evSummary_.dphi_met_j=-1;
+  evSummary_.dilep_pt=-1;
+  evSummary_.drll=-1;
+  evSummary_.dphiHZ=-1;
+  evSummary_.dphi_met_l_SR1=-1;
+   evSummary_.btag3_SR1=-1;
+  evSummary_.drjj_SR1=-1;
+  evSummary_.dphi_met_j_SR1=-1;
+  evSummary_.dilep_pt_SR1=-1;
+  evSummary_.drll_SR1=-1;
+  evSummary_.dphiHZ_SR1=-1;
+  evSummary_.dphi_met_l_SR1=-1;
+  evSummary_.weight=0;
+ 
+  
+
 }
 
-//
-void MVAHandler::getEntry( 
-			  bool isEven, 
-                          bool is3b, bool is4b, 
-                          float Wpt, //W only
-                          float Hmass, float HpT, float bbdRAve, float bbdMMin, float HHt, //Higgs only
-                          float WHdR, //W and H
-			  float lepPt, float pfMET, float MTw, 
-			  float ljDR,
-                          float weight, float xsecWeight,
-                          int lheNJets
-                         )
+
+void MVAHandler::getEntry(
+			  bool isSR1,
+			  bool isSR2,
+			  bool isSR3,
+			  float m4b,
+			  float pt4b,
+			  float m4b_SR1,
+			  float pt4b_SR1,
+			  float ptf1,
+			  float sd_mass1,
+			  float ht,
+			  float met,
+			  float ht_SR1,
+			  float met_SR1,
+			  float xbb1,
+			  float xbbccqq1,
+			  float ptb1,
+			  float ptb1_SR1,
+			  float ptb2,
+			  float n_ad_j,
+			  float n_ad_j_SR1,
+			  float btag1,
+			  float btag3,
+			  float drjj,
+			  float dphi_met_j,
+			  float dilep_pt,
+			  float drll,
+			  float dphiHZ,
+			  float dphi_met_l,
+			  float btag3_SR1,
+			  float drjj_SR1,
+			  float dphi_met_j_SR1,
+			  float dilep_pt_SR1,
+			  float drll_SR1,
+			  float dphiHZ_SR1,
+			  float dphi_met_l_SR1,
+			  float weight) 
+ 
 {
+  
   resetStruct();
-  evSummary_.isEven = isEven;
-  //  evSummary_.isOdd = isOdd;
-  //catagory type
-  evSummary_.is3b = is3b;
-  evSummary_.is4b = is4b;
-  //W boson related only related var
-  evSummary_.WpT = Wpt;
-  //Higgs boson related only var
-  evSummary_.Hmass = Hmass;
-  evSummary_.HpT = HpT;
-  evSummary_.bbdRAve = bbdRAve;
-  evSummary_.bbdMMin = bbdMMin;
-  evSummary_.HHt = HHt;
-  //dr W and Higgs 
-  evSummary_.WHdR = WHdR;
-  // few additions
-  evSummary_.lepPt = lepPt;
-  evSummary_.pfMET = pfMET;
-  evSummary_.MTw = MTw;
-  evSummary_.ljDR = ljDR;
+  evSummary_.isSR1=isSR1;
+  evSummary_.isSR2=isSR2;
+  evSummary_.isSR3=isSR3;
+  evSummary_.m4b=m4b;
+  evSummary_.pt4b=pt4b;
+  evSummary_.m4b_SR1=m4b_SR1;
+  evSummary_.pt4b_SR1=pt4b_SR1;
+  evSummary_.ptf1=ptf1;
+  evSummary_.ptb1=ptb1;
+  evSummary_.ptb1_SR1=ptb1_SR1;
+  evSummary_.ptb2=ptb2;
+  evSummary_.ht=ht;
+  evSummary_.n_ad_j=n_ad_j;
+  evSummary_.met=met;
+  evSummary_.ht_SR1=ht_SR1;
+  evSummary_.n_ad_j_SR1=n_ad_j_SR1;
+  evSummary_.met_SR1=met_SR1;
+  evSummary_.btag1=btag1;
+  evSummary_.btag3=btag3;
+  evSummary_.btag3_SR1=btag3_SR1;
+  
+  evSummary_.sd_mass1=sd_mass1;
+  evSummary_.xbb1=xbb1;
+  evSummary_.xbbccqq1=xbbccqq1;
+ 
+  evSummary_.drjj=drjj;
+  evSummary_.dphi_met_j=dphi_met_j;
+  evSummary_.dilep_pt=dilep_pt;
+  evSummary_.drll=drll;
+  evSummary_.dphiHZ=dphiHZ;
+  evSummary_.dphi_met_l=dphi_met_l;
+
+  evSummary_.drjj_SR1=drjj_SR1;
+  evSummary_.dphi_met_j_SR1=dphi_met_j_SR1;
+  evSummary_.dilep_pt_SR1=dilep_pt_SR1;
+  evSummary_.drll_SR1=drll_SR1;
+  evSummary_.dphiHZ_SR1=dphiHZ_SR1;
+  evSummary_.dphi_met_l_SR1=dphi_met_l_SR1;
+
   //weight
   evSummary_.weight = weight;
-  evSummary_.xsecWeight = xsecWeight;  
-  //AUX
-  evSummary_.lheNJets = lheNJets;
+
   return ;
 }
 
 //
-bool MVAHandler::initTree(TString mvaout)
+bool MVAHandler::initTree()
 {
-  //write mode, to mva tree
-  MVAofile = TFile::Open( mvaout, "recreate");
-  to3b_e = new TTree("TribMVA_e","TribMVA");
-  to4b_e = new TTree("QuabMVA_e","QuabMVA");
-  toSignal_e = new TTree("H4bMVA_e","H4bMVA");
-
-  to3b_o = new TTree("TribMVA_o","TribMVA");   
-  to4b_o = new TTree("QuabMVA_o","QuabMVA"); 
-  toSignal_o = new TTree("H4bMVA_o","H4bMVA");  
-
-  toSignal_e->Branch("WpT",  &evSummary_.WpT,  "WpT/F"); 
-  toSignal_e->Branch("Hmass",  &evSummary_.Hmass,  "Hmass/F");   
-  toSignal_e->Branch("HpT",  &evSummary_.HpT,  "HpT/F");      
-  toSignal_e->Branch("bbdRAve",  &evSummary_.bbdRAve,  "bbdRAve/F"); 
-  toSignal_e->Branch("bbdMMin",  &evSummary_.bbdMMin,  "bbdMMin/F");  
-  toSignal_e->Branch("HHt",  &evSummary_.HHt,  "HHt/F");
-  toSignal_e->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F"); 
-  toSignal_e->Branch("lepPt", &evSummary_.lepPt, "lepPt/F");
-  toSignal_e->Branch("pfMET", &evSummary_.pfMET, "pfMET/F"); 
-  toSignal_e->Branch("MTw", &evSummary_.MTw, "MTw/F");
-  toSignal_e->Branch("ljDR", &evSummary_.ljDR, "ljDR/F"); 
-  toSignal_e->Branch("weight",  &evSummary_.weight,  "weight/F");
-  toSignal_e->Branch("xsecWeight",  &evSummary_.xsecWeight,  "xsecWeight/F"); 
-  toSignal_e->Branch("lheNJets",  &evSummary_.lheNJets,  "lheNJets/I"); 
-
-  toSignal_o->Branch("WpT",  &evSummary_.WpT,  "WpT/F"); 
-  toSignal_o->Branch("Hmass",  &evSummary_.Hmass,  "Hmass/F");   
-  toSignal_o->Branch("HpT",  &evSummary_.HpT,  "HpT/F");      
-  toSignal_o->Branch("bbdRAve",  &evSummary_.bbdRAve,  "bbdRAve/F"); 
-  toSignal_o->Branch("bbdMMin",  &evSummary_.bbdMMin,  "bbdMMin/F");  
-  toSignal_o->Branch("HHt",  &evSummary_.HHt,  "HHt/F");
-  toSignal_o->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F"); 
-  toSignal_o->Branch("lepPt", &evSummary_.lepPt, "lepPt/F");
-  toSignal_o->Branch("pfMET", &evSummary_.pfMET, "pfMET/F"); 
-  toSignal_o->Branch("MTw", &evSummary_.MTw, "MTw/F");
-  toSignal_o->Branch("ljDR", &evSummary_.ljDR, "ljDR/F"); 
-  toSignal_o->Branch("weight",  &evSummary_.weight,  "weight/F");
-  toSignal_o->Branch("xsecWeight",  &evSummary_.xsecWeight,  "xsecWeight/F"); 
-  toSignal_o->Branch("lheNJets",  &evSummary_.lheNJets,  "lheNJets/I"); 
   
-  to3b_e->Branch("WpT",  &evSummary_.WpT,  "WpT/F");
-  to3b_e->Branch("Hmass",  &evSummary_.Hmass,  "Hmass/F");
-  to3b_e->Branch("HpT",  &evSummary_.HpT,  "HpT/F");
-  to3b_e->Branch("bbdRAve",  &evSummary_.bbdRAve,  "bbdRAve/F");
-  //to3b_e->Branch("bbdMMin",  &evSummary_.bbdMMin,  "bbdMMin/F");
-  to3b_e->Branch("HHt",  &evSummary_.HHt,  "HHt/F");
-  to3b_e->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F");
-  to3b_e->Branch("lepPt", &evSummary_.lepPt, "lepPt/F");
-  to3b_e->Branch("pfMET", &evSummary_.pfMET, "pfMET/F");
-  to3b_e->Branch("MTw", &evSummary_.MTw, "MTw/F");  
-  to3b_e->Branch("ljDR", &evSummary_.ljDR, "ljDR/F");  
-  to3b_e->Branch("weight",  &evSummary_.weight,  "weight/F");
-  to3b_e->Branch("xsecWeight",  &evSummary_.xsecWeight,  "xsecWeight/F");    
-  to3b_e->Branch("lheNJets",  &evSummary_.lheNJets,  "lheNJets/I");
-
-  to3b_o->Branch("WpT",  &evSummary_.WpT,  "WpT/F");
-  to3b_o->Branch("Hmass",  &evSummary_.Hmass,  "Hmass/F");
-  to3b_o->Branch("HpT",  &evSummary_.HpT,  "HpT/F");
-  to3b_o->Branch("bbdRAve",  &evSummary_.bbdRAve,  "bbdRAve/F");
-  //to3b_o->Branch("bbdMMin",  &evSummary_.bbdMMin,  "bbdMMin/F");
-  to3b_o->Branch("HHt",  &evSummary_.HHt,  "HHt/F");
-  to3b_o->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F");
-  to3b_o->Branch("lepPt", &evSummary_.lepPt, "lepPt/F");
-  to3b_o->Branch("pfMET", &evSummary_.pfMET, "pfMET/F");
-  to3b_o->Branch("MTw", &evSummary_.MTw, "MTw/F");  
-  to3b_o->Branch("ljDR", &evSummary_.ljDR, "ljDR/F");  
-  to3b_o->Branch("weight",  &evSummary_.weight,  "weight/F");
-  to3b_o->Branch("xsecWeight",  &evSummary_.xsecWeight,  "xsecWeight/F");    
-  to3b_o->Branch("lheNJets",  &evSummary_.lheNJets,  "lheNJets/I");
-
-  to4b_e->Branch("WpT",  &evSummary_.WpT,  "WpT/F");
-  to4b_e->Branch("Hmass",  &evSummary_.Hmass,  "Hmass/F");
-  to4b_e->Branch("HpT",  &evSummary_.HpT,  "HpT/F");
-  to4b_e->Branch("bbdRAve",  &evSummary_.bbdRAve,  "bbdRAve/F");
-  to4b_e->Branch("bbdMMin",  &evSummary_.bbdMMin,  "bbdMMin/F");
-  to4b_e->Branch("HHt",  &evSummary_.HHt,  "HHt/F");
-  to4b_e->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F");
-  to4b_e->Branch("lepPt", &evSummary_.lepPt, "lepPt/F");   
-  to4b_e->Branch("pfMET", &evSummary_.pfMET, "pfMET/F");      
-  to4b_e->Branch("MTw", &evSummary_.MTw, "MTw/F"); 
-  to4b_e->Branch("ljDR", &evSummary_.ljDR, "ljDR/F");  
-  to4b_e->Branch("weight",  &evSummary_.weight,  "weight/F");
-  to4b_e->Branch("xsecWeight",  &evSummary_.xsecWeight,  "xsecWeight/F"); 
-  to4b_e->Branch("lheNJets",  &evSummary_.lheNJets,  "lheNJets/I");
-
-  to4b_o->Branch("WpT",  &evSummary_.WpT,  "WpT/F");
-  to4b_o->Branch("Hmass",  &evSummary_.Hmass,  "Hmass/F");
-  to4b_o->Branch("HpT",  &evSummary_.HpT,  "HpT/F");
-  to4b_o->Branch("bbdRAve",  &evSummary_.bbdRAve,  "bbdRAve/F");
-  to4b_o->Branch("bbdMMin",  &evSummary_.bbdMMin,  "bbdMMin/F");
-  to4b_o->Branch("HHt",  &evSummary_.HHt,  "HHt/F");
-  to4b_o->Branch("WHdR",  &evSummary_.WHdR,  "WHdR/F");
-  to4b_o->Branch("lepPt", &evSummary_.lepPt, "lepPt/F");   
-  to4b_o->Branch("pfMET", &evSummary_.pfMET, "pfMET/F");      
-  to4b_o->Branch("MTw", &evSummary_.MTw, "MTw/F"); 
-  to4b_o->Branch("ljDR", &evSummary_.ljDR, "ljDR/F");  
-  to4b_o->Branch("weight",  &evSummary_.weight,  "weight/F");
-  to4b_o->Branch("xsecWeight",  &evSummary_.xsecWeight,  "xsecWeight/F"); 
-  to4b_o->Branch("lheNJets",  &evSummary_.lheNJets,  "lheNJets/I");
+  t1 = new TTree("t1","trMVA");
+  t1->SetDirectory(0);
+  std::cout << "check init tree"<<std::endl;
   
+  t1->Branch("weight",&evSummary_.weight,"weight/F");
+  t1->Branch("m4b",&evSummary_.m4b_SR1,"m4b/F");
+  t1->Branch("pt4b",&evSummary_.pt4b_SR1,"pt4b/F");
+  t1->Branch("ht",&evSummary_.ht_SR1,"ht/F");
+  t1->Branch("met",&evSummary_.met_SR1,"met/F");
+  t1->Branch("ptf1",&evSummary_.ptf1,"ptf1/F");
+  t1->Branch("n_ad_j",&evSummary_.n_ad_j_SR1,"n_ad_j/F");  
+  t1->Branch("ptb1",&evSummary_.ptb1_SR1,"ptb1/F");
+  t1->Branch("btag3",&evSummary_.btag3_SR1,"btag3/F");
+   
+  t1->Branch("sd_mass1",&evSummary_.sd_mass1,"sd_mass1/F");
+  
+  t1->Branch("xbb1",&evSummary_.xbb1,"xbb1/F");
+  
+  t1->Branch("xbbccqq1",&evSummary_.xbbccqq1,"xbbccqq1/F");
+  t1->Branch("drjj",&evSummary_.drjj_SR1,"drjj/F");
+  
+  //2lepton
+  if(!run0lep){
+    t1->Branch("dilep_pt",&evSummary_.dilep_pt_SR1,"dilep_pt/F");
+    t1->Branch("drll",&evSummary_.drll_SR1,"drll/F");
+    t1->Branch("dphiHZ",&evSummary_.dphiHZ_SR1,"dphiHZ/F");
+    t1->Branch("dphi_met_l",&evSummary_.dphi_met_l_SR1,"dphi_met_l/F");
+    t1->Branch("dphi_met_j",&evSummary_.dphi_met_j_SR1,"dphi_met_j/F");
+ }
+ 
+ 
+  t2 = new TTree("t2","trMVA2");
+  t2->SetDirectory(0);
+  
+
+  t2->Branch("weight",&evSummary_.weight,"weight/F");
+  t2->Branch("m4b",&evSummary_.m4b,"m4b/F");
+  t2->Branch("pt4b",&evSummary_.pt4b,"pt4b/F");
+  t2->Branch("ht",&evSummary_.ht,"ht/F");
+  t2->Branch("met",&evSummary_.met,"met/F");
+  t2->Branch("n_ad_j",&evSummary_.n_ad_j,"n_ad_j/F");                          
+  t2->Branch("ptb1",&evSummary_.ptb1,"ptb1/F");
+  t2->Branch("ptb2",&evSummary_.ptb2,"ptb2/F");
+  t2->Branch("btag1",&evSummary_.btag1,"btag1/F");
+  t2->Branch("btag3",&evSummary_.btag3,"btag3/F");
+  t2->Branch("drjj",&evSummary_.drjj,"drjj/F");
+ 
+  if(!run0lep){
+    t2->Branch("dilep_pt",&evSummary_.dilep_pt,"dilep_pt/F");
+    t2->Branch("drll",&evSummary_.drll,"drll/F");
+    t2->Branch("dphiHZ",&evSummary_.dphiHZ,"dphiHZ/F");
+    t2->Branch("dphi_met_l",&evSummary_.dphi_met_l,"dphi_met_l/F");
+    t2->Branch("dphi_met_j",&evSummary_.dphi_met_j,"dphi_met_j/F");
+  }
+  t3 = new TTree("t3","trMVA3");
+  t3->SetDirectory(0);
+  t3->Branch("weight",&evSummary_.weight,"weight/F");
+  t3->Branch("m4b",&evSummary_.m4b,"m4b/F");
+  t3->Branch("pt4b",&evSummary_.pt4b,"pt4b/F");
+  t3->Branch("ht",&evSummary_.ht,"ht/F");
+  t3->Branch("met",&evSummary_.met,"met/F");
+  t3->Branch("n_ad_j",&evSummary_.n_ad_j,"n_ad_j/F");
+  t3->Branch("ptb1",&evSummary_.ptb1,"ptb1/F");
+  t3->Branch("ptb2",&evSummary_.ptb2,"ptb2/F");
+  t3->Branch("btag1",&evSummary_.btag1,"btag1/F");
+  t3->Branch("btag3",&evSummary_.btag3,"btag3/F");
+ 
+  if(!run0lep){
+    t3->Branch("dilep_pt",&evSummary_.dilep_pt,"dilep_pt/F");
+    t3->Branch("drll",&evSummary_.drll,"drll/F");
+    t3->Branch("dphiHZ",&evSummary_.dphiHZ,"dphiHZ/F");
+    t3->Branch("dphi_met_l",&evSummary_.dphi_met_l,"dphi_met_l/F");
+    t3->Branch("dphi_met_j",&evSummary_.dphi_met_j,"dphi_met_j/F");
+  }
+                                                                                                                               
+  std::cout << "branches check!" << std::endl;
   return true;
 }
 
@@ -191,55 +229,43 @@ bool MVAHandler::initTree(TString mvaout)
 void MVAHandler::fillTree()
 {
 
-  if ( evSummary_.is3b || evSummary_.is4b )
+  if(evSummary_.isSR1)
     {
-      if (evSummary_.isEven) {
-	if ( toSignal_e ) toSignal_e->Fill();
-      } else {
-	//      if (evSummary_.isOdd) {
-	if ( toSignal_o ) toSignal_o->Fill();
-      }
+      
+      t1->Fill();}
+  
+  if ( evSummary_.isSR2  )
+    {
+      t2->Fill();
+    }
+  if ( evSummary_.isSR3  )
+    {
+      t3->Fill();
+    }
+  if ( evSummary_.isSR2 &&  evSummary_.isSR3 )
+    {
+      std::cout<<"ouuuups"<<std::endl;
     }
 
-  // Fill MVA separately for 3b and 4b
-  if ( evSummary_.is3b && evSummary_.is4b )
-  {
-    std::cout << "One event can not be both in 3 and 4 b cat! Please check!" << std::endl;
-  }
-  else if ( evSummary_.is3b && !evSummary_.is4b ) 
-  {
-    // if ( to3b_e ) to3b_e->Fill();
-     if (evSummary_.isEven) {
-	if ( to3b_e ) to3b_e->Fill();
-     } else {
-       //      if (evSummary_.isOdd) {
-	if ( to3b_o ) to3b_o->Fill();
-     }
-    return ;
-  }
-  else if ( !evSummary_.is3b && evSummary_.is4b )
-  {
-    //  if ( to4b_e ) to4b_e->Fill();
-     if (evSummary_.isEven) {
-	if ( to4b_e ) to4b_e->Fill();
-     } else {
-       //      if (evSummary_.isOdd) {
-       if ( to4b_o ) to4b_o->Fill();
-     }
-    return ;
-  }
-  else return ;
-  return ;
+      std::cout << "tree fill check!" << std::endl;
+      
+      return;
+       
 }
 
-//
-void MVAHandler::writeTree()
+void MVAHandler::writeTree(TString mvaout)
 {
-  //TFile *MVAofile=TFile::Open( outURL, "recreate");  
-  toSignal_e->Write(); toSignal_o->Write();
-  to3b_e->Write(); to3b_o->Write();
-  to4b_e->Write(); to4b_o->Write();
+  TFile *MVAofile=TFile::Open( mvaout, "recreate");  
+  t1->SetDirectory(0);
+  t1->Write();
+ 
+  t2->SetDirectory(0);
+  t2->Write();
+  t3->SetDirectory(0);
+  t3->Write();
   MVAofile->Close();
+  std::cout << "write tree check!" << std::endl;
+ 
   return ;
 }
 //
