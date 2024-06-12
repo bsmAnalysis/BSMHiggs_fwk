@@ -30,6 +30,7 @@ runProcess = cms.PSet(
     reweightDYdR16 = cms.bool(@reweightDYdR16), 
     reweightTopPt = cms.bool(@reweightTopPt),
     runMVA = cms.bool(@runMVA),
+    run0lep = cms.bool(@run0lep),
     btagSFMethod = cms.int32(@btagSFMethod),
     ele_trgSF = cms.string("${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/weights/2017Feb-A-Popov_TriggerSF_Run2016All_v1.root"),
     ele_recoSF = cms.string("${CMSSW_BASE}/src/UserCode/bsmhiggs_fwk/data/weights/2017/egammaEffi.txt_EGM2D_runBCDEF_passingRECO.root"),
