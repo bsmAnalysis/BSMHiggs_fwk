@@ -1,5 +1,4 @@
 #define YEAR_2017
-
 #include <iostream>
 #include <map>
 
@@ -147,12 +146,12 @@ int main(int argc, char* argv[])
   TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";;Events", 6,0,6) );
   h->GetXaxis()->SetBinLabel(1,"Raw");
   if (run0lep) {
-    h->GetXaxis()->SetBinLabel(2,"0 lepton");
-    h->GetXaxis()->SetBinLabel(3,"MET cut>170");  
+  h->GetXaxis()->SetBinLabel(2,"0 lepton");
+  h->GetXaxis()->SetBinLabel(3,"MET cut>170");  
   } else {
-    h->GetXaxis()->SetBinLabel(2,"2 leptons");
-    h->GetXaxis()->SetBinLabel(3,"Z-mass window"); 
-  }
+  h->GetXaxis()->SetBinLabel(2,"2 leptons");
+  h->GetXaxis()->SetBinLabel(3,"Z-mass window"); 
+   }
   
   h->GetXaxis()->SetBinLabel(4,"=2 AK4 b-jets");
   h->GetXaxis()->SetBinLabel(5,">=3 AK4 b-jets");
@@ -160,7 +159,7 @@ int main(int argc, char* argv[])
  
   
 
-  TH1F *hr= new TH1F ("raw_eventflow", ";;Events", 5,1,6);
+  TH1F *hr= new TH1F ("raw_eventflow", ";;Events", 6,1,6);
   hr->GetXaxis()->SetBinLabel(1,"Raw");
   if (run0lep) {
     hr->GetXaxis()->SetBinLabel(2,"0 lepton");
@@ -174,7 +173,9 @@ int main(int argc, char* argv[])
   hr->GetXaxis()->SetBinLabel(5,">=3 AK4 b-jets");
   hr->GetXaxis()->SetBinLabel(6,">=1 f-jet and 1 AK4 b-jet");
  
-  
+  //MVA BDT
+  TH1F *bdt= new TH1F ("bdt", ";BDT;Events", 100, -1,1);
+  mon.addHistogram( new TH1F( "bdt", ";BDT;Events", 100, -1,1) );
 
   //reconstruction level
   //dR between leptons-jets/leptons-fjets/jets-fjets: before and after cross-cleaning
@@ -214,8 +215,8 @@ int main(int argc, char* argv[])
  
   
   //fjet and fjet matched soft drop mass 
-  mon.addHistogram(new TH1F("fj_sd_mass",";soft drop mass [GeV];Events",40,0,80));
-  mon.addHistogram( new TH2F("fj_pt_sd_mass", ";P_{T} [GeV];soft drop mass [Gev]",50,0,500, 40, 0,80));
+  mon.addHistogram(new TH1F("fj_sd_mass",";soft drop mass [GeV];Events",100,0,200));
+  mon.addHistogram( new TH2F("fj_pt_sd_mass", ";P_{T} [GeV];soft drop mass [Gev]",50,0,500, 100, 0,200));
   //B TAG JET
    mon.addHistogram( new TH1F("btag1", ";b-tag1;Events", 50, 0, 1));
   //fjet discriminants
@@ -312,7 +313,28 @@ int main(int argc, char* argv[])
   // MVAHandler myMVAHandler_;
   // if (runMVA) { myMVAHandler_.initTree(mvaout); }
 
-  
+  //####################################################################################################################
+    //###########################################           TMVAReader         ###########################################
+    //####################################################################################################################
+    
+  std::string chpath = "MVA_2lepton/";
+   if (run0lep) chpath =  "MVA_0lepton/";
+
+   TMVAReader SR1Reader;
+   SR1Reader.InitTMVAReader();
+   std::string SR1_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA1_BDT.weights.xml"; 
+   SR1Reader.SetupMVAReader( "SR1Class", SR1_xml_path );
+
+   TMVAReader SR2Reader;
+   SR2Reader.InitTMVAReader();
+   std::string SR2_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA2_BDT.weights.xml"; 
+   SR2Reader.SetupMVAReader( "SR2Class", SR2_xml_path );
+
+   TMVAReader SR3Reader;
+   SR3Reader.InitTMVAReader();
+   std::string SR3_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA3_BDT.weights.xml"; 
+   SR3Reader.SetupMVAReader( "SR3Class", SR3_xml_path );
+    
   
   //####################################################################################################################
   //###########################################           EVENT LOOP         ###########################################
@@ -326,7 +348,7 @@ int main(int argc, char* argv[])
   for( int iev=evStart; iev<evEnd; iev++) 
     {
 
-      if ( verbose ) printf("\n\n Event info %3d: \n",iev);
+      //if ( verbose ) printf("\n\n Event info %3d: \n",iev);
       //load the event content from tree
       summaryHandler_.getEntry(iev);
       DataEvtSummary_t &ev=summaryHandler_.getEvent();
@@ -384,7 +406,7 @@ int main(int argc, char* argv[])
       for (int imc=0; imc<ev.nmcparticles;imc++)	{
        if(verbose && iev <3) 
        {
-	 std::cout << " imcparticle " << imc << " : is a " << ev.mc_id[imc] << " , and has a mother at: " << ev.mc_momidx[imc]  <<"has status   "<<ev.mc_status[imc] << "  and has a 4-vector p = (" << ev.mc_en[imc] << ", " << ev.mc_px[imc] << ", " << ev.mc_py[imc] << ", " << ev.mc_pz[imc] << " ) " << std::endl;
+	 std::cout << " imcparticle " << imc << " : is a " << ev.mc_id[imc] <<",has a mom:"<<ev.mc_mom[imc]<< " , and has a mother at: " << ev.mc_momidx[imc]  <<"has status   "<<ev.mc_status[imc] << "  and has a 4-vector p = (" << ev.mc_en[imc] << ", " << ev.mc_px[imc] << ", " << ev.mc_py[imc] << ", " << ev.mc_pz[imc] << " ) " << std::endl;
        }
        
         if(ev.mc_id[imc]==25) 
@@ -730,14 +752,14 @@ int main(int argc, char* argv[])
     //-----End config ------------
     //raw events 
     
-    mon.fillHisto("eventflow","histo",0,weight);
+     mon.fillHisto("eventflow","histo",0,weight);
     
        // lepton cuts---------------------------------------------------
 
     if(run0lep) {
      if (vec_leptons.size() !=0) continue;
      n_event_lepton_test++;
-     mon.fillHisto("eventflow","histo",1,weight);
+     //mon.fillHisto("eventflow","histo",1,weight);
      hr->Fill(2);
     }
     else {
@@ -816,8 +838,9 @@ int main(int argc, char* argv[])
     
     //step 3 : // 
     Float_t m4b(-1) ,pt4b(-1.),m4b_SR1(-1) ,pt4b_SR1(-1.),ptf1(-1.),ptb1(-1.),ptb1_SR1(-1.),ptb2(-1),ht(-1.),dilep_pt(-1.),drll(-1.),dphiHZ(-1.),n_ad_j(-1.),met(-1.),
-      dilep_pt_SR1(-1.),drll_SR1(-1.),dphiHZ_SR1(-1.),n_ad_j_SR1(-1.),ht_SR1,met_SR1(-1.),btag1(-1),
+      dilep_pt_SR1(-1.),drll_SR1(-1.),dphiHZ_SR1(-1.),n_ad_j_SR1(-1.),ht_SR1(-1),met_SR1(-1.),btag1(-1),
       btag3(-1), btag3_SR1(-1),sd_mass1(-1.),xbb1(-2.),xbbccqq1(-2.),drjj(-1),dphi_met_j(-1),dphi_met_l(-1),drjj_SR1(-1),dphi_met_j_SR1(-1),dphi_met_l_SR1(-1);
+    float mvaBDT1(-10.0),mvaBDT2(-10.0);
     bool isSR2(false);
     bool isSR3(false);
     bool isSR1(false);
@@ -901,21 +924,70 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("eventflow","histo",4,weight);
           hr->Fill(5);
 	}
+	//MVAREADER
+	
+	if(isSR2)
+	  {
+	    if(!run0lep)
+	      {
+		mvaBDT2 = SR2Reader.GenReMVAReader
+		  (
+		   dilep_pt, drll,dphiHZ,dphi_met_l,dphi_met_j,
+		   m4b,pt4b, met,ht,drjj,n_ad_j,
+	       ptb1,ptb2 ,btag1,btag3,
+		   "SR2Class"
+		   );
+	      }
+	    else if(run0lep)
+	      {
+		mvaBDT2 = SR2Reader.GenReMVAReader
+                  (
+                   
+                   m4b,pt4b, met,ht,drjj,n_ad_j,
+		   ptb1,ptb2 ,btag1,btag3,
+                   "SR2Class"
+                   );
+	      }
+	    mon.fillHisto("bdt","sr2",mvaBDT2,weight);
+	 }
+	else if (isSR3)
+	  {
+	    if(!run0lep){
+	      mvaBDT2 = SR3Reader.GenReMVAReader
+		(
+		 dilep_pt, drll,dphiHZ,dphi_met_l,dphi_met_j,
+		 m4b,pt4b, met,ht,n_ad_j,
+		 ptb1,ptb2 ,btag1,btag3,
+		 "SR3Class"
+		 );
+	    }
+	    else if(run0lep)
+	      {
+		mvaBDT2 = SR3Reader.GenReMVAReader
+		  (
+		   
+		   m4b,pt4b, met,ht,n_ad_j,
+		   ptb1,ptb2 ,btag1,btag3,
+                 "SR3Class"
+		   );
+	      }
+	    mon.fillHisto("bdt","sr3",mvaBDT2,weight);
+	  }
+	 
       }
     
     if(isSR1)
       {
 	
-	
-	mon.fillHisto("mult","fjet_3",vec_fjet.size(),weight);
+     	mon.fillHisto("mult","fjet_3",vec_fjet.size(),weight);
 	mon.fillHisto("mult","bjet_cc_3",vec_bjets_cc.size(),weight);
 	mon.fillHisto("mult","jet_cc_3",vec_jet_cc.size(),weight);
 	mon.fillHisto("Ht","total",Ht(vec_jet_cc,vec_fjet),weight);
 	ht_SR1=Ht(vec_jet_cc,vec_fjet);
 	//met
 	met_SR1=ev.met_pt;
-	mon.fillHisto("met","step_3",ev.met_pt,weight);
-	mon.fillHisto("met_phi","step_3",ev.met_phi,weight);
+	//mon.fillHisto("met","step_3",ev.met_pt,weight);
+	//mon.fillHisto("met_phi","step_3",ev.met_phi,weight);
 	if(hasMETtrigger1||hasMETtrigger2){
 	  mon.fillHisto("met","step3_trig",ev.met_pt,weight);
 	  mon.fillHisto("met_phi","step3_trig",ev.met_phi,weight);
@@ -980,7 +1052,7 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("fj_sd_mass","1_mat",ev.fjet_softdropM[fjet_index[0].second],weight);
 	  mon.fillHisto("subcount","1_mat",ev.fjet_subjet_count[fjet_index[0].second],weight);
 	}
-	
+											      
 	//xbb discriminants
 	xbb1=ev.fjet_btag10[fjet_index[0].second]/(ev.fjet_btag10[fjet_index[0].second]+ev.fjet_btag13[fjet_index[0].second]+ev.fjet_btag14[fjet_index[0].second]+ev.fjet_btag15[fjet_index[0].second]+ev.fjet_btag16[fjet_index[0].second]+ev.fjet_btag17[fjet_index[0].second]);
 	if(TMath::IsNaN(xbb1)||std::isinf(xbb1))xbb1=-1;
@@ -991,7 +1063,13 @@ int main(int argc, char* argv[])
 	mon.fillHisto("fjet_XbbXccXqq_pt","1",vec_fjet[0].Pt(),xbbccqq1);
 	mon.fillHisto("fjet_Xbb_pt","1",vec_fjet[0].Pt(),xbb1,weight);
 	
-	
+	if(verbose)
+          {
+            if(ev.fjet_softdropM[fjet_index[0].second]<1)
+              {
+		std::cout << " this f-jet has pt " <<vec_fjet[0].Pt()  << ", no of sujets  " << ev.fjet_subjet_count[fjet_index[0].second]<<"sd_mass" <<ev.fjet_softdropM[fjet_index[0].second]<< " , Xbbccqq: " <<xbbccqq1<<",and matched;: "<< matched<<std::endl;
+	      }
+	  }
        
 	btag3_SR1=ev.jet_btag1[bjet_index_cc[0].second];
 	ptb1_SR1=vec_bjets_cc[0].Pt();
@@ -1007,9 +1085,9 @@ int main(int argc, char* argv[])
 	if(vec_bjets_cc.size()==1){
 	  m4b_SR1=(vec_bjets_cc[0]+vec_fjet[0]).M();
 	  pt4b_SR1=(vec_bjets_cc[0]+vec_fjet[0]).Pt();
-	  dphi_met_j_SR1=min(fabs(deltaPhi(vec_fjet[0].Phi(),ev.met_phi)),fabs(deltaPhi(vec_bjets_cc[0].Phi(),ev.met_phi)));
 	  
 	  if(!run0lep){
+	    dphi_met_j_SR1=min(fabs(deltaPhi(vec_fjet[0].Phi(),ev.met_phi)),fabs(deltaPhi(vec_bjets_cc[0].Phi(),ev.met_phi)));
 	    if(fabs((vec_fjet[0]+vec_bjets_cc[0]).Phi()-(vec_leptons[0]+vec_leptons[1]).Phi())<TMath::Pi())
 	      {
 		dphiHZ_SR1=std::fabs((vec_fjet[0]+vec_bjets_cc[0]).Phi()-(vec_leptons[0]+vec_leptons[1]).Phi());
@@ -1027,10 +1105,11 @@ int main(int argc, char* argv[])
 	  
 	  m4b_SR1=(vec_bjets_cc[0]+vec_bjets_cc[1]+vec_fjet[0]).M();
 	  pt4b_SR1=(vec_bjets_cc[0]+vec_bjets_cc[1]+vec_fjet[0]).Pt();
-	  float dphi_met_j1=min(fabs(deltaPhi(vec_fjet[0].Phi(),ev.met_phi)),fabs(deltaPhi(vec_bjets_cc[0].Phi(),ev.met_phi)));
-	  float dphi_met_j2=min(fabs(deltaPhi(vec_bjets_cc[0].Phi(),ev.met_phi)),fabs(deltaPhi(vec_bjets_cc[1].Phi(),ev.met_phi)));
-	  dphi_met_j_SR1=min(dphi_met_j1,dphi_met_j2);
+	  
 	  if(!run0lep){
+	    float dphi_met_j1=min(fabs(deltaPhi(vec_fjet[0].Phi(),ev.met_phi)),fabs(deltaPhi(vec_bjets_cc[0].Phi(),ev.met_phi)));
+	    float dphi_met_j2=min(fabs(deltaPhi(vec_bjets_cc[0].Phi(),ev.met_phi)),fabs(deltaPhi(vec_bjets_cc[1].Phi(),ev.met_phi)));
+	    dphi_met_j_SR1=min(dphi_met_j1,dphi_met_j2);
 	    if(std::fabs((vec_fjet[0]+vec_bjets_cc[0]+vec_bjets_cc[1]).Phi()-(vec_leptons[0]+vec_leptons[1]).Phi())< TMath::Pi())
 	      {
 		dphiHZ_SR1=std::fabs((vec_fjet[0]+vec_bjets_cc[0]+vec_bjets_cc[1]).Phi()-(vec_leptons[0]+vec_leptons[1]).Phi());
@@ -1045,9 +1124,30 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("m_bbb","sr1",(vec_bjets_cc[0]+vec_bjets_cc[1]+vec_fjet[0]).M(),weight);
 	  mon.fillHisto("pt_bbb","sr1",(vec_bjets_cc[0]+vec_bjets_cc[1]+vec_fjet[0]).Pt(),weight);
 	  
-	}	
+	}
+	if(TMath::IsNaN(sd_mass1)|| isinf(sd_mass1))continue;
+	if(run0lep)
+	  {	  
+	    mvaBDT1 = SR1Reader.GenReMVAReader
+	      (
+	       
+	    m4b_SR1,pt4b_SR1, met_SR1,ht_SR1,
+	    ptf1,sd_mass1,xbb1, xbbccqq1,n_ad_j_SR1,ptb1_SR1,btag3_SR1,drjj_SR1,"S\
+R1Class");
+	  }
+	else if(! run0lep)
+	  {
+	    mvaBDT1 = SR1Reader.GenReMVAReader
+	      (
+	       dilep_pt_SR1, drll_SR1,dphiHZ_SR1,dphi_met_l_SR1,dphi_met_j_SR1,
+	       m4b_SR1,pt4b_SR1, met_SR1,ht_SR1,
+	       ptf1,sd_mass1,xbb1, xbbccqq1,n_ad_j_SR1,ptb1_SR1,btag3_SR1,drjj_SR1,"SR1Class");
+	    mon.fillHisto("bdt","sr1",mvaBDT1,weight);
+	  }
+	
       }
-    
+     //##############################################################################
+  
     
     if (runMVA) {
       
