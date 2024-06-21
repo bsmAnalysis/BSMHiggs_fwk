@@ -14,9 +14,9 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_ = t;
 
     //event info
-    t_->Branch("run",           &evSummary_.run,            "run/I");
-    t_->Branch("lumi",          &evSummary_.lumi,           "lumi/I");
-    t_->Branch("event",         &evSummary_.event,          "event/L");
+    //    t_->Branch("run",           &evSummary_.run,            "run/I");
+    //  t_->Branch("lumi",          &evSummary_.lumi,           "lumi/I");
+    //  t_->Branch("event",         &evSummary_.event,          "event/L");
     //    t_->Branch("puWeight",      &evSummary_.puWeight,       "puWeight/F"); 
     /* tmp
     t_->Branch("curAvgInstLumi",&evSummary_.curAvgInstLumi, "curAvgInstLumi/F");
@@ -26,10 +26,10 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("triggerType",   &evSummary_.triggerType,    "triggerType/I");
 
     //primary vertex
-    t_->Branch("nvtx",          &evSummary_.nvtx,           "nvtx/I");
-    t_->Branch("vtx_x",         &evSummary_.vtx_x,          "vtx_x/F");
-    t_->Branch("vtx_y",         &evSummary_.vtx_y,          "vtx_y/F");
-    t_->Branch("vtx_z",         &evSummary_.vtx_z,          "vtx_z/F");
+    //   t_->Branch("nvtx",          &evSummary_.nvtx,           "nvtx/I");
+    //  t_->Branch("vtx_x",         &evSummary_.vtx_x,          "vtx_x/F");
+    // t_->Branch("vtx_y",         &evSummary_.vtx_y,          "vtx_y/F");
+    // t_->Branch("vtx_z",         &evSummary_.vtx_z,          "vtx_z/F");
 
     /*
     t_->Branch("fixedGridRhoAll",                           &evSummary_.fixedGridRhoAll,                        "fixedGridRhoAll/F");
@@ -42,10 +42,10 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
 
     //generator level info
      
-    t_->Branch("ngenITpu",      &evSummary_.ngenITpu,       "ngenITpu/I");
-    t_->Branch("ngenOOTpu",     &evSummary_.ngenOOTpu,      "ngenOOTpu/I");
-    t_->Branch("ngenOOTpum1",   &evSummary_.ngenOOTpum1,    "ngenOOTpum1/I");
-    t_->Branch("ngenTruepu",    &evSummary_.ngenTruepu,     "ngenTruepu/I");
+    //    t_->Branch("ngenITpu",      &evSummary_.ngenITpu,       "ngenITpu/I");
+    //    t_->Branch("ngenOOTpu",     &evSummary_.ngenOOTpu,      "ngenOOTpu/I");
+    //    t_->Branch("ngenOOTpum1",   &evSummary_.ngenOOTpum1,    "ngenOOTpum1/I");
+    //    t_->Branch("ngenTruepu",    &evSummary_.ngenTruepu,     "ngenTruepu/I");
     /*r
     t_->Branch("pthat",         &evSummary_.pthat,          "pthat/F");
     t_->Branch("genWeight",     &evSummary_.genWeight,      "genWeight/F");
@@ -136,8 +136,8 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("mn_passIdLoose",        evSummary_.mn_passIdLoose,          "mn_passIdLoose[mn]/O");
     ///t_->Branch("mn_passSoftMuon",       evSummary_.mn_passSoftMuon,         "mn_passSoftMuon[mn]/O");
     t_->Branch("mn_passIso",            evSummary_.mn_passIso,              "mn_passIso[mn]/O");
-    t_->Branch("mn_relIso",             evSummary_.mn_relIso,               "mn_relIso[mn]/F");
-    t_->Branch("mn_trkrelIso",          evSummary_.mn_trkrelIso,            "mn_trkrelIso[mn]/F");
+    // t_->Branch("mn_relIso",             evSummary_.mn_relIso,               "mn_relIso[mn]/F");
+    //t_->Branch("mn_trkrelIso",          evSummary_.mn_trkrelIso,            "mn_trkrelIso[mn]/F");
 
     //    t_->Branch("mn_nMatches",                   evSummary_.mn_nMatches,                     "mn_nMatches[mn]/F");
     //t_->Branch("mn_nMatchedStations",           evSummary_.mn_nMatchedStations,             "mn_nMatchedStations[mn]/F");
@@ -304,6 +304,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("fjet_py",                 evSummary_.fjet_py,                 "fjet_py[fjet]/F");
     t_->Branch("fjet_pz",                 evSummary_.fjet_pz,                 "fjet_pz[fjet]/F");
     t_->Branch("fjet_en",                 evSummary_.fjet_en,                 "fjet_en[fjet]/F");
+    /*
     t_->Branch("fjet_btag0",              evSummary_.fjet_btag0,              "fjet_btag0[fjet]/F");  
     t_->Branch("fjet_btag1",              evSummary_.fjet_btag1,              "fjet_btag1[fjet]/F");  
     t_->Branch("fjet_btag2",              evSummary_.fjet_btag2,              "fjet_btag2[fjet]/F");
@@ -314,6 +315,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("fjet_btag7",              evSummary_.fjet_btag7,              "fjet_btag7[fjet]/F");
     t_->Branch("fjet_btag8",              evSummary_.fjet_btag8,              "fjet_btag8[fjet]/F");
     t_->Branch("fjet_btag9",              evSummary_.fjet_btag9,              "fjet_btag9[fjet]/F");
+    */
     t_->Branch("fjet_btag10",             evSummary_.fjet_btag10,             "fjet_btag10[fjet]/F");
     t_->Branch("fjet_btag11",             evSummary_.fjet_btag11,             "fjet_btag11[fjet]/F");
     t_->Branch("fjet_btag12",             evSummary_.fjet_btag12,             "fjet_btag12[fjet]/F");
@@ -326,7 +328,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
 
 
 
-    t_->Branch("fjet_genpt",              evSummary_.fjet_genpt,              "fjet_genpt[fjet]/F");
+    // t_->Branch("fjet_genpt",              evSummary_.fjet_genpt,              "fjet_genpt[fjet]/F");
     ///t_->Branch("fjet_prunedM",            evSummary_.fjet_prunedM,            "fjet_prunedM[fjet]/F");
     t_->Branch("fjet_softdropM",          evSummary_.fjet_softdropM,          "fjet_softdropM[fjet]/F"); 
     //t_->Branch("fjet_trimmeen_dM",         evSummary_.fjet_trimmedM,           "fjet_trimmedM[fjet]/F");
@@ -335,6 +337,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("fjet_tau2",               evSummary_.fjet_tau2,               "fjet_tau2[fjet]/F");
     t_->Branch("fjet_tau3",               evSummary_.fjet_tau3,               "fjet_tau3[fjet]/F");
     t_->Branch("fjet_tau4",               evSummary_.fjet_tau4,               "fjet_tau4[fjet]/F");
+    /*
     t_->Branch("fjet_mother_id",          evSummary_.fjet_mother_id,          "fjet_mother_id[fjet]/I"); 
     t_->Branch("fjet_parton_px",          evSummary_.fjet_parton_px,          "fjet_parton_px[fjet]/F");
     t_->Branch("fjet_parton_py",          evSummary_.fjet_parton_py,          "fjet_parton_py[fjet]/F");
@@ -342,7 +345,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("fjet_parton_en",          evSummary_.fjet_parton_en,          "fjet_parton_en[fjet]/F");
     t_->Branch("fjet_partonFlavour",      evSummary_.fjet_partonFlavour,      "fjet_partonFlavour[fjet]/I");
     t_->Branch("fjet_hadronFlavour",      evSummary_.fjet_hadronFlavour,      "fjet_hadronFlavour[fjet]/I");
-    
+    */
     t_->Branch("fjet_chf",  		  evSummary_.fjet_chf,		      "fjet_chf[fjet]/F");
     t_->Branch("fjet_nhf",                evSummary_.fjet_nhf,                "fjet_nhf[fjet]/F");
     t_->Branch("fjet_phf",                evSummary_.fjet_phf,                "fjet_phf[fjet]/F");
@@ -399,9 +402,11 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
 
 
     //event info
+    /*
     t_->SetBranchAddress("run",             &evSummary_.run);
     t_->SetBranchAddress("lumi",            &evSummary_.lumi);
     t_->SetBranchAddress("event",           &evSummary_.event);
+    */
     //t_->SetBranchAddress("puWeight",        &evSummary_.puWeight);  
     /* tmp
     t_->SetBranchAddress("curAvgInstLumi",  &evSummary_.curAvgInstLumi);
@@ -411,11 +416,12 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("triggerType",     &evSummary_.triggerType);
 
     //primary vertex
+    /*
     t_->SetBranchAddress("nvtx",            &evSummary_.nvtx);
     t_->SetBranchAddress("vtx_x",           &evSummary_.vtx_x);
     t_->SetBranchAddress("vtx_y",           &evSummary_.vtx_y);
     t_->SetBranchAddress("vtx_z",           &evSummary_.vtx_z);
-
+    */
     /*
     t_->SetBranchAddress("fixedGridRhoAll",                           &evSummary_.fixedGridRhoAll);
     t_->SetBranchAddress("fixedGridRhoFastjetAll",                    &evSummary_.fixedGridRhoFastjetAll);
@@ -425,10 +431,12 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("fixedGridRhoFastjetCentralNeutral",         &evSummary_.fixedGridRhoFastjetCentralNeutral);
     */
     //generator level info
+    /*
     t_->SetBranchAddress("ngenITpu",        &evSummary_.ngenITpu);
     t_->SetBranchAddress("ngenOOTpu",       &evSummary_.ngenOOTpu);
     t_->SetBranchAddress("ngenOOTpum1",     &evSummary_.ngenOOTpum1);
     t_->SetBranchAddress("ngenTruepu",      &evSummary_.ngenTruepu);
+    */
     /*
     t_->SetBranchAddress("pthat",           &evSummary_.pthat);
     t_->SetBranchAddress("genWeight",       &evSummary_.genWeight);
@@ -524,8 +532,8 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("mn_passIdLoose",  evSummary_.mn_passIdLoose);
     ///t_->SetBranchAddress("mn_passSoftMuon",  evSummary_.mn_passSoftMuon);
     t_->SetBranchAddress("mn_passIso",  evSummary_.mn_passIso);
-    t_->SetBranchAddress("mn_relIso",  evSummary_.mn_relIso);
-    t_->SetBranchAddress("mn_trkrelIso",  evSummary_.mn_trkrelIso);
+    //    t_->SetBranchAddress("mn_relIso",  evSummary_.mn_relIso);
+    //    t_->SetBranchAddress("mn_trkrelIso",  evSummary_.mn_trkrelIso);
     //    t_->SetBranchAddress("mn_nMatches",                   evSummary_.mn_nMatches);
     //t_->SetBranchAddress("mn_nMatchedStations",           evSummary_.mn_nMatchedStations);
     ///t_->SetBranchAddress("mn_validMuonHits",              evSummary_.mn_validMuonHits);
@@ -712,6 +720,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("fjet_py",                 evSummary_.fjet_py);
     t_->SetBranchAddress("fjet_pz",                 evSummary_.fjet_pz);
     t_->SetBranchAddress("fjet_en",                 evSummary_.fjet_en);
+    /*
     t_->SetBranchAddress("fjet_btag0",              evSummary_.fjet_btag0);     
     t_->SetBranchAddress("fjet_btag1",              evSummary_.fjet_btag1);
     t_->SetBranchAddress("fjet_btag2",              evSummary_.fjet_btag2);
@@ -722,6 +731,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("fjet_btag7",              evSummary_.fjet_btag7);
     t_->SetBranchAddress("fjet_btag8",              evSummary_.fjet_btag8);
     t_->SetBranchAddress("fjet_btag9",              evSummary_.fjet_btag9);
+    */
     t_->SetBranchAddress("fjet_btag10",             evSummary_.fjet_btag10);
     t_->SetBranchAddress("fjet_btag11",             evSummary_.fjet_btag11);
     t_->SetBranchAddress("fjet_btag12",             evSummary_.fjet_btag12);
@@ -732,7 +742,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("fjet_btag17",             evSummary_.fjet_btag17);
 
 
-    t_->SetBranchAddress("fjet_genpt",              evSummary_.fjet_genpt);
+    //    t_->SetBranchAddress("fjet_genpt",              evSummary_.fjet_genpt);
     t_->SetBranchAddress("fjet_prunedM",            evSummary_.fjet_prunedM);
     t_->SetBranchAddress("fjet_softdropM",          evSummary_.fjet_softdropM);
     //t_->SetBranchAddress("fjet_trimmedM",           evSummary_.fjet_trimmedM);
@@ -741,6 +751,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("fjet_tau2",               evSummary_.fjet_tau2);
     t_->SetBranchAddress("fjet_tau3",               evSummary_.fjet_tau3);
     t_->SetBranchAddress("fjet_tau4",               evSummary_.fjet_tau4);
+    /*
     t_->SetBranchAddress("fjet_mother_id",          evSummary_.fjet_mother_id);
     t_->SetBranchAddress("fjet_partonFlavour",      evSummary_.fjet_partonFlavour);
     t_->SetBranchAddress("fjet_hadronFlavour",      evSummary_.fjet_hadronFlavour); 
@@ -748,7 +759,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("fjet_parton_py",          evSummary_.fjet_parton_py);
     t_->SetBranchAddress("fjet_parton_pz",          evSummary_.fjet_parton_pz);
     t_->SetBranchAddress("fjet_parton_en",          evSummary_.fjet_parton_en);
-    
+    */
     t_->SetBranchAddress("fjet_chf",                evSummary_.fjet_chf);
     t_->SetBranchAddress("fjet_nhf",                evSummary_.fjet_nhf);
     t_->SetBranchAddress("fjet_phf",                evSummary_.fjet_phf);

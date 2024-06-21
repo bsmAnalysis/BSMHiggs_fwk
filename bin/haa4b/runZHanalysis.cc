@@ -11,6 +11,7 @@
 #include "UserCode/bsmhiggs_fwk/interface/DataEvtSummaryHandler.h"
 #include "UserCode/bsmhiggs_fwk/interface/MVAHandler.h"
 #include "UserCode/bsmhiggs_fwk/interface/TMVAReader.h"
+#include "UserCode/bsmhiggs_fwk/interface/TMVAReader_zh.h"
 #include "UserCode/bsmhiggs_fwk/interface/BSMPhysicsEvent.h"
 #include "UserCode/bsmhiggs_fwk/interface/SmartSelectionMonitor.h"
 #include "UserCode/bsmhiggs_fwk/interface/PDFInfo.h"
@@ -1125,15 +1126,14 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("pt_bbb","sr1",(vec_bjets_cc[0]+vec_bjets_cc[1]+vec_fjet[0]).Pt(),weight);
 	  
 	}
-	if(TMath::IsNaN(sd_mass1)|| isinf(sd_mass1))continue;
+       
 	if(run0lep)
 	  {	  
 	    mvaBDT1 = SR1Reader.GenReMVAReader
 	      (
 	       
 	    m4b_SR1,pt4b_SR1, met_SR1,ht_SR1,
-	    ptf1,sd_mass1,xbb1, xbbccqq1,n_ad_j_SR1,ptb1_SR1,btag3_SR1,drjj_SR1,"S\
-R1Class");
+	    ptf1,sd_mass1,xbb1, xbbccqq1,n_ad_j_SR1,ptb1_SR1,btag3_SR1,drjj_SR1,"SR1Class");
 	  }
 	else if(! run0lep)
 	  {
@@ -1142,9 +1142,9 @@ R1Class");
 	       dilep_pt_SR1, drll_SR1,dphiHZ_SR1,dphi_met_l_SR1,dphi_met_j_SR1,
 	       m4b_SR1,pt4b_SR1, met_SR1,ht_SR1,
 	       ptf1,sd_mass1,xbb1, xbbccqq1,n_ad_j_SR1,ptb1_SR1,btag3_SR1,drjj_SR1,"SR1Class");
-	    mon.fillHisto("bdt","sr1",mvaBDT1,weight);
+	    
 	  }
-	
+	mon.fillHisto("bdt","sr1",mvaBDT1,weight);
       }
      //##############################################################################
   
