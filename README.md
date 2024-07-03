@@ -13,7 +13,7 @@ git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git UserCode/bsmhiggs_fwk
 #git clone https://github.com/bsmAnalysis/BSMHiggs_fwk.git -b ul_run2_branch UserCode/bsmhiggs_fwk
 
 cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
-git checkout -b <new branch name>   #copy the branch to a new one to host future modifications (ease pull request and code merging)
+#git checkout -b <new branch name>   #copy the branch to a new one to host future modifications (ease pull request and code merging)
 
 #Switch CMSSW_80X to CMSSW_10X by running: (without this compile fails)
 cd test/haa4b
