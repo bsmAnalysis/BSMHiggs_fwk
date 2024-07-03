@@ -17,7 +17,7 @@ cd $CMSSW_BASE/src/UserCode/bsmhiggs_fwk
 
 #Switch CMSSW_80X to CMSSW_10X by running: (without this compile fails)
 cd test/haa4b
-sh ./converter.sh # input 1 when you are prompted to select
+#sh ./converter.sh # input 1 when you are prompted to select
 
 cd $CMSSW_BASE/src
 
