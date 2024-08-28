@@ -673,102 +673,7 @@
             ],
             "mctruthmode": 5,
             "tag": "t#bar{t} + b#bar{b}"
-        },
-        {
-            "color": 408,
-            "data": [
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_TTTo2L2Nu_powheg_2017",
-                    "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 68595608,
-                    "xsec": 88.29
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_TTToSemiLeptonic_powheg_2017",
-                    "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 43379133,
-                    "xsec": 365.34
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17MiniAODv2-106X_mc2017_realistic_v9-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_TTToHadronic_powheg_2017",
-                    "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 129211204,
-                    "xsec": 377.96
-                }
-            ],
-            "isdata": false,
-            "keys": [
-                "haa_mcbased"
-            ],
-            "mctruthmode": 4,
-            "tag": "t#bar{t} + c#bar{c}"
-        },
-        {
-            "color": 406,
-            "data": [
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_TTTo2L2Nu_powheg_2017",
-                    "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 68595608,
-                    "xsec": 88.29
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17MiniAODv2-106X_mc2017_realistic_v9-v1/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_TTToSemiLeptonic_powheg_2017",
-                    "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 43379133,
-                    "xsec": 365.34
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL17MiniAODv2-106X_mc2017_realistic_v9-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_TTToHadronic_powheg_2017",
-                    "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 129211204,
-                    "xsec": 377.96
-                }
-            ],
-            "isdata": false,
-            "keys": [
-                "haa_prod_TT",
-                "haa_mcbased"
-            ],
-            "mctruthmode": 1,
-            "tag": "t#bar{t} + light"
-        },
+        },                  
         {
             "color": 624,
             "data": [
@@ -1185,7 +1090,7 @@
                     "dset": [
                         "/QCD_Pt-170to300_EMEnriched_TuneCP5_13TeV-pythia8/RunIISummer20UL17MiniAODv2-106X_mc2017_realistic_v9-v2/MINIAODSIM"
                     ],
-                    "dtag": "MC13TeV_QCD_Pt300ToInf_EMEnr_2017",
+                    "dtag": "MC13TeV_QCD_Pt170To300_EMEnr_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 2874295,
                     "xsec": 1350
@@ -1318,7 +1223,7 @@
                     "dtag": "MC13TeV_Wh_amass12_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "1.37*0.61*1.076"
+                    "xsec": "1.37"
                 },
                 {
                     "br": [
@@ -1330,7 +1235,7 @@
                     "dtag": "MC13TeV_Zh_amass12_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "0.8839*0.75*1.0474"
+                    "xsec": "0.8839"
                 }
             ],
             "fill": 0,
@@ -1361,7 +1266,7 @@
                     "dtag": "MC13TeV_Wh_amass15_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "1.37*0.61*1.076"
+                    "xsec": "1.37"
                 },
                 {
                     "br": [
@@ -1373,7 +1278,7 @@
                     "dtag": "MC13TeV_Zh_amass15_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "0.8839*0.75*1.0474"
+                    "xsec": "0.8839"
                 }
             ],
             "fill": 0,
@@ -1404,7 +1309,7 @@
                     "dtag": "MC13TeV_Wh_amass20_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "1.37*0.61*1.076"
+                    "xsec": "1.37"
                 },
                 {
                     "br": [
@@ -1416,7 +1321,7 @@
                     "dtag": "MC13TeV_Zh_amass20_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "0.8839*0.75*1.0474"
+                    "xsec": "0.8839"
                 }
             ],
             "fill": 0,
@@ -1446,7 +1351,7 @@
                     "dtag": "MC13TeV_Wh_amass25_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "1.37*0.61*1.076"
+                    "xsec": "1.37"
                 },
                 {
                     "br": [
@@ -1458,7 +1363,7 @@
                     "dtag": "MC13TeV_Zh_amass25_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "0.8839*0.75*1.0474"
+                    "xsec": "0.8839"
                 }
             ],
             "fill": 0,
@@ -1489,7 +1394,7 @@
                     "dtag": "MC13TeV_Wh_amass30_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "1.37*0.61*1.076"
+                    "xsec": "1.37"
                 },
                 {
                     "br": [
@@ -1501,7 +1406,7 @@
                     "dtag": "MC13TeV_Zh_amass30_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "0.8839*0.75*1.0474"
+                    "xsec": "0.8839"
                 }
             ],
             "fill": 0,
@@ -1532,7 +1437,7 @@
                     "dtag": "MC13TeV_Wh_amass35_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "1.37*0.61*1.076"
+                    "xsec": "1.37"
                 },
                 {
                     "br": [
@@ -1544,7 +1449,7 @@
                     "dtag": "MC13TeV_Zh_amass35_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "0.8839*0.75*1.0474"
+                    "xsec": "0.8839"
                 }
             ],
             "fill": 0,
@@ -1575,7 +1480,7 @@
                     "dtag": "MC13TeV_Wh_amass40_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "1.37*0.61*1.076"
+                    "xsec": "1.37"
                 },
                 {
                     "br": [
@@ -1587,7 +1492,7 @@
                     "dtag": "MC13TeV_Zh_amass40_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "0.8839*0.75*1.0474"
+                    "xsec": "0.8839"
                 }
             ],
             "fill": 0,
@@ -1618,7 +1523,7 @@
                     "dtag": "MC13TeV_Wh_amass45_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "1.37*0.61*1.076"
+                    "xsec": "1.37"
                 },
                 {
                     "br": [
@@ -1630,7 +1535,7 @@
                     "dtag": "MC13TeV_Zh_amass45_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "0.8839*0.75*1.0474"
+                    "xsec": "0.8839"
                 }
             ],
             "fill": 0,
@@ -1661,7 +1566,7 @@
                     "dtag": "MC13TeV_Wh_amass50_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "1.37*0.61*1.076"
+                    "xsec": "1.37"
                 },
                 {
                     "br": [
@@ -1673,7 +1578,7 @@
                     "dtag": "MC13TeV_Zh_amass50_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "0.8839*0.75*1.0474"
+                    "xsec": "0.8839"
                 }
             ],
             "fill": 0,
@@ -1704,7 +1609,7 @@
                     "dtag": "MC13TeV_Wh_amass55_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "1.37*0.61*1.076"
+                    "xsec": "1.37"
                 },
                 {
                     "br": [
@@ -1716,7 +1621,7 @@
                     "dtag": "MC13TeV_Zh_amass55_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "0.8839*0.75*1.0474"
+                    "xsec": "0.8839"
                 }
             ],
             "fill": 0,
@@ -1747,7 +1652,7 @@
                     "dtag": "MC13TeV_Wh_amass60_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "1.37*0.61*1.076"
+                    "xsec": "1.37"
                 },
                 {
                     "br": [
@@ -1759,7 +1664,7 @@
                     "dtag": "MC13TeV_Zh_amass60_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 25000,
-                    "xsec": "0.8839*0.75*1.0474"
+                    "xsec": "0.8839"
                 }
             ],
             "fill": 0,
@@ -1790,7 +1695,7 @@
                     "dtag": "MC13TeV_VBFh_amass12_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 50000,
-                    "xsec": 0.03288
+                    "xsec": "3.78"
                 }
             ],
             "fill": 0,
@@ -1821,7 +1726,7 @@
                     "dtag": "MC13TeV_VBFh_amass15_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 50000,
-                    "xsec": 0.06821
+                    "xsec": "3.78"
                 }
             ],
             "fill": 0,
@@ -1852,7 +1757,7 @@
                     "dtag": "MC13TeV_VBFh_amass20_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 50000,
-                    "xsec": 0.1422
+                    "xsec": "3.78"
                 }
             ],
             "fill": 0,
@@ -1882,7 +1787,7 @@
                     "dtag": "MC13TeV_VBFh_amass25_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 50000,
-                    "xsec": 0.2314
+                    "xsec": "3.78"
                 }
             ],
             "fill": 0,
@@ -1913,7 +1818,7 @@
                     "dtag": "MC13TeV_VBFh_amass30_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 50000,
-                    "xsec": 0.3329
+                    "xsec": "3.78"
                 }
             ],
             "fill": 0,
@@ -1944,7 +1849,7 @@
                     "dtag": "MC13TeV_VBFh_amass35_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 50000,
-                    "xsec": 0.4376
+                    "xsec": "3.78"
                 }
             ],
             "fill": 0,
@@ -1975,7 +1880,7 @@
                     "dtag": "MC13TeV_VBFh_amass40_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 50000,
-                    "xsec": 0.5389
+                    "xsec": "3.78"
                 }
             ],
             "fill": 0,
@@ -2006,7 +1911,7 @@
                     "dtag": "MC13TeV_VBFh_amass45_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 50000,
-                    "xsec": 0.6219
+                    "xsec": "3.78"
                 }
             ],
             "fill": 0,
@@ -2037,7 +1942,7 @@
                     "dtag": "MC13TeV_VBFh_amass50_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 50000,
-                    "xsec": 0.6652
+                    "xsec": "3.78"
                 }
             ],
             "fill": 0,
@@ -2068,7 +1973,7 @@
                     "dtag": "MC13TeV_VBFh_amass55_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 50000,
-                    "xsec": 0.639
+                    "xsec": "3.78"
                 }
             ],
             "fill": 0,
@@ -2099,7 +2004,7 @@
                     "dtag": "MC13TeV_VBFh_amass60_2017",
                     "gtag": "106X_mc2017_realistic_v10",
                     "nevts": 50000,
-                    "xsec": 0.4516
+                    "xsec": "3.78"
                 }
             ],
             "fill": 0,

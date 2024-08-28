@@ -5,6 +5,7 @@ SCRIPT=$(readlink -f $1)
 SCRIPTPATH=`dirname $SCRIPT`
 ARCH=${SCRIPTPATH##/*/}
 CMSSW=${SCRIPTPATH}/../../src
+source /cvmfs/cms.cern.ch/cmsset_default.sh
 
 #configure environment
 cd $CMSSW

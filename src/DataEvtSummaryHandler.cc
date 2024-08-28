@@ -69,10 +69,10 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("weight_QCDscale_muR0p5_muF0p5",     &evSummary_.weight_QCDscale_muR0p5_muF0p5,      "weight_QCDscale_muR0p5_muF0p5/F");
     */
 
-    t_->Branch("npdfs", &evSummary_.npdfs, "npdfs/I");
+    /* t_->Branch("npdfs", &evSummary_.npdfs, "npdfs/I");
     t_->Branch("pdfWeights", evSummary_.pdfWeights, "pdfWeights[npdfs]/F");
     t_->Branch("nalphaS", &evSummary_.nalphaS, "nalphaS/I");
-    t_->Branch("alphaSWeights", evSummary_.alphaSWeights, "alphaSWeights[nalphaS]/F");
+    t_->Branch("alphaSWeights", evSummary_.alphaSWeights, "alphaSWeights[nalphaS]/F"); */
     
     //mc truth
     t_->Branch("nmcparticles",  &evSummary_.nmcparticles,   "nmcparticles/I");
@@ -244,7 +244,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("jet_py",                evSummary_.jet_py,                  "jet_py[jet]/F");
     t_->Branch("jet_pz",                evSummary_.jet_pz,                  "jet_pz[jet]/F");
     t_->Branch("jet_en",                evSummary_.jet_en,                  "jet_en[jet]/F");
-    t_->Branch("jet_btag0",             evSummary_.jet_btag0,               "jet_btag0[jet]/F");
+    //t_->Branch("jet_btag0",             evSummary_.jet_btag0,               "jet_btag0[jet]/F");
     t_->Branch("jet_btag1",             evSummary_.jet_btag1,               "jet_btag1[jet]/F");
     /*
     t_->Branch("jet_btag1",             evSummary_.jet_btag1,               "jet_btag1[jet]/F");
@@ -258,17 +258,17 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("jet_btag9",             evSummary_.jet_btag9,               "jet_btag9[jet]/F");
     t_->Branch("jet_btag10",            evSummary_.jet_btag10,              "jet_btag10[jet]/F");
     */
-    t_->Branch("jet_mass",              evSummary_.jet_mass,                "jet_mass[jet]/F");
+    //t_->Branch("jet_mass",              evSummary_.jet_mass,                "jet_mass[jet]/F");
     /* ///
     t_->Branch("jet_area",              evSummary_.jet_area,                "jet_area[jet]/F");
     t_->Branch("jet_pu",                evSummary_.jet_pu,                  "jet_pu[jet]/F");
     t_->Branch("jet_puId",              evSummary_.jet_puId,                "jet_puId[jet]/F");
 	*/
-    t_->Branch("jet_PFLoose",           evSummary_.jet_PFLoose,             "jet_PFLoose[jet]/O");
+    //t_->Branch("jet_PFLoose",           evSummary_.jet_PFLoose,             "jet_PFLoose[jet]/O");
     t_->Branch("jet_PFTight",           evSummary_.jet_PFTight,             "jet_PFTight[jet]/O");
-    /*
+    
     t_->Branch("jet_partonFlavour",     evSummary_.jet_partonFlavour,       "jet_partonFlavour[jet]/I");
-    t_->Branch("jet_hadronFlavour",     evSummary_.jet_hadronFlavour,       "jet_hadronFlavour[jet]/I");
+    /* t_->Branch("jet_hadronFlavour",     evSummary_.jet_hadronFlavour,       "jet_hadronFlavour[jet]/I");
     t_->Branch("jet_mother_id",         evSummary_.jet_mother_id,           "jet_mother_id[jet]/I");
     t_->Branch("jet_parton_px",         evSummary_.jet_parton_px,        "jet_parton_px[jet]/F");
     t_->Branch("jet_parton_py",         evSummary_.jet_parton_py,        "jet_parton_py[jet]/F");
@@ -330,39 +330,39 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
 
     // t_->Branch("fjet_genpt",              evSummary_.fjet_genpt,              "fjet_genpt[fjet]/F");
     ///t_->Branch("fjet_prunedM",            evSummary_.fjet_prunedM,            "fjet_prunedM[fjet]/F");
-    t_->Branch("fjet_softdropM",          evSummary_.fjet_softdropM,          "fjet_softdropM[fjet]/F"); 
-    //t_->Branch("fjet_trimmeen_dM",         evSummary_.fjet_trimmedM,           "fjet_trimmedM[fjet]/F");
-    //t_->Branch("fjet_filteredM",        evSummary_.fjet_filteredM,          "fjet_filteredM[fjet]/F");
-    t_->Branch("fjet_tau1",               evSummary_.fjet_tau1,               "fjet_tau1[fjet]/F");
+    // t_->Branch("fjet_softdropM",          evSummary_.fjet_softdropM,          "fjet_softdropM[fjet]/F"); 
+    // t_->Branch("fjet_trimmeen_dM",         evSummary_.fjet_trimmedM,           "fjet_trimmedM[fjet]/F");
+    // t_->Branch("fjet_filteredM",        evSummary_.fjet_filteredM,          "fjet_filteredM[fjet]/F");
+    /*t_->Branch("fjet_tau1",               evSummary_.fjet_tau1,               "fjet_tau1[fjet]/F");
     t_->Branch("fjet_tau2",               evSummary_.fjet_tau2,               "fjet_tau2[fjet]/F");
     t_->Branch("fjet_tau3",               evSummary_.fjet_tau3,               "fjet_tau3[fjet]/F");
-    t_->Branch("fjet_tau4",               evSummary_.fjet_tau4,               "fjet_tau4[fjet]/F");
-    /*
+    t_->Branch("fjet_tau4",               evSummary_.fjet_tau4,               "fjet_tau4[fjet]/F"); 
+    
     t_->Branch("fjet_mother_id",          evSummary_.fjet_mother_id,          "fjet_mother_id[fjet]/I"); 
     t_->Branch("fjet_parton_px",          evSummary_.fjet_parton_px,          "fjet_parton_px[fjet]/F");
     t_->Branch("fjet_parton_py",          evSummary_.fjet_parton_py,          "fjet_parton_py[fjet]/F");
     t_->Branch("fjet_parton_pz",          evSummary_.fjet_parton_pz,          "fjet_parton_pz[fjet]/F");
     t_->Branch("fjet_parton_en",          evSummary_.fjet_parton_en,          "fjet_parton_en[fjet]/F");
     t_->Branch("fjet_partonFlavour",      evSummary_.fjet_partonFlavour,      "fjet_partonFlavour[fjet]/I");
-    t_->Branch("fjet_hadronFlavour",      evSummary_.fjet_hadronFlavour,      "fjet_hadronFlavour[fjet]/I");
-    */
-    t_->Branch("fjet_chf",  		  evSummary_.fjet_chf,		      "fjet_chf[fjet]/F");
-    t_->Branch("fjet_nhf",                evSummary_.fjet_nhf,                "fjet_nhf[fjet]/F");
-    t_->Branch("fjet_phf",                evSummary_.fjet_phf,                "fjet_phf[fjet]/F");
-    t_->Branch("fjet_muf",                evSummary_.fjet_muf,                "fjet_muf[fjet]/F");
-    t_->Branch("fjet_elf",                evSummary_.fjet_elf,                "fjet_elf[fjet]/F");
+    t_->Branch("fjet_hadronFlavour",      evSummary_.fjet_hadronFlavour,      "fjet_hadronFlavour[fjet]/I");*/
+    
+    // t_->Branch("fjet_chf",  		  evSummary_.fjet_chf,		      "fjet_chf[fjet]/F");
+    // t_->Branch("fjet_nhf",                evSummary_.fjet_nhf,                "fjet_nhf[fjet]/F");
+    // t_->Branch("fjet_phf",                evSummary_.fjet_phf,                "fjet_phf[fjet]/F");
+    // t_->Branch("fjet_muf",                evSummary_.fjet_muf,                "fjet_muf[fjet]/F");
+    // t_->Branch("fjet_elf",                evSummary_.fjet_elf,                "fjet_elf[fjet]/F");
 
-    //t_->Branch("fjet_ecfB1N2",	    evSummary_.fjet_ecfB1N2,	       "fjet_ecfB1N2[fjet]/F");
-    //t_->Branch("fjet_ecfB1N3",            evSummary_.fjet_ecfB1N3,           "fjet_ecfB1N3[fjet]/F");
-    //t_->Branch("fjet_ecfB2N2",            evSummary_.fjet_ecfB2N2,           "fjet_ecfB2N2[fjet]/F");
-    //t_->Branch("fjet_ecfB2N3",            evSummary_.fjet_ecfB2N3,           "fjet_ecfB2N3[fjet]/F");
+    // t_->Branch("fjet_ecfB1N2",	    evSummary_.fjet_ecfB1N2,	       "fjet_ecfB1N2[fjet]/F");
+    // t_->Branch("fjet_ecfB1N3",            evSummary_.fjet_ecfB1N3,           "fjet_ecfB1N3[fjet]/F");
+    // t_->Branch("fjet_ecfB2N2",            evSummary_.fjet_ecfB2N2,           "fjet_ecfB2N2[fjet]/F");
+    // t_->Branch("fjet_ecfB2N3",            evSummary_.fjet_ecfB2N3,           "fjet_ecfB2N3[fjet]/F");
 
     t_->Branch("fjet_subjet_count",       evSummary_.fjet_subjet_count,       "fjet_subjet_count[fjet]/I");
-    t_->Branch("fjet_subjets_px",         &evSummary_.fjet_subjets_px,        "fjet_subjets_px[fjet][2]/F");
+    /* t_->Branch("fjet_subjets_px",         &evSummary_.fjet_subjets_px,        "fjet_subjets_px[fjet][2]/F");
     t_->Branch("fjet_subjets_py",         &evSummary_.fjet_subjets_py,        "fjet_subjets_py[fjet][2]/F");
     t_->Branch("fjet_subjets_pz",         &evSummary_.fjet_subjets_pz,        "fjet_subjets_pz[fjet][2]/F"); 
     t_->Branch("fjet_subjets_en",         &evSummary_.fjet_subjets_en,        "fjet_subjets_en[fjet][2]/F");
-    t_->Branch("fjet_subjets_btag",       &evSummary_.fjet_subjets_btag,      "fjet_subjets_btag[fjet][2]/F"); 
+    t_->Branch("fjet_subjets_btag",       &evSummary_.fjet_subjets_btag,      "fjet_subjets_btag[fjet][2]/F");*/ 
     ///t_->Branch("fjet_subjets_partonFlavour",       &evSummary_.fjet_subjets_partonFlavour,      "fjet_subjets_partonFlavour[fjet][2]/I");
     ///t_->Branch("fjet_subjets_hadronFlavour",       &evSummary_.fjet_subjets_hadronFlavour,      "fjet_subjets_hadronFlavour[fjet][2]/I");
 
@@ -460,10 +460,10 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("weight_QCDscale_muR0p5_muF0p5",       &evSummary_.weight_QCDscale_muR0p5_muF0p5);
     */
 
-    t_->SetBranchAddress("npdfs", &evSummary_.npdfs);
+    /* t_->SetBranchAddress("npdfs", &evSummary_.npdfs);
     t_->SetBranchAddress("pdfWeights", evSummary_.pdfWeights);
     t_->SetBranchAddress("nalphaS", &evSummary_.nalphaS);
-    t_->SetBranchAddress("alphaSWeights", evSummary_.alphaSWeights);
+    t_->SetBranchAddress("alphaSWeights", evSummary_.alphaSWeights); */
 
 	
     //mc truth
@@ -640,7 +640,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("jet_py",                  evSummary_.jet_py);
     t_->SetBranchAddress("jet_pz",                  evSummary_.jet_pz);
     t_->SetBranchAddress("jet_en",                  evSummary_.jet_en);
-    t_->SetBranchAddress("jet_btag0",               evSummary_.jet_btag0);
+    // t_->SetBranchAddress("jet_btag0",               evSummary_.jet_btag0);
     t_->SetBranchAddress("jet_btag1",               evSummary_.jet_btag1);
     /*
     t_->SetBranchAddress("jet_btag1",               evSummary_.jet_btag1);
@@ -654,13 +654,13 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("jet_btag9",               evSummary_.jet_btag9);
     t_->SetBranchAddress("jet_btag10",               evSummary_.jet_btag10);
     */
-    t_->SetBranchAddress("jet_mass",                evSummary_.jet_mass);
+    // t_->SetBranchAddress("jet_mass",                evSummary_.jet_mass);
     /*///
     t_->SetBranchAddress("jet_area",                evSummary_.jet_area);
     t_->SetBranchAddress("jet_pu",                  evSummary_.jet_pu);
     t_->SetBranchAddress("jet_puId",                evSummary_.jet_puId);
 	*/
-    t_->SetBranchAddress("jet_PFLoose",             evSummary_.jet_PFLoose);
+    // t_->SetBranchAddress("jet_PFLoose",             evSummary_.jet_PFLoose);
     t_->SetBranchAddress("jet_PFTight",             evSummary_.jet_PFTight);
     /*
     t_->SetBranchAddress("jet_mother_id",           evSummary_.jet_mother_id);
@@ -743,14 +743,14 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
 
 
     //    t_->SetBranchAddress("fjet_genpt",              evSummary_.fjet_genpt);
-    t_->SetBranchAddress("fjet_prunedM",            evSummary_.fjet_prunedM);
-    t_->SetBranchAddress("fjet_softdropM",          evSummary_.fjet_softdropM);
-    //t_->SetBranchAddress("fjet_trimmedM",           evSummary_.fjet_trimmedM);
-    //t_->SetBranchAddress("fjet_filteredM",          evSummary_.fjet_filteredM);
-    t_->SetBranchAddress("fjet_tau1",               evSummary_.fjet_tau1);
-    t_->SetBranchAddress("fjet_tau2",               evSummary_.fjet_tau2);
-    t_->SetBranchAddress("fjet_tau3",               evSummary_.fjet_tau3);
-    t_->SetBranchAddress("fjet_tau4",               evSummary_.fjet_tau4);
+    // t_->SetBranchAddress("fjet_prunedM",            evSummary_.fjet_prunedM);
+    // t_->SetBranchAddress("fjet_softdropM",          evSummary_.fjet_softdropM);
+    // t_->SetBranchAddress("fjet_trimmedM",           evSummary_.fjet_trimmedM);
+    // t_->SetBranchAddress("fjet_filteredM",          evSummary_.fjet_filteredM);
+    // t_->SetBranchAddress("fjet_tau1",               evSummary_.fjet_tau1);
+    // t_->SetBranchAddress("fjet_tau2",               evSummary_.fjet_tau2);
+    // t_->SetBranchAddress("fjet_tau3",               evSummary_.fjet_tau3);
+    // t_->SetBranchAddress("fjet_tau4",               evSummary_.fjet_tau4);
     /*
     t_->SetBranchAddress("fjet_mother_id",          evSummary_.fjet_mother_id);
     t_->SetBranchAddress("fjet_partonFlavour",      evSummary_.fjet_partonFlavour);
@@ -759,12 +759,12 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("fjet_parton_py",          evSummary_.fjet_parton_py);
     t_->SetBranchAddress("fjet_parton_pz",          evSummary_.fjet_parton_pz);
     t_->SetBranchAddress("fjet_parton_en",          evSummary_.fjet_parton_en);
-    */
+    
     t_->SetBranchAddress("fjet_chf",                evSummary_.fjet_chf);
     t_->SetBranchAddress("fjet_nhf",                evSummary_.fjet_nhf);
     t_->SetBranchAddress("fjet_phf",                evSummary_.fjet_phf);
     t_->SetBranchAddress("fjet_muf",                evSummary_.fjet_muf);
-    t_->SetBranchAddress("fjet_elf",                evSummary_.fjet_elf);
+    t_->SetBranchAddress("fjet_elf",                evSummary_.fjet_elf);*/
 
     //t_->SetBranchAddress("fjet_ecfB1N2",            evSummary_.fjet_ecfB1N2);
     //t_->SetBranchAddress("fjet_ecfB1N3",            evSummary_.fjet_ecfB1N3);
@@ -772,13 +772,13 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     //t_->SetBranchAddress("fjet_ecfB2N3",            evSummary_.fjet_ecfB2N3);
     
     t_->SetBranchAddress("fjet_subjet_count",       evSummary_.fjet_subjet_count);
-    t_->SetBranchAddress("fjet_subjets_px",         &evSummary_.fjet_subjets_px);
-    t_->SetBranchAddress("fjet_subjets_py",         &evSummary_.fjet_subjets_py);
-    t_->SetBranchAddress("fjet_subjets_pz",         &evSummary_.fjet_subjets_pz);
-    t_->SetBranchAddress("fjet_subjets_en",         &evSummary_.fjet_subjets_en);
-    t_->SetBranchAddress("fjet_subjets_btag",       &evSummary_.fjet_subjets_btag);
-    t_->SetBranchAddress("fjet_subjets_partonFlavour",       &evSummary_.fjet_subjets_partonFlavour);
-    t_->SetBranchAddress("fjet_subjets_hadronFlavour",       &evSummary_.fjet_subjets_hadronFlavour);
+    // t_->SetBranchAddress("fjet_subjets_px",         &evSummary_.fjet_subjets_px);
+    // t_->SetBranchAddress("fjet_subjets_py",         &evSummary_.fjet_subjets_py);
+    // t_->SetBranchAddress("fjet_subjets_pz",         &evSummary_.fjet_subjets_pz);
+    // t_->SetBranchAddress("fjet_subjets_en",         &evSummary_.fjet_subjets_en);
+    // t_->SetBranchAddress("fjet_subjets_btag",       &evSummary_.fjet_subjets_btag);
+    // t_->SetBranchAddress("fjet_subjets_partonFlavour",       &evSummary_.fjet_subjets_partonFlavour);
+    // t_->SetBranchAddress("fjet_subjets_hadronFlavour",       &evSummary_.fjet_subjets_hadronFlavour);
 
 
     //met
@@ -822,8 +822,8 @@ void DataEvtSummaryHandler::resetStruct()
     // evSummary_.sv=0;
     ///// evSummary_.pjet=0;
     evSummary_.fjet=0;
-    evSummary_.npdfs=0;
-    evSummary_.nalphaS=0;
+    // evSummary_.npdfs=0;
+    // evSummary_.nalphaS=0;
 
     evSummary_.ngenITpu=0;
     evSummary_.ngenOOTpu=0;
