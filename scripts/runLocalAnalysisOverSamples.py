@@ -63,6 +63,7 @@ onlytag='all'
 queuelog=''
 resubmit=False
 
+
 DtagsList = []
 count=0
 who = commands.getstatusoutput('whoami')[1]
@@ -228,6 +229,7 @@ for proc in procList :
                     if(params.find('@useDeepCSV')<0) :      params = '@useDeepCSV=False ' + params
                     if(params.find('@runQCD')<0) :          params = '@runQCD=False ' + params
                     if(params.find('@runMVA')<0) :          params = '@runMVA=False ' + params
+                    if(params.find('@run0lep')<0) :          params = '@run0lep=False ' + params
                     if(len(params)>0) :
                         extracfgs = params.split(' ')
                         for icfg in extracfgs :
@@ -269,8 +271,10 @@ for proc in procList :
 
             PythonLists.close()
             if(os.stat("/tmp/"+who+'/'+dtag+'_PythonList.txt').st_size > 0):
+                
                 SCRIPT2HTCondor.writelines('executable            = '+os.environ.get('CMSSW_BASE')+'/bin/'+os.environ.get('SCRAM_ARCH')+'/wrapLocalAnalysisRun.sh\n')
-                SCRIPT2HTCondor.writelines('arguments             = '+'"'+os.environ.get('CMSSW_BASE')+'/bin/'+os.environ.get('SCRAM_ARCH')+'/'+theExecutable+' $(cfg)"'+'\n')
+                SCRIPT2HTCondor.writelines('arguments = '+'"'+os.environ.get('CMSSW_BASE')+'/bin/'+os.environ.get('SCRAM_ARCH')+'/'+theExecutable+' $(cfg)"'+'\n')
+                SCRIPT2HTCondor.writelines('+SingularityImage ='+ ' "/cvmfs/unpacked.cern.ch/gitlab-registry.cern.ch/cms-cat/cmssw-lxplus/cmssw-el7-lxplus:latest/"'+'\n') 
                 SCRIPT2HTCondor.writelines('transfer_input_files  = '+os.environ.get('CMSSW_BASE')+'/bin/'+os.environ.get('SCRAM_ARCH')+'/'+theExecutable+', $(cfg)'+'\n')
                 SCRIPT2HTCondor.writelines('output                = $(log).out\n')
                 SCRIPT2HTCondor.writelines('error                 = $(log).err\n')
