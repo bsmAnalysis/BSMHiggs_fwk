@@ -39,7 +39,7 @@ if [[ $# -ge 4 ]]; then echo "Additional arguments will be considered: "$argumen
 YEAR=2017
 CHANNEL=WH
 
-do_syst=True # Always run with Systematics, unless its QCD mode
+do_syst=False # Always run with Systematics, unless its QCD mode
 
 if [[ $CHANNEL == "WH_QCD" ]]; then 
     doQCD=True ; do_syst=False
@@ -48,8 +48,8 @@ else doQCD=False ; fi
 if [[ $CHANNEL == "ZH" ]]; then doZH=True ; 
 else doZH=False ; fi
 
-if [[ $YEAR == "2016" ]]; then SUFFIX=_2024_01_15 
-else SUFFIX=_2024_03_04 ; fi
+if [[ $YEAR == "2016" ]]; then SUFFIX=_2023_11_15 
+else SUFFIX=_2024_09_12 ; fi
 
 MAINDIR=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/test/haa4b
 
@@ -65,18 +65,27 @@ GOLDENJSON=$CMSSW_BASE/src/UserCode/bsmhiggs_fwk/data/json/
 RESULTSDIR=$MAINDIR/results_$YEAR$SUFFIX 
 
 if [[ $arguments == *"crab3"* ]]; then STORAGEDIR='';
-else STORAGEDIR=/eos/user/a/ataxeidi/results$SUFFIX ; fi
+else STORAGEDIR=/eos/user/a/ataxeidi/Ntuples/results_${YEAR}_2024_03_04 ; fi
+#/eos/cms/store/user/e/esiamark/results$SUFFIX ; fi
 
 PLOTSDIR=$MAINDIR/plots_${CHANNEL}_${YEAR}${SUFFIX}
 PLOTTER=$MAINDIR/plotter_${CHANNEL}_${YEAR}${SUFFIX}
  
 ####################### Settings for Ntuple Analysis ##################
 if [[ $YEAR == "2016" ]]; then
-    NTPL_INPUT=/eos/user/a/ataxeidi/results_2016$SUFFIX
+    NTPL_INPUT=/eos/user/e/esiamark/results_2016$SUFFIX
 elif [[ $YEAR == "2017" ]]; then
-    NTPL_INPUT=/eos/user/a/ataxeidi/results_2017$SUFFIX 
+    # signal WH, ZH
+    # NTPL_INPUT=/eos/user/a/ataxeidi/Ntuples/results_2017_2024_03_04
+    
+    # signal VBFH, W+jets 
+    # NTPL_INPUT=/eos/user/a/ataxeidi/results_2017_2020_02_05
+   
+    #ttbar, QCD
+    NTPL_INPUT=/eos/user/l/lrouseli/Ntuples
+#/eos/cms/store/user/e/esiamark/results_2017$SUFFIX 
 elif [[ $YEAR == "2018" ]]; then
-    NTPL_INPUT=/eos/user/a/ataxeidi/results_2018$SUFFIX   
+    NTPL_INPUT=/eos/user/a/ataxeidi/Ntuples/results_2018_2024_03_20 #/$SUFFIX   
 fi
 
 ZPtSF_OUT=$MAINDIR/VPtSF_${CHANNEL}_$YEAR$SUFFIX
@@ -123,9 +132,9 @@ fi
 if [[ $step > 0.999 &&  $step < 2 ]]; then
    if [[ $step == 1.0 ]]; then
        echo "JOB SUBMISSION for Ntuplization using full CMSSW fwk"
-       echo -e "Input: " $JSON "\nOutput: " $RESULTSDIR
+       echo -e "Input:sh " $JSON "\nOutput: " $RESULTSDIR
        #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -s crab 
-       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $FULLANALYSISCFG -l results_$YEAR$SUFFIX -p "@verbose=False" --key haa_prod_TT -s crab
+       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $FULLANALYSISCFG -l results_$YEAR$SUFFIX -p "@verbose=True" --key haa_prod_others -s crab
        # Ntuplize 2016 signal samples under 94X:
        #runAnalysisOverSamples.py -j $MAINDIR/samples2016.json -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg_2016Signal.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_signal  -s crab
    fi    
@@ -137,7 +146,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        if [ ! -d "$BTAG_NTPL_OUTDIR" ]; then
 	   mkdir $BTAG_NTPL_OUTDIR
        fi
-       computeBTagRatio.py -j $NTPL_JSON -d $NTPL_INPUT -o $BTAG_NTPL_OUTDIR -t MC13TeV_DY # -t MC13TeV_TTTo
+       computeBTagRatio.py -j $NTPL_JSON -d $NTPL_INPUT -o $BTAG_NTPL_OUTDIR -t MC13TeV_DYJetsToLL # -t MC13TeV_TTTo
    fi
    
    if [[ $step == 1.02 ]]; then  # compute Z pt SFs from LO and NLO DY samples
@@ -162,6 +171,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
    fi
    
    if [[ $step == 1.1 ]]; then  #submit jobs for h->aa->XXYY analysis
+      
        echo "JOB SUBMISSION for BSM h->aa Analysis"
        echo -e "Input: " $NTPL_JSON "\n Output: " $NTPL_OUTDIR
        ## if the output directory does not exist, create it:
@@ -170,7 +180,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        fi
 	# @btagSFMethod=1: Jet-by-jet updating of b-tagging status
 	# @btagSFMethod=2: Event reweighting using discriminator-dependent scale factors
-       runLocalAnalysisOverSamples.py -e runhaaAnalysis -b $BTAG_NTPL_OUTDIR -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=$do_syst @runMVA=False @reweightDYZPt=True @reweightDYdR16=True @reweightTopPt=True @usemetNoHF=False @verbose=False @useDeepCSV=True @useWNJet=False @runQCD=$doQCD @runZH=$doZH @btagSFMethod=1" -s $queue #-t MC13TeV_TTTo #-r true
+       runLocalAnalysisOverSamples.py -e runWHanalysis  -g $RUNLOG -j $NTPL_JSON -o $NTPL_OUTDIR -d $NTPL_INPUT -c $RUNNTPLANALYSISCFG -p "@runSystematics=$do_syst @runMVA=True  @reweightDYZPt=False @reweightDYdR16=False @reweightTopPt=False @usemetNoHF=False @verbose=True @useDeepCSV=True @btagSFMethod=1 @useWNJet=False @runZH=$doZH @run0lep=False " -s $queue -t amass -r true
    fi
 fi
 

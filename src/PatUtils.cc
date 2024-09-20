@@ -1,4 +1,4 @@
-//#define YEAR_2017
+#define YEAR_2017
 #include "UserCode/bsmhiggs_fwk/interface/PatUtils.h"
 
 #include "DataFormats/METReco/interface/HcalNoiseSummary.h"

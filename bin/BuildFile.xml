@@ -32,7 +32,7 @@
 <!-- Analysis specific code (please keep that in subdirectories and refer to test/<subdir> for instructions) -->
 <!--  <bin name="runNtuplizer"                file="common/runNtuplizer.cc"></bin> --> 
     
-  <bin name="runZHanalysis"              file="haa4b/runZHanalysis.cc"></bin>  
+  <bin name="runWHanalysis"              file="haa4b/runWHanalysis.cc"></bin>  
   <bin name="genParticleDump"                file="common/genParticleDump.cc"></bin>
 </environment>
 

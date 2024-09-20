@@ -23,7 +23,8 @@ class TMVAReader
 {
  public:
   float Njets=0;
-  float HTjets=0;
+  float Nlepton=0;
+  float HT=0;
   float H_pt=0;
   float W_pt=0;
   float lepton_pt=0;
@@ -33,6 +34,7 @@ class TMVAReader
   float MTW=0;
   float dphiWH=0;
   float dphiMetJetMin=0;
+  float DRbbav=0;
   float btag1=0;
   float btag2=0;
   float btag3=0;
@@ -40,7 +42,10 @@ class TMVAReader
 
   void InitTMVAReader();
   void SetupMVAReader( std::string methodName, std::string modelPath );
-  float GenReMVAReader(float thisNjets, float thisHTjets, float thisH_pt, float thisW_pt, float thislepton_pt, float thisbjet1_pt, float thisMET, float thisH_M, float thisMTW, float thisdphiWH, float thisdphiMetJeMin, float thisbtag1, float thisbtag2, float thisbtag3, std::string methodName);
+
+  float GenReMVAReader(float thisNjets, float thisHT, float thisH_pt, float thisW_pt, float thislepton_pt, float thisbjet1_pt, float thisMET, float thisH_M, float thisMTW, float thisdphiWH, float thisdphiMetJetMin, float thisDRbbav, float thisbtag1, float thisbtag2, float thisbtag3, std::string methodName);
+
+  float GenReMVAReader(float thisHT, float thisH_pt, float thisW_pt, float thislepton_pt, float thisbjet1_pt, float thisMET, float thisH_M, float thisMTW, float thisdphiWH, float thisdphiMetJetMin, float thisDRbbav, float thisbtag1, float thisbtag2, float thisbtag3, std::string methodName);
 
   void CloseMVAReader();
 
