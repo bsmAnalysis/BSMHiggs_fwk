@@ -75,7 +75,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("alphaSWeights", evSummary_.alphaSWeights, "alphaSWeights[nalphaS]/F"); */
     
     //mc truth
-    /* t_->Branch("nmcparticles",  &evSummary_.nmcparticles,   "nmcparticles/I");
+    t_->Branch("nmcparticles",  &evSummary_.nmcparticles,   "nmcparticles/I");
     t_->Branch("mc_px",         evSummary_.mc_px,           "mc_px[nmcparticles]/F");
     t_->Branch("mc_py",         evSummary_.mc_py,           "mc_py[nmcparticles]/F");
     t_->Branch("mc_pz",         evSummary_.mc_pz,           "mc_pz[nmcparticles]/F");
@@ -83,7 +83,7 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     t_->Branch("mc_id",         evSummary_.mc_id,           "mc_id[nmcparticles]/I");
     t_->Branch("mc_status",     evSummary_.mc_status,       "mc_status[nmcparticles]/I");
     t_->Branch("mc_mom",        evSummary_.mc_mom,          "mc_mom[nmcparticles]/I");
-    t_->Branch("mc_momidx",     evSummary_.mc_momidx,       "mc_momidx[nmcparticles]/I");*/
+    t_->Branch("mc_momidx",     evSummary_.mc_momidx,       "mc_momidx[nmcparticles]/I");
 	
     //gen ground state B hadrons
 //    t_->Branch("mcbh",          &evSummary_.mcbh,           "mcbh/I");
@@ -467,7 +467,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
 
 	
     //mc truth
-    /* t_->SetBranchAddress("nmcparticles",    &evSummary_.nmcparticles);
+    t_->SetBranchAddress("nmcparticles",    &evSummary_.nmcparticles);
     t_->SetBranchAddress("mc_px",           evSummary_.mc_px);
     t_->SetBranchAddress("mc_py",           evSummary_.mc_py);
     t_->SetBranchAddress("mc_pz",           evSummary_.mc_pz);
@@ -475,7 +475,7 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     t_->SetBranchAddress("mc_id",           evSummary_.mc_id);
     t_->SetBranchAddress("mc_status",       evSummary_.mc_status);
     t_->SetBranchAddress("mc_mom",          evSummary_.mc_mom);
-    t_->SetBranchAddress("mc_momidx",       evSummary_.mc_momidx);*/
+    t_->SetBranchAddress("mc_momidx",       evSummary_.mc_momidx);
 	
 
     //gen ground state B hadrons
