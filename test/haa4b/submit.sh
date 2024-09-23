@@ -125,7 +125,7 @@ if [[ $step > 0.999 &&  $step < 2 ]]; then
        echo "JOB SUBMISSION for Ntuplization using full CMSSW fwk"
        echo -e "Input: " $JSON "\nOutput: " $RESULTSDIR
        #runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_mcbased -s crab 
-       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $FULLANALYSISCFG -l results_$YEAR$SUFFIX -p "@verbose=False" --key haa_prod_TT -s crab
+       runAnalysisOverSamples.py -j $JSON -o $RESULTSDIR  -c $FULLANALYSISCFG -l results_$YEAR$SUFFIX -p "@verbose=False" --key haa_mcbased -s crab
        # Ntuplize 2016 signal samples under 94X:
        #runAnalysisOverSamples.py -j $MAINDIR/samples2016.json -o $RESULTSDIR  -c $MAINDIR/../fullAnalysis_cfg_2016Signal.py.templ -l results$SUFFIX -p "@verbose=False" --key haa_signal  -s crab
    fi    
