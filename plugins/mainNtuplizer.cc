@@ -221,6 +221,7 @@ class mainNtuplizer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {
   TH2F *h2_TightBTaggingEff_Num_b, *h2_TightBTaggingEff_Num_c, *h2_TightBTaggingEff_Num_udsg;
 
   bool isMC_ttbar;
+  bool isDATA_VBFH;
   bool is2016Signal;
   bool is2016;
   bool is2017;
@@ -346,6 +347,7 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
      printf("  Verbose set to false.  Will be quiet.\n") ;
   }
 
+  isDATA_VBFH = (string(proc_.c_str()).find("BTagCSV") != string::npos || string(proc_.c_str()).find("JetHT") != string::npos ) && !isMC_;
   is2016Signal	= (string(proc_.c_str()).find("2016") != string::npos && string(proc_.c_str()).find("h_amass") != string::npos );
   is2016	= string(proc_.c_str()).find("2016") != string::npos;
   is2017     	= (string(proc_.c_str()).find("2017") != string::npos);
@@ -880,7 +882,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
       eeTrigger          = utils::passTriggerPatterns(tr,"HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");// isolation version
       eeTrigger2         = utils::passTriggerPatterns(tr,"HLT_DoubleEle33_CaloIdL_MW_v*"); // non isolation version
       // 2017 RunB and C single electron trigger needs special treatment, see below
-      eTrigger           = utils::passTriggerPatterns(tr,"HLT_Ele32_WPTight_Gsf_v*"); //"HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*";
+      eTrigger           = utils::passTriggerPatterns(tr,"HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*"); //HLT_Ele32_WPTight_Gsf_v;
       eTrigger2          = utils::passTriggerPatterns(tr,"HLT_Ele35_WPTight_Gsf_v*");
       emuTrigger         = utils::passTriggerPatterns(tr,"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v*");
       emuTrigger2	 = utils::passTriggerPatterns(tr,"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*");
@@ -906,8 +908,9 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/Egamma2017DataRecommendations#Double%20Electron%20Triggers
    // https://github.com/Sam-Harper/usercode/blob/100XNtup/TrigTools/plugins/Ele32DoubleL1ToSingleL1Example.cc
    // https://github.com/Sam-Harper/usercode/blob/100XNtup/TrigTools/test/ele32DoubleToSingle.py
+   if (verbose_) std::cout << isDATA_VBFH << endl;
 #ifdef YEAR_2017
-   if(is2017BC){
+   if(is2017BC && !isDATA_VBFH){
       //so the filter names are all packed in miniAOD so we need to create a new collection of them which are unpacked
       std::vector<pat::TriggerObjectStandAlone> unpackedTrigObjs;
       for(auto& trigObj: *triggerObjects){
