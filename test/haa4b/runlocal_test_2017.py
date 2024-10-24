@@ -6,20 +6,14 @@ from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 
 process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
 process.load("Configuration.EventContent.EventContent_cff")
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 #load run conditions
 #process.load('Configuration.Geometry.GeometryIdeal_cff')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
-
-process.options   = cms.untracked.PSet(
-   allowUnscheduled = cms.untracked.bool(True)
-)
 
 updateJetCollection(
    process, 
