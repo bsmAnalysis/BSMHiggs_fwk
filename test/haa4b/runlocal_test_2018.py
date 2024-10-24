@@ -2,143 +2,194 @@ import FWCore.ParameterSet.Config as cms
 
 from UserCode.bsmhiggs_fwk.mainNtuplizer_cfi import *
 
-#from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
-#from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
-from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
-from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection 
-
 from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 5
 
 process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")
 process.load("Configuration.EventContent.EventContent_cff")
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 #load run conditions
-#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.load('Configuration.Geometry.GeometryIdeal_cff')
-#process.load('Configuration.Geometry.GeometryRecoDB_cff')
-#process.load('Configuration.Geometry.GeometryReco_cff')
+#process.load('Configuration.Geometry.GeometryIdeal_cff')
+process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 
-process.load('RecoMET.METFilters.ecalBadCalibFilter_cfi')
-#------ Declare the correct global tag ------#
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
-process.GlobalTag.globaltag = '102X_dataRun2_Sep2018ABC_v2'
-#process.GlobalTag.globaltag = '102X_dataRun2_Prompt_v13'
-#process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v18'
-
-process.options   = cms.untracked.PSet(
-   allowUnscheduled = cms.untracked.bool(True),
-   SkipEvent = cms.untracked.vstring('ProductNotFound')
+updateJetCollection(
+   process,
+   jetSource = cms.InputTag('slimmedJets'),
+   labelName = 'UpdatedJEC',
+   jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')  # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual orrections (always set to 1)
 )
 
-updateJetCollection(                                                                                                                                                                              
-   process,                                                                                                                                                                                       
-   jetSource = cms.InputTag('slimmedJets'),                                                                                                                                                       
-   labelName = 'UpdatedJEC',                                                                                                                                                                      
-   jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual']), 'None')  # Update: Safe to always add 'L2L3Residual' as MC contains dummy L2L3Residual orrections (always set to 1)
-)     
-
-
-#declare producer for ecalBadCalibReducedMINIAODFilter
-#https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2
-baddetEcallist = cms.vuint32(
-  [872439604,872422825,872420274,872423218,
-   872423215,872416066,872435036,872439336,
-   872420273,872436907,872420147,872439731,
-   872436657,872420397,872439732,872439339,
-   872439603,872422436,872439861,872437051,
-   872437052,872420649,872422436,872421950,
-   872437185,872422564,872421566,872421695,
-   872421955,872421567,872437184,872421951,
-   872421694,872437056,872437057,872437313])
-
-process.ecalBadCalibReducedMINIAODFilter = cms.EDFilter(
-  "EcalBadCalibFilter",
-  EcalRecHitSource = cms.InputTag("reducedEgamma:reducedEERecHits"),
-  ecalMinEt        = cms.double(50.),
-  baddetEcal       = baddetEcallist,
-  taggingMode      = cms.bool(True),
-  debug            = cms.bool(False)
-  )
+from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+from RecoJets.JetProducers.PileupJetID_cfi import _chsalgos_106X_UL18
+from RecoJets.JetProducers.PileupJetID_cfi import pileupJetId
+process.pileupJetIdUpdated = pileupJetId.clone( 
+        jets=cms.InputTag('updatedPatJetsUpdatedJEC'), #Your JEC corrected jets here
+        inputIsCorrected=True,
+        applyJec=False,
+        vertexes=cms.InputTag("offlineSlimmedPrimaryVertices"),
+        algos = cms.VPSet(_chsalgos_106X_UL18),
+    )
 
 #rerun energy correction for electrons
+#Recipe for running scales and smearings using EgammaPostRecoTools
 setupEgammaPostRecoSeq(process,
-    era='2018-Prompt')
-
-runMetCorAndUncFromMiniAOD(process,
-                           #isData=False,
-                           isData=True,
-                          )
-
+                       runEnergyCorrections=True,
+                       runVID=False, #saves CPU time by not needlessly re-running VID, if you want the Fall17V2 IDs, set this to True or remove (default is True)
+                       era='2018-UL')    
 #a sequence egammaPostRecoSeq has now been created and should be added to your path, eg process.p=cms.Path(process.egammaPostRecoSeq)
 
-#runMetCorAndUncFromMiniAOD(process,
-#    isData=False,
-#    isData=True,
-#    )
+runMetCorAndUncFromMiniAOD(process,
+    isData=True
+    )
 
-#runMetCorAndUncFromMiniAOD(process,
-#    isData = False,
-#    isData = True,
-#    fixEE2017 = True,
-#    fixEE2017Params = {'userawPt': True, 'ptThreshold':50.0, 'minEtaThreshold':2.65, 'maxEtaThreshold': 3.139} ,
-#    postfix = "ModifiedMET"
-#    )
-
-#process.mainNtuplizer.isMC = cms.bool(True)
 process.mainNtuplizer.isMC = cms.bool(False)
-#process.mainNtuplizer.dtag = cms.string("MC13TeV_TTToSemiLeptonic_2018")
 process.mainNtuplizer.dtag = cms.string("DATA13TeV_SingleElectron_2018B")
 process.mainNtuplizer.xsec = cms.double(1.0)
 process.mainNtuplizer.mctruthmode = cms.int32(0)
 process.mainNtuplizer.verbose = cms.bool(True)
+process.mainNtuplizer.metFilterBitsTag = cms.InputTag('TriggerResults','','HLT')
+process.mainNtuplizer.Legacy2016 = cms.bool(False)
 process.mainNtuplizer.jetsTag = cms.InputTag('updatedPatJetsUpdatedJEC')
+
 #process.mainNtuplizer.verbose = cms.bool(True)
 #process.mainNtuplizer.jetsTag = cms.InputTag('selectedUpdatedPatJets')
 #process.mainNtuplizer.verticesTag = cms.InputTag("offlineSlimmedPrimaryVertices")
 #process.mainNtuplizer.jetsTag = cms.InputTag('slimmedMETTEST')
-
 #process.mainNtuplizer.fatjetsTag = cms.InputTag('selectedPatJetsAK8PFCHS')
 #process.mainNtuplizer.fatjetsTag = cms.InputTag('packedPatJetsAK8PFCHSSoftDrop')
 #process.mainNtuplizer.fatjetsTag = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked')
-process.mainNtuplizer.metFilterBitsTag = cms.InputTag('TriggerResults','','HLT')
 #process.mainNtuplizer.metsTag = cms.InputTag("slimmedMETsModifiedMET","","bsmAnalysis")
 #process.mainNtuplizer.bits = cms.InputTag('TriggerResultsTest','','HLT')
-process.mainNtuplizer.Legacy2016 = cms.bool(False)
+
+###########################################################
+## Workflow START
+## We try to reproduce slimmedJetsAK8 collection
+## like in MiniAOD production but lower the pt cut to as low
+## as possible
+##
+###########################################################
+from UserCode.bsmhiggs_fwk.puppiJetMETReclusteringTools import puppiAK8ReclusterFromMiniAOD
+
+from RecoBTag.ONNXRuntime.pfDeepBoostedJet_cff import _pfDeepBoostedJetTagsAll as pfDeepBoostedJetTagsAll
+from RecoBTag.ONNXRuntime.pfHiggsInteractionNet_cff import _pfHiggsInteractionNetTagsProbs as pfHiggsInteractionNetTagsProbs
+from RecoBTag.ONNXRuntime.pfParticleNet_cff import _pfParticleNetJetTagsAll as pfParticleNetJetTagsAll
+from RecoBTag.ONNXRuntime.pfParticleNet_cff import _pfParticleNetMassRegressionOutputs
+
+btagDiscriminatorsAK8 = cms.PSet(names = cms.vstring(
+'pfCombinedSecondaryVertexV2BJetTags',
+'pfCombinedInclusiveSecondaryVertexV2BJetTags',
+# 'pfCombinedMVAV2BJetTags',
+'pfDeepCSVJetTags:probb',
+'pfDeepCSVJetTags:probc',
+'pfDeepCSVJetTags:probudsg',
+'pfDeepCSVJetTags:probbb',
+'pfBoostedDoubleSecondaryVertexAK8BJetTags',
+'pfMassIndependentDeepDoubleBvLV2JetTags:probQCD',
+'pfMassIndependentDeepDoubleBvLV2JetTags:probHbb',
+'pfMassIndependentDeepDoubleCvLV2JetTags:probQCD',
+'pfMassIndependentDeepDoubleCvLV2JetTags:probHcc',
+'pfMassIndependentDeepDoubleCvBV2JetTags:probHbb',
+'pfMassIndependentDeepDoubleCvBV2JetTags:probHcc',
+)
+# + pfDeepBoostedJetTagsAll
++ pfParticleNetJetTagsAll
+# + pfHiggsInteractionNetTagsProbs
+# # + _pfParticleNetMassRegressionOutputs
+)
+
+btagDiscriminatorsAK8Subjets = cms.PSet(names = cms.vstring(
+   'pfDeepCSVJetTags:probb',
+   'pfDeepCSVJetTags:probbb',
+ )
+)
+
+process = puppiAK8ReclusterFromMiniAOD(process,
+   runOnMC=False,
+   useExistingWeights=True,
+   btagDiscriminatorsAK8=btagDiscriminatorsAK8,
+   btagDiscriminatorsAK8Subjets=btagDiscriminatorsAK8Subjets,
+   reclusterAK8GenJets=False
+)
+
+process.patAlgosToolsTask.add(process.patJetPartons)
+
+################################
+## Override some configurations
+## for reclustered AK8 Gen jets
+################################
+#process.ak8GenJetsNoNu.jetPtMin = 10
+#process.ak8GenJetsNoNuSoftDrop.jetPtMin = 10
+#process.ak8GenJetsNoNuConstituents.cut = "pt > 10"
+
+#################################
+## Override some configurations
+## for reclustered AK8 Puppi jets
+##################################
+process.ak8PFJetsPuppi.jetPtMin = 15
+process.ak8PFJetsPuppiSoftDrop.jetPtMin = 15
+process.ak8PFJetsPuppiConstituents.cut = "pt > 15. && abs(rapidity()) < 2.4"
+
+finalAK8PuppiPt = 30
+process.selectedPatJetsAK8Puppi.cut = "pt > {}".format(finalAK8PuppiPt)
+process.selectedPatJetsAK8Puppi.cutLoose = ""
+process.selectedPatJetsAK8Puppi.nLoose = 0
+process.slimmedJetsAK8NoDeepTags.dropDaughters = cms.string("pt < {}".format(finalAK8PuppiPt))
+process.slimmedJetsAK8NoDeepTags.dropSpecific = cms.string("pt < {}".format(finalAK8PuppiPt))
+process.slimmedJetsAK8NoDeepTags.dropTagInfos = cms.string("pt < {}".format(finalAK8PuppiPt))
+
+##################################
+## For reclustered AK8 Puppi jets
+##################################
+process.mainNtuplizer.fatjetsTag = "slimmedJetsAK8"
+
+#######################################################
+##
+## Workflow END
+##
+########################################################
+
+process.MessageLogger.cerr.FwkReport.reportEvery = 1
+
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+
+#------ Declare the correct global tag ------#
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+process.GlobalTag.globaltag = '102X_dataRun2_Sep2018ABC_v2'
+
+process.options   = cms.untracked.PSet(
+   allowUnscheduled = cms.untracked.bool(True),
+   #SkipEvent = cms.untracked.vstring('ProductNotFound')
+)
 
 process.source = cms.Source("PoolSource",
              fileNames = cms.untracked.vstring("/store/data/Run2018C/EGamma/MINIAOD/17Sep2018-v1/70000/25C41660-D0D7-CF46-A544-D9DE8231BA59.root"),
-#             fileNames = cms.untracked.vstring("/store/data/Run2018D/EGamma/MINIAOD/PromptReco-v2/000/325/175/00000/9D0F9360-DD60-314A-BB24-33D62A3CD6BD.root"),
-#             fileNames = cms.untracked.vstring("/store/mc/RunIIAutumn18MiniAOD/TTToSemiLeptonic_TuneCP5up_13TeV-powheg-pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v1/90000/1137389F-C639-E641-B930-AF20537789CA.root"),
-                            inputCommands=cms.untracked.vstring( 
-        'keep *', 
+             inputCommands=cms.untracked.vstring( 
+    'keep *', 
         'drop *_ctppsLocalTrackLiteProducer_*_RECO'
 #CTPPSPixelClusteredmDetSetVector_ctppsPixelClusters_*_RECO'
         )
 )
 
 process.TFileService = cms.Service("TFileService",
-#			fileName = cms.string("analysis_MC_2J_woFJ.root")
 			fileName = cms.string("analysis_data2018.root")
 )
 
-process.dump = cms.EDAnalyzer("EventContentAnalyzer")  
+process.pathRunPatAlgos = cms.Path(process.patAlgosToolsTask)
 
 #jetToolbox(process, 'ak8', 'jetSequence', 'out', PUMethod='CHS', addPruning=True, addSoftDrop=True,addNsubSubjets=True,addSoftDropSubjets=True,addNsub=True,Cut="pt>20")
 #jetToolbox( process, 'ak8', 'jetSequence', 'out', PUMethod='CHS', addPruning=True, addSoftDrop=True, addSoftDropSubjets=True,addNsub=True, Cut="pt>20") 
 #jetToolbox( process, 'ak8', 'jetSequence', 'out', PUMethod='CHS', addPruning=True, addSoftDrop=True, addNsub=True, Cut="pt>20") 
 #process.p = cms.Path(process.dump)
 process.p = cms.Path( 
-    process.ecalBadCalibReducedMINIAODFilter *
     process.patJetCorrFactorsUpdatedJEC *  
     process.updatedPatJetsUpdatedJEC *
-#    process.fullPatMetSequenceTEST *
+    process.pileupJetIdUpdated *
     process.fullPatMetSequence *
-#    process.fullPatMetSequenceModifiedMET *
     process.egammaPostRecoSeq *
     process.mainNtuplizer 
-    ) #* process.dump )	
+    )	
+
+
