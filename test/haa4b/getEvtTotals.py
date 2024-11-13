@@ -1,4 +1,3 @@
-
 import ROOT as r
 import glob
 import sys
@@ -35,25 +34,20 @@ if year == '2016' :
    out_dir = 'evt-total-files-2016'
    dtfile = 'dtags-2016-legacy-mc.txt'
  #-- 2016 Data and MC
-   ntuple_base_dir_list.append("/eos/cms/store/user/georgia/results_2020_06_19")
+   ntuple_base_dir_list.append("/eos/user/g/georgia/results_2016_2020_06_19")
 
 if year == '2017' :
    out_dir = 'evt-total-files-2017'
    dtfile = 'dtags-2017-mc.txt'
  #-- 2017 Data and MC
-   ntuple_base_dir_list.append("/eos/cms/store/user/georgia/results_2017_2020_02_05")
+   ntuple_base_dir_list.append("/eos/user/l/lrouseli/Ntuples")
  #-- 2017 DY NJets and W NJets samples
-   ntuple_base_dir_list.append("/eos/user/z/zhangyi/2017Analysis")
 
 if year == '2018' :
    out_dir = 'evt-total-files-2018'
    dtfile = 'dtags-2018-mc.txt'
  #-- 2018 Data and MC
    ntuple_base_dir_list.append("/eos/cms/store/user/georgia/results_2018_2020_02_05")
- #-- 2018 DY samples, W inclusive and NJets samples
-   ntuple_base_dir_list.append("/eos/cms/store/user/georgia/backup_2018Analysis")
-
-
 
 adtfile = open(dtfile,"r")
 dtags = adtfile.readlines()
@@ -113,32 +107,10 @@ for ntuple_base_dir in ntuple_base_dir_list :
             ofp.write( "{:200}  {:15}  {:15}  {:15}\n".format(nt_fname, this_file_nTot, this_file_nPos, this_file_nNeg) )
             tf.Close()
 
-         ofp.write("Totals {:15}  {:15}  {:15}\n".format(nTot, nPos, nNeg))
-
+#         ofp.write("Totals {:15}  {:15}  {:15}\n".format(nTot, nPos, nNeg))
+         ofp.write("nTot: {0:15}, nPos: {1:15}, nNeg: {2:15}, nPos-nNeg: {3:15}\n".format(nTot,nPos,nNeg,nPos-nNeg))  
       else :
          print "   * No files matching {0} in {1}".format( tag, ntplpath )
-
-
-
-# with open(outfile,"w+") as _f:
-#   for filename in glob.glob(ntplpath+'*.root'):
-#     f = r.TFile(filename)
-#     if (f.IsZombie() or (not f.IsOpen())):
-#       print FAIL + "Error: cannot open " + filename + " or the file is not valid,please check if filename is valid!" + END
-#       continue
-#     this_file_nTot = f.Get("mainNtuplizer/nevents").GetBinContent(1)
-#     this_file_nPos = f.Get("mainNtuplizer/n_posevents").GetBinContent(1)
-#     this_file_nNeg = f.Get("mainNtuplizer/n_negevents").GetBinContent(1)
-#     nTot += this_file_nTot
-#     nPos += this_file_nPos
-#     nNeg += this_file_nNeg
-#     _f.write( "{:200}  {:15}  {:15}  {:15}\n".format(filename, this_file_nTot, this_file_nPos, this_file_nNeg) )
-#     f.Close()
-#   _f.write("Totals {:15}  {:15}  {:15}\n".format(nTot, nPos, nNeg))
-
-# print("nTot: {0:15}, nPos: {1:15}, nNeg: {2:15}, nPos-nNeg: {3:15}\n".format(nTot,nPos,nNeg,nPos-nNeg))
-# num += 1
-
 
 
 
@@ -151,7 +123,8 @@ for tag in dtags:
    else:
       print "  *** Found no files for " + tag
 
-
+### The do somthing like:
+### >  grep nTot *.txt | sort | awk '{printf(" %70s %15s %15s \n",$1, $7,$8)}'
 
 
 
