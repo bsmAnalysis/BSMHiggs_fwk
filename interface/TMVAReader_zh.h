@@ -55,7 +55,8 @@ class TMVAReader
   float drll_SR1=0.8;
   float dphiHZ_SR1=0;
   float dphi_met_l_SR1=0;
-         
+  float drbbav=0.8;
+  float dmbbmin=0;
   TMVA::Reader *myreader;
 
   void InitTMVAReader();
@@ -72,28 +73,17 @@ class TMVAReader
                        float thisptf1,float thissd_mass1,float thisxbb1, float thisxbbccqq1 ,
                        float thisdrjj,float thisn_ad_j,float thisptb1,float thisbtag3,
                        std::string methodName);
-  float GenReMVAReader(
-				   float thisdilep_pt, float thisdrll,float thisdhiHZ,float thisdphi_met_l,  float thisdphi_met_j,
-				   float thism4b,float thispt4b,float thismet,  float thisht,float thisdrjj,
-				   float thisn_ad_j,float thisptb1,float thisptb2,float thisbtag1,float thisbtag3,
-				   std::string methodName
-				   );
-  float GenReMVAReader(
-		       
-		       float thism4b,float thispt4b,float thismet,  float thisht,float thisdrjj,
-		       float thisn_ad_j,float thisptb1,float thisptb2,float thisbtag1,float thisbtag3,
-		       std::string methodName
-		       );
+
 
   float GenReMVAReader(
 				   float thisdilep_pt, float thisdrll,float thisdhiHZ,float thisdphi_met_l,  float thisdphi_met_j,
 				   float thism4b,float thispt4b,float thismet,  float thisht,
-				   float thisn_ad_j,float thisptb1,float thisptb2,float thisbtag1,float thisbtag3,
+				   float thisn_ad_j,float thisptb1,float thisptb2,float thisbtag1,float thisbtag3,float thisdrbbav,float thisdmbbmin,
 				   std::string methodName
 				   );
   float GenReMVAReader(
 		       float thism4b,float thispt4b,float thismet,  float thisht,
-		       float thisn_ad_j,float thisptb1,float thisptb2,float thisbtag1,float thisbtag3,
+		       float thisn_ad_j,float thisptb1,float thisptb2,float thisbtag1,float thisbtag3,float thisdrbbav,float thisdmbbmin,
 		       std::string methodName
 		       );
   void CloseMVAReader();
