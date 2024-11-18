@@ -270,15 +270,15 @@ int main(int argc, char* argv[])
   //####################################################################################################################//
   std::string chpath = "WhAnalysis/";
 
-  TMVAReader SR0adaReader;
-  SR0adaReader.InitTMVAReader();
-  std::string SR0ada_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA_BDT_ada.weights.xml";
-  SR0adaReader.SetupMVAReader("SR0adaClass", SR0ada_xml_path);
+  TMVAReader SR1adaReader;
+  SR1adaReader.InitTMVAReader();
+  std::string SR1ada_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA_BDT_ada.weights.xml";
+  SR1adaReader.SetupMVAReader("SR1adaClass", SR1ada_xml_path);
 
-  TMVAReader SR0gradReader;
-  SR0gradReader.InitTMVAReader();
-  std::string SR0grad_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA_BDT_grad.weights.xml";
-  SR0gradReader.SetupMVAReader("SR0gradClass", SR0grad_xml_path);
+  TMVAReader SR1gradReader;
+  SR1gradReader.InitTMVAReader();
+  std::string SR1grad_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA_BDT_grad.weights.xml";
+  SR1gradReader.SetupMVAReader("SR1gradClass", SR1grad_xml_path);
 
  
   //####################################################################################################################//
@@ -704,7 +704,9 @@ int main(int argc, char* argv[])
 
       // LOOP OVER DETECTOR PARTICLES
 
-      // Muon
+      // Lepton configuration
+      
+      // Muon 
       for(int i=0; i<ev.mn; i++)
 	{
 	  TLorentzVector pmn;
@@ -737,6 +739,11 @@ int main(int argc, char* argv[])
 	      vec_lepton.push_back(pen);
 	    }
 	}
+
+      // Sort the lepton vectors based on their pT
+      vec_mn     = sort_vec_pt(vec_mn);
+      vec_en     = sort_vec_pt(vec_en);
+      vec_lepton = sort_vec_pt(vec_lepton);
 
 
       // Fill the multiplicity histograms for lepton
@@ -913,6 +920,12 @@ int main(int argc, char* argv[])
       // If there is one lepton
       if(vec_lepton.size()<1) continue;
 
+      // If the lepton is a muon, the offline pT cut must be > 30 GeV
+      if(vec_mn.size()>0 && vec_mn[0].Pt()<30) continue;
+
+      // If the lepton is an electron, the offline pT cut must be > 35 GeV
+      if(vec_en.size()>0 && vec_en[0].Pt()<35) continue;
+
       n_event_lepton++;
 
       mon.fillHisto("eventflow", "histo", 1, 1);
@@ -938,7 +951,7 @@ int main(int argc, char* argv[])
       mon.fillHisto("jetmulti", "step1_untag", vec_untag.size(), weight);
       
 
-           
+      
       //### STEP 2 ###//
      
       // If there is at least three jets
@@ -964,8 +977,9 @@ int main(int argc, char* argv[])
       // If there is at least three b-jets
       if(vec_btag.size() < 3) continue;
 
-      // b tagged jets working point : first b-jet tight WP, second b-jet medium WP, third (and fourth) b-jet loose WP 
-      if( vec_bjetsbtag[0].second < 0.7476 || vec_bjetsbtag[1].second < 0.3040) continue;
+      // b tagged jets working points
+      // Tight WP: 0.7476, Medium WP: 0.3040, Loose WP: 0.0532
+      if( vec_bjetsbtag[0].second < 0.7476 || vec_bjetsbtag[1].second < 0.3040 || vec_bjetsbtag[2].second < 0.3040) continue;
 
       for (const auto& pair : vec_bjetsbtag)
 	{
@@ -1208,10 +1222,10 @@ int main(int argc, char* argv[])
       float mvaBDTada  = -10.0;
       float mvaBTDgrad = -10.0;
 
-      mvaBDTada = SR0adaReader.GenReMVAReader(Njets, HT, H_pt, W_pt, lepton_pt, bjet1_pt, MET, H_M, MTW, dphiWH, detaWH, dphiMetJetMin, DRbbav, DeltaMassbbMin, mbbuntag, btag1, btag2, btag3, "SR0adaClass");
-      mvaBTDgrad = SR0gradReader.GenReMVAReader(Njets, HT, H_pt, W_pt, lepton_pt, bjet1_pt, MET, H_M, MTW, dphiWH, detaWH, dphiMetJetMin, DRbbav, DeltaMassbbMin, mbbuntag, btag1, btag2, btag3, "SR0gradClass");
-      mon.fillHisto("BDT", "SR0_ada", mvaBDTada, weight);
-      mon.fillHisto("BDT", "SR0_grad", mvaBTDgrad, weight);
+      mvaBDTada = SR1adaReader.GenReMVAReader(Njets, HT, H_pt, W_pt, lepton_pt, bjet1_pt, MET, H_M, MTW, dphiWH, detaWH, dphiMetJetMin, DRbbav, DeltaMassbbMin, mbbuntag, btag1, btag2, btag3, "SR1adaClass");
+      mvaBTDgrad = SR1gradReader.GenReMVAReader(Njets, HT, H_pt, W_pt, lepton_pt, bjet1_pt, MET, H_M, MTW, dphiWH, detaWH, dphiMetJetMin, DRbbav, DeltaMassbbMin, mbbuntag, btag1, btag2, btag3, "SR1gradClass");
+      mon.fillHisto("BDT", "SR1_ada", mvaBDTada, weight);
+      mon.fillHisto("BDT", "SR1_grad", mvaBTDgrad, weight);
       
     
    } // END OF EVENT LOOP
