@@ -58,7 +58,7 @@ using namespace std;
 //std::vector<TLorentzVector> vec_genqg;
 //std::vector<std::pair<TLorentzVector,int> > vec_genqg_id;
 double getDeltaR(TLorentzVector vec_1, TLorentzVector vec_2);
-int flav_jet_matched(TLorentzVector jet,std::vector<std::pair<TLorentzVector,int> > vec_genqg_id);
+
 double dR_j_fj_min(TLorentzVector jet,std::vector<TLorentzVector> vecfjet);
 double dphi_met_j_min(float metphi,std::vector<TLorentzVector> jet,std::vector<TLorentzVector> fjet);
 float fjet_matched(TLorentzVector fjet,std::vector<TLorentzVector> vecb) ;
@@ -67,8 +67,11 @@ std::vector<TLorentzVector> sort_vec_pt(std::vector<TLorentzVector> vec);
 bool sortBtag( std::pair<TLorentzVector,float>  vec_jet_and_btagi,std::pair<TLorentzVector,float> vec_jet_and_btagj){
   return  vec_jet_and_btagi.second >  vec_jet_and_btagj.second ;
 }
-
-
+bool sortlep( std::pair<TLorentzVector,TString>  vec_lep_idi,std::pair<TLorentzVector,TString> vec_lep_idj){
+  return  vec_lep_idi.first.Pt() >  vec_lep_idj.first.Pt() ;
+}
+float getAverageDeltaR(vector<TLorentzVector> vec);
+float getDeltaMassMin(vector<TLorentzVector> vec);
 int main(int argc, char* argv[])
 {
   //##################################################################################
@@ -148,7 +151,7 @@ int main(int argc, char* argv[])
   SmartSelectionMonitor mon;
   TH1F *drbf= new TH1F ("dr-min-bjet-fjet", ";dr;Events", 100,0,8);
   TH1F *drjf= new TH1F ("dr-min-jet-fjet", ";dr;Events", 100,0,8);
-  TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";;Events", 6,0,6) );
+  TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";;Events", 5,0,5) );
   h->GetXaxis()->SetBinLabel(1,"Raw");
   if (run0lep) {
   h->GetXaxis()->SetBinLabel(2,"0 lepton");
@@ -157,14 +160,12 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(2,"2 leptons");
   h->GetXaxis()->SetBinLabel(3,"Z-mass window"); 
    }
-  
-  h->GetXaxis()->SetBinLabel(4,"=2 AK4 b-jets");
-  h->GetXaxis()->SetBinLabel(5,">=3 AK4 b-jets");
-  h->GetXaxis()->SetBinLabel(6,">=1 f-jet and 1 AK4 b-jet");
+  h->GetXaxis()->SetBinLabel(4,">=3 AK4 b-jets");
+  h->GetXaxis()->SetBinLabel(5,">=1 f-jet and 1 AK4 b-jet");
  
   
 
-  TH1F *hr= new TH1F ("raw_eventflow", ";;Events", 6,0.5,6.5);
+  TH1F *hr= new TH1F ("raw_eventflow", ";;Events", 5,0.5,5.5);
   hr->GetXaxis()->SetBinLabel(1,"Raw");
   if (run0lep) {
     hr->GetXaxis()->SetBinLabel(2,"0 lepton");
@@ -173,10 +174,8 @@ int main(int argc, char* argv[])
     hr->GetXaxis()->SetBinLabel(2,"2 leptons");
     hr->GetXaxis()->SetBinLabel(3,"Z-mass window");
   }
-  
-  hr->GetXaxis()->SetBinLabel(4,"=2 AK4 b-jets");
-  hr->GetXaxis()->SetBinLabel(5,">=3 AK4 b-jets");
-  hr->GetXaxis()->SetBinLabel(6,">=1 f-jet and 1 AK4 b-jet");
+  hr->GetXaxis()->SetBinLabel(4,">=3 AK4 b-jets");
+  hr->GetXaxis()->SetBinLabel(5,">=1 f-jet and 1 AK4 b-jet");
  
   TH1F *hs= new TH1F ("sig_eventflow", ";;Events", 6,0.5,6.5);
   hs->GetXaxis()->SetBinLabel(1,"RAW in ZH");
@@ -214,7 +213,8 @@ int main(int argc, char* argv[])
 
   //fjet kinematics
   mon.addHistogram( new TH1F("pt", ";p_{T} [GeV];Events", 50, 0, 500));
-   mon.addHistogram( new TH1F("M", ";M [GeV];Events", 150, 0, 1500));
+  mon.addHistogram( new TH1F("M", ";M [GeV];Events", 150, 0, 1500));
+  mon.addHistogram( new TH1F("dm", ";M [GeV];Events", 200, 0, 200));
   mon.addHistogram( new TH1F("eta", ";#eta ;Events", 50, -5, 5));
   mon.addHistogram( new TH1F("phi", ";#phi;Events", 50, -3*TMath::Pi(), 3*TMath::Pi()));
   //fjet matched pt vs met(vv)
@@ -301,7 +301,7 @@ int main(int argc, char* argv[])
   Int_t METCUT=0;
   Int_t sr1=0;
   Int_t sr2=0;
-  Int_t sr3=0;
+ 
   //z->:
   Int_t zqq_light=0;
   Int_t zbb=0;
@@ -332,7 +332,7 @@ int main(int argc, char* argv[])
   //####################################################################################################################
     //###########################################           TMVAReader         ###########################################
     //####################################################################################################################
-    
+    /*
   std::string chpath = "MVA_2lepton/";
    if (run0lep) chpath =  "MVA_0lepton/";
 
@@ -345,12 +345,8 @@ int main(int argc, char* argv[])
    SR2Reader.InitTMVAReader();
    std::string SR2_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA2_BDT.weights.xml"; 
    SR2Reader.SetupMVAReader( "SR2Class", SR2_xml_path );
-
-   TMVAReader SR3Reader;
-   SR3Reader.InitTMVAReader();
-   std::string SR3_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA3_BDT.weights.xml"; 
-   SR3Reader.SetupMVAReader( "SR3Class", SR3_xml_path );
-    
+    */
+  
   
   //####################################################################################################################
   //###########################################           EVENT LOOP         ###########################################
@@ -388,6 +384,7 @@ int main(int argc, char* argv[])
       std::vector<TLorentzVector> vec_genqg;
       std::vector<std::pair<TLorentzVector,int> > vec_genqg_id;
       std::vector<TLorentzVector> vec_jet;
+      std::vector<TLorentzVector> vec_jet_r;
       std::vector<TLorentzVector> vec_bjets;
       std::vector<TLorentzVector> vec_bjets_cc;
       std::vector<TLorentzVector> vec_fjet;
@@ -396,8 +393,9 @@ int main(int argc, char* argv[])
       // Leptons
       std::vector<TLorentzVector> vec_muons;
       std::vector<TLorentzVector> vec_ele;
+      
       std::vector<TLorentzVector> vec_leptons;
-    
+      
       //generator level
       //before accepance cuts 
       std::vector<TLorentzVector> vec_genmu_bef;
@@ -426,7 +424,8 @@ int main(int argc, char* argv[])
       std::vector<std::pair<TLorentzVector,int> > fjet_index;
       std::vector<std::pair<TLorentzVector,int> > bjet_index_cc;
       std::vector<std::pair<TLorentzVector,float> > vec_jet_and_btag;
-
+      std::vector<std::pair<TLorentzVector,float> > vec_jet_and_btag_cc;
+      std::vector<std::pair<TLorentzVector,TString> > vec_lep_and_id;
       //start generator level loop
       for (int imc=0; imc<ev.nmcparticles;imc++)	{
        if(verbose && iev<10) 
@@ -652,14 +651,15 @@ int main(int argc, char* argv[])
       TLorentzVector p_muon;
       p_muon.SetPxPyPzE(ev.mn_px[i], ev.mn_py[i], ev.mn_pz[i], ev.mn_en[i]);
 
-      if (p_muon.Pt() < 20. || std::fabs(p_muon.Eta()) > 2.4) continue;
+      if (p_muon.Pt() < 10. || std::fabs(p_muon.Eta()) > 2.4) continue;
 
       // id + Isolation
       if (ev.mn_passId[i] && ev.mn_passIso[i])
       {
         vec_muons.push_back(p_muon);
 	     
-        vec_leptons.push_back(p_muon);
+       
+	vec_lep_and_id.push_back(make_pair(p_muon,"mu"));
       }
     }
 
@@ -668,15 +668,25 @@ int main(int argc, char* argv[])
       TLorentzVector p_electron;
       p_electron.SetPxPyPzE(ev.en_px[i], ev.en_py[i], ev.en_pz[i], ev.en_en[i]);
 
-      if (p_electron.Pt() < 20. || std::fabs(p_electron.Eta()) > 2.4) continue;
+      if (p_electron.Pt() < 15. || std::fabs(p_electron.Eta()) > 2.4) continue;
 
       if (ev.en_passId[i] && ev.en_passIso[i])
       {
         vec_ele.push_back(p_electron);
-	vec_leptons.push_back(p_electron);
+	
+	vec_lep_and_id.push_back(make_pair(p_electron,"ele"));
       }
     }
+    //sorting the lepton vector based on pT in descending order
 
+   std::sort(vec_lep_and_id.begin(), vec_lep_and_id.end(), sortlep);
+   if (!vec_lep_and_id.empty()) {
+    
+     if((vec_lep_and_id[0].second=="ele" && vec_lep_and_id[0].first.Pt()>=25)|| (vec_lep_and_id[0].second=="mu" && vec_lep_and_id[0].first.Pt()>=20))
+       {
+	 for (std::vector<TLorentzVector>::size_type i=0; i<vec_lep_and_id.size(); i++) vec_leptons.push_back(vec_lep_and_id[i].first);
+       }
+   }
      // jets & cross cleaning
    
     int nHF, nHFc; nHF=nHFc=0;
@@ -717,7 +727,7 @@ int main(int argc, char* argv[])
 
      
       if ( overlap )continue; 
-      vec_jet.push_back(p_jet);
+      
       vec_jet_and_btag.push_back(make_pair(p_jet,ev.jet_btag1[i]));
 
       if (ev.jet_btag1[i] > 0.3040)
@@ -725,7 +735,7 @@ int main(int argc, char* argv[])
 	    vec_bjets.push_back(p_jet);
 	    bjet_index.push_back(make_pair(p_jet,i));
 	  }
-      if (isMC_ttbar) {
+      /*if (isMC_ttbar) {
 	
 	  bool isMatched(false);
 	  
@@ -745,11 +755,11 @@ int main(int argc, char* argv[])
 	  else if (abs(ev.jet_partonFlavour[i]==4)) {
 	    nHFc++;
 	  }
-	  }
+	  }*/
     } // end jet loop
     
     //split inclusive TTJets POWHEG sample into tt+bb, tt+cc and tt+light
-     if (isMC_ttbar) {
+    /*if (isMC_ttbar) {
       nTot++;
       if(mctruthmode==5) { // only keep events with nHF>0.
 	if (!(nHF>0)) { continue;}
@@ -763,10 +773,19 @@ int main(int argc, char* argv[])
 	if (nHF>0 || (nHFc>0  && nHF==0 )) { continue; }
 	else { nFilt1++;}
       }
-      }
-    //sort the b-tagged jets by discriminator value   
+      }*/
+     
+    //sort the  jets by discriminator value   
     std::sort(vec_jet_and_btag.begin(), vec_jet_and_btag.end(), sortBtag);
+    //fill the vec_jet
+    for (std::vector<TLorentzVector>::size_type i=0; i<vec_jet_and_btag.size(); i++) {
+      vec_jet.push_back(vec_jet_and_btag[i].first);
+    }
+    //sorting b jet vector based on pT in descending order
     
+    std::sort(vec_bjets.begin(), vec_bjets.end(), [](const TLorentzVector& a, const TLorentzVector& b){
+      return a.Pt() > b.Pt();
+    });
     //fjets
     for (int i = 0; i < ev.fjet; i++)
       {  
@@ -775,9 +794,9 @@ int main(int argc, char* argv[])
          TLorentzVector p_fjet;
          p_fjet.SetPxPyPzE(ev.fjet_px[i], ev.fjet_py[i], ev.fjet_pz[i], ev.fjet_en[i]);
          if(ev.fjet_subjet_count[i]<2)continue;
-
+	 //raw fjets
          if (p_fjet.Pt() <30. || std::fabs(p_fjet.Eta()) > 2.5 ) continue;
-	 //	 if( (ev.fjet_btag10[i]+ev.fjet_btag11[i]+ev.fjet_btag12[i])/(ev.fjet_btag10[i]+ev.fjet_btag11[i]+ev.fjet_btag12[i]+ev.fjet_btag13[i]+ev.fjet_btag14[i]+ev.fjet_btag15[i]+ev.fjet_btag16[i]+ev.fjet_btag17[i])<0.5)continue;
+  
          for (int mn_count = 0; mn_count < vec_muons.size(); mn_count++)
          {
          dR1 = getDeltaR(p_fjet, vec_muons[mn_count]);
@@ -819,23 +838,22 @@ int main(int argc, char* argv[])
       } // end fjets loop
  
     
-    // do it for vec_jet as well
-    for (int j = 0; j < vec_jet.size(); j++)  {
-      drjf->Fill(dR_j_fj_min(vec_jet[j],vec_fjet));
-      if(dR_j_fj_min(vec_jet[j],vec_fjet)>0.8) {
-        vec_jet_cc.push_back(vec_jet[j]);
+    // fjet- jet cross-cleaning
+   for (const auto& jet_tag: vec_jet_and_btag) {
+      
+      if(dR_j_fj_min(jet_tag.first,vec_fjet)>0.8) {
+	vec_jet_and_btag_cc.push_back(make_pair(jet_tag.first,jet_tag.second));
+	vec_jet_cc.push_back(jet_tag.first);
       }
     }
     
-      //jet f jet cross-cleaning
+      //fjet- bjet cross-cleaning
+   for (int j = 0; j < vec_bjets.size(); j++)  {
    
-    for (const auto& bjet: bjet_index) {
-      drbf->Fill(dR_j_fj_min(bjet.first,vec_fjet));
-      if(dR_j_fj_min(bjet.first,vec_fjet)>0.8) {
-	bjet_index_cc.push_back(make_pair(bjet.first,bjet.second));
-	vec_bjets_cc.push_back(bjet.first);
+      if(dR_j_fj_min(vec_bjets[j],vec_fjet)>0.8) {
+        vec_bjets_cc.push_back(vec_bjets[j]);
       }
-    }
+   }   
     //-----End config ------------
     //raw events 
     
@@ -998,7 +1016,6 @@ int main(int argc, char* argv[])
       if (ev.met_pt < 170.) continue;
       METCUT++;
       mon.fillHisto("eventflow","histo",2,weight);
-      //mon.fillHisto("raw_eventflow","histo",2);
       hr->Fill(3);
       mon.fillHisto("mult","fjet_2",vec_fjet.size(),weight);
       mon.fillHisto("mult","jet_cc_2",vec_jet_cc.size(),weight);
@@ -1012,7 +1029,6 @@ int main(int argc, char* argv[])
       if (dileptonmass>100. || dileptonmass < 80.) continue;
       INVM++;
       mon.fillHisto("eventflow","histo",2,weight);
-      //mon.fillHisto("raw_eventflow","histo",2);
       hr->Fill(3);
       mon.fillHisto("mult","fjet_2",vec_fjet.size(),weight);
       mon.fillHisto("mult","jet_cc_2",vec_jet_cc.size(),weight);
@@ -1023,167 +1039,120 @@ int main(int argc, char* argv[])
     //step 3 : // 
     Float_t m4b(-1) ,pt4b(-1.),m4b_SR1(-1) ,pt4b_SR1(-1.),ptf1(-1.),ptb1(-1.),ptb1_SR1(-1.),ptb2(-1),ht(-1.),dilep_pt(-1.),drll(-1.),dphiHZ(-1.),n_ad_j(-1.),met(-1.),
       dilep_pt_SR1(-1.),drll_SR1(-1.),dphiHZ_SR1(-1.),n_ad_j_SR1(-1.),ht_SR1(-1),met_SR1(-1.),btag1(-1),
-      btag3(-1), btag3_SR1(-1),sd_mass1(-1.),xbb1(-2.),xbbccqq1(-2.),drjj(-1),dphi_met_j(-1),dphi_met_l(-1),drjj_SR1(-1),dphi_met_j_SR1(-1),dphi_met_l_SR1(-1);
+      btag3(-1), btag3_SR1(-1),sd_mass1(-1.),xbb1(-2.),xbbccqq1(-2.),drjj(-1),dphi_met_j(-1),dphi_met_l(-1),drjj_SR1(-1),dphi_met_j_SR1(-1),dphi_met_l_SR1(-1),drbbav(-1),dmbbmin(-1);
     float mvaBDT1(-10.0),mvaBDT2(-10.0);
     bool isSR2(false);
-    bool isSR3(false);
+   
     bool isSR1(false);
-    if(vec_bjets.size()==2)isSR2=true;
-    if(vec_bjets.size()>=3)isSR3=true;
+    
+    if(vec_bjets.size()>=3)isSR2=true;
     if (vec_fjet.size()>=1 && vec_bjets_cc.size()>=1) {
       	  isSR1=true;
     }
 
-    if(isSR2||isSR3)
+    if(isSR2)
       {
 	
 	ptb1=vec_bjets[0].Pt();
 
 	ptb2=vec_bjets[1].Pt();
-	TLorentzVector tot_bjets;
 	TLorentzVector tot_jets;
-	for(std::vector<TLorentzVector>::size_type i=0; i<vec_bjets.size(); i++){
-	  if(i==4) break;
-	   tot_bjets += vec_bjets[i];
-	}
+
 	for(std::vector<TLorentzVector>::size_type i=0; i<vec_jet.size(); i++){
           if(i==4) break;
+	  vec_jet_r.push_back(vec_jet[i]);
 	  tot_jets += vec_jet[i];
         }
 	if(!run0lep){
-	  //mon.fillHisto("inv_mass","dilept",(vec_leptons[0]+vec_leptons[1]).M(),weight);
+	  mon.fillHisto("inv_mass","dilept",(vec_leptons[0]+vec_leptons[1]).M(),weight);
 	  //mon.fillHisto("dR","dilept",getDeltaR(vec_leptons[0],vec_leptons[1]),weight);
 	  drll=getDeltaR(vec_leptons[0],vec_leptons[1]);
 	  dilep_pt=(vec_leptons[0]+vec_leptons[1]).Pt();
 	  dphi_met_l=min(fabs(vec_leptons[0].Phi()-ev.met_phi),fabs(vec_leptons[1].Phi()-ev.met_phi));
-	  if(fabs( tot_bjets.Phi()-(vec_leptons[0]+vec_leptons[1]).Phi())<TMath::Pi())
+	  if(fabs( tot_jets.Phi()-(vec_leptons[0]+vec_leptons[1]).Phi())<TMath::Pi())
 		  {
-		    dphiHZ=std::fabs( tot_bjets.Phi()-(vec_leptons[0]+vec_leptons[1]).Phi());
+		    dphiHZ=std::fabs( tot_jets.Phi()-(vec_leptons[0]+vec_leptons[1]).Phi());
 		  }
 		else{
-		  dphiHZ=2*TMath::Pi()-std::fabs( tot_bjets.Phi()-(vec_leptons[0]+vec_leptons[1]).Phi());
+		  dphiHZ=2*TMath::Pi()-std::fabs( tot_jets.Phi()-(vec_leptons[0]+vec_leptons[1]).Phi());
 		}
 	  dphi_met_j=999;
 	  for(std::vector<TLorentzVector>::size_type i=0; i<vec_jet.size(); i++)if (fabs( deltaPhi(vec_jet[i].Phi(),ev.met_phi))<dphi_met_j)dphi_met_j=fabs( deltaPhi(vec_jet[i].Phi(),ev.met_phi));
 	   
 	}
-	drjj=getDeltaR(vec_bjets[0],vec_bjets[1]);
+
+         drbbav = getAverageDeltaR(vec_bjets);
 	met=ev.met_pt;
 	n_ad_j=vec_jet.size();
 	btag1=vec_jet_and_btag[0].second;
-       
-	if(vec_bjets.size()==3 && vec_jet.size()==4)
-	  {pt4b=tot_jets.Pt(); m4b = tot_jets.M();}
-	else{pt4b = tot_bjets.Pt(); m4b = tot_bjets.M();}
+	
+	pt4b=tot_jets.Pt();
+	m4b = tot_jets.M();
+        
 	ht = 0;
 	
 	for(std::vector<TLorentzVector>::size_type i=0; i<vec_jet.size(); i++){
 	  ht += vec_jet[i].Pt();
 	}
+        dmbbmin = getDeltaMassMin(vec_jet_r);
 	
-	if(isSR2){
-	  btag3=vec_jet_and_btag[1].second;
-	  mon.fillHisto("btag3","SR2",btag3,weight);
-	  mon.fillHisto("btag1","SR2",btag1,weight);
-	  mon.fillHisto("eventflow","histo",3,weight);
+
+	  btag3=vec_jet_and_btag[2].second;
+	   mon.fillHisto("dR","SR2_bb_av",drbbav,weight);
+	    mon.fillHisto("dm","SR2_bbmin",dmbbmin,weight);
 	  mon.fillHisto("pt","SR2_b1",vec_bjets[0].Pt(),weight);
 	  mon.fillHisto("pt","SR2_b2",vec_bjets[1].Pt(),weight);
-	  mon.fillHisto("M","SR2_4b",m4b,weight);
-	   mon.fillHisto("pt","SR2_4b",pt4b,weight);
-	   mon.fillHisto("Ht","SR2",ht,weight);
-	   mon.fillHisto("met","SR2",met,weight);
-	   mon.fillHisto("mult","SR2_ad_j",n_ad_j,weight);
-	   mon.fillHisto("dR","SR2_jj",drjj,weight);
-	   if(!run0lep)
-	     {
-	       mon.fillHisto("dR","SR2_ll",drll,weight);
-	       mon.fillHisto("dphi","SR2_met_l",dphi_met_l,weight);
-	       mon.fillHisto("dphi","SR2_met_j",dphi_met_j,weight);
-	       mon.fillHisto("dphi","SR2_HZ",dphiHZ,weight);
-	       mon.fillHisto("pt","SR2_dilep",dilep_pt,weight);
-	     }
-	  hr->Fill(4);
-	  sr2++;
-	}
-	else if(isSR3){
-	  btag3=vec_jet_and_btag[2].second;
-	  mon.fillHisto("pt","SR3_b1",vec_bjets[0].Pt(),weight);
-	  mon.fillHisto("pt","SR3_b2",vec_bjets[1].Pt(),weight);
-	  mon.fillHisto("eventflow","histo",4,weight);
-	  mon.fillHisto("btag3","SR3",btag3,weight);
-          mon.fillHisto("btag1","SR3",btag1,weight);
+	  mon.fillHisto("btag3","SR2",btag3,weight);
+          mon.fillHisto("btag1","SR2",btag1,weight);
           mon.fillHisto("eventflow","histo",3,weight);
       
-          mon.fillHisto("M","SR3_4b",m4b,weight);
-	  mon.fillHisto("pt","SR3_4b",pt4b,weight);
-	  mon.fillHisto("Ht","SR3",ht,weight);
-	  mon.fillHisto("met","SR3",met,weight);
-	  mon.fillHisto("mult","SR3_ad_j",n_ad_j,weight);
-	  mon.fillHisto("dR","SR3_jj",drjj,weight);
+          mon.fillHisto("M","SR2_4b",m4b,weight);
+	  mon.fillHisto("pt","SR2_4b",pt4b,weight);
+	  mon.fillHisto("Ht","SR2",ht,weight);
+	  mon.fillHisto("met","SR2",met,weight);
+	  mon.fillHisto("mult","SR2_ad_j",n_ad_j,weight);
+	 
 	  if(!run0lep)
 	    {
-	      mon.fillHisto("dR","SR3_ll",drll,weight);
-	      mon.fillHisto("dphi","SR3_met_l",dphi_met_l,weight);
-	      mon.fillHisto("dphi","SR3_met_j",dphi_met_j,weight);
-	      mon.fillHisto("dphi","SR3_HZ",dphiHZ,weight);
-	      mon.fillHisto("pt","SR3_dilep",dilep_pt,weight);
+	      mon.fillHisto("dR","SR2_ll",drll,weight);
+	      mon.fillHisto("dphi","SR2_met_l",dphi_met_l,weight);
+	      mon.fillHisto("dphi","SR2_met_j",dphi_met_j,weight);
+	      mon.fillHisto("dphi","SR2_HZ",dphiHZ,weight);
+	      mon.fillHisto("pt","SR2_dilep",dilep_pt,weight);
 	    }
-          hr->Fill(5);
+          hr->Fill(4);
 	  if(isSignal && isMC_Zh)hs->Fill(3,weight);
 	  if(isSignal && isMC_Wh)hs->Fill(4,weight);
-	  sr3++;
-	}
+	  sr2++;
+      }
 	//MVAREADER
-	
-	if(isSR2)
-	  {
-	    if(!run0lep)
-	      {
-		mvaBDT2 = SR2Reader.GenReMVAReader
-		  (
-		   dilep_pt, drll,dphiHZ,dphi_met_l,dphi_met_j,
-		   m4b,pt4b, met,ht,drjj,n_ad_j,
-	       ptb1,ptb2 ,btag1,btag3,
-		   "SR2Class"
-		   );
-	      }
-	    else if(run0lep)
-	      {
-		mvaBDT2 = SR2Reader.GenReMVAReader
-                  (
-                   
-                   m4b,pt4b, met,ht,drjj,n_ad_j,
-		   ptb1,ptb2 ,btag1,btag3,
-                   "SR2Class"
-                   );
-	      }
-	    mon.fillHisto("bdt","sr2",mvaBDT2,weight);
-	 }
-	else if (isSR3)
+	/*
+
+        if (isSR2)
 	  {
 	    if(!run0lep){
-	      mvaBDT2 = SR3Reader.GenReMVAReader
+	      mvaBDT2 = SR2Reader.GenReMVAReader
 		(
 		 dilep_pt, drll,dphiHZ,dphi_met_l,dphi_met_j,
 		 m4b,pt4b, met,ht,n_ad_j,
-		 ptb1,ptb2 ,btag1,btag3,
-		 "SR3Class"
+		 ptb1,ptb2 ,btag1,btag3,drbbav,dmbbmin,
+		 "SR2Class"
 		 );
 	    }
 	    else if(run0lep)
 	      {
-		mvaBDT2 = SR3Reader.GenReMVAReader
+		mvaBDT2 = SR2Reader.GenReMVAReader
 		  (
 		   
 		   m4b,pt4b, met,ht,n_ad_j,
-		   ptb1,ptb2 ,btag1,btag3,
-                 "SR3Class"
+		   ptb1,ptb2 ,btag1,btag3,drbbav,dmbbmin,
+                 "SR2Class"
 		   );
 	      }
-	    mon.fillHisto("bdt","sr3",mvaBDT2,weight);
+	    mon.fillHisto("bdt","sr2",mvaBDT2,weight);
 	  }
 	 
-      }
+	*/
     
     if(isSR1)
       {
@@ -1197,11 +1166,7 @@ int main(int argc, char* argv[])
 	//met
 	met_SR1=ev.met_pt;
 	mon.fillHisto("met","SR1",ev.met_pt,weight);
-	//mon.fillHisto("met_phi","step_3",ev.met_phi,weight);
-	if(hasMETtrigger1||hasMETtrigger2){
-	  mon.fillHisto("met","step3_trig",ev.met_pt,weight);
-	  mon.fillHisto("met_phi","step3_trig",ev.met_phi,weight);
-	}
+	
 	//2lept inv mass
 	if(!run0lep){
 	  mon.fillHisto("inv_mass","dilept",(vec_leptons[0]+vec_leptons[1]).M(),weight);
@@ -1225,8 +1190,8 @@ int main(int argc, char* argv[])
 	//fj1 kinematics
 	ptf1=vec_fjet[0].Pt();
 	mon.fillHisto("pt","fjet1",vec_fjet[0].Pt(),weight);
-	//mon.fillHisto("eta","fjet1",vec_fjet[0].Eta(),weight);
-	//mon.fillHisto("phi","fjet1",vec_fjet[0].Phi(),weight);
+	mon.fillHisto("eta","fjet1",vec_fjet[0].Eta(),weight);
+	mon.fillHisto("phi","fjet1",vec_fjet[0].Phi(),weight);
 	
         // fj1 sdmass
 	sd_mass1=ev.fjet_softdropM[fjet_index[0].second];
@@ -1249,7 +1214,7 @@ int main(int argc, char* argv[])
 	mon.fillHisto("fjet_Xbb_pt","1",vec_fjet[0].Pt(),xbb1,weight);
 	
        
-	btag3_SR1=ev.jet_btag1[bjet_index_cc[0].second];
+	btag3_SR1=vec_jet_and_btag_cc[0].second;
 	 mon.fillHisto("btag3","SR1",btag3_SR1,weight);
 	ptb1_SR1=vec_bjets_cc[0].Pt();
 	n_ad_j_SR1=vec_jet_cc.size();
@@ -1257,11 +1222,11 @@ int main(int argc, char* argv[])
 	drjj_SR1=getDeltaR(vec_fjet[0],vec_bjets_cc[0]);
 	mon.fillHisto("dR","SR1_jj",drjj_SR1,weight);
 	mon.fillHisto("phi","met_sr1",ev.met_phi,weight);
-	mon.fillHisto("eventflow","histo",5,weight);
-	hr->Fill(6);
+	mon.fillHisto("eventflow","histo",4,weight);
+	hr->Fill(5);
 	if(isSignal && isMC_Zh)hs->Fill(5,weight);
 	if(isSignal && isMC_Wh)hs->Fill(6,weight);
-	mon.fillHisto("btag3","SR1", ev.jet_btag1[bjet_index_cc[0].second],weight);
+	mon.fillHisto("btag3","SR1",vec_jet_and_btag_cc[0].second,weight);
 	mon.fillHisto("pt","SR1_b1",vec_bjets_cc[0].Pt(),weight);
 
 	if(vec_bjets_cc.size()==1){
@@ -1277,19 +1242,34 @@ int main(int argc, char* argv[])
 	    
 	    dphi_met_j_SR1=min(fabs(deltaPhi(vec_fjet[0].Phi(),ev.met_phi)),fabs(deltaPhi(vec_bjets_cc[0].Phi(),ev.met_phi)));
 	    mon.fillHisto("dphi","SR1_met_j",dphi_met_j_SR1,weight);
-	    if(fabs((vec_fjet[0]+vec_bjets_cc[0]).Phi()-(vec_leptons[0]+vec_leptons[1]).Phi())<TMath::Pi())
+	    if (vec_jet_cc.size()>=2)
 	      {
-		dphiHZ_SR1=std::fabs((vec_fjet[0]+vec_bjets_cc[0]).Phi()-(vec_leptons[0]+vec_leptons[1]).Phi());
-		mon.fillHisto("dphi","SR1_HZ",dphiHZ_SR1,weight);
+		if(fabs((vec_fjet[0]+vec_jet_cc[0]+vec_jet_cc[1]).Phi()-(vec_leptons[0]+vec_leptons[1]).Phi())<TMath::Pi())
+		  {
+		    dphiHZ_SR1=std::fabs((vec_fjet[0]+vec_jet_cc[0]+vec_jet_cc[1]).Phi()-(vec_leptons[0]+vec_leptons[1]).Phi());
+		    mon.fillHisto("dphi","SR1_HZ",dphiHZ_SR1,weight);
+		  }
+		
+		else{
+		  dphiHZ_SR1=2*TMath::Pi()-std::fabs((vec_fjet[0]+vec_jet_cc[0]+vec_jet_cc[1]).Phi()-(vec_leptons[0]+vec_leptons[1]).Phi());
+		  mon.fillHisto("dphi","SR1_HZ",dphiHZ_SR1,weight);
+		}}
+	    else if (vec_jet_cc.size()==1)
+	      {
+		if(fabs((vec_fjet[0]+vec_bjets_cc[0]).Phi()-(vec_leptons[0]+vec_leptons[1]).Phi())<TMath::Pi())
+		  {
+		    dphiHZ_SR1=std::fabs((vec_fjet[0]+vec_bjets_cc[0]).Phi()-(vec_leptons[0]+vec_leptons[1]).Phi());
+		    mon.fillHisto("dphi","SR1_HZ",dphiHZ_SR1,weight);
+		  }
+		
+		else{
+		  dphiHZ_SR1=2*TMath::Pi()-std::fabs((vec_fjet[0]+vec_bjets_cc[0]).Phi()-(vec_leptons[0]+vec_leptons[1]).Phi());
+		  mon.fillHisto("dphi","SR1_HZ",dphiHZ_SR1,weight);
+		}
 	      }
 	    
-	    else{
-	      dphiHZ_SR1=2*TMath::Pi()-std::fabs((vec_fjet[0]+vec_bjets_cc[0]).Phi()-(vec_leptons[0]+vec_leptons[1]).Phi());
-	      mon.fillHisto("dphi","SR1_HZ",dphiHZ_SR1,weight);
-	    }
-	    
 	  }
-	 
+	  
 	}
 	else if(vec_bjets_cc.size()>1){
 	  
@@ -1301,7 +1281,7 @@ int main(int argc, char* argv[])
 	    float dphi_met_j1=min(fabs(deltaPhi(vec_fjet[0].Phi(),ev.met_phi)),fabs(deltaPhi(vec_bjets_cc[0].Phi(),ev.met_phi)));
 	    float dphi_met_j2=min(fabs(deltaPhi(vec_bjets_cc[0].Phi(),ev.met_phi)),fabs(deltaPhi(vec_bjets_cc[1].Phi(),ev.met_phi)));
 	    dphi_met_j_SR1=min(dphi_met_j1,dphi_met_j2);
-	     mon.fillHisto("dphi","SR1_met_j",dphi_met_j_SR1,weight);
+	    mon.fillHisto("dphi","SR1_met_j",dphi_met_j_SR1,weight);
 	    if(std::fabs((vec_fjet[0]+vec_bjets_cc[0]+vec_bjets_cc[1]).Phi()-(vec_leptons[0]+vec_leptons[1]).Phi())< TMath::Pi())
 	      {
 		dphiHZ_SR1=std::fabs((vec_fjet[0]+vec_bjets_cc[0]+vec_bjets_cc[1]).Phi()-(vec_leptons[0]+vec_leptons[1]).Phi());
@@ -1316,8 +1296,7 @@ int main(int argc, char* argv[])
 	 
 	 
 	}
-	     //if(TMath::IsNaN(sd_mass1)|| isinf(sd_mass1))continue;
-	if(run0lep)
+	/*	if(run0lep)
 	  {	  
 	    mvaBDT1 = SR1Reader.GenReMVAReader
 	      (
@@ -1334,20 +1313,19 @@ int main(int argc, char* argv[])
 	       ptf1,sd_mass1,xbb1, xbbccqq1,n_ad_j_SR1,ptb1_SR1,btag3_SR1,drjj_SR1,"SR1Class");
 	    
 	  }
-	mon.fillHisto("bdt","sr1",mvaBDT1,weight);
+	mon.fillHisto("bdt","sr1",mvaBDT1,weight);*/
       }
      //##############################################################################
   
     
     if (runMVA) {
       
-       float mvaweight = 1.0; // weight; //xsecWeight; //1.0;
+       float mvaweight = 1.0; 
        
-       myMVAHandler_.getEntry (isSR1,isSR2,isSR3,m4b,pt4b,m4b_SR1,pt4b_SR1,ptf1,sd_mass1,ht,met,ht_SR1,met_SR1,xbb1,xbbccqq1,ptb1,ptb1_SR1,ptb2,n_ad_j,n_ad_j_SR1,btag1,btag3,drjj,dphi_met_j,dilep_pt,drll,dphiHZ,dphi_met_l,btag3_SR1,drjj_SR1,dphi_met_j_SR1,dilep_pt_SR1,drll_SR1,dphiHZ_SR1,dphi_met_l_SR1,weight);
+       myMVAHandler_.getEntry (isSR1,isSR2,m4b,pt4b,m4b_SR1,pt4b_SR1,ptf1,sd_mass1,ht,met,ht_SR1,met_SR1,xbb1,xbbccqq1,ptb1,ptb1_SR1,ptb2,n_ad_j,n_ad_j_SR1,btag1,btag3,drjj,dphi_met_j,dilep_pt,drll,dphiHZ,dphi_met_l,btag3_SR1,drjj_SR1,dphi_met_j_SR1,dilep_pt_SR1,drll_SR1,dphiHZ_SR1,dphi_met_l_SR1,drbbav,dmbbmin,weight);
        
        myMVAHandler_.fillTree();
-       //	  }
-       //	}
+      
     } // runMVA
      
      }// end event loop
@@ -1366,8 +1344,8 @@ int main(int argc, char* argv[])
   std::cout << "inv mass cut," <<INVM<< ","<< (float)INVM/(float)totalEntries*100<<std::endl;
   std::cout << "MET cut," <<METCUT<< ","<< (float)METCUT/(float)totalEntries*100<<std::endl;
   std::cout << "1fjet  cut," << sr1<< ","<< (float)sr1/(float)totalEntries*100<<std::endl;
-  std::cout << "=2bjet  cut," << sr2<< ","<< (float)sr2/(float)totalEntries*100<<std::endl;
-  std::cout << ">3bjet  cut," << sr3<< ","<< (float)sr3/(float)totalEntries*100<<std::endl;
+  std::cout << "=>3bjet  cut," << sr2<< ","<< (float)sr2/(float)totalEntries*100<<std::endl;
+
   std::cout << "number of events after at least 2 fjet cuts and z->vv: " << st4_vv << std::endl;
   std::cout << "number of events after at least 2 fjet cuts and Z->qq_light: " << st4_qq << std::endl;
   std::cout << "number of events after at least 2 fjet cuts and Z->bb: " << st4_bb << std::endl;
@@ -1389,7 +1367,7 @@ int main(int argc, char* argv[])
   outUrl += outFileUrl + ".root";
   //    outUrl = outFileUrl + ".root";
   printf("Results saved in %s\n", outUrl.Data());
-  if (isMC_ttbar) { 
+  /*if (isMC_ttbar) { 
 
       double cFilt1, cFilt4, cFilt5;
       cFilt1=(double(nFilt1)/double(nTot));
@@ -1398,7 +1376,7 @@ int main(int argc, char* argv[])
       
       printf("From total = %i TTbar events ,  Found %.2f (filt1) , %.2f (filt4) , %.2f (filt5) \n\n", 
 	     nTot, cFilt1, cFilt4, cFilt5);
-	     }
+	     }*/
   // in the end: save all to the file
   int nTrial = 0;
   TFile *ofile=TFile::Open(outUrl, "recreate");
@@ -1523,27 +1501,113 @@ double Ht(std::vector<TLorentzVector> vecjet,std::vector<TLorentzVector> vecfjet
    for(int j=0;j< vecfjet.size();j++) Ht+=vecfjet[j].Pt();}
    return Ht;
 }
-
-    
 std::vector<TLorentzVector> sort_vec_pt(std::vector<TLorentzVector> vec)
 {
-if (vec.size()>0)
+  if (vec.size()>0)
     {
       for (int i=0;i<vec.size()-1;i++)
-      {
+	{
           int maxIndex = i;  
           for (int j = i + 1; j < vec.size(); j++) 
             {  
               if (vec[j].Pt() > vec[maxIndex].Pt())
-          {  
-            maxIndex = j;  
-          }  
+		{  
+		  maxIndex = j;  
+		}  
             }   
           TLorentzVector temp;
           temp = vec[i];  
           vec[i] = vec[maxIndex];  
           vec[maxIndex] = temp; 
-      }
+	}
     }
   return vec;
+}
+    
+
+// Average angular distance DR
+float getAverageDeltaR(vector<TLorentzVector> vec)
+{
+  float sum = 0.0;
+  int npairs = 0;
+
+  for(size_t i=0; i<vec.size(); i++)
+    {
+      for(size_t j=i+1; j<vec.size(); j++)
+	{
+	  sum += getDeltaR(vec[i], vec[j]);
+	  npairs ++ ;
+	}
+    }
+
+  return sum/npairs;
+}
+
+// Minimum Delta mass
+float getDeltaMassMin(vector<TLorentzVector> vec)
+{
+    float minDeltaMass = std::numeric_limits<float>::max();
+    int n=vec.size();
+    if (n == 4)
+      {
+	for (size_t i = 0; i < 4; ++i)
+	  {
+	    for (size_t j = i + 1; j < 4; ++j)
+	      {
+		TLorentzVector pair1 = vec[i] + vec[j];
+		TLorentzVector pair2;
+
+		for (size_t k = 0; k < 4; ++k)
+		  {
+		    if (k != i && k != j)
+		      {
+			pair2 += vec[k];
+		      }
+		  }
+		
+		float mass1 = pair1.M();
+		float mass2 = pair2.M();
+		float deltaMass = std::fabs(mass1 - mass2);
+
+		if (deltaMass < minDeltaMass)
+		  {
+		    minDeltaMass = deltaMass;
+		  }   
+	      }
+	  }
+      }
+    else if (n == 3)
+      {
+        for (size_t i = 0; i < 3; ++i)
+	  {
+	    size_t j = (i + 1) % 3;
+	    size_t k = (i + 2) % 3;
+
+	    TLorentzVector pair1 = vec[i] + vec[j];
+	    TLorentzVector pair2 = vec[k] + vec[i];
+
+	    float mass1 = pair1.M();
+	    float mass2 = pair2.M();
+	    float deltaMass = std::fabs(mass1 - mass2);
+
+	    if (deltaMass < minDeltaMass)
+	      {
+		minDeltaMass = deltaMass;
+	      }
+
+	    pair1 = vec[i] + vec[k];
+	    pair2 = vec[j] + vec[k];
+
+	    mass1 = pair1.M();
+	    mass2 = pair2.M();
+	    deltaMass = std::fabs(mass1 - mass2);
+
+	    if (deltaMass < minDeltaMass)
+	      {
+		minDeltaMass = deltaMass;
+	      }
+	  }
+      }
+    
+    return minDeltaMass;
 }
