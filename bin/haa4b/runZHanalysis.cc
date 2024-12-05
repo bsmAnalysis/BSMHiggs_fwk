@@ -321,32 +321,35 @@ int main(int argc, char* argv[])
   float Lint=41.5*1000;
   double nev_exp=xsec*Lint;
   double weight=nev_exp/nevts;
-   //####################################################################################################################
-    //###########################################           MVAHandler         ###########################################
-    //####################################################################################################################
-    //construct MVA out put file name
-  // TString mvaout = TString ( runProcess.getParameter<std::string>("outdir") ) + "/mva_" + outFileUrl + ".root";
-  // MVAHandler myMVAHandler_;
-  // if (runMVA) { myMVAHandler_.initTree(mvaout); }
+  
 
   //####################################################################################################################
     //###########################################           TMVAReader         ###########################################
     //####################################################################################################################
-    /*
   std::string chpath = "MVA_2lepton/";
    if (run0lep) chpath =  "MVA_0lepton/";
 
-   TMVAReader SR1Reader;
-   SR1Reader.InitTMVAReader();
-   std::string SR1_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA1_BDT.weights.xml"; 
-   SR1Reader.SetupMVAReader( "SR1Class", SR1_xml_path );
+   TMVAReader SR1Reader_ada;
+   SR1Reader_ada.InitTMVAReader();
+   std::string SR1_ada_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA1_BDT_ada.weights.xml"; 
+   SR1Reader_ada.SetupMVAReader( "SR1_adaClass", SR1_ada_xml_path );
+		      
+ TMVAReader SR1Reader_grad;
+   SR1Reader_grad.InitTMVAReader();
+   std::string SR1_grad_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA1_BDT_grad.weights.xml"; 
+   SR1Reader_grad.SetupMVAReader( "SR1_gradClass", SR1_grad_xml_path );
+		      
+   TMVAReader SR2Reader_ada;
+   SR2Reader_ada.InitTMVAReader();
+   std::string SR2_ada_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA2_BDT_ada.weights.xml"; 
+   SR2Reader_ada.SetupMVAReader( "SR2_adaClass", SR2_ada_xml_path );
 
-   TMVAReader SR2Reader;
-   SR2Reader.InitTMVAReader();
-   std::string SR2_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA2_BDT.weights.xml"; 
-   SR2Reader.SetupMVAReader( "SR2Class", SR2_xml_path );
-    */
   
+  TMVAReader SR2Reader_grad;
+   SR2Reader_grad.InitTMVAReader();
+   std::string SR2_grad_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA2_BDT_grad.weights.xml"; 
+   SR2Reader_grad.SetupMVAReader( "SR2_gradClass", SR2_grad_xml_path );
+  		      
   
   //####################################################################################################################
   //###########################################           EVENT LOOP         ###########################################
@@ -371,13 +374,10 @@ int main(int argc, char* argv[])
 	 cout << "nDuplicates: " << nDuplicates << endl;
 	 continue;
        }
+      
        if (isMC_WJets && !(isMC_WJets_HTbin) ) {
 	 if(ev.lheHt >= 70) continue;
        }
-      // add PhysicsEvent_t class, get all tree to physics objects
-
-      //PhysicsEvent_t phys=getPhysicsEventFrom(ev);
-      //PhysicsEvent_t phys=getPhysicsEventFrom(summaryHandler_.getEvent());
      
      // Create new object vectors after configuration
       // Jets
@@ -393,9 +393,15 @@ int main(int argc, char* argv[])
       // Leptons
       std::vector<TLorentzVector> vec_muons;
       std::vector<TLorentzVector> vec_ele;
-      
+      std::vector<std::pair<TLorentzVector,float> > vec_jet_and_btag_cc;
+      std::vector<std::pair<TLorentzVector,int> > vec_lep_and_id;
       std::vector<TLorentzVector> vec_leptons;
-      
+      std::vector<int> vec_leptons_id;
+
+       std::vector<std::pair<TLorentzVector,int> > bjet_index;
+      std::vector<std::pair<TLorentzVector,int> > fjet_index;
+      std::vector<std::pair<TLorentzVector,int> > bjet_index_cc;
+      std::vector<std::pair<TLorentzVector,float> > vec_jet_and_btag;
       //generator level
       //before accepance cuts 
       std::vector<TLorentzVector> vec_genmu_bef;
@@ -420,12 +426,8 @@ int main(int argc, char* argv[])
       std::vector<TLorentzVector> vec_zbb;
       std::vector<TLorentzVector> vec_zqq_light;
       std::vector<TLorentzVector> vec_zvv;
-      std::vector<std::pair<TLorentzVector,int> > bjet_index;
-      std::vector<std::pair<TLorentzVector,int> > fjet_index;
-      std::vector<std::pair<TLorentzVector,int> > bjet_index_cc;
-      std::vector<std::pair<TLorentzVector,float> > vec_jet_and_btag;
-      std::vector<std::pair<TLorentzVector,float> > vec_jet_and_btag_cc;
-      std::vector<std::pair<TLorentzVector,TString> > vec_lep_and_id;
+     
+      
       //start generator level loop
       for (int imc=0; imc<ev.nmcparticles;imc++)	{
        if(verbose && iev<10) 
@@ -659,7 +661,7 @@ int main(int argc, char* argv[])
         vec_muons.push_back(p_muon);
 	     
        
-	vec_lep_and_id.push_back(make_pair(p_muon,"mu"));
+	vec_lep_and_id.push_back(make_pair(p_muon,ev.mn_id[i]));
       }
     }
 
@@ -674,7 +676,7 @@ int main(int argc, char* argv[])
       {
         vec_ele.push_back(p_electron);
 	
-	vec_lep_and_id.push_back(make_pair(p_electron,"ele"));
+	vec_lep_and_id.push_back(make_pair(p_electron,ev.en_id[i]));
       }
     }
     //sorting the lepton vector based on pT in descending order
@@ -682,9 +684,12 @@ int main(int argc, char* argv[])
    std::sort(vec_lep_and_id.begin(), vec_lep_and_id.end(), sortlep);
    if (!vec_lep_and_id.empty()) {
     
-     if((vec_lep_and_id[0].second=="ele" && vec_lep_and_id[0].first.Pt()>=25)|| (vec_lep_and_id[0].second=="mu" && vec_lep_and_id[0].first.Pt()>=20))
+     if((abs(vec_lep_and_id[0].second)==11 && vec_lep_and_id[0].first.Pt()>=25)|| (abs(vec_lep_and_id[0].second)==13 && vec_lep_and_id[0].first.Pt()>=20))
        {
-	 for (std::vector<TLorentzVector>::size_type i=0; i<vec_lep_and_id.size(); i++) vec_leptons.push_back(vec_lep_and_id[i].first);
+	 for (std::vector<TLorentzVector>::size_type i=0; i<vec_lep_and_id.size(); i++) {
+	   vec_leptons.push_back(vec_lep_and_id[i].first);
+	   vec_leptons_id.push_back(vec_lep_and_id[i].second);
+	 }
        }
    }
      // jets & cross cleaning
@@ -735,7 +740,7 @@ int main(int argc, char* argv[])
 	    vec_bjets.push_back(p_jet);
 	    bjet_index.push_back(make_pair(p_jet,i));
 	  }
-      /*if (isMC_ttbar) {
+      if (isMC_ttbar) {
 	
 	  bool isMatched(false);
 	  
@@ -755,11 +760,11 @@ int main(int argc, char* argv[])
 	  else if (abs(ev.jet_partonFlavour[i]==4)) {
 	    nHFc++;
 	  }
-	  }*/
+	  }
     } // end jet loop
     
     //split inclusive TTJets POWHEG sample into tt+bb, tt+cc and tt+light
-    /*if (isMC_ttbar) {
+    if (isMC_ttbar) {
       nTot++;
       if(mctruthmode==5) { // only keep events with nHF>0.
 	if (!(nHF>0)) { continue;}
@@ -773,8 +778,8 @@ int main(int argc, char* argv[])
 	if (nHF>0 || (nHFc>0  && nHF==0 )) { continue; }
 	else { nFilt1++;}
       }
-      }*/
-     
+    }
+    
     //sort the  jets by discriminator value   
     std::sort(vec_jet_and_btag.begin(), vec_jet_and_btag.end(), sortBtag);
     //fill the vec_jet
@@ -857,12 +862,14 @@ int main(int argc, char* argv[])
     //-----End config ------------
     //raw events 
     
-     mon.fillHisto("eventflow","histo",0,weight);
-     if(isSignal && isMC_Zh)hs->Fill(1,weight);
-     if(isSignal && isMC_Wh)hs->Fill(2,weight);
-       // lepton cuts---------------------------------------------------
-
-    if(run0lep) {
+   mon.fillHisto("eventflow","histo",0,weight);
+   if(isSignal && isMC_Zh)hs->Fill(1,weight);
+   if(isSignal && isMC_Wh)hs->Fill(2,weight);
+   
+   
+   // lepton cuts---------------------------------------------------
+   
+   if(run0lep) {
      if (vec_leptons.size() !=0) continue;
      n_event_lepton_test++;
      mon.fillHisto("eventflow","histo",1,weight);
@@ -963,9 +970,14 @@ int main(int argc, char* argv[])
 	 }
 	 
        }
+     
     }
     else {
+      //at least 2 leptons and fist 2 leptons have same flavor and opposite charge
       if (vec_leptons.size() < 2) continue;
+      if( abs(vec_leptons_id[1])!=abs(vec_leptons_id[0]))continue;
+      if (vec_leptons_id[0]*vec_leptons_id[1]>0)continue;
+      
       n_event_lepton_test++;
       mon.fillHisto("eventflow","histo",1,weight);
       hr->Fill(2);
@@ -1008,6 +1020,8 @@ int main(int argc, char* argv[])
     mon.fillHisto("mult","bjet_cc_1",vec_bjets_cc.size(),weight);
     mon.fillHisto("mult","fjet_1",vec_fjet.size(),weight);
     mon.fillHisto("mult","jet_cc_1",vec_jet_cc.size(),weight);
+
+    
     //step 2 MET/INV MASS CUT   
         
     if(run0lep) {
@@ -1040,7 +1054,7 @@ int main(int argc, char* argv[])
     Float_t m4b(-1) ,pt4b(-1.),m4b_SR1(-1) ,pt4b_SR1(-1.),ptf1(-1.),ptb1(-1.),ptb1_SR1(-1.),ptb2(-1),ht(-1.),dilep_pt(-1.),drll(-1.),dphiHZ(-1.),n_ad_j(-1.),met(-1.),
       dilep_pt_SR1(-1.),drll_SR1(-1.),dphiHZ_SR1(-1.),n_ad_j_SR1(-1.),ht_SR1(-1),met_SR1(-1.),btag1(-1),
       btag3(-1), btag3_SR1(-1),sd_mass1(-1.),xbb1(-2.),xbbccqq1(-2.),drjj(-1),dphi_met_j(-1),dphi_met_l(-1),drjj_SR1(-1),dphi_met_j_SR1(-1),dphi_met_l_SR1(-1),drbbav(-1),dmbbmin(-1);
-    float mvaBDT1(-10.0),mvaBDT2(-10.0);
+    float mvaBDT1_grad(-10.0),mvaBDT1_ada,mvaBDT2_grad(-10.0),mvaBDT2_ada(-10.0);
     bool isSR2(false);
    
     bool isSR1(false);
@@ -1125,34 +1139,23 @@ int main(int argc, char* argv[])
 	  if(isSignal && isMC_Wh)hs->Fill(4,weight);
 	  sr2++;
       }
-	//MVAREADER
-	/*
-
-        if (isSR2)
+    //MVAREADER
+    if (isSR2)
 	  {
 	    if(!run0lep){
-	      mvaBDT2 = SR2Reader.GenReMVAReader
-		(
-		 dilep_pt, drll,dphiHZ,dphi_met_l,dphi_met_j,
-		 m4b,pt4b, met,ht,n_ad_j,
-		 ptb1,ptb2 ,btag1,btag3,drbbav,dmbbmin,
-		 "SR2Class"
-		 );
+	      mvaBDT2_ada = SR2Reader_ada.GenReMVAReader(dilep_pt, drll,dphiHZ,dphi_met_l,dphi_met_j,m4b,pt4b, met,ht,n_ad_j,ptb1,ptb2 ,btag1,btag3,drbbav,dmbbmin,"SR2_adaClass");
+	      
+	      mvaBDT2_grad = SR2Reader_grad.GenReMVAReader(dilep_pt, drll,dphiHZ,dphi_met_l,dphi_met_j,m4b,pt4b, met,ht,n_ad_j,ptb1,ptb2 ,btag1,btag3,drbbav,dmbbmin,"SR2_gradClass");
 	    }
 	    else if(run0lep)
 	      {
-		mvaBDT2 = SR2Reader.GenReMVAReader
-		  (
-		   
-		   m4b,pt4b, met,ht,n_ad_j,
-		   ptb1,ptb2 ,btag1,btag3,drbbav,dmbbmin,
-                 "SR2Class"
-		   );
+		mvaBDT2_ada = SR2Reader_ada.GenReMVAReader( m4b,pt4b, met,ht,n_ad_j,ptb1,ptb2 ,btag1,btag3,drbbav,dmbbmin,"SR2_adaClass");
+		mvaBDT2_grad = SR2Reader_grad.GenReMVAReader( m4b,pt4b, met,ht,n_ad_j,ptb1,ptb2 ,btag1,btag3,drbbav,dmbbmin,"SR2_gradClass");
 	      }
-	    mon.fillHisto("bdt","sr2",mvaBDT2,weight);
+	    mon.fillHisto("bdt","sr2_ada",mvaBDT2_ada,weight);
+	    mon.fillHisto("bdt","sr2_grad",mvaBDT2_grad,weight);
 	  }
-	 
-	*/
+    
     
     if(isSR1)
       {
@@ -1296,24 +1299,25 @@ int main(int argc, char* argv[])
 	 
 	 
 	}
-	/*	if(run0lep)
+	//MVAREADER
+	if(run0lep)
 	  {	  
-	    mvaBDT1 = SR1Reader.GenReMVAReader
-	      (
-	       
-	    m4b_SR1,pt4b_SR1, met_SR1,ht_SR1,
-	    ptf1,sd_mass1,xbb1, xbbccqq1,n_ad_j_SR1,ptb1_SR1,btag3_SR1,drjj_SR1,"SR1Class");
+	    mvaBDT1_ada = SR1Reader_ada.GenReMVAReader(m4b_SR1,pt4b_SR1, met_SR1,ht_SR1,ptf1,sd_mass1,xbb1, xbbccqq1,n_ad_j_SR1,ptb1_SR1,btag3_SR1,drjj_SR1,"SR1_adaClass");
+     
+	    mvaBDT1_grad = SR1Reader_grad.GenReMVAReader(m4b_SR1,pt4b_SR1, met_SR1,ht_SR1,ptf1,sd_mass1,xbb1, xbbccqq1,n_ad_j_SR1,ptb1_SR1,btag3_SR1,drjj_SR1,"SR1_gradClass");
+	  
 	  }
 	else if(! run0lep)
 	  {
-	    mvaBDT1 = SR1Reader.GenReMVAReader
-	      (
-	       dilep_pt_SR1, drll_SR1,dphiHZ_SR1,dphi_met_l_SR1,dphi_met_j_SR1,
-	       m4b_SR1,pt4b_SR1, met_SR1,ht_SR1,
-	       ptf1,sd_mass1,xbb1, xbbccqq1,n_ad_j_SR1,ptb1_SR1,btag3_SR1,drjj_SR1,"SR1Class");
-	    
-	  }
-	mon.fillHisto("bdt","sr1",mvaBDT1,weight);*/
+	    mvaBDT1_ada = SR1Reader_ada.GenReMVAReader(dilep_pt_SR1, drll_SR1,dphiHZ_SR1,dphi_met_l_SR1,dphi_met_j_SR1,m4b_SR1,pt4b_SR1, met_SR1,ht_SR1,
+						       ptf1,sd_mass1,xbb1, xbbccqq1,n_ad_j_SR1,ptb1_SR1,btag3_SR1,drjj_SR1,"SR1_adaClass");
+
+	    mvaBDT1_grad = SR1Reader_grad.GenReMVAReader(dilep_pt_SR1, drll_SR1,dphiHZ_SR1,dphi_met_l_SR1,dphi_met_j_SR1,m4b_SR1,pt4b_SR1, met_SR1,ht_SR1,
+							 ptf1,sd_mass1,xbb1, xbbccqq1,n_ad_j_SR1,ptb1_SR1,btag3_SR1,drjj_SR1,"SR1_gradClass");
+	     }
+	mon.fillHisto("bdt","sr1_ada",mvaBDT1_ada,weight);
+	mon.fillHisto("bdt","sr1_grad",mvaBDT1_grad,weight);
+	
       }
      //##############################################################################
   
@@ -1328,7 +1332,7 @@ int main(int argc, char* argv[])
       
     } // runMVA
      
-     }// end event loop
+   }// end event loop
   printf("\n");
   file->Close();
   
@@ -1355,8 +1359,7 @@ int main(int argc, char* argv[])
   std::cout << "number of events with z->bb: " << zbb << std::endl;
   std::cout << "number of events with z->vv: " << zvv << std::endl;
   std::cout << "number of events with z->ll: " << zll << std::endl;
-  // std::cout << "n_expected" <<nev_exp << std::endl;
-  // std::cout << "n_expected_final" <<nev_exp*n_fjets/totalEntries << std::endl;
+ 
    std::cout << "weight " << weight << std::endl;
 
   //##############################################
@@ -1367,7 +1370,7 @@ int main(int argc, char* argv[])
   outUrl += outFileUrl + ".root";
   //    outUrl = outFileUrl + ".root";
   printf("Results saved in %s\n", outUrl.Data());
-  /*if (isMC_ttbar) { 
+  if (isMC_ttbar) { 
 
       double cFilt1, cFilt4, cFilt5;
       cFilt1=(double(nFilt1)/double(nTot));
@@ -1376,7 +1379,7 @@ int main(int argc, char* argv[])
       
       printf("From total = %i TTbar events ,  Found %.2f (filt1) , %.2f (filt4) , %.2f (filt5) \n\n", 
 	     nTot, cFilt1, cFilt4, cFilt5);
-	     }*/
+	     }
   // in the end: save all to the file
   int nTrial = 0;
   TFile *ofile=TFile::Open(outUrl, "recreate");
