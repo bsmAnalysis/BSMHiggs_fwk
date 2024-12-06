@@ -117,11 +117,11 @@ btagDiscriminatorsAK8Subjets = cms.PSet(names = cms.vstring(
 )
 
 process = puppiAK8ReclusterFromMiniAOD(process,
-   runOnMC=True,
+   runOnMC=@isMC,
    useExistingWeights=True,
    btagDiscriminatorsAK8=btagDiscriminatorsAK8,
    btagDiscriminatorsAK8Subjets=btagDiscriminatorsAK8Subjets,
-   reclusterAK8GenJets=True
+   reclusterAK8GenJets=@isMC
 )
 
 process.patAlgosToolsTask.add(process.patJetPartons)
@@ -130,9 +130,11 @@ process.patAlgosToolsTask.add(process.patJetPartons)
 # Override some configurations
 # for reclustered AK8 Gen jets
 ###############################
-process.ak8GenJetsNoNu.jetPtMin = 10
-process.ak8GenJetsNoNuSoftDrop.jetPtMin = 10
-process.ak8GenJetsNoNuConstituents.cut = "pt > 10"
+runOnMC=@isMC  
+if runOnMC:
+    process.ak8GenJetsNoNu.jetPtMin = 10
+    process.ak8GenJetsNoNuSoftDrop.jetPtMin = 10
+    process.ak8GenJetsNoNuConstituents.cut = "pt > 10"
 
 #################################
 # Override some configurations

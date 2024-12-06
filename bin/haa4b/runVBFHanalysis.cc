@@ -66,7 +66,7 @@ struct jets_struct {
   int category;
 };
 
-// Initialize functions to use
+// Initialize functions 
 double getDeltaR(TLorentzVector vec_1, TLorentzVector vec_2);
 double getDeltaRyy(TLorentzVector vec_1, TLorentzVector vec_2);
 bool match_jets(TLorentzVector det_vec, std::vector<TLorentzVector> gen_vec, double threshold);
@@ -102,9 +102,15 @@ int main(int argc, char* argv[])
 
   // Configure the process
   const edm::ParameterSet &runProcess = edm::cmspybind11::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
-
+  
   // Will produce the input root trees to BDT training (optional)
   bool runMVA = runProcess.getParameter<bool>("runMVA");
+  
+  // For the Trigger Efficiency plots
+  bool runTriggerStudies = runProcess.getParameter<bool>("runTriggerStudies");
+
+  // For the QCD control region
+  bool runQCD = runProcess.getParameter<bool>("runQCD");
 
   bool isMC    = runProcess.getParameter<bool>("isMC");
   double xsec  = runProcess.getParameter<double>("xsec");
@@ -114,22 +120,20 @@ int main(int argc, char* argv[])
   TString dtag   = runProcess.getParameter<std::string>("tag");
   TString suffix = runProcess.getParameter<std::string>("suffix");
 
-  bool is2017data  = (!isMC && dtag.Contains("2017"));
-  bool is2017MC    = (isMC && dtag.Contains("2017"));
   bool is2018data  = (!isMC && dtag.Contains("2018"));
   bool is2018MC    = (isMC && dtag.Contains("2018"));
-  bool is2017_2018 = (is2017MC || is2017data || is2018MC || is2018data);
-
+  
   bool verbose = runProcess.getParameter<bool>("verbose");
 
   TString url = runProcess.getParameter<std::string>("input");
   TString outFileUrl(dtag); 
   gSystem->BaseName( url );
 
+  bool isQCD = isMC && dtag.Contains("QCD");
   bool isMC_Wh = isMC && (string(url.Data()).find("Wh_amass")  != string::npos); 
   bool isMC_Zh = isMC && (string(url.Data()).find("Zh_amass")  != string::npos);
-  bool isMC_VBFh = isMC && (string(url.Data()).find("VBFh_amass") !=string::npos);
-  bool isSignal = (isMC_Wh || isMC_Zh || isMC_VBFh);
+  bool isMC_VBFh = isMC && (string(url.Data()).find("VBFh_amass") != string::npos);
+  bool isSignal = isMC_VBFh;
 
   TString outdir = runProcess.getParameter<std::string>("outdir");
   TString outUrl( outdir );
@@ -143,52 +147,53 @@ int main(int argc, char* argv[])
   printf("TextFile URL = %s\n",outTxtUrl_final.Data());
   fprintf(outTxtFile_final,"run lumi event\n");
 
-  // Calculate xsec weight
-  double Lint = 41.5;
-  double Nexp = xsec * 1000 * Lint;
-  double weight = Nexp / nevts;
-  if(verbose)
-    {
-      cout << "Cross section:" << xsec << " [pb]" << endl;
-      cout << "Weight: " << weight << endl;
-      cout << "N expected:" << Nexp << endl; 
-    }
-
-
   //#######################################################################################################################################//
   //--------------------------------------------------------INITIALIZE HISTOGRAMS----------------------------------------------------------//
   //#######################################################################################################################################//
 
   SmartSelectionMonitor mon;
 
-  // Event flow 
-  TH1F *h_event_flow = (TH1F*) mon.addHistogram ( new TH1F ("event_flow", "Cut Flow;Step;N_{Events}", 6,0,6) );
+  // Event flow (weighted)
+  TH1F *h_event_flow = (TH1F*) mon.addHistogram ( new TH1F ("event_flow", "Cut Flow;Step;N_{Events}", 8,0,8) );
   h_event_flow->GetXaxis()->SetBinLabel(1,"0: Raw Events");
   h_event_flow->GetXaxis()->SetBinLabel(2,"1: N_leptons=0");
-  h_event_flow->GetXaxis()->SetBinLabel(3,"2: N_jets>=5");
-  h_event_flow->GetXaxis()->SetBinLabel(4,"3: N_bjets>=3 and N_qjets>=2");
-  h_event_flow->GetXaxis()->SetBinLabel(5,"4: Tight btag for at least two jets");
-  h_event_flow->GetXaxis()->SetBinLabel(6,"5: Dh>2.5 and Mqq>250");
-  
+  h_event_flow->GetXaxis()->SetBinLabel(3,"2: VBF Triggers");
+  h_event_flow->GetXaxis()->SetBinLabel(4,"3: N_jets>=5");
+  h_event_flow->GetXaxis()->SetBinLabel(5,"4: Jet pT cuts");
+  h_event_flow->GetXaxis()->SetBinLabel(6,"5: N_bjets>=3 and N_qjets>=2");
+  h_event_flow->GetXaxis()->SetBinLabel(7,"6: b-tag WPs");
+  h_event_flow->GetXaxis()->SetBinLabel(8,"7: Dh>2.5 and Mqq>250");
+
+  // Event flow (unweighted)
+  TH1F *h_event_flow_unweighted = (TH1F*) mon.addHistogram ( new TH1F ("event_flow_unweighted", "Cut Flow;Step;N_{Events}", 8,0,8) );
+  h_event_flow_unweighted->GetXaxis()->SetBinLabel(1,"0: Raw Events");
+  h_event_flow_unweighted->GetXaxis()->SetBinLabel(2,"1: N_leptons=0");
+  h_event_flow_unweighted->GetXaxis()->SetBinLabel(3,"2: VBF Triggers");
+  h_event_flow_unweighted->GetXaxis()->SetBinLabel(4,"3: N_jets>=5");
+  h_event_flow_unweighted->GetXaxis()->SetBinLabel(5,"4: Jet pT cuts");
+  h_event_flow_unweighted->GetXaxis()->SetBinLabel(6,"5: N_bjets>=3 and N_qjets>=2");
+  h_event_flow_unweighted->GetXaxis()->SetBinLabel(7,"6: b-tag WPs");
+  h_event_flow_unweighted->GetXaxis()->SetBinLabel(8,"7: Dh>2.5 and Mqq>250");
+
   // Particles/Objects kinematics (single)
-  mon.addHistogram ( new TH1F ("pt", "Transverse Momentum;p_{T} [GeV];N_{Events}", 150, 0, 500) );
+  mon.addHistogram ( new TH1F ("pt", "Transverse Momentum;p_{T} [GeV];N_{Events}", 500, 0, 2000) );
   mon.addHistogram ( new TH1F ("eta", "Pseudorapidity;#eta [-];N_{Events}", 150, -6, 6) );
   mon.addHistogram ( new TH1F ("psi", "Rapidity;y [-];N_{Events}", 150, -6, 6) );
   mon.addHistogram ( new TH1F ("phi", "Azimuthal Angle;#phi [-];N_{Events}", 150, -TMath::Pi(), TMath::Pi()) );
-  mon.addHistogram ( new TH1F ("M", "Mass;M [GeV];N_{Events}", 150, 0, 800) );
-  mon.addHistogram ( new TH1F ("E", "Energy;E [GeV];N_{Events}", 150, 0, 500) );
+  mon.addHistogram ( new TH1F ("M", "Mass;M [GeV];N_{Events}", 500, 0, 1500) );
+  mon.addHistogram ( new TH1F ("E", "Energy;E [GeV];N_{Events}", 500, 0, 1500) );
 
   mon.addHistogram ( new TH1F ("theta", "Polar Angle;#theta [-];N_{Events}", 150, 0, TMath::Pi()) );
   mon.addHistogram ( new TH1F ("costheta", "Polar Angle;cos #theta [-];N_{Events}", 150, -1, 1) );
 
   // -//- (multi)
   mon.addHistogram ( new TH1F ("deltaR", "Angular Distance;#Delta R [-];N_{Events}", 150, 0, 16) );
-  mon.addHistogram ( new TH1F ("deltaRyy", "Angular Distance;#Delta R [-];N_{Events}", 150, 0, 7) );
+  mon.addHistogram ( new TH1F ("deltaRyy", "Angular Distance;#Delta R [-];N_{Events}", 150, 0, 16) );
   mon.addHistogram ( new TH1F ("deltaEta", "Pseudorapidity Difference;#left|#Delta#eta#right| [-];N_{Events}", 150, 0, 10) );
   mon.addHistogram ( new TH1F ("deltaPhi", "Azimuthal Angle Difference;#left|#Delta#phi#right| [-];N_{Events}", 150, 0, 10) );
-  mon.addHistogram ( new TH1F ("prodEta", "Pseudorapidity Product;#eta_{1} #times #eta_{2} [-];N_{Events}", 150, -25, 10) );
-  mon.addHistogram ( new TH1F ("Mqq", "Mass;M [GeV];N_{Events}", 150, 0, 1400) );
-  mon.addHistogram ( new TH1F ("avdeltaR", "Angular Distance;#bar{#Delta R}_{bb} [-];N_{Events}", 150, 0, 7) );
+  mon.addHistogram ( new TH1F ("prodEta", "Pseudorapidity Product;#eta_{1} #times #eta_{2} [-];N_{Events}", 300, -25, 25) );
+  mon.addHistogram ( new TH1F ("Mqq", "Mass;M [GeV];N_{Events}", 500, 0, 2000) );
+  mon.addHistogram ( new TH1F ("avdeltaR", "Angular Distance;#bar{#Delta R}_{bb} [-];N_{Events}", 150, 0, 10) );
 
   // Multiplicity
   mon.addHistogram ( new TH1F ("multi", ";N [-] ;N_{Events}", 18, 0, 18) );
@@ -197,9 +202,10 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "btag", "b-tag discriminator;score [-];N_{Events}", 150, 0, 1) );
 
   // HT, Hz
-  mon.addHistogram( new TH1F( "HT", ";H_{T} [GeV];N_{Events}", 150, 0, 1400) );
+  mon.addHistogram( new TH1F( "HT", ";H_{T} [GeV];N_{Events}", 200, 0, 2000) );
+  mon.addHistogram( new TH1F( "HT_studies", ";H_{T} [GeV];N_{Events}", 500, 0, 3000) );
   mon.addHistogram ( new TH1F ("Hz", "Longitudinal Momentum;#sum_{i}{p_{z,{b_i}}} + #sum_{j}{p_{z,{q_j}}} [GeV];N_{Events}", 300, -6000, 6000) );
-  mon.addHistogram( new TH1F( "HT_vec", ";#frac{#sum_{i}{\vec{p_i}}_T}{#sum_{i}{p_{i,T}}} [-];N_{Events}", 150, 0, 2) );
+  mon.addHistogram( new TH1F( "HT_vec", ";#frac{#sum_{i}{#vec{p_i}}_T}{#sum_{i}{p_{i,T}}} [-];N_{Events}", 150, 0, 2) );
 
   // Flavour
   mon.addHistogram( new TH1F( "flavour", "flavour", 6, 0, 6) );
@@ -234,6 +240,9 @@ int main(int argc, char* argv[])
   mon.addHistogram ( new TH2F (TString("mindeltaR_vs_pt"),"Angular Distance vs p_{T};p_{T} [GeV];min#Delta R [-];N_{Events}", 150, 0, 500, 150, 0, 7) );
   mon.addHistogram ( new TH2F (TString("mindeltaR_vs_eta"), "Angular Distance vs Eta;#eta [-];min#Delta R [-];N_{Events}", 150, -6, 6, 150, 0, 7) );
 
+  // BDT score 
+  mon.addHistogram( new TH1F( "BDT", "BDT;BDT Score [-];N_{Events}", 200, -1, 1) );
+
   //#######################################################################################################################################//
   //----------------------------------------------------INITIALIZE KINEMATIC VARIABLES-----------------------------------------------------//
   //#######################################################################################################################################//
@@ -254,15 +263,15 @@ int main(int argc, char* argv[])
   float minDeltaM;
   float MassOfbbj;
 
-  // outgoing quark pair kinematics
+  // Outgoing quark pair kinematics
   float DeltaEta;
-  float qq_m;
   float ProductEta;
+  float qq_m;
   float qq_dR;
   float qq_dphi;
   float alpha_qq;
 
-  // jet kinematics
+  // Jet kinematics
   float N_jet;
   float N_jet_eta_cut;
   float jet1_pt;
@@ -280,8 +289,6 @@ int main(int argc, char* argv[])
   float H_T;
   float H_z;
   float H_Tvec;
-  float pt_rest;
-  float E_rest;
 
   // bjet kinematics
   float N_bjet;
@@ -305,31 +312,18 @@ int main(int argc, char* argv[])
   float qjet1_eta;
   float qjet2_eta;
 
-  // untagged jets
+  // Untagged jets
   float N_untaggedjet;
+  float pt_rest;
+  float E_rest;
 
-  // met
+  // MET
   float MET_pt;
   float MET_phi;
   
   //#######################################################################################################################################//
 
-  //----------------------------------------------------------Event Counters-----------------------------------------------------------------//
-  Int_t count_leptons = 0;
-  Int_t count_jets = 0;
-  Int_t count_bjets = 0;
-  Int_t count_btag = 0;
-  Int_t count_jets_max = 0;
-  Int_t count_final_events = 0;
-
-  //-------------------------------------------------------Signal Region Counters------------------------------------------------------------//
-  Int_t count_bjets_SR1 = 0;
-  Int_t count_bjets_SR2 = 0;
-  Int_t count_bjets_SR3 = 0;
-
-  //#######################################################################################################################################//
-
-  //---------------------------------------------------------------Get Tree info-------------------------------------------------------------f-//
+  //--------------------------------------------------------------Get Tree info------------------------------------------------------------//
   int evStart     = runProcess.getParameter<int>("evStart");
   int evEnd       = runProcess.getParameter<int>("evEnd");
   TString dirname = runProcess.getParameter<std::string>("dirName");
@@ -365,6 +359,72 @@ int main(int argc, char* argv[])
     }
 
   //#######################################################################################################################################//
+  //--------------------------------------------------------------TMVA READER--------------------------------------------------------------//
+  //#######################################################################################################################################//
+
+  std::string chpath = "VBFHaa4bMVA/";
+  TMVAReader VBFhAnalysisReader;
+  VBFhAnalysisReader.InitTMVAReader();
+  std::string VBFhAnalysis_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"MVAnalysis_BDT.weights.xml";
+  VBFhAnalysisReader.SetupMVAReader("VBFhAnalysisClass", VBFhAnalysis_xml_path);
+
+  //#######################################################################################################################################//
+  //----------------------------------------------------------PREPARE FOR THE LOOP---------------------------------------------------------//
+  //#######################################################################################################################################//
+
+  //
+  // X sec weighting per luminosity unit [pb^-1]
+  //
+
+  double weight_xsec = isMC ? xsec / nevts : 1.;
+    
+  //
+  // Pile up weighting
+  //
+
+  // Read pile up distribution (data)
+  TString PU = runProcess.getParameter<std::string>("PU_Central");
+  gSystem->ExpandPathName(PU);
+  cout << "Loading PU weights: " << PU << endl;
+  TFile *PU_File = TFile::Open(PU);
+  TH1F* PU_intended = (TH1F *) PU_File->Get("pileup"); // Data pileup distribution
+  
+  // Initialize histograms
+  TH1F* PU_generated=NULL; // MC pileup distribution 
+  TH1F* PU_weight = new TH1F("hPUweight", "", 100, 0, 100);
+
+  if (isMC) {
+    // Read and normalize the MC pileup distribution
+    TH1F* PU_generated = (TH1F*)file->Get("mainNtuplizer/pileuptrue");
+    PU_intended->Scale(1.0 / PU_intended->Integral()); // Normalize data distribution
+    PU_generated->Scale(1.0 / PU_generated->Integral()); // Normalize MC distribution
+
+    // Calculate weights as the ratio of data to MC distributions
+    PU_intended->Divide(PU_generated);
+
+    // Fill PU_weight histogram with calculated weights
+    for (int ibin = 0; ibin < 102; ++ibin) {
+      float weight = PU_intended->GetBinContent(ibin);
+      PU_weight->SetBinContent(ibin, weight);
+      if (verbose) printf("pu = %3d has weight = %7.3f \n", ibin, weight);
+    }
+  }
+
+  //
+  // deepJet b tagging discriminator working points
+  //
+                             //efficiency:
+  double looseWP = 0.0490;   //91.5%
+  double mediumWP = 0.2783;  //80.7%
+  double tightWP = 0.7100;   //65.1%
+
+  // Initialize weight
+  double weight(1.0);
+
+  // QCD k factor
+  float k_factor = 1.42;
+
+  //#######################################################################################################################################//
   //--------------------------------------------------------------EVENT LOOP---------------------------------------------------------------//
   //#######################################################################################################################################//
 
@@ -379,7 +439,8 @@ int main(int argc, char* argv[])
       // Load the event content from tree
       summaryHandler_.getEntry(iev);
       DataEvtSummary_t &ev=summaryHandler_.getEvent();
-            
+
+      // Check for duplicates
       if(!isMC && duplicatesChecker.isDuplicate(ev.run, ev.lumi, ev.event))
 	{
 	  nDuplicates++;
@@ -387,6 +448,24 @@ int main(int argc, char* argv[])
 	  continue;
 	}
 
+      // Initialize weight
+      weight = 1.0;
+
+      // X sec weighting
+      weight *= weight_xsec;
+
+      // PileUp weighting
+      float weight_PU(1.0);
+      if(isMC) {
+	weight_PU = getSFfrom1DHist(ev.ngenTruepu, PU_weight); //removed the +1
+	if ( verbose ) printf("pu = %3d has weight = %7.3f \n", ev.ngenTruepu + 1, weight_PU);
+	weight *= weight_PU;
+      }
+
+      // Initialize boolean for HEM veto
+      bool afterRun319077(false);
+      if(is2018data) afterRun319077 = (ev.run >= 319077);
+      
       //#######################################################################################################################################//
       //--------------------------------------------------------GENERATOR LEVEL ANALYSIS-------------------------------------------------------//
       //#######################################################################################################################################//
@@ -432,12 +511,12 @@ int main(int argc, char* argv[])
 	  //---------------------------loop over MC particles---------------------------// 
 	  //----------------------------------------------------------------------------//
 
-	  for (int imc=0; imc<ev.nmcparticles;imc++)
+	  for (int imc=0; imc<ev.nmcparticles; imc++)
 	    {
 	      TLorentzVector p_particle;
 	      p_particle.SetPxPyPzE(ev.mc_px[imc],ev.mc_py[imc],ev.mc_pz[imc],ev.mc_en[imc]);
 
-	      // Find how many categories exist in status and perform printouts
+	      // Printouts
 
 	      if(iev<5 && verbose) 
 		{
@@ -680,8 +759,7 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("costheta", "0b3_H", b_quarks_boosted[2].CosTheta(), 1);
 	  mon.fillHisto("costheta", "0b4_H", b_quarks_boosted[3].CosTheta(), 1);
 	  mon.fillHisto("costheta", "0b_H_avg", (b_quarks_boosted[3].CosTheta()+b_quarks_boosted[2].CosTheta()+b_quarks_boosted[1].CosTheta()+b_quarks_boosted[0].CosTheta())/4, 1);
-	 	
-	
+	 		
 	  //----------------------Step 2: Truth (Acceptance Cuts)-----------------------//
 
 	  // b quark multiplicity
@@ -979,6 +1057,14 @@ int main(int argc, char* argv[])
       std::vector<jets_struct> untagged_jets;
 
       //----------------------------------------------------------------------------//
+      //-----------------------------------Triggers---------------------------------// 
+      //----------------------------------------------------------------------------//
+
+      bool hasvbfTrigger1  = (ev.triggerType >> 14 ) & 0x1;
+      bool hasvbfTrigger2 = (ev.triggerType >> 15 ) & 0x1;
+      bool hasjetsTrigger = (ev.triggerType >> 16) & 0x1;
+
+      //----------------------------------------------------------------------------//
       //------------------------loop over electrons and muons-----------------------// 
       //----------------------------------------------------------------------------//
 
@@ -1014,6 +1100,9 @@ int main(int argc, char* argv[])
 	}
 
       // Electrons
+
+      bool eleinHEM(false); // to use for HEM veto in 2018
+
       for (int ien = 0; ien < ev.en; ien++)
 	{
 	  TLorentzVector p_electron;
@@ -1027,6 +1116,11 @@ int main(int argc, char* argv[])
 	    {
 	      electrons.push_back(p_electron);
 	      leptons.push_back(p_electron);
+
+	      // Check if (at least one) electron is in HEM region
+	      if(!eleinHEM && p_electron.Pt()>25. &&
+		 -1.57<p_electron.Phi() && p_electron.Phi()<-0.87 &&
+		 -3.0<p_electron.Eta() && p_electron.Eta()<-1.4) eleinHEM = true;
 	    }
 	} // END electrons loop
       
@@ -1048,11 +1142,18 @@ int main(int argc, char* argv[])
       //--------------------------------loop over jets------------------------------// 
       //----------------------------------------------------------------------------//
 
+      bool jetinHEM(false); // to use for HEM veto in 2018
+      
       for (int ijet = 0; ijet < ev.jet; ijet++)
 	{
 	  TLorentzVector p_jet;
 	  p_jet.SetPxPyPzE(ev.jet_px[ijet], ev.jet_py[ijet], ev.jet_pz[ijet], ev.jet_en[ijet]);
-	  
+
+	  // Check if (at least one) jet is in HEM region
+	  if(!jetinHEM && p_jet.Pt()>25. &&
+	     p_jet.Eta()>-3.2 && p_jet.Eta()<-1.2 &&
+	     p_jet.Phi()>-1.77 && p_jet.Phi()<-0.67) jetinHEM = true;
+
 	  // Acceptance cuts
 	  if (p_jet.Pt()<20. || abs(p_jet.Eta())>4.7) continue;
 	  
@@ -1065,17 +1166,17 @@ int main(int argc, char* argv[])
 	  for (int imn = 0; imn < muons.size(); imn++)
 	    {
 	      float dR_jet_mn = getDeltaR(p_jet, muons[imn]);
-	      mon.fillHisto("deltaR", "jet_mn_before", dR_jet_mn, weight);
+	      mon.fillHisto("deltaR", "jet_mn_before", dR_jet_mn, 1.);
 	      if (dR_jet_mn < 0.4) overlap = true;	     
-	      else mon.fillHisto("deltaR", "jet_mn_after", dR_jet_mn, weight);	   
+	      else mon.fillHisto("deltaR", "jet_mn_after", dR_jet_mn, 1.);	   
 	    }
 	  
 	  for (int ien = 0; ien < electrons.size(); ien++)
 	    {
 	      float dR_jet_en = getDeltaR(p_jet, electrons[ien]);
-	      mon.fillHisto("deltaR", "jet_en_before", dR_jet_en, weight);
+	      mon.fillHisto("deltaR", "jet_en_before", dR_jet_en, 1.);
 	      if (dR_jet_en < 0.4) overlap = true;
-	      else mon.fillHisto("deltaR", "jet_en_after", dR_jet_en, weight);		   
+	      else mon.fillHisto("deltaR", "jet_en_after", dR_jet_en, 1.);		   
 	    }
 	  
 	  if (!overlap)
@@ -1089,8 +1190,7 @@ int main(int argc, char* argv[])
 	      bool match_qjets = match_jets(p_jet, out_quarks, 0.5);
 	      
 	      // Configure b jets and non b jets
-	      if (ev.jet_btag1[ijet] > 0.3040) //medium working point
-		//if (jet_btag1[ijet] > 0.7476) //tight working point
+	      if (ev.jet_btag1[ijet] > looseWP) //medium working point
 		{
 		  // Demand b jets to have eta less than 2.4
 		  if (abs(p_jet.Eta())>2.4) continue;
@@ -1129,7 +1229,7 @@ int main(int argc, char* argv[])
 
 	} // END jets loop
       
-      //printout
+      // Printout
       if (iev <5 && verbose)
 	{
 	  for (int i = 0; i < jets.size(); i++)
@@ -1144,25 +1244,26 @@ int main(int argc, char* argv[])
 	    }
 	}
 
-      //sort jets on pt
+      // Sort jets on pt
       std::sort(jets.begin(), jets.end(), [](const TLorentzVector &a, const TLorentzVector &b){
 	  return a.Pt() > b.Pt();
 	});
 
-      //sort non b jets on pt
+      // Sort non b jets on pt
       std::sort(non_b_jets.begin(), non_b_jets.end(), [](const jets_struct &a, const jets_struct &b){
 	  return a.momentum.Pt() > b.momentum.Pt();
 	});
 
-      //----------configure qjets and untagged jets from non b jets----------//
+      //----------Configure qjets and untagged jets from non b jets----------//
 
+      if (non_b_jets.size()==1)  q_jets.push_back(non_b_jets[0]);
       if (non_b_jets.size()>=2)
 	{
 	  q_jets.push_back(non_b_jets[0]);
 	  q_jets.push_back(non_b_jets[1]);
 	}
       
-      if (non_b_jets.size()>=3)
+      if (non_b_jets.size()>2)
 	{
 	  for (size_t i = 2; i < non_b_jets.size(); i++)
 	    {
@@ -1170,26 +1271,26 @@ int main(int argc, char* argv[])
 	    }
 	}
 
-      //sort q jets (unnecessary)
+      // Sort q jets (unnecessary)
       std::sort(q_jets.begin(), q_jets.end(), [](const jets_struct &a, const jets_struct &b){
 	  return a.momentum.Pt() > b.momentum.Pt();
 	});
 
-      //sort untagged jets (based on btag)
+      // Sort untagged jets (based on btag)
       std::sort(untagged_jets.begin(), untagged_jets.end(), [](const jets_struct &a, const jets_struct &b){
 	  return a.btag > b.btag;
 	});
 
-      //----------------------------------------------------------------------------//
-      //-------------------------------Fill histogramms-----------------------------//
-      //----------------------------------------------------------------------------//
+      // Fill HT on generator level and on detector level before any cut (study the behaviour of QCD background)
+      if (isQCD) {
+	mon.fillHisto("HT_studies", "gen", ev.lheHt, weight);
 
-      // Lepton multiplicity
+	Float_t H_T_draft_step_0 = 0.;
+	for (const auto& p_jet : jets) H_T_draft_step_0 += p_jet.Pt();
       
-      mon.fillHisto("multi", "el", electrons.size(), weight);
-      mon.fillHisto("multi", "mn", muons.size(), weight);
-      mon.fillHisto("multi", "lep", leptons.size(), weight);	   
-
+	mon.fillHisto("HT_studies", "reco", H_T_draft_step_0, weight);
+      }
+      
       // Compare with generator
 
       if (isSignal)
@@ -1228,83 +1329,95 @@ int main(int argc, char* argv[])
       //---------------------------EVENT SELECTION CRITERIA-------------------------// 
       //----------------------------------------------------------------------------//
 
-      mon.fillHisto("event_flow", "hist", 0.5, 1);
+      // Apply the HEM veto
+      if(is2018data && afterRun319077 && (jetinHEM || eleinHEM)) continue;
+      if(is2018MC && (jetinHEM || eleinHEM)) weight *= 0.35;
+
+      // Apply QCD k factor
+      if(isQCD) weight *= k_factor;
+
+      mon.fillHisto("event_flow", "hist", 0.5, weight);
+      mon.fillHisto("event_flow_unweighted", "hist", 0.5, 1);
+
+      // CONTROL PLOT: Lepton multiplicity 
+      mon.fillHisto("multi", "el", electrons.size(), weight);
+      mon.fillHisto("multi", "mn", muons.size(), weight);
+      mon.fillHisto("multi", "lep", leptons.size(), weight);	   
 
       // STEP1: Recquire zero leptons
       if (leptons.size()!=0) continue;
       
-      count_leptons++;
+      mon.fillHisto("event_flow", "hist", 1.5, weight);
+      mon.fillHisto("event_flow_unweighted", "hist", 1.5, 1);
 
-      mon.fillHisto("event_flow", "hist", 1.5, 1);
-
-      // Control plot: jet multiplicity
+      // CONTROL PLOT: jet multiplicity
       mon.fillHisto("multi", "jet", jets.size(), weight);
 
-      // STEP2: Recquire at least 5 jets
+      // Save jets' Pt before and after the trigger for the trigger sensitivity plot
+      if(runTriggerStudies){
+	
+      if(jets.size()>0) mon.fillHisto("pt", "jet1_before_trigger", jets[0].Pt(), 1.);
+      if(jets.size()>1) mon.fillHisto("pt", "jet2_before_trigger", jets[1].Pt(), 1.);
+      if(jets.size()>2) mon.fillHisto("pt", "jet3_before_trigger", jets[2].Pt(), 1.);
+      if(jets.size()>3) mon.fillHisto("pt", "jet4_before_trigger", jets[3].Pt(), 1.);
+      if(jets.size()>4) mon.fillHisto("pt", "jet5_before_trigger", jets[4].Pt(), 1.);
+
+      if(hasvbfTrigger1){
+	if(jets.size()>0) mon.fillHisto("pt", "jet1_after_vbfTrigger1", jets[0].Pt(), 1.);
+	if(jets.size()>1) mon.fillHisto("pt", "jet2_after_vbfTrigger1", jets[1].Pt(), 1.);
+	if(jets.size()>2) mon.fillHisto("pt", "jet3_after_vbfTrigger1", jets[2].Pt(), 1.);
+	if(jets.size()>3) mon.fillHisto("pt", "jet4_after_vbfTrigger1", jets[3].Pt(), 1.);
+	if(jets.size()>4) mon.fillHisto("pt", "jet5_after_vbfTrigger1", jets[4].Pt(), 1.);
+      }
+
+      if(hasvbfTrigger2){
+	if(jets.size()>0) mon.fillHisto("pt", "jet1_after_vbfTrigger2", jets[0].Pt(), 1.);
+	if(jets.size()>1) mon.fillHisto("pt", "jet2_after_vbfTrigger2", jets[1].Pt(), 1.);
+	if(jets.size()>2) mon.fillHisto("pt", "jet3_after_vbfTrigger2", jets[2].Pt(), 1.);
+	if(jets.size()>3) mon.fillHisto("pt", "jet4_after_vbfTrigger2", jets[3].Pt(), 1.);
+	if(jets.size()>4) mon.fillHisto("pt", "jet5_after_vbfTrigger2", jets[4].Pt(), 1.);
+      }
+
+      if(hasjetsTrigger){
+	if(jets.size()>0) mon.fillHisto("pt", "jet1_after_jetsTrigger", jets[0].Pt(), 1.);
+	if(jets.size()>1) mon.fillHisto("pt", "jet2_after_jetsTrigger", jets[1].Pt(), 1.);
+	if(jets.size()>2) mon.fillHisto("pt", "jet3_after_jetsTrigger", jets[2].Pt(), 1.);
+	if(jets.size()>3) mon.fillHisto("pt", "jet4_after_jetsTrigger", jets[3].Pt(), 1.);
+	if(jets.size()>4) mon.fillHisto("pt", "jet5_after_jetsTrigger", jets[4].Pt(), 1.);
+      }
+
+      // for the (vbfTrigger1 OR vbfTrigger2) Mqq efficiency curve
+      if(q_jets.size()>1){
+	float M_qq = (q_jets[0].momentum+q_jets[1].momentum).M();
+	mon.fillHisto("Mqq", "before_trigger", M_qq, 1.);
+      }
+
+      }
+
+      // STEP2: Pass the VBF triggers
+      if (!hasvbfTrigger1 && !hasvbfTrigger2) continue;
+
+      mon.fillHisto("event_flow", "hist", 2.5, weight);
+      mon.fillHisto("event_flow_unweighted", "hist", 2.5, 1);
+
+      // for the vbfTrigger1 OR vbfTrigger2 Mqq efficiency curve
+      if(runTriggerStudies){
+	if(q_jets.size()>1){
+	  float M_qq = (q_jets[0].momentum+q_jets[1].momentum).M();
+	  mon.fillHisto("Mqq", "after_trigger", M_qq, 1.);
+	}
+      }
+        
+      // STEP3: Recquire at least 5 jets
       if(jets.size()<5) continue;
       
-      count_jets++;
+      mon.fillHisto("event_flow", "hist", 3.5, weight);
+      mon.fillHisto("event_flow_unweighted", "hist", 3.5, 1);
 
-      mon.fillHisto("event_flow", "hist", 2.5, 1);
- 
-      // Control plot: b and q jet multiplicity
+      // CONTROL PLOT: b and q jet multiplicity
       mon.fillHisto("multi", "bjet", b_jets.size(), weight);
       mon.fillHisto("multi", "qjet", q_jets.size(), weight);
       mon.fillHisto("multi", "untaggedjets", untagged_jets.size(), weight);
-
-      // Compare with generator
-
-      if (isSignal)
-	{
-	  // Matching b tagged, q tagged and untagged jets with either b quarks, q quarks or none (categorical plots)
-
-	  //b tagged
-	  for (size_t i = 0; i < b_jets.size(); i++)
-	    {
-	      int category = b_jets[i].category;
-	      if (category==1) mon.fillHisto("match_bjets","step2", 0.5, 1);
-	      if (category==2) mon.fillHisto("match_bjets","step2", 1.5, 1);
-	      if (category==-1) mon.fillHisto("match_bjets","step2", 2.5, 1);
-	    }
-	  
-	  //q tagged
-	  for (size_t i = 0; i < q_jets.size(); i++)
-	    {
-	      int category = q_jets[i].category;
-	      if (category==1) mon.fillHisto("match_qjets","step2", 0.5, 1);
-	      if (category==2) mon.fillHisto("match_qjets","step2", 1.5, 1);
-	      if (category==-1) mon.fillHisto("match_qjets","step2", 2.5, 1);
-	    }
-	  
-	  //untagged
-	  for (size_t i = 0; i < untagged_jets.size(); i++)
-	    {
-	      int category = untagged_jets[i].category;
-	      if (category==1) mon.fillHisto("match_untaggedjets","step2", 0.5, 1);
-	      if (category==2) mon.fillHisto("match_untaggedjets","step2", 1.5, 1);
-	      if (category==-1) mon.fillHisto("match_untaggedjets","step2", 2.5, 1);
-	    }
-	} // END if isSignal
-
-      //STEP3: Recquire at least 3 b tagged and 2 q tagged jets
-      if(b_jets.size()<3 || q_jets.size()<2) continue;
-
-      count_bjets++;
-
-      mon.fillHisto("event_flow", "hist", 3.5, 1);
-
-      DeltaEta = abs(q_jets[0].momentum.Eta()-q_jets[1].momentum.Eta());
-      qq_m = (q_jets[0].momentum+q_jets[1].momentum).M();
-
-      // Control plot: b jet, q jet and untagged jet multiplicity
-      mon.fillHisto("multi", "bjet_step3", b_jets.size(), weight);
-      mon.fillHisto("multi", "qjet_step3", q_jets.size(), weight);
-      mon.fillHisto("multi", "untaggedjet_step3", untagged_jets.size(), weight);         
-
-      // Control plot: qq mass, eta difference and eta product plots
-      mon.fillHisto("deltaEta", "qjet1_qjet2_before", DeltaEta, weight);
-      mon.fillHisto("prodEta", "qjet1_qjet2_before", q_jets[0].momentum.Eta()*q_jets[1].momentum.Eta(), weight);
-      mon.fillHisto("Mqq", "qjet1_qjet2_before", qq_m, weight);
 
       // Compare with generator
 
@@ -1340,17 +1453,82 @@ int main(int argc, char* argv[])
 	    }
 	} // END if isSignal
 
+      //STEP4: Apply pt thresholds for jets
+      if(jets[0].Pt()<110 || jets[1].Pt()<90 || jets[2].Pt()<80 || jets[3].Pt()<30) continue;
+
+      mon.fillHisto("event_flow", "hist", 4.5, weight);
+      mon.fillHisto("event_flow_unweighted", "hist", 4.5, 1);
+
+      //STEP5: Recquire at least 3 b tagged and 2 q tagged jets
+      if(b_jets.size()<3 || q_jets.size()<2) continue;
+
+      mon.fillHisto("event_flow", "hist", 5.5, weight);
+      mon.fillHisto("event_flow_unweighted", "hist", 5.5, 1);
+
+      // CONTROL PLOT: b jet, q jet and untagged jet multiplicity
+      mon.fillHisto("multi", "bjet_step5", b_jets.size(), weight);
+      mon.fillHisto("multi", "qjet_step5", q_jets.size(), weight);
+      mon.fillHisto("multi", "untaggedjet_step5", untagged_jets.size(), weight);         
+
+      // Compare with generator
+
+      if (isSignal)
+	{
+	  // Matching b tagged, q tagged and untagged jets with either b quarks, q quarks or none (categorical plots)
+
+	  //b tagged
+	  for (size_t i = 0; i < b_jets.size(); i++)
+	    {
+	      int category = b_jets[i].category;
+	      if (category==1) mon.fillHisto("match_bjets","step5", 0.5, 1);
+	      if (category==2) mon.fillHisto("match_bjets","step5", 1.5, 1);
+	      if (category==-1) mon.fillHisto("match_bjets","step5", 2.5, 1);
+	    }
+	  
+	  //q tagged
+	  for (size_t i = 0; i < q_jets.size(); i++)
+	    {
+	      int category = q_jets[i].category;
+	      if (category==1) mon.fillHisto("match_qjets","step5", 0.5, 1);
+	      if (category==2) mon.fillHisto("match_qjets","step5", 1.5, 1);
+	      if (category==-1) mon.fillHisto("match_qjets","step5", 2.5, 1);
+	    }
+	  
+	  //untagged
+	  for (size_t i = 0; i < untagged_jets.size(); i++)
+	    {
+	      int category = untagged_jets[i].category;
+	      if (category==1) mon.fillHisto("match_untaggedjets","step5", 0.5, 1);
+	      if (category==2) mon.fillHisto("match_untaggedjets","step5", 1.5, 1);
+	      if (category==-1) mon.fillHisto("match_untaggedjets","step5", 2.5, 1);
+	    }
+	} // END if isSignal
+
+      // Define vbf jets quantities
+      DeltaEta = abs(q_jets[0].momentum.Eta()-q_jets[1].momentum.Eta());
+      ProductEta = q_jets[0].momentum.Eta()*q_jets[1].momentum.Eta();
+      qq_m = (q_jets[0].momentum+q_jets[1].momentum).M();
+
+      // CONTROL PLOT: qq mass, eta difference and eta product plots
+      mon.fillHisto("deltaEta", "qjet1_qjet2_before", DeltaEta, weight);
+      mon.fillHisto("prodEta", "qjet1_qjet2_before", ProductEta, weight);
+      mon.fillHisto("Mqq", "qjet1_qjet2_before", qq_m, weight);
+
       //sort b jets on btag
       std::sort(b_jets.begin(), b_jets.end(), [](const jets_struct &a, const jets_struct &b){
 	  return a.btag > b.btag;
 	});
+      
+      //STEP6: Recquire tight working point for the btag algorithm for the first two b jets
+      if(!runQCD) {
+	if (b_jets[0].btag < tightWP || b_jets[2].btag < mediumWP) continue;
+      }
+      else {
+	if (b_jets[0].btag >= tightWP) continue;
+      }
 
-      //STEP4: Recquire tight working point for the btag algorithm for the first two b jets
-      if (b_jets[0].btag < 0.7476 || b_jets[1].btag < 0.7476) continue;
-
-      count_btag++;
-
-      mon.fillHisto("event_flow", "hist", 4.5, 1);
+      mon.fillHisto("event_flow", "hist", 6.5, weight);
+      mon.fillHisto("event_flow_unweighted", "hist", 6.5, 1);
 
       // Compare with generator
 
@@ -1362,43 +1540,41 @@ int main(int argc, char* argv[])
 	  for (size_t i = 0; i < b_jets.size(); i++)
 	    {
 	      int category = b_jets[i].category;
-	      if (category==1) mon.fillHisto("match_bjets","step4", 0.5, 1);
-	      if (category==2) mon.fillHisto("match_bjets","step4", 1.5, 1);
-	      if (category==-1) mon.fillHisto("match_bjets","step4", 2.5, 1);
+	      if (category==1) mon.fillHisto("match_bjets","step6", 0.5, 1);
+	      if (category==2) mon.fillHisto("match_bjets","step6", 1.5, 1);
+	      if (category==-1) mon.fillHisto("match_bjets","step6", 2.5, 1);
 	    }
 	  
 	  //q tagged
 	  for (size_t i = 0; i < q_jets.size(); i++)
 	    {
 	      int category = q_jets[i].category;
-	      if (category==1) mon.fillHisto("match_qjets","step4", 0.5, 1);
-	      if (category==2) mon.fillHisto("match_qjets","step4", 1.5, 1);
-	      if (category==-1) mon.fillHisto("match_qjets","step4", 2.5, 1);
+	      if (category==1) mon.fillHisto("match_qjets","step6", 0.5, 1);
+	      if (category==2) mon.fillHisto("match_qjets","step6", 1.5, 1);
+	      if (category==-1) mon.fillHisto("match_qjets","step6", 2.5, 1);
 	    }
 	  
 	  //untagged
 	  for (size_t i = 0; i < untagged_jets.size(); i++)
 	    {
 	      int category = untagged_jets[i].category;
-	      if (category==1) mon.fillHisto("match_untaggedjets","step4", 0.5, 1);
-	      if (category==2) mon.fillHisto("match_untaggedjets","step4", 1.5, 1);
-	      if (category==-1) mon.fillHisto("match_untaggedjets","step4", 2.5, 1);
+	      if (category==1) mon.fillHisto("match_untaggedjets","step6", 0.5, 1);
+	      if (category==2) mon.fillHisto("match_untaggedjets","step6", 1.5, 1);
+	      if (category==-1) mon.fillHisto("match_untaggedjets","step6", 2.5, 1);
 	    }
 	} // END if isSignal
 
 
-      //sort b jets on pt
-      std::sort(b_jets.begin(), b_jets.end(), [](const jets_struct &a, const jets_struct &b){
-	  return a.momentum.Pt() > b.momentum.Pt();
-	});
-
-      //STEP5: Recquire Mqq more than 250 GeV and Dhqq more than 2.5
+      //STEP7: Recquire Mqq more than 250 GeV and Dhqq more than 2.5
       
       if (DeltaEta<2.5 || qq_m<250) continue;
 
-      mon.fillHisto("event_flow", "hist", 5.5, 1);
-
-      count_final_events++;
+      double deltaPhibjet1bjet2 = abs(b_jets[0].momentum.Phi() - b_jets[1].momentum.Phi());
+      double deltaEtabjet1bjet2 = abs(b_jets[0].momentum.Eta() - b_jets[1].momentum.Eta());
+      double deltaRbjet1bjet2 = getDeltaR(b_jets[0].momentum, b_jets[1].momentum);
+		   
+      mon.fillHisto("event_flow", "hist", 7.5, weight);
+      mon.fillHisto("event_flow_unweighted", "hist", 7.5, 1);
 
       // Compare with generator
 
@@ -1410,27 +1586,27 @@ int main(int argc, char* argv[])
 	  for (size_t i = 0; i < b_jets.size(); i++)
 	    {
 	      int category = b_jets[i].category;
-	      if (category==1) mon.fillHisto("match_bjets","final", 0.5, 1);
-	      if (category==2) mon.fillHisto("match_bjets","final", 1.5, 1);
-	      if (category==-1) mon.fillHisto("match_bjets","final", 2.5, 1);
+	      if (category==1) mon.fillHisto("match_bjets","step7", 0.5, 1);
+	      if (category==2) mon.fillHisto("match_bjets","step7", 1.5, 1);
+	      if (category==-1) mon.fillHisto("match_bjets","step7", 2.5, 1);
 	    }
 	  
 	  //q tagged
 	  for (size_t i = 0; i < q_jets.size(); i++)
 	    {
 	      int category = q_jets[i].category;
-	      if (category==1) mon.fillHisto("match_qjets","final", 0.5, 1);
-	      if (category==2) mon.fillHisto("match_qjets","final", 1.5, 1);
-	      if (category==-1) mon.fillHisto("match_qjets","final", 2.5, 1);
+	      if (category==1) mon.fillHisto("match_qjets","step7", 0.5, 1);
+	      if (category==2) mon.fillHisto("match_qjets","step7", 1.5, 1);
+	      if (category==-1) mon.fillHisto("match_qjets","step7", 2.5, 1);
 	    }
 	  
 	  //untagged
 	  for (size_t i = 0; i < untagged_jets.size(); i++)
 	    {
 	      int category = untagged_jets[i].category;
-	      if (category==1) mon.fillHisto("match_untaggedjets","final", 0.5, 1);
-	      if (category==2) mon.fillHisto("match_untaggedjets","final", 1.5, 1);
-	      if (category==-1) mon.fillHisto("match_untaggedjets","final", 2.5, 1);
+	      if (category==1) mon.fillHisto("match_untaggedjets","step7", 0.5, 1);
+	      if (category==2) mon.fillHisto("match_untaggedjets","step7", 1.5, 1);
+	      if (category==-1) mon.fillHisto("match_untaggedjets","step7", 2.5, 1);
 	    }
 
 	  //untagged n.0 matchings 
@@ -1442,19 +1618,19 @@ int main(int argc, char* argv[])
 		{
 		  mon.fillHisto(TString("match_eta"), "untagged0", untagged_jets[0].momentum.Eta(), 0.5, 1.);
 		  mon.fillHisto(TString("match_pt"), "untagged0", untagged_jets[0].momentum.Pt(), 0.5, 1.);
-		  mon.fillHisto(TString("match_untaggedjets"),"0_final", 0.5, 1);
+		  mon.fillHisto(TString("match_untaggedjets"),"0_step7", 0.5, 1);
 		}
 	      if (untagged_jets[0].category == 2)
 		{
 		  mon.fillHisto(TString("match_eta"), "untagged0", untagged_jets[0].momentum.Eta(), 1.5, 1.);
 		  mon.fillHisto(TString("match_pt"), "untagged0", untagged_jets[0].momentum.Pt(), 1.5, 1.);
-		  mon.fillHisto(TString("match_untaggedjets"),"0_final", 1.5, 1);
+		  mon.fillHisto(TString("match_untaggedjets"),"0_step7", 1.5, 1);
 		}
 	      if (untagged_jets[0].category == -1)
 		{
 		  mon.fillHisto(TString("match_eta"), "untagged0", untagged_jets[0].momentum.Eta(), 2.5, 1.);
 		  mon.fillHisto(TString("match_pt"), "untagged0", untagged_jets[0].momentum.Pt(), 2.5, 1.);
-		  mon.fillHisto(TString("match_untaggedjets"),"0_final", 2.5, 1);
+		  mon.fillHisto(TString("match_untaggedjets"),"0_step7", 2.5, 1);
 		}		  
 	    }
 
@@ -1523,24 +1699,22 @@ int main(int argc, char* argv[])
 	  
 	} // END if isSignal
 
+      // Sort b jets on pt
+      std::sort(b_jets.begin(), b_jets.end(), [](const jets_struct &a, const jets_struct &b){
+	  return a.momentum.Pt() > b.momentum.Pt();
+	});
+
       //
       // qq quantities
       //
-      
-      ProductEta = q_jets[0].momentum.Eta()*q_jets[1].momentum.Eta();
+
       qq_dR = getDeltaR(q_jets[0].momentum, q_jets[1].momentum);
       qq_dphi = abs(q_jets[0].momentum.Phi() - q_jets[1].momentum.Phi());
 
-      mon.fillHisto("deltaEta","qjet1_qjet2", DeltaEta, weight);
-      mon.fillHisto("prodEta","qjet1_qjet2", ProductEta, weight);
-      mon.fillHisto("Mqq","qjet1_qjet2", qq_m, weight);
-      mon.fillHisto("deltaR","qjet1_qjet2", qq_dR, weight);
-      mon.fillHisto("deltaPhi","qjet1_qjet2", qq_dphi, weight);
-	    
       //
       // jet kinematics
       //
-      
+
       jet1_pt = jets[0].Pt();
       jet2_pt = jets[1].Pt();
       jet3_pt = jets[2].Pt();
@@ -1553,24 +1727,10 @@ int main(int argc, char* argv[])
       jet4_eta = jets[3].Eta();
       jet5_eta = jets[4].Eta();
 
-      mon.fillHisto("pt","jet1", jet1_pt, weight);
-      mon.fillHisto("pt","jet2", jet2_pt, weight);
-      mon.fillHisto("pt","jet3", jet3_pt, weight);
-      mon.fillHisto("pt","jet4", jet4_pt, weight);
-      mon.fillHisto("pt","jet5", jet5_pt, weight);
-
-      mon.fillHisto("eta","jet1", jet1_eta, weight);
-      mon.fillHisto("eta","jet2", jet2_eta, weight);
-      mon.fillHisto("eta","jet3", jet3_eta, weight);
-      mon.fillHisto("eta","jet4", jet4_eta, weight);
-      mon.fillHisto("eta","jet5", jet5_eta, weight);
-
       if (jets.size()>=6)
 	{
 	  jet6_pt = jets[5].Pt();
 	  jet6_eta = jets[5].Eta();
-	  mon.fillHisto("pt","jet6", jet6_pt, weight);
-	  mon.fillHisto("eta","jet6", jet6_eta, weight);
 	}
       else
 	{
@@ -1594,27 +1754,11 @@ int main(int argc, char* argv[])
       bjet2_btag = b_jets[1].btag;
       bjet3_btag = b_jets[2].btag;
 
-      mon.fillHisto("pt","bjet1", bjet1_pt, weight);
-      mon.fillHisto("pt","bjet2", bjet2_pt, weight);
-      mon.fillHisto("pt","bjet3", bjet3_pt, weight);
-
-      mon.fillHisto("eta","bjet1", bjet1_eta, weight);
-      mon.fillHisto("eta","bjet2", bjet2_eta, weight);
-      mon.fillHisto("eta","bjet3", bjet3_eta, weight);
-
-      mon.fillHisto("btag","bjet1", bjet1_btag, weight);
-      mon.fillHisto("btag","bjet2", bjet2_btag, weight);
-      mon.fillHisto("btag","bjet3", bjet3_btag, weight);
-
       if (b_jets.size()>=4)
 	{
 	  bjet4_pt = b_jets[3].momentum.Pt();
 	  bjet4_eta = b_jets[3].momentum.Eta();
 	  bjet4_btag = b_jets[3].btag;
-
-	  mon.fillHisto("pt","bjet4", bjet4_pt, weight);
-	  mon.fillHisto("eta","bjet4", bjet4_eta, weight);
-	  mon.fillHisto("btag","bjet4", bjet4_btag, weight);
 	}
       else
 	{
@@ -1628,13 +1772,7 @@ int main(int argc, char* argv[])
       qjet2_pt = q_jets[1].momentum.Pt();
       qjet2_eta = q_jets[1].momentum.Eta();
 
-      mon.fillHisto("pt","qjet1", qjet1_pt, weight);
-      mon.fillHisto("pt","qjet2", qjet2_pt, weight);
-
-      mon.fillHisto("eta","qjet1", qjet1_eta, weight);
-      mon.fillHisto("eta","qjet2", qjet2_eta, weight);
-
-      // calculate qq pair vector
+      // Calculate qq pair vector
       TLorentzVector qjet_total = q_jets[0].momentum + q_jets[1].momentum;
 
       //
@@ -1653,34 +1791,18 @@ int main(int argc, char* argv[])
       if (b_jets.size()>=4)
 	{
 	  bjet_total += b_jets[3].momentum;
-	  mon.fillHisto("M","bjet_total_4", bjet_total.M(), weight);
 	  bjet_total_vec.push_back(b_jets[3].momentum);
 	}
-      /*
-      //else if (b_jets.size() < 4 && untagged_jets.size() > 0 && abs(untagged_jets[0].momentum.Eta()) < 2.4)
-      else if (b_jets.size() < 4 && untagged_jets.size() > 0 && (abs(untagged_jets[0].momentum.Eta()) < 2.4 || abs(untagged_jets[0].momentum.Eta()) > 3.3))
-	//else if (b_jets.size() < 4 && untagged_jets.size() > 0 && abs(untagged_jets[0].momentum.Eta()) < 1)
-	{
-	  bjet_total += untagged_jets[0].momentum;
-	  bjet_total_vec.push_back(untagged_jets[0].momentum);
-	}
-      */
       
       higgs_m = bjet_total.M();
       higgs_pt = bjet_total.Pt();
       higgs_eta = bjet_total.Eta();
-
-      mon.fillHisto("M","bjet_total", higgs_m, weight);
-      mon.fillHisto("eta","bjet_total", higgs_eta, weight);
-      mon.fillHisto("pt","bjet_total", higgs_pt, weight);
 
       //
       // Compute azimuthal angle between qq pair and reco Higgs
       //
 
       phi_qq_higgs = abs(bjet_total.Phi()-qjet_total.Phi());
-
-      mon.fillHisto("phi", "qq_higgs", phi_qq_higgs, weight);
 
       //
       // Compute angles of vbf jets with respect to the qq pair rest frame
@@ -1706,17 +1828,12 @@ int main(int argc, char* argv[])
 
       alpha_qq = alpha_q1 < alpha_q2 ? alpha_q1 : alpha_q2;
 
-      mon.fillHisto("theta", "alpha_qq", alpha_qq, weight);
-
       //
       // Compute the deltaR between higgs and the two vbf jets
       //
 
       dR_higgs_q1 = getDeltaR(bjet_total, q_jets[0].momentum);
       dR_higgs_q2 = getDeltaR(bjet_total, q_jets[1].momentum);
-
-      mon.fillHisto("deltaR", "H_qjet1", dR_higgs_q1, weight);
-      mon.fillHisto("deltaR", "H_qjet2", dR_higgs_q2, weight);
 
       //
       // Compute the average delta R of the b's
@@ -1733,81 +1850,42 @@ int main(int argc, char* argv[])
 	  ++count_pairs; // Count the number of pairs
         }
       }
+      
       // Calculate the average Delta R
       avDeltaR = sumDeltaR / count_pairs;
-      mon.fillHisto("deltaR","av_bb", avDeltaR, weight);
 
       //
       // Calculate DeltaMmin
       //
+      
       double unpairedMass;
       double minDeltaMold = getDeltaMmin(bjet_total_vec, unpairedMass);
       minDeltaM = getDeltaMminNew(bjet_total_vec);
-
-      mon.fillHisto("M", "Delta_pair_min", minDeltaMold, weight);
-      mon.fillHisto("M", "Delta_pair_min_new", minDeltaM, weight);
-
-      if (bjet_total_vec.size()==3) mon.fillHisto("M", "unpaired_b", unpairedMass, weight);	  
 
       //
       // Calculate Mbbj
       //
 
       MassOfbbj = getMassOfbbj(b_jets, untagged_jets);
-      mon.fillHisto("M", "bbj", MassOfbbj, weight);	  
 
       // Find angle of a random b in bbb(b) ("Higgs") rest frame
       
       std::vector<double> b_bjet = findBoostandRotation(bjet_total).b;
       TVector3 k_bjet= findBoostandRotation(bjet_total).k;
       double theta_bjet = findBoostandRotation(bjet_total).theta;     
-
-      if (b_jets.size()>=4)
-	{
-	  // Generate a random number
-	  int random_number_jet = rand_int(0, 3);
-	  TLorentzVector bjet_random = b_jets[random_number_jet].momentum;
-
-	  bjet_random.Boost(-b_bjet[0], -b_bjet[1], -b_bjet[2]);
-	  bjet_random.Rotate(theta_bjet, k_bjet);
-
-	  costheta0 = bjet_random.CosTheta();
-	  mon.fillHisto("costheta","0_bjet", costheta0, weight);
-	}
-      /*
-      //else if (b_jets.size() < 4 && untagged_jets.size() > 0 && abs(untagged_jets[0].momentum.Eta()) < 2.4)
-      else if (b_jets.size() < 4 && untagged_jets.size() > 0 && (abs(untagged_jets[0].momentum.Eta()) < 2.4 || abs(untagged_jets[0].momentum.Eta()) > 3.3))
-	//else if (b_jets.size() < 4 && untagged_jets.size() > 0 && abs(untagged_jets[0].momentum.Eta()) < 1)
-	{
-	  //create new "higgs" vector with 1st untagged as 4th b
-	  std::vector<jets_struct> vec_bj;
-	  for (size_t i = 0; i < b_jets.size(); i++) vec_bj.push_back(b_jets[i]);
-	  vec_bj.push_back(untagged_jets[0]);
-
-	  // Generate a random number
-	  int random_number_jet = rand_int(0, 3);
-	  TLorentzVector bjet_random = vec_bj[random_number_jet].momentum;
-
-	  bjet_random.Boost(-b_bjet[0], -b_bjet[1], -b_bjet[2]);
-	  bjet_random.Rotate(theta_bjet, k_bjet);
-	  
-	  costheta0 = bjet_random.CosTheta();
-	  mon.fillHisto("costheta","0_bjet", costheta0, weight);
-	}
-      */
-      else
-	{
-	  // Generate a random number
-	  int random_number_jet = rand_int(0, 2);
-	  TLorentzVector bjet_random = b_jets[random_number_jet].momentum;
-
-	  bjet_random.Boost(-b_bjet[0], -b_bjet[1], -b_bjet[2]);
-	  bjet_random.Rotate(theta_bjet, k_bjet);
-
-	  costheta0 = bjet_random.CosTheta();
-	  mon.fillHisto("costheta","0_bjet", costheta0, weight);
-	}
       
+      // Generate a random number
+      int random_number_jet;
+      if (b_jets.size()>=4) random_number_jet = rand_int(0, 3);
+      else random_number_jet = rand_int(0, 2);
+      
+      TLorentzVector bjet_random = b_jets[random_number_jet].momentum;
+
+      bjet_random.Boost(-b_bjet[0], -b_bjet[1], -b_bjet[2]);
+      bjet_random.Rotate(theta_bjet, k_bjet);
+
+      costheta0 = bjet_random.CosTheta();
+    
       //
       // Find H_T
       //
@@ -1836,12 +1914,11 @@ int main(int argc, char* argv[])
       for (size_t i = 0; i<2; i++) H_z_draft+=q_jets[i].momentum.Pz();
 
       H_z = H_z_draft;
-	
-      mon.fillHisto("HT","", H_T, weight);
-      mon.fillHisto("Hz","", H_z, weight);
-      mon.fillHisto("HT_vec","", H_Tvec, weight);	    
-
-      //find final jet multiplicity
+      
+      //
+      // Find final jet multiplicity
+      //
+      
       N_jet = jets.size();
       N_bjet = b_jets.size();
       N_qjet = q_jets.size();
@@ -1852,13 +1929,8 @@ int main(int argc, char* argv[])
       for (size_t i = 0; i<jets.size(); i++) {
 	if (abs(jets[i].Eta()<2.4)) jet_multi_eta_cut++;
       }
+      
       N_jet_eta_cut = jet_multi_eta_cut;
-
-      mon.fillHisto("multi", "jet_final", N_jet, weight);
-      mon.fillHisto("multi", "jet_final_eta_cuts", jet_multi_eta_cut, weight);
-      mon.fillHisto("multi", "bjet_final", N_bjet, weight);
-      mon.fillHisto("multi", "qjet_final", N_qjet, weight);
-      mon.fillHisto("multi", "untaggedjet_final", N_untaggedjet, weight);
 
       //
       //find met pt and phi
@@ -1866,9 +1938,6 @@ int main(int argc, char* argv[])
       
       MET_pt = ev.met_pt;
       MET_phi = ev.met_phi;
-
-      mon.fillHisto("pt", "met", MET_pt, weight);
-      mon.fillHisto("phi", "met", MET_phi, weight);
 
       //
       // Find p_T sum and energy sum of the untagged jets
@@ -1885,25 +1954,175 @@ int main(int argc, char* argv[])
       pt_rest = pt_rest_draft;
       E_rest = E_rest_draft;
 
+      //----------------------------------------------------------------------------//
+      //-------------------------------Fill histogramms-----------------------------//
+      //----------------------------------------------------------------------------//
+      
+      //
+      // qq quantities
+      //
+
+      mon.fillHisto("deltaEta","qjet1_qjet2", DeltaEta, weight);
+      mon.fillHisto("prodEta","qjet1_qjet2", ProductEta, weight);
+      mon.fillHisto("Mqq","qjet1_qjet2", qq_m, weight);
+      mon.fillHisto("deltaR","qjet1_qjet2", qq_dR, weight);
+      mon.fillHisto("deltaPhi","qjet1_qjet2", qq_dphi, weight);
+	    
+      //
+      // jet kinematics
+      //
+
+      mon.fillHisto("pt","jet1", jet1_pt, weight);
+      mon.fillHisto("pt","jet2", jet2_pt, weight);
+      mon.fillHisto("pt","jet3", jet3_pt, weight);
+      mon.fillHisto("pt","jet4", jet4_pt, weight);
+      mon.fillHisto("pt","jet5", jet5_pt, weight);
+
+      mon.fillHisto("eta","jet1", jet1_eta, weight);
+      mon.fillHisto("eta","jet2", jet2_eta, weight);
+      mon.fillHisto("eta","jet3", jet3_eta, weight);
+      mon.fillHisto("eta","jet4", jet4_eta, weight);
+      mon.fillHisto("eta","jet5", jet5_eta, weight);
+
+      if (jets.size()>=6)
+	{
+	  mon.fillHisto("pt","jet6", jet6_pt, weight);
+	  mon.fillHisto("eta","jet6", jet6_eta, weight);
+	}
+
+      //
+      // bjet, qjet kinematics (pt,eta) and btag values
+      //
+
+      mon.fillHisto("pt","bjet1", bjet1_pt, weight);
+      mon.fillHisto("pt","bjet2", bjet2_pt, weight);
+      mon.fillHisto("pt","bjet3", bjet3_pt, weight);
+
+      mon.fillHisto("eta","bjet1", bjet1_eta, weight);
+      mon.fillHisto("eta","bjet2", bjet2_eta, weight);
+      mon.fillHisto("eta","bjet3", bjet3_eta, weight);
+
+      mon.fillHisto("btag","bjet1", bjet1_btag, weight);
+      mon.fillHisto("btag","bjet2", bjet2_btag, weight);
+      mon.fillHisto("btag","bjet3", bjet3_btag, weight);
+
+      mon.fillHisto("deltaPhi", "bjet1bjet2", deltaPhibjet1bjet2, weight);
+      mon.fillHisto("deltaEta", "bjet1bjet2", deltaEtabjet1bjet2, weight);
+      mon.fillHisto("deltaR", "bjet1bjet2", deltaRbjet1bjet2, weight);
+
+      if (b_jets.size()>=4)
+	{
+	  mon.fillHisto("pt","bjet4", bjet4_pt, weight);
+	  mon.fillHisto("eta","bjet4", bjet4_eta, weight);
+	  mon.fillHisto("btag","bjet4", bjet4_btag, weight);
+	}
+
+      mon.fillHisto("pt","qjet1", qjet1_pt, weight);
+      mon.fillHisto("pt","qjet2", qjet2_pt, weight);
+
+      mon.fillHisto("eta","qjet1", qjet1_eta, weight);
+      mon.fillHisto("eta","qjet2", qjet2_eta, weight);
+
+
+      //
+      // bbb(b) ("higgs") kinematic variables
+      //
+
+      if (b_jets.size()>=4)
+	{
+	  mon.fillHisto("M","bjet_total_4", bjet_total.M(), weight);
+	}
+  
+      mon.fillHisto("M","bjet_total", higgs_m, weight);
+      mon.fillHisto("eta","bjet_total", higgs_eta, weight);
+      mon.fillHisto("pt","bjet_total", higgs_pt, weight);
+
+      //
+      // Angle between qq pair and reco Higgs
+      //
+
+      mon.fillHisto("deltaPhi", "qq_higgs", phi_qq_higgs, weight);
+
+      //
+      // Angle of vbf jets with respect to the qq pair rest frame
+      //
+      
+      mon.fillHisto("theta", "alpha_qq", alpha_qq, weight);
+
+      //
+      // deltaR between higgs and the two vbf jets
+      //
+
+      mon.fillHisto("deltaR", "H_qjet1", dR_higgs_q1, weight);
+      mon.fillHisto("deltaR", "H_qjet2", dR_higgs_q2, weight);
+
+      //
+      // Average delta R of the b's
+      //
+      
+      mon.fillHisto("deltaR","av_bb", avDeltaR, weight);
+
+      //
+      // DeltaMmin
+      //
+      
+      mon.fillHisto("M", "Delta_pair_min", minDeltaMold, weight);
+      mon.fillHisto("M", "Delta_pair_min_new", minDeltaM, weight);
+
+      if (bjet_total_vec.size()==3) mon.fillHisto("M", "unpaired_b", unpairedMass, weight);	  
+
+      //
+      // Mbbj
+      //
+
+      mon.fillHisto("M", "bbj", MassOfbbj, weight);	  
+
+      //
+      // costheta0
+      //
+      
+      mon.fillHisto("costheta","0_bjet", costheta0, weight);
+
+      //
+      // H_T, H_z, HT_vec
+      //
+      
+      mon.fillHisto("HT","", H_T, weight);
+      mon.fillHisto("Hz","", H_z, weight);
+      mon.fillHisto("HT_vec","", H_Tvec, weight);	    
+
+      //
+      // Multiplicities
+      //
+      
+      mon.fillHisto("multi", "jet_final", N_jet, weight);
+      mon.fillHisto("multi", "jet_final_eta_cuts", jet_multi_eta_cut, weight);
+      mon.fillHisto("multi", "bjet_final", N_bjet, weight);
+      mon.fillHisto("multi", "qjet_final", N_qjet, weight);
+      mon.fillHisto("multi", "untaggedjet_final", N_untaggedjet, weight);
+
+      //
+      // Met
+      //
+      
+      mon.fillHisto("pt", "met", MET_pt, weight);
+      mon.fillHisto("phi", "met", MET_phi, weight);
+
+      //
+      // Rest
+      //
+      
       mon.fillHisto("pt", "rest", pt_rest, weight);
-      mon.fillHisto("E", "rest", E_rest, weight);
-
+      mon.fillHisto("E", "rest", E_rest, weight); 
       
-      
-      //--------------------------------discrete signal region analysis--------------------------------//
-      bool isSR1 = false;
-      bool isSR2 = false;
-      bool isSR3 = false;
+      //#######################################################################################################################################//
+      //--------------------------------------------------------------TMVA Reader--------------------------------------------------------------//
+      //#######################################################################################################################################//
 
-      if (b_jets.size()==3 && untagged_jets.size()==0) isSR1 = true;
-      else if (b_jets.size()==3 && untagged_jets.size()>0) isSR2 = true;
-      else isSR3 = true;
-      
-      if (isSR1) count_bjets_SR1++;
-      else if (isSR2) count_bjets_SR2++;
-      else count_bjets_SR3++;
-
-
+      float mvaBDT;
+      mvaBDT = VBFhAnalysisReader.GenReMVAReader(higgs_m, higgs_pt, higgs_eta, costheta0, dR_higgs_q1, dR_higgs_q2, phi_qq_higgs, avDeltaR, minDeltaM, MassOfbbj, DeltaEta, qq_m, ProductEta, qq_dphi, qq_dR, alpha_qq, jet1_eta, jet1_pt, jet2_pt, jet3_pt, jet4_pt, jet5_pt, N_jet_eta_cut, H_T, H_z, H_Tvec, bjet1_pt, bjet2_pt, bjet3_pt, bjet1_eta, bjet2_eta, bjet3_eta, bjet1_btag, bjet2_btag, bjet3_btag, N_bjet, qjet1_pt, qjet2_pt, qjet1_eta, qjet2_eta, pt_rest, E_rest, N_untaggedjet, MET_pt, MET_phi, "VBFhAnalysisClass");
+      mon.fillHisto("BDT", "VBFhAnalysis", mvaBDT, weight);
+  
       //#######################################################################################################################################//
       //--------------------------------------------------------------MVA Handler--------------------------------------------------------------//
       //#######################################################################################################################################//
@@ -1957,7 +2176,6 @@ int main(int argc, char* argv[])
   cout << endl;
   
 } // END main function
-
 
 //#######################################################################################################################################//
 //---------------------------------------------------------------FUNCTIONS---------------------------------------------------------------//
@@ -2037,7 +2255,7 @@ bool match_jets(TLorentzVector det_vec, std::vector<TLorentzVector> gen_vec, dou
 // Function that returns the minimum angular distance between a four-vector and a collection of four-vectors along with the position of the four-vector that minimizes the distance
 std::pair<double, int> getDeltaRmin(TLorentzVector det_vec, std::vector<TLorentzVector> gen_vec)
 {
-  //initialize dR and index of minimum dR
+  // Initialize dR and index of minimum dR
   double DeltaRmin(1000);
   int minIndex(-1);
       
@@ -2057,7 +2275,7 @@ std::pair<double, int> getDeltaRmin(TLorentzVector det_vec, std::vector<TLorentz
 // Function to generate a random integer number between two values
 int rand_int(int min, int max)
 {
-  //random number generator
+  // Random number generator
   std::random_device rd; 
   std::mt19937 gen(rd()); // Mersenne Twister engine seeded with rd()
 
