@@ -40,13 +40,18 @@ if year == '2017' :
    out_dir = 'evt-total-files-2017'
    dtfile = 'dtags-2017-mc.txt'
  #-- 2017 Data and MC
-   ntuple_base_dir_list.append("/eos/cms/store/user/georgia/results_2017_2020_02_05")
+   ntuple_base_dir_list.append("/eos/user/l/lrouseli/Ntuples")
  #-- 2017 DY NJets and W NJets samples
 
 if year == '2018' :
    out_dir = 'evt-total-files-2018'
    dtfile = 'dtags-2018-mc.txt'
+<<<<<<< HEAD
    ntuple_base_dir_list.append("/eos/user/k/kpaschos/NTuples_2018/")
+=======
+ #-- 2018 Data and MC
+   ntuple_base_dir_list.append("/eos/cms/store/user/georgia/results_2018_2020_02_05")
+>>>>>>> db917c897aec67c8a6b04bd935bbea7e7fd7ee45
 
 adtfile = open(dtfile,"r")
 dtags = adtfile.readlines()
