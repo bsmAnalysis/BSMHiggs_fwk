@@ -374,11 +374,11 @@ for procBlock in procList :
                           LaunchOnCondor.Jobs_CRABexe      = opt.theExecutable
                           LaunchOnCondor.Jobs_CRABStorageSite = 'T3_CH_CERNBOX'
                           if(isdata): 
-                              LaunchOnCondor.Jobs_CRABsplitting = 'LumiBased'
-                              LaunchOnCondor.Jobs_CRABUnitPerJob = 100 
+                              LaunchOnCondor.Jobs_CRABsplitting = 'Automatic'
+                              LaunchOnCondor.Jobs_CRABUnitPerJob = 1000
                           else: 
                               LaunchOnCondor.Jobs_CRABsplitting = 'Automatic' # 'FileBased'
-                              LaunchOnCondor.Jobs_CRABUnitPerJob = 200   #5
+                              LaunchOnCondor.Jobs_CRABUnitPerJob = 1000   #5
                           LaunchOnCondor.Jobs_CRABname     = dtag + '_' + str(s)
                           if( 'signal' in opt.onlykeyword):
                             LaunchOnCondor.Jobs_CRABInDBS    = getByLabel(procData,'dbsURL','global')
