@@ -222,6 +222,7 @@ private:
 
   bool isMC_ttbar;
   bool isDATA_VBFH;
+  bool isDATA_VH;
   bool is2016Signal;
   bool is2016;
   bool is2017;
@@ -347,15 +348,16 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
      printf("  Verbose set to false.  Will be quiet.\n") ;
   }
 
-  isDATA_VBFH =   (string(proc_.c_str()).find("BTagCSV") != string::npos || string(proc_.c_str()).find("JetHT") != string::npos ) && !isMC_;
-  is2016Signal	= (string(proc_.c_str()).find("2016") != string::npos && string(proc_.c_str()).find("h_amass") != string::npos );
-  is2016	= string(proc_.c_str()).find("2016") != string::npos;
-  is2017     	= (string(proc_.c_str()).find("2017") != string::npos);
-  is2017BC   	= (string(proc_.c_str()).find("2017B") != string::npos || string(proc_.c_str()).find("2017C") != string::npos);
-  is2018     	= (string(proc_.c_str()).find("2018") != string::npos);
-  is2016Legacy 	= is2016Legacy || is2016Signal;
-  is2016PreVFP  = string(proc_.c_str()).find("2016_preVFP") != string::npos;
-  is2016PostVFP = ( is2016 && !(is2016PreVFP) );
+  isDATA_VBFH   =   (string(proc_.c_str()).find("BTagCSV") != string::npos || string(proc_.c_str()).find("JetHT") != string::npos ) && !isMC_;
+  isDATA_VH     =   (string(proc_.c_str()).find("MuEG") != string::npos || string(proc_.c_str()).find("SingleElectron") != string::npos || string(proc_.c_str()).find("SingleMuon") != string::npos || string(proc_.c_str()).find("DoubleMuon") != string::npos || string(proc_.c_str()).find("DoubleEle") != string::npos) && !isMC_;
+  is2016Signal	=   (string(proc_.c_str()).find("2016") != string::npos && string(proc_.c_str()).find("h_amass") != string::npos );
+  is2016	=   string(proc_.c_str()).find("2016") != string::npos;
+  is2017     	=   (string(proc_.c_str()).find("2017") != string::npos);
+  is2017BC   	=   (string(proc_.c_str()).find("2017B") != string::npos || string(proc_.c_str()).find("2017C") != string::npos);
+  is2018     	=   (string(proc_.c_str()).find("2018") != string::npos);
+  is2016Legacy 	=   is2016Legacy || is2016Signal;
+  is2016PreVFP  =   string(proc_.c_str()).find("2016_preVFP") != string::npos;
+  is2016PostVFP =   ( is2016 && !(is2016PreVFP) );
 
   if ( verbose_ ) printf("Definition of plots\n");
   
@@ -865,6 +867,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
    bool highPTeTrigger(false);
    bool vbfTrigger1(false), vbfTrigger2(false);
    bool jetsTrigger(false);
+   bool mssmTrigger(false), mssmTrigger1(false), mssmTrigger2(false);
    
    // 1-lepton (el/muon) 2-lepton (el/muon) --> add 0-lepton
    if(is2018){
@@ -883,6 +886,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
       vbfTrigger1        = utils::passTriggerPatterns(tr,"HLT_QuadPFJet105_88_76_15_PFBTagDeepCSV_1p3_VBF2_v*");
       vbfTrigger2        = utils::passTriggerPatterns(tr,"HLT_QuadPFJet105_90_76_15_DoublePFBTagDeepCSV_1p3_7p7_VBF1_v*", "HLT_QuadPFJet105_88_76_15_DoublePFBTagDeepCSV_1p3_7p7_VBF1_v*");
       jetsTrigger        = utils::passTriggerPatterns(tr,"HLT_QuadPFJet105_88_76_15_v*");
+      mssmTrigger        = utils::passTriggerPatterns(tr,"HLT_DoublePFJets116MaxDeta1p6_DoubleCaloBTagDeepCSV_p71_v*");
    }else if(is2017){ 
       // https://indico.cern.ch/event/682891/contributions/2810364/attachments/1570825/2820752/20171206_CMSWeek_MuonHLTReport_KPLee_v3_4.pdf
       mumuTrigger        = utils::passTriggerPatterns(tr,"HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
@@ -899,6 +903,8 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
       emuTrigger2	 = utils::passTriggerPatterns(tr,"HLT_Mu23_TrkIsoVVL_Ele12_CaloIdL_TrackIdL_IsoVL_v*","HLT_Mu12_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_v*");
       metTrigger	 = utils::passTriggerPatterns(tr,"HLT_PFMET120_PFMHT120_IDTight_v*");
       metTrigger2	 = utils::passTriggerPatterns(tr,"HLT_PFMET120_PFMHT120_IDTight_PFHT60_v*");
+      mssmTrigger1       = utils::passTriggerPatterns(tr,"HLT_Mu12_DoublePFJets40MaxDeta1p6_DoubleCaloBTagCSV_p33_v*");
+      mssmTrigger2       = utils::passTriggerPatterns(tr,"HLT_DoublePFJets100MaxDeta1p6_DoubleCaloBTagCSV_p33_v*");
    } else{
       mumuTrigger        = utils::passTriggerPatterns(tr, "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*", "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*" , "HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
       // muTrigger          = utils::passTriggerPatterns(tr, "HLT_IsoMu22_v*","HLT_IsoTkMu22_v*", "HLT_IsoMu24_v*", "HLT_IsoTkMu24_v*");
@@ -920,9 +926,10 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
    // https://github.com/Sam-Harper/usercode/blob/100XNtup/TrigTools/plugins/Ele32DoubleL1ToSingleL1Example.cc
    // https://github.com/Sam-Harper/usercode/blob/100XNtup/TrigTools/test/ele32DoubleToSingle.py
 
-   if (verbose_) std::cout << isDATA_VBFH << endl;
+   if (verbose_) std::cout << "is VBFH?" << isDATA_VBFH <<  endl;
+   if (verbose_) std::cout << "is VH?"   << isDATA_VH   <<  endl;
 #ifdef YEAR_2017
-   if(is2017BC && !isDATA_VBFH){
+   if(is2017BC && !isDATA_VBFH && !isDATA_VH){
       //so the filter names are all packed in miniAOD so we need to create a new collection of them which are unpacked
       std::vector<pat::TriggerObjectStandAlone> unpackedTrigObjs;
       for(auto& trigObj: *triggerObjects){
@@ -959,25 +966,28 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
    }
 #endif
 
-   ev.hasTrigger  = ( mumuTrigger||mumuTrigger2||muTrigger||muTrigger2||eeTrigger||eeTrigger2||highPTeTrigger||eTrigger||eTrigger2||emuTrigger||emuTrigger2||metTrigger||metTrigger2||metTrigger3||vbfTrigger1||vbfTrigger2||jetsTrigger );
+   ev.hasTrigger  = ( mumuTrigger||mumuTrigger2||muTrigger||muTrigger2||eeTrigger||eeTrigger2||highPTeTrigger||eTrigger||eTrigger2||emuTrigger||emuTrigger2||metTrigger||metTrigger2||metTrigger3||vbfTrigger1||vbfTrigger2||jetsTrigger||mssmTrigger||mssmTrigger1||mssmTrigger2 );
    
-   ev.triggerType = ( mumuTrigger  << 0 )
-     | ( muTrigger  << 1 )
-     | ( eeTrigger << 2 )
-     | ( highPTeTrigger << 3 )
-     | ( eTrigger << 4 )
-     | ( emuTrigger << 5 ) 
-     | ( muTrigger2 << 6 )
-     | ( eTrigger2 << 7 )
-     | ( eeTrigger2 << 8 )
-     | ( mumuTrigger2 << 9 )
-     | ( emuTrigger2 << 10 )
-     | ( metTrigger << 11 ) 
-     | ( metTrigger2 << 12 ) 
-     | ( metTrigger3 << 13 )
-     | ( vbfTrigger1 << 14 )
-     | ( vbfTrigger2 << 15 )
-     | ( jetsTrigger << 16 );
+   ev.triggerType = ( mumuTrigger    <<         0  )
+     | ( muTrigger                   <<         1  )
+     | ( eeTrigger                   <<         2  )
+     | ( highPTeTrigger              <<         3  ) 
+     | ( eTrigger                    <<         4  )
+     | ( emuTrigger                  <<         5  ) 
+     | ( muTrigger2                  <<         6  )
+     | ( eTrigger2                   <<         7  )
+     | ( eeTrigger2                  <<         8  ) 
+     | ( mumuTrigger2                <<         9  )
+     | ( emuTrigger2                 <<         10 )
+     | ( metTrigger                  <<         11 ) 
+     | ( metTrigger2                 <<         12 ) 
+     | ( metTrigger3                 <<         13 )
+     | ( vbfTrigger1                 <<         14 )
+     | ( vbfTrigger2                 <<         15 )
+     | ( jetsTrigger                 <<         16 )
+     | ( mssmTrigger                 <<         17 )
+     | ( mssmTrigger1                <<         18 )
+     | ( mssmTrigger2                <<         19 );
    
    //if(!isMC__ && !ev.hasTrigger) return; // skip the event if no trigger, only for Data
    //if(!ev.hasTrigger) return; // skip the event if no trigger, for both Data and MC
