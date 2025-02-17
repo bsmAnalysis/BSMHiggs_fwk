@@ -176,40 +176,47 @@ fi
 
 ###  ############################################## STEPS between 2 and 3
 if [[ $step > 1.999 && $step < 3 ]]; then
-   if [[ $step == 2 ]]; then    #extract integrated luminosity of the processed lumi blocks
-	echo "MISSING LUMI WILL APPEAR AS DIFFERENCE LUMI ONLY IN in.json"
-	mergeJSON.py --output=$RESULTSDIR/json_all.json        $RESULTSDIR/Data*.json
-	mergeJSON.py --output=$RESULTSDIR/json_doubleMu.json   $RESULTSDIR/Data*_DoubleMu*.json
-	mergeJSON.py --output=$RESULTSDIR/json_doubleEl.json   $RESULTSDIR/Data*_DoubleElectron*.json
-	mergeJSON.py --output=$RESULTSDIR/json_muEG.json       $RESULTSDIR/Data*_MuEG*.json
-	mergeJSON.py --output=$RESULTSDIR/json_in.json  $GOLDENJSON/Cert_*.txt
-	echo "MISSING LUMI BLOCKS IN DOUBLE MU DATASET"
-	compareJSON.py --diff $RESULTSDIR/json_in.json $RESULTSDIR/json_doubleMu.json 
-	echo "MISSING LUMI BLOCKS IN DOUBLE ELECTRON DATASET"
-	compareJSON.py --diff $RESULTSDIR/json_in.json $RESULTSDIR/json_doubleEl.json 
-	echo "MISSING LUMI BLOCKS IN MUON EGAMMA DATASET"
-	compareJSON.py --diff $RESULTSDIR/json_in.json $RESULTSDIR/json_muEG.json 
+    if [[ $step == 2 ]]; then    #extract integrated luminosity of the processed lumi blocks
 
-	echo "COMPUTE INTEGRATED LUMINOSITY"
-	export LD_LIBRARY_PATH=/afs/cern.ch/cms/lumi/brilconda-1.1.7/root/lib
-        export PYTHONPATH=/afs/cern.ch/cms/lumi/brilconda-1.1.7/root/lib 
-        export PYTHONPATH=$ROOTSYS/lib:$PYTHONPATH 
-        export ROOTSYS=/afs/cern.ch/cms/lumi/brilconda-1.1.7/root 
-        export PATH=$HOME/.local/bin:/afs/cern.ch/cms/lumi/brilconda-1.1.7/bin:$PATH 
-#	export PATH=$HOME/.local/bin:/afs/cern.ch/cms/lumi/brilconda-1.0.3/bin:$PATH
+	echo "WARNING: There must be no directories other than 'Data' in results_ directory."
 
-	pip uninstall brilws -y 
-	pip install --upgrade --install-option="--prefix=$HOME/.local" brilws &> /dev/null #will be installed only the first time
+        # Automatically run crab report for all available CRAB jobs                                                                                                                                         
+        echo "Running crab report to extract processed lumis..."
 
-	if [[ $JSON =~ "2016" ]]; then
-	    brilcalc lumi -b "STABLE BEAMS" --normtag /afs/cern.ch/user/l/lumipro/public/Normtags/normtag_DATACERT.json -i $RESULTSDIR/json_all.json -u /pb -o $RESULTSDIR/LUMI.txt 
-	else
-	    brilcalc lumi --normtag /afs/cern.ch/user/l/lumipro/public/normtag_file/moriond16_normtag.json -i $RESULTSDIR/json_all.json -u /pb -o $RESULTSDIR/LUMI.txt 
-	fi
-	tail -n 3 $RESULTSDIR/LUMI.txt  
+        # Base path where CRAB reports are stored                                                                                                                                                           
+        CRAB_BASE_DIR="$RESULTSDIR/FARM/inputs"
+
+        # Find all CRAB job directories dynamically                                                                                                                                                         
+        CRAB_DIRS=$(find "$CRAB_BASE_DIR" -maxdepth 1 -type d -name "crab_*")
+
+        for CRAB_DIR in $CRAB_DIRS; do
+            echo "Generating CRAB report for: $CRAB_DIR"
+            crab report -d "$CRAB_DIR"
+
+            # Copy the JSON files from the CRAB results directory to $RESULTSDIR                                                                                                                            
+            CRAB_RESULTS_DIR="${CRAB_DIR}/results"
+
+            if [ -d "$CRAB_RESULTS_DIR" ]; then
+                JSON_NAME=$(basename "$CRAB_DIR")  # Use the CRAB directory name as identifier                                                                                                              
+                echo "Copying processed luminosity JSON from $CRAB_RESULTS_DIR to $RESULTSDIR..."
+                cp "$CRAB_RESULTS_DIR/processedLumis.json" "$RESULTSDIR/Data_processed_${JSON_NAME}.json" 2>/dev/null
+            else
+                echo "WARNING: Results directory not found in $CRAB_DIR"
+            fi
+        done
+
+        jq -s 'reduce .[] as $item ({}; . * $item)' $RESULTSDIR/Data_*.json > $RESULTSDIR/json_all.json
+        echo "COMPUTE INTEGRATED LUMINOSITY"
+
+        # Full RUN 2                                                                                                                                                                                        
+        export PATH=$HOME/.local/bin:/cvmfs/cms-bril.cern.ch/brilconda310/bin:$PATH
+        pip install --user --upgrade brilws
+
+        brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -u /fb -i $RESULTSDIR/json_all.json -o $RESULTSDIR/LUMI.csv
+
+        tail -n 3 $RESULTSDIR/LUMI.csv
      fi
-  fi     
-
+  fi
 ###  ############################################## STEPS between 3 and 4
 if [[ $step > 2.999 && $step < 4 ]]; then
     if [ -f $NTPL_OUTDIR/LUMI.txt ]; then
