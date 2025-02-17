@@ -303,6 +303,33 @@ float getSFfrom2DHist(double xval, double yval, TH2F* h_)
   else return sf_;
 }
 
+float getSFfrom3DHist(double xval, double yval, double zval, TH3F* h_)
+{
+
+  if(h_==NULL) {
+    cout << "[getSFfrom3DHist]: empty hist! " << endl;
+    return 1;
+  }
+  int xbins = h_->GetXaxis()->GetNbins();
+  if(xval > h_->GetXaxis()->GetBinUpEdge(xbins)    ) xval = h_->GetXaxis()->GetBinUpEdge(xbins);
+  if(xval < h_->GetXaxis()->GetBinLowEdge(1)       ) xval = h_->GetXaxis()->GetBinLowEdge(1);
+
+  int ybins = h_->GetYaxis()->GetNbins();
+  if(yval > h_->GetYaxis()->GetBinUpEdge(ybins)    ) yval = h_->GetYaxis()->GetBinUpEdge(ybins);
+  if(yval < h_->GetYaxis()->GetBinLowEdge(1)       ) yval = h_->GetYaxis()->GetBinLowEdge(1);
+
+  int zbins = h_->GetZaxis()->GetNbins();
+  if(zval > h_->GetZaxis()->GetBinUpEdge(zbins)    ) zval = h_->GetZaxis()->GetBinUpEdge(zbins);
+  if(zval < h_->GetZaxis()->GetBinLowEdge(1)       ) zval = h_->GetZaxis()->GetBinLowEdge(1);
+
+  int binx = h_->GetXaxis()->FindBin(xval);
+  int biny = h_->GetYaxis()->FindBin(yval);
+  int binz = h_->GetZaxis()->FindBin(zval);
+  float sf_ = h_->GetBinContent(binx,biny,binz);
+
+  if(sf_==0.) return 1.;
+  else return sf_;
+}
 
 float getNLOEWKZZWeight(double trailing_pt)
 {
