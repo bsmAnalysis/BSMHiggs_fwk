@@ -284,8 +284,9 @@ bool DataEvtSummaryHandler::initTree(TTree *t)
     /*
     t_->Branch("jet_area",              evSummary_.jet_area,                "jet_area[jet]/F");
     t_->Branch("jet_pu",                evSummary_.jet_pu,                  "jet_pu[jet]/F");
+    */    
     t_->Branch("jet_puId",              evSummary_.jet_puId,                "jet_puId[jet]/F");
-    */
+    
 
 //  t_->Branch("jet_PFLoose",           evSummary_.jet_PFLoose,             "jet_PFLoose[jet]/O");
     
@@ -705,8 +706,9 @@ bool DataEvtSummaryHandler::attachToTree(TTree *t)
     /*
     t_->SetBranchAddress("jet_area",                evSummary_.jet_area);
     t_->SetBranchAddress("jet_pu",                  evSummary_.jet_pu);
+    */    
     t_->SetBranchAddress("jet_puId",                evSummary_.jet_puId);
-    */
+    
 //  t_->SetBranchAddress("jet_PFLoose",             evSummary_.jet_PFLoose);
     
     t_->SetBranchAddress("jet_PFTight",             evSummary_.jet_PFTight);
