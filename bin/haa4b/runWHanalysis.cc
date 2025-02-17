@@ -53,10 +53,12 @@ using namespace std;
 
 //######################### FUNCTIONS ###########################//
 float getDeltaR(TLorentzVector vec_1, TLorentzVector vec_2);
+float getDeltaRmin(TLorentzVector vec_1, vector<TLorentzVector> vec_2);
 float getAverageDeltaR(vector<TLorentzVector> vec);
 float getdeltaMass(TLorentzVector b1, TLorentzVector b2, float targetMass);
 float getDeltaMassMin(vector<TLorentzVector> vec, int n);
 float getDeltaMassMinNew(vector<TLorentzVector> vec, float& unpairedmass);
+float fjet_matched(TLorentzVector vec_1, std::vector<TLorentzVector> vec_2);
 float getmbbb(vector<TLorentzVector> vec);
 float computeMT2(TLorentzVector vis1, TLorentzVector vis2, TLorentzVector invis);
 float getDeltaPhiMin(TLorentzVector vec_1, std::vector<TLorentzVector> vec_2);
@@ -65,6 +67,10 @@ float HTjets(std::vector<TLorentzVector> vec);
 TLorentzVector getbbwithDRMin(vector<TLorentzVector> vec);
 
 std::vector<TLorentzVector> sort_vec_pt(std::vector<TLorentzVector> vec);
+bool sortlep(std::pair<TLorentzVector, TString>  vec_id_i, std::pair<TLorentzVector, TString> vec_id_j)
+{
+  return  vec_id_i.first.Pt() > vec_id_j.first.Pt();
+}
 std::pair<int, int> findFirstPair(std::vector<TLorentzVector> vec_b, float targetMass);
 
 bool sortPair(std::pair<TLorentzVector, float> vec_1, std::pair<TLorentzVector, float> vec_2);
@@ -148,71 +154,125 @@ int main(int argc, char* argv[])
   fprintf(outTxtFile_final,"run lumi event\n");
 
   // Calculate xsec weight
-  float Lint   = 41.5;
-  float Nexp   = xsec * 1000 * Lint;
-  float weight = Nexp / nevts;
+  float xsec_weight = isMC ? xsec / nevts : 1;
+  float weight      = 1.0;
   if(verbose)
     {
-      cout << "Cross section : " << xsec   << " [pb]" << endl;
-      cout << "Weight        : " << weight            << endl;
-      cout << "N expected    : " << Nexp              << endl; 
+      cout << "Cross section   : " << xsec   << " [pb]" << endl;
+      cout << "Weight per event: " << xsec_weight       << endl;
+      cout << "Weight          : " << weight            << endl;
     }
+
+  // B-tag Working Points
+  float looseWP  = 0.0532;
+  float mediumWP = 0.3040;
+  float tightWP  = 0.7476;
+  
  
   //##################################################################################//
   //##########################    INITIATING HISTOGRAMS     ##########################//
   //##################################################################################//
   SmartSelectionMonitor mon;
 
-  // Count the events with 3 or more than 3 jets
-  TH1F *hj = (TH1F*) mon.addHistogram ( new TH1F ("Events", ";;N_{Events}", 2,0,2) );
-  hj->GetXaxis()->SetBinLabel(1,"3 jets");
-  hj->GetXaxis()->SetBinLabel(2,">3 jets");
-  
   // Event flow 
-  TH1F *h = (TH1F*) mon.addHistogram ( new TH1F ("eventflow", ";;N_{Events}", 5,0,5) );
+  TH1F *h = (TH1F*) mon.addHistogram ( new TH1F ("eventflow", ";;N_{Events}", 5, 0, 5 ) );
   h->GetXaxis()->SetBinLabel(1,"Raw");
   h->GetXaxis()->SetBinLabel(2,"1 lepton");
-  h->GetXaxis()->SetBinLabel(3,">=3 jets");
-  h->GetXaxis()->SetBinLabel(4,">=3 b-tags");
-  h->GetXaxis()->SetBinLabel(5,"MET>25 & MTW>50");
+  h->GetXaxis()->SetBinLabel(3,"MET>25 & MTW>50");
+  h->GetXaxis()->SetBinLabel(4,">=3 jets");
+  h->GetXaxis()->SetBinLabel(5,">=3 b-tag jets");            //SR1
+  //h->GetXaxis()->SetBinLabel(6,">=1 b-tag and >=1 f-jet");   //SR2
 
   // Multiplicity 
-  mon.addHistogram ( new TH1F ("multi", ";N_{lepton} ;N_{Events}", 5, 0, 5) );
-  mon.addHistogram ( new TH1F ("qgmulti", ";N_{qg} ;N_{Events}", 15, 0, 15) );
-  mon.addHistogram ( new TH1F ("jetmulti", ";N_{jet} ;N_{Events}", 15, 0, 15) );
+  mon.addHistogram ( new TH1F ("multi", ";N_{lepton} ;N_{Events}", 5, 0, 5 ) );
+  mon.addHistogram ( new TH1F ("qgmulti", ";N_{qg} ;N_{Events}", 15, 0, 15 ) );
+  mon.addHistogram ( new TH1F ("jetmulti", ";N_{jet} ;N_{Events}", 15, 0, 15 ) );
 
   // Particles/Objects kinematics
-  mon.addHistogram ( new TH1F ("pt", ";p_{T} [GeV] ;N_{Events}", 100, 0, 500) );
-  mon.addHistogram ( new TH1F ("eta", ";#eta ;N_{Events}", 100, -6, 6));
-  mon.addHistogram ( new TH1F ("phi", ";#phi ;N_{Events}", 100, -TMath::Pi(), TMath::Pi()) );
+  mon.addHistogram ( new TH1F ("pt", ";p_{T} [GeV] ;N_{Events}", 100, 0, 500 ) );
+  mon.addHistogram ( new TH1F ("eta", ";#eta ;N_{Events}", 100, -6, 6 ) );
+  mon.addHistogram ( new TH1F ("phi", ";#phi ;N_{Events}", 100, -TMath::Pi(), TMath::Pi() ) );
   mon.addHistogram ( new TH1F ("M", ";M [GeV] ;N_{Events}", 100, 0, 800) );
-  mon.addHistogram ( new TH1F ("m", ";M [GeV] ;N_{Events}", 100, 0, 40 ) );
+  mon.addHistogram ( new TH2F("fjetpt_vs_bbpt", ";p_{T} ;p_{T}", 50, 0, 500, 50, 0, 500 ) );
+
+  // quarks kinematics
+  mon.addHistogram ( new TH1F ("max_pt", ";p_{T} [GeV] ;N_{Events}", 100, 0, 200 ) );
+  mon.addHistogram ( new TH1F ("min_pt", ";p_{T} [GeV] ;N_{Events}", 100, 0, 200 ) );
 
   // Delta R
-  mon.addHistogram( new TH1F( "DR", ";#DeltaR ;N_{events}", 100, 0, 7) );
+  mon.addHistogram ( new TH1F( "DR", ";#DeltaR ;N_{events}", 100, 0, 8 ) );
 
   // Delta phi
-  mon.addHistogram( new TH1F( "dphi", ";|#Delta#phi| ;N_{Events}", 100, 0, TMath::Pi()) );
+  mon.addHistogram ( new TH1F( "dphi", ";|#Delta#phi| ;N_{Events}", 100, 0, TMath::Pi() ) );
 
   // Delta eta
-  mon.addHistogram( new TH1F( "dEta", ";|#Delta#eta| ;N_{Events}", 100, 0, 10 ) );
+  mon.addHistogram ( new TH1F( "dEta", ";|#Delta#eta| ;N_{Events}", 100, 0, 10 ) );
 
   // HT
-  mon.addHistogram( new TH1F( "HT", ";H_{T} ;N_{Events}", 100, 0, 1000) );
-  mon.addHistogram( new TH1F( "HTWjets", ";H_{T} ;N_{Events}", 100, 0, 5000) );
+  mon.addHistogram ( new TH1F( "HTWjets", ";H_{T} ;N_{Events}", 100, 0, 5000 ) );
 
   // MT W
-  mon.addHistogram( new TH1F( "MT", ";M_{T} ;N_{Events}", 100, 0, 500) );
+  mon.addHistogram ( new TH1F( "MT", ";M_{T} ;N_{Events}", 100, 0, 500) );
 
   // <DR> vs pt 
-  mon.addHistogram( new TProfile ("DR_vs_pt", ";p_{T} [GeV] ;<#DeltaR>", 100, 0, 500) );
+  mon.addHistogram ( new TProfile ( "DR_vs_pt", ";p_{T} [GeV] ;<#DeltaR>", 100, 0, 500 ) );
+  mon.addHistogram ( new TH2F ( "DRbb_vs_ptbb", ";p_{T}^{bb} [GeV]; ;#DeltaR", 100, 0, 500, 100, 0, 8 ));
 
   // b-tag discriminator
-  mon.addHistogram( new TH1F( "btag", ";b-tag ;N_{Events}", 100, 0, 1) );
+  mon.addHistogram ( new TH1F( "btag", ";b-tag ;N_{Events}", 100, 0, 1 ) );
+  
+  // Filter efficiency for ttbar
+  mon.addHistogram ( new TH1F( "filter", ";filter ;" , 1, 0, 1 ) );
 
-  // MVA BDT
-  mon.addHistogram( new TH1F( "BDT", ";BDT ;N_{Events}", 100, -1, 1) );
+  // Fat jets and soft-drop mass
+  mon.addHistogram ( new TH1F ( "SDM", ";M_{SD} [GeV] ;N_{Events}", 100, 0, 200 ) );
+  mon.addHistogram ( new TH2F ( "fjet_pt_vs_SDM", ";p_{T} [GeV] ;M_{SD} [Gev]", 100, 0, 500, 100, 0, 200 ) );
+  mon.addHistogram ( new TH2F ( "fjet_eta_vs_SDM", ";#eta ;M_{SD} [Gev]", 100, -7, 7, 100, 0, 200 ) );
+  mon.addHistogram ( new TH2F ( "fjet_subjet_vs_SDM", ";N_{subjet} ;M_{SD} [Gev]", 5, 0, 5, 100, 0, 200 ) );
+  mon.addHistogram ( new TProfile ( "fjetpt_vs_SDM", ";p_{T} [GeV] ;<M_{SD}> [Gev]", 100, 0, 500 ) );
+  mon.addHistogram ( new TProfile ( "fjeteta_vs_SDM", ";#eta ;<M_{SD}> [Gev]", 100, -7, 7 ) );
+  mon.addHistogram ( new TProfile ( "fjetsubjet_vs_SDM", ";N_{subjet} ;<M_{SD}> [Gev]", 5, 0, 5 ) );
 
+  mon.addHistogram( new TH2F ( "pt_bb_vs_met", ";p_{T} [GeV] ;E_{T}^{miss} [GeV]", 100, 0, 500, 100, 0, 500 ) );
+  mon.addHistogram( new TProfile ( "pt_fjet_vs_met_prof", ";p_{T} [GeV] ;<E_{T}^{miss}> [GeV]", 100, 0, 500 ) );
+
+  // Subjet count
+  mon.addHistogram (new TH1F ( "count", ";N_{subjets} ;N_{Events}", 5, 0, 5 ) );
+
+  // Discriminants
+  mon.addHistogram ( new TH1F( "discriminant", ";discriminant ;N_{Events}", 100, 0, 1 ) );
+  mon.addHistogram ( new TH2F( "fjet_Xbb_pt", ";p_{T} [GeV] ;Xbb", 100, 0, 500, 50, 0, 1 ) );
+  mon.addHistogram ( new TH2F( "fjet_XbbXccXqq_pt", ";p_{T} [GeV] ;XbbXccXqq", 100, 0, 500, 50, 0, 1 ) );
+  mon.addHistogram ( new TProfile( "Xbb_pt", ";p_{T} [GeV] ;<Xbb>", 100, 0, 500 ) );
+  mon.addHistogram ( new TProfile( "XbbXccXqq_pt", ";p_{T} [GeV] ;<XbbXccXqq>", 100, 0, 500 ) );
+
+  // Final step histograms for /submit 3.1
+  mon.addHistogram ( new TH1F ( "BDT", ";BDT ;Events", 50, -1, 1 ) );
+  mon.addHistogram ( new TH1F ( "H_pt", ";p_{T}^{H} [GeV] ;Events", 50, 0, 800 ) );
+  mon.addHistogram ( new TH1F ( "W_pt", ";p_{T}^{W} [GeV] ;Events", 50, 0, 800 ) );
+  mon.addHistogram ( new TH1F ( "l_pt", ";p_{T}^{lep} [GeV] ;Events", 50, 0, 500 ) );
+  mon.addHistogram ( new TH1F ( "bjet1_pt", ";p_{T}^{bjet1} [GeV] ;Events", 50, 0, 800 ) );
+  mon.addHistogram ( new TH1F ( "HT", ";H_{T} ;Events", 50, 0, 1000 ) );
+  mon.addHistogram ( new TH1F ( "H_M", ";M_{H} [GeV] ;Events", 50, 0, 800) );
+  mon.addHistogram ( new TH1F ( "bbj_M", ";M_{bbj} [GeV ;Events", 50, 0, 1000) );
+  mon.addHistogram ( new TH1F ( "W_MT", ";M_{T}^{W} [GeV] ;Events", 50, 0, 500) );
+  mon.addHistogram ( new TH1F ( "MET", ";E_{T}^{miss} [GeV] ;Events", 50, 0, 500 ) );
+  mon.addHistogram ( new TH1F ( "WH_dphi", ";|#Delta#phi(WH)| ;Events", 50, 0, TMath::Pi() ) );
+  mon.addHistogram ( new TH1F ( "METjet_dphi", ";min|#Delta#phi(E_{T}^{miss}-jet)| ;Events", 50, 0, TMath::Pi() ) );
+  mon.addHistogram ( new TH1F ( "WH_deta", ";|#Delta#eta(WH)| ;Events", 50, 0, 7 ) );
+  mon.addHistogram ( new TH1F ( "avbb_dR", ";#DeltaR(bb)^{aver} ;Events", 50, 0, 7 ) );
+  mon.addHistogram ( new TH1F ( "jet-mn_dR", ";#DeltaR(jet-#mu) ;Events", 100, 0, 7 ) );
+  mon.addHistogram ( new TH1F ( "jet-mn_cc_dR", ";#DeltaR(jet-#mu)_{cc} ;Events", 100, 0, 7 ) );
+  mon.addHistogram ( new TH1F ( "jet-en_dR", ";#DeltaR(jet-e) ;Events", 100, 0, 7 ) );
+  mon.addHistogram ( new TH1F ( "jet-en_cc_dR", ";#DeltaR(jet-#mu)_{cc} ;Events", 100, 0, 7 ) );
+  mon.addHistogram ( new TH1F ( "minbb_dM", ";#DeltaM(bb)^{min} [GeV] ;Events", 50, 0, 400) );
+  mon.addHistogram ( new TH1F ( "btag1_bef", ";b-tag1 ;Events", 100, mediumWP, 1 ) );
+  mon.addHistogram ( new TH1F ( "btag2_bef", ";b-tag2 ;Events", 100, mediumWP, 1 ) );
+  mon.addHistogram ( new TH1F ( "btag3_bef", ";b-tag3 ;Events", 100, mediumWP, 1 ) );
+  mon.addHistogram ( new TH1F ( "btag1", ";b-tag1 ;Events", 50, tightWP, 1 ) );
+  mon.addHistogram ( new TH1F ( "btag2", ";b-tag2 ;Events", 50, mediumWP, 1 ) );
+  mon.addHistogram ( new TH1F ( "btag3", ";b-tag3 ;Events", 50, mediumWP, 1 ) );
+  
   
   // Tree info
   int evStart     = runProcess.getParameter<int>("evStart");
@@ -255,31 +315,45 @@ int main(int argc, char* argv[])
   int n_event_jet    = 0;
   int n_event_bjet   = 0;
   int n_event_metcut = 0;
-  int n_event_SR     = 0;
-  int n_event_njet   = 0;
+  int n_event_fjet   = 0;
+
+  int n_SR1 = 0;
+  int n_SR2 = 0;
   
   // Variables for TTJets 
   int nTot   = 0; 
   int nFilt1 = 0;
   int nFilt4 = 0;
   int nFilt5 = 0;
-  
+
  
   //####################################################################################################################//
   //###########################################           TMVAReader         ###########################################//
   //####################################################################################################################//
-  std::string chpath = "WhAnalysis/";
+  
+  std::string SR1_chpath = "WhAnalysis/SR1/";
+  std::string SR2_chpath = "WhAnalysis/SR2/";
 
   TMVAReader SR1adaReader;
   SR1adaReader.InitTMVAReader();
-  std::string SR1ada_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA_BDT_ada.weights.xml";
+  std::string SR1ada_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+SR1_chpath+"TMVA_BDT_ada.weights.xml";
   SR1adaReader.SetupMVAReader("SR1adaClass", SR1ada_xml_path);
 
   TMVAReader SR1gradReader;
   SR1gradReader.InitTMVAReader();
-  std::string SR1grad_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+chpath+"TMVA_BDT_grad.weights.xml";
+  std::string SR1grad_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+SR1_chpath+"TMVA_BDT_grad.weights.xml";
   SR1gradReader.SetupMVAReader("SR1gradClass", SR1grad_xml_path);
 
+  TMVAReader SR2adaReader;
+  SR2adaReader.InitTMVAReader();
+  std::string SR2ada_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+SR2_chpath+"TMVA_BDT_ada.weights.xml";
+  SR2adaReader.SetupMVAReader("SR2adaClass", SR2ada_xml_path);
+
+  TMVAReader SR2gradReader;
+  SR2gradReader.InitTMVAReader();
+  std::string SR2grad_xml_path = std::string(std::getenv("CMSSW_BASE"))+"/src/UserCode/bsmhiggs_fwk/data/mva/"+SR2_chpath+"TMVA_BDT_grad.weights.xml";
+  SR2gradReader.SetupMVAReader("SR2gradClass", SR2grad_xml_path);
+  
  
   //####################################################################################################################//
   //###########################################           EVENT LOOP         ###########################################//
@@ -292,6 +366,12 @@ int main(int argc, char* argv[])
 
   for(int iev=evStart; iev<evEnd; iev++)
     {
+      // Initializa weight
+      weight = 1.0;
+
+      // Step 1 : xsec weighting
+      weight *= xsec_weight;
+      
       // Load the event content from tree
       summaryHandler_.getEntry(iev);
       DataEvtSummary_t &ev=summaryHandler_.getEvent();
@@ -315,11 +395,8 @@ int main(int argc, char* argv[])
 	  continue;
 	}
 
-      float lheHT = ev.lheHt;
-      if(isMC_WJets && !(isMC_WJets_HTbin))
-	{
-	  if (lheHT >= 70.0) continue; // reject the event
-	}
+      if (isMC_WJets && !(isMC_WJets_HTbin) ) { if(ev.lheHt >= 70) continue; }
+	
 
      
       //############################################################//
@@ -327,24 +404,24 @@ int main(int argc, char* argv[])
       //###########################################################//
       
       // Create new object vectors
-      std::vector<TLorentzVector> vec_genlep; // store the lepton
-      std::vector<TLorentzVector> vec_genqg;  // store the quarks/gluons
-      std::vector<TLorentzVector> vec_genb;   // store the b quarks
-      std::vector<TLorentzVector> vec_H;      // store the Higgs
-      std::vector<TLorentzVector> vec_A;      // store the A
-      std::vector<TLorentzVector> vec_W;      // store the W
-      std::vector<TLorentzVector> vec_bb1;    // store the bb pair from mother A1
-      std::vector<TLorentzVector> vec_bb2;    // store the bb pair from mother A2
+      std::vector<TLorentzVector> vec_genlep;  // store the lepton
+      std::vector<TLorentzVector> vec_genqg;   // store the quarks/gluons
+      std::vector<TLorentzVector> vec_genb;    // store the b quarks
+      std::vector<TLorentzVector> vec_H;       // store the Higgs
+      std::vector<TLorentzVector> vec_A;       // store the A
+      std::vector<TLorentzVector> vec_W;       // store the W
+      std::vector<TLorentzVector> vec_bb1;     // store the bb pair from mother A1
+      std::vector<TLorentzVector> vec_bb2;     // store the bb pair from mother A2
 
       TLorentzVector met_gen;                 // Missing transverse energy vector
 
       // LOOP OVER MC PARTICLES at GENERATOR LEVEL
       for (int imc=0; imc<ev.nmcparticles; imc++)
 	{
-	  /* if(verbose && iev <3) 
+	  if(verbose && iev<5) 
 	    {
 	      std::cout << " imcparticle " << imc << " : is a " << ev.mc_id[imc] <<",has a mom:"<<ev.mc_mom[imc]<< " , and has a mother at: " << ev.mc_momidx[imc]  <<"has status   "<<ev.mc_status[imc] << "  and has a 4-vector p = (" << ev.mc_en[imc] << ", " << ev.mc_px[imc] << ", " << ev.mc_py[imc] << ", " << ev.mc_pz[imc] << " ) " << std::endl;
-	      }*/
+	    }
 
 	  if(ev.mc_id[imc]==25) 
 	    { // Found the Higgs boson
@@ -352,10 +429,10 @@ int main(int argc, char* argv[])
 	      pH.SetPxPyPzE(ev.mc_px[imc],ev.mc_py[imc],ev.mc_pz[imc],ev.mc_en[imc]);
 
 	      // Make histograms of Higgs boson kinematics:
-	      mon.fillHisto("pt", "gen_H", pH.Pt(), 1.0);
-	      mon.fillHisto("eta", "gen_H", pH.Eta(), 1.0);
-	      mon.fillHisto("phi", "gen_H", pH.Phi(), 1.0);
-	      mon.fillHisto("M", "gen_H", pH.M(), 1.0);
+	      mon.fillHisto("pt", "gen_H", pH.Pt(), weight);
+	      mon.fillHisto("eta", "gen_H", pH.Eta(), weight);
+	      mon.fillHisto("phi", "gen_H", pH.Phi(), weight);
+	      mon.fillHisto("M", "gen_H", pH.M(), weight);
 	      
 	      vec_H.push_back(pH);        
 	    }
@@ -366,10 +443,10 @@ int main(int argc, char* argv[])
 	      pW.SetPxPyPzE(ev.mc_px[imc],ev.mc_py[imc],ev.mc_pz[imc],ev.mc_en[imc]);
 
 	      // Make histograms of the W boson kinematics
-	      mon.fillHisto("pt", "gen_W", pW.Pt(), 1.0);
-	      mon.fillHisto("eta", "gen_W", pW.Eta(), 1.0);
-	      mon.fillHisto("phi", "gen_W", pW.Phi(), 1.0);
-	      mon.fillHisto("M", "gen_W", pW.M(), 1.0);
+	      mon.fillHisto("pt", "gen_W", pW.Pt(), weight);
+	      mon.fillHisto("eta", "gen_W", pW.Eta(), weight);
+	      mon.fillHisto("phi", "gen_W", pW.Phi(), weight);
+	      mon.fillHisto("M", "gen_W", pW.M(), weight);
 	      
 	      vec_W.push_back(pW);
 	    }
@@ -380,10 +457,10 @@ int main(int argc, char* argv[])
               pA.SetPxPyPzE(ev.mc_px[imc],ev.mc_py[imc],ev.mc_pz[imc],ev.mc_en[imc]);
 
               // Make histograms of the A boson kinematics
-	      mon.fillHisto("pt", "gen_A", pA.Pt(), 1.0);
-	      mon.fillHisto("eta", "gen_A", pA.Eta(), 1.0);
-	      mon.fillHisto("phi", "gen_A", pA.Phi(), 1.0);
-	      mon.fillHisto("M", "gen_A", pA.M(), 1.0);
+	      mon.fillHisto("pt", "gen_A", pA.Pt(), weight);
+	      mon.fillHisto("eta", "gen_A", pA.Eta(), weight);
+	      mon.fillHisto("phi", "gen_A", pA.Phi(), weight);
+	      mon.fillHisto("M", "gen_A", pA.M(), weight);
 	      
 	      vec_A.push_back(pA);
             }
@@ -445,8 +522,8 @@ int main(int argc, char* argv[])
       
 
       // Fill the multiplicity histograms before cuts
-      mon.fillHisto("multi", "step0_gen_lepton", vec_genlep.size(), 1.0);
-      mon.fillHisto("qgmulti", "step0_gen", vec_genqg.size(), 1.0);
+      mon.fillHisto("multi", "step0_gen_lepton", vec_genlep.size(), weight);
+      mon.fillHisto("qgmulti", "step0_gen", vec_genqg.size(), weight);
 
       // Sorting the quarks/gluons and b quarks based on pT in descending order
       vec_genqg = sort_vec_pt(vec_genqg);
@@ -455,112 +532,126 @@ int main(int argc, char* argv[])
       vec_bb2   = sort_vec_pt(vec_bb2);
 
       // Fill histogram with lheHT for the W+Jets background
-      mon.fillHisto("HTWJets", "gen", lheHT, weight); 
+      mon.fillHisto("HTWJets", "gen", ev.lheHt, weight); 
 	
-      // Fill histograms with bb-pair
       if(vec_bb1.size()>1)
 	{
+	  float DRbb1 = getDeltaR(vec_bb1[0], vec_bb1[1]);
 	  TLorentzVector pbb1 = vec_bb1[0] + vec_bb1[1];
-	 
-	  mon.fillHisto("pt", "step0_gen_bb1", pbb1.Pt(), 1.0);
-	  mon.fillHisto("eta", "step0_gen_bb1", pbb1.Eta(), 1.0);
-	  mon.fillHisto("phi", "step0_gen_bb1", pbb1.Phi(), 1.0);
-	  mon.fillHisto("M", "step0_gen_bb1", pbb1.M(), 1.0);
+
+	  // Fill histograms with bb-pair kinematics
+	  mon.fillHisto("pt", "step0_gen_bb1", pbb1.Pt(), weight);
+	  mon.fillHisto("eta", "step0_gen_bb1", pbb1.Eta(), weight);
+	  mon.fillHisto("phi", "step0_gen_bb1", pbb1.Phi(), weight);
+	  mon.fillHisto("M", "step0_gen_bb1", pbb1.M(), weight);
+
+	  // Fill histograms of angular distance DR
+	  mon.fillHisto("DR", "step0_gen_bb1", DRbb1, weight);
+	  mon.fillProfile("DR_vs_pt", "step0_gen_bb1", pbb1.Pt(), DRbb1, weight);
+
+	  if(DRbb1 < 0.8)
+	    {
+	      mon.fillHisto("DRbb_vs_ptbb", "1_DR<0.8", (vec_bb1[0]+vec_bb1[1]).Pt(), DRbb1, weight);
+	      mon.fillProfile("DR_vs_pt", "1_DR<0.8", (vec_bb1[0]+vec_bb1[1]).Pt(), DRbb1, weight);
+	      mon.fillHisto("pt", "1_DR<0.8", (vec_bb1[0]+vec_bb1[1]).Pt(), weight);
+	    }	  
 	}
       
       if(vec_bb2.size()>1)
 	{
-	  TLorentzVector pbb2 = vec_bb2[0] + vec_bb2[1];
-	  
-	  mon.fillHisto("pt", "step0_gen_bb2", pbb2.Pt(), 1.0);
-	  mon.fillHisto("eta", "step0_gen_bb2", pbb2.Eta(), 1.0);
-	  mon.fillHisto("phi", "step0_gen_bb2", pbb2.Phi(), 1.0);
-	  mon.fillHisto("M", "step0_gen_bb2", pbb2.M(), 1.0);
-	}
-
-      if(vec_genqg.size()>0)
-	{
-	  mon.fillHisto("pt", "step0_gen_qg1", vec_genqg[0].Pt(), 1.0);
-	  mon.fillHisto("eta", "step0_gen_qg1", vec_genqg[0].Eta(), 1.0);
-	  mon.fillHisto("phi", "step0_gen_qg1", vec_genqg[0].Phi(), 1.0);
-	}
-
-      if(vec_genqg.size()>1)
-	{
-	  mon.fillHisto("pt", "step0_gen_qg2", vec_genqg[1].Pt(), 1.0);
-	  mon.fillHisto("eta", "step0_gen_qg2", vec_genqg[1].Eta(), 1.0);
-	  mon.fillHisto("phi", "step0_gen_qg2", vec_genqg[1].Phi(), 1.0);
-	}
-
-      if(vec_genqg.size()>2)
-	{
-	  mon.fillHisto("pt", "step0_gen_qg3", vec_genqg[2].Pt(), 1.0);
-	  mon.fillHisto("eta", "step0_gen_qg3", vec_genqg[2].Eta(), 1.0);
-	  mon.fillHisto("phi", "step0_gen_qg3", vec_genqg[2].Phi(), 1.0);
-	}
-
-      if(vec_genqg.size()>3)
-	{
-	  mon.fillHisto("pt", "step0_gen_qg4", vec_genqg[3].Pt(), 1.0);
-	  mon.fillHisto("eta", "step0_gen_qg4", vec_genqg[3].Eta(), 1.0);
-	  mon.fillHisto("phi", "step0_gen_qg4", vec_genqg[3].Phi(), 1.0);
-	}
-
-      if(vec_genb.size()>0)
-	{
-	  mon.fillHisto("pt", "step0_gen_b1", vec_genb[0].Pt(), 1.0);
-	  mon.fillHisto("eta", "step0_gen_b1", vec_genb[0].Eta(), 1.0);
-	  mon.fillHisto("phi", "step0_gen_b1", vec_genb[0].Phi(), 1.0);
-	}
-
-      if(vec_genb.size()>1)
-	{
-	  mon.fillHisto("pt", "step0_gen_b2", vec_genb[1].Pt(), 1.0);
-	  mon.fillHisto("eta", "step0_gen_b2", vec_genb[1].Eta(), 1.0);
-	  mon.fillHisto("phi", "step0_gen_b2", vec_genb[1].Phi(), 1.0);
-	}
-
-      if(vec_genb.size()>2)
-	{
-	  mon.fillHisto("pt", "step0_gen_b3", vec_genb[2].Pt(), 1.0);
-	  mon.fillHisto("eta", "step0_gen_b3", vec_genb[2].Eta(), 1.0);
-	  mon.fillHisto("phi", "step0_gen_b3", vec_genb[2].Phi(), 1.0);
-	}
-
-      if(vec_genb.size()>3)
-	{
-	  mon.fillHisto("pt", "step0_gen_b4", vec_genb[3].Pt(), 1.0);
-	  mon.fillHisto("eta", "step0_gen_b4", vec_genb[3].Eta(), 1.0);
-	  mon.fillHisto("phi", "step0_gen_b4", vec_genb[3].Phi(), 1.0);
-	}
-
-      // Fill histograms of angular distance DR
-      if(vec_bb1.size()>1)
-	{
-	  float DRbb1 = getDeltaR(vec_bb1[0], vec_bb1[1]);
-	  mon.fillHisto("DR", "step0_gen_bb1", DRbb1, 1.0);
-	      
-	  TLorentzVector pbb1 = vec_bb1[0] + vec_bb1[1];
-	  mon.fillProfile("DR_vs_pt", "step0_gen_bb1", pbb1.Pt(), DRbb1, 1.0);
-	}
-
-      if(vec_bb2.size()>1)
-	{
 	  float DRbb2 = getDeltaR(vec_bb2[0], vec_bb2[1]);
-	  mon.fillHisto("DR", "step0_gen_bb2", DRbb2, 1.0);
-
 	  TLorentzVector pbb2 = vec_bb2[0] + vec_bb2[1];
-	  mon.fillProfile("DR_vs_pt", "step0_gen_bb2", pbb2.Pt(), DRbb2, 1.0);
+
+	  // Fill histograms with bb-pair kinematics
+	  mon.fillHisto("pt", "step0_gen_bb2", pbb2.Pt(), weight);
+	  mon.fillHisto("eta", "step0_gen_bb2", pbb2.Eta(), weight);
+	  mon.fillHisto("phi", "step0_gen_bb2", pbb2.Phi(), weight);
+	  mon.fillHisto("M", "step0_gen_bb2", pbb2.M(), weight);
+
+	   // Fill histograms of angular distance DR
+	  mon.fillHisto("DR", "step0_gen_bb2", DRbb2, weight);
+	  mon.fillProfile("DR_vs_pt", "step0_gen_bb2", pbb2.Pt(), DRbb2, weight);
+
+	  if(DRbb2 < 0.8)
+	    {
+	      mon.fillHisto("DRbb_vs_ptbb", "2_DR<0.8", (vec_bb2[0]+vec_bb2[1]).Pt(), DRbb2, weight);
+	      mon.fillProfile("DR_vs_pt", "2_DR<0.8", (vec_bb2[0]+vec_bb2[1]).Pt(), DRbb2, weight);
+	      mon.fillHisto("pt", "2_DR<0.8", (vec_bb2[0]+vec_bb2[1]).Pt(), weight);
+	    }
 	}
 
-      if(vec_bb1.size()>1 && vec_bb2.size()>1)
+       if(vec_bb1.size()>1 && vec_bb2.size()>1)
 	{
 	  TLorentzVector vec_A1 = vec_bb1[0] + vec_bb1[1];
 	  TLorentzVector vec_A2 = vec_bb2[0] + vec_bb2[1];
        
 	  float DRAA = getDeltaR(vec_A1, vec_A2);
-	  mon.fillHisto("DR", "step0_gen_AA", DRAA, 1.0);
+	  mon.fillHisto("DR", "step0_gen_AA", DRAA, weight);
 	}
+
+      // Fill the kinematics histograms for the quarks/gluons
+      if(vec_genqg.size()>0)
+	{
+	  mon.fillHisto("pt", "step0_gen_qg1", vec_genqg[0].Pt(), weight);
+	  mon.fillHisto("max_pt", "step0_gen_qg1", vec_genqg[0].Pt(), weight);
+	  mon.fillHisto("eta", "step0_gen_qg1", vec_genqg[0].Eta(), weight);
+	  mon.fillHisto("phi", "step0_gen_qg1", vec_genqg[0].Phi(), weight);
+	}
+
+      if(vec_genqg.size()>1)
+	{
+	  mon.fillHisto("pt", "step0_gen_qg2", vec_genqg[1].Pt(), weight);
+	  mon.fillHisto("eta", "step0_gen_qg2", vec_genqg[1].Eta(), weight);
+	  mon.fillHisto("phi", "step0_gen_qg2", vec_genqg[1].Phi(), weight);
+	}
+
+      if(vec_genqg.size()>2)
+	{
+	  mon.fillHisto("pt", "step0_gen_qg3", vec_genqg[2].Pt(), weight);
+	  mon.fillHisto("eta", "step0_gen_qg3", vec_genqg[2].Eta(), weight);
+	  mon.fillHisto("phi", "step0_gen_qg3", vec_genqg[2].Phi(), weight);
+	}
+
+      if(vec_genqg.size()>3)
+	{
+	  mon.fillHisto("pt", "step0_gen_qg4", vec_genqg[3].Pt(), weight);
+	  mon.fillHisto("min_pt", "step0_gen_qg4", vec_genqg[3].Pt(), weight);
+	  mon.fillHisto("eta", "step0_gen_qg4", vec_genqg[3].Eta(), weight);
+	  mon.fillHisto("phi", "step0_gen_qg4", vec_genqg[3].Phi(), weight);
+	}
+
+      
+      // Fill the kinematics histograms for the b-quarks
+      if(vec_genb.size()>0)
+	{
+	  mon.fillHisto("pt", "step0_gen_b1", vec_genb[0].Pt(), weight);
+	  mon.fillHisto("max_pt", "step0_gen_b1", vec_genb[0].Pt(), weight);
+	  mon.fillHisto("eta", "step0_gen_b1", vec_genb[0].Eta(), weight);
+	  mon.fillHisto("phi", "step0_gen_b1", vec_genb[0].Phi(), weight);
+	}
+
+      if(vec_genb.size()>1)
+	{
+	  mon.fillHisto("pt", "step0_gen_b2", vec_genb[1].Pt(), weight);
+	  mon.fillHisto("eta", "step0_gen_b2", vec_genb[1].Eta(), weight);
+	  mon.fillHisto("phi", "step0_gen_b2", vec_genb[1].Phi(), weight);
+	}
+
+      if(vec_genb.size()>2)
+	{
+	  mon.fillHisto("pt", "step0_gen_b3", vec_genb[2].Pt(), weight);
+	  mon.fillHisto("eta", "step0_gen_b3", vec_genb[2].Eta(), weight);
+	  mon.fillHisto("phi", "step0_gen_b3", vec_genb[2].Phi(), weight);
+	}
+
+      if(vec_genb.size()>3)
+	{
+	  mon.fillHisto("pt", "step0_gen_b4", vec_genb[3].Pt(), weight);
+	  mon.fillHisto("min_pt", "step0_gen_b4", vec_genb[3].Pt(), weight);
+	  mon.fillHisto("eta", "step0_gen_b4", vec_genb[3].Eta(), weight);
+	  mon.fillHisto("phi", "step0_gen_b4", vec_genb[3].Phi(), weight);
+	}
+
       
 
       //##################################################//
@@ -573,26 +664,26 @@ int main(int argc, char* argv[])
       if(vec_genlep.size() >= 1)
 	{
 	  // Fill the multiplicity histograms
-	  mon.fillHisto("multi", "step1_gen_lepton", vec_genlep.size(), 1.0);
-	  mon.fillHisto("qgmulti", "step1_gen", vec_genqg.size(), 1.0);
+	  mon.fillHisto("multi", "step1_gen_lepton", vec_genlep.size(), weight);
+	  mon.fillHisto("qgmulti", "step1_gen", vec_genqg.size(), weight);
 			
 	  // Fill histograms of angular distance DR
 	  if(vec_bb1.size()>1)
 	    {
 	      float DRbb1 = getDeltaR(vec_bb1[0], vec_bb1[1]);
-	      mon.fillHisto("DR", "step1_gen_bb1", DRbb1, 1.0);
+	      mon.fillHisto("DR", "step1_gen_bb1", DRbb1, weight);
 	      
 	      TLorentzVector pbb1 = vec_bb1[0] + vec_bb1[1];
-	      mon.fillProfile("DR_vs_pt", "step1_gen_bb1", pbb1.Pt(), DRbb1, 1.0);
+	      mon.fillProfile("DR_vs_pt", "step1_gen_bb1", pbb1.Pt(), DRbb1, weight);
 	    }
 
 	  if(vec_bb2.size()>1)
 	    {
 	      float DRbb2 = getDeltaR(vec_bb2[0], vec_bb2[1]);
-	      mon.fillHisto("DR", "step1_gen_bb2", DRbb2, 1.0);
+	      mon.fillHisto("DR", "step1_gen_bb2", DRbb2, weight);
 
 	      TLorentzVector pbb2 = vec_bb2[0] + vec_bb2[1];
-	      mon.fillProfile("DR_vs_pt", "step1_gen_bb2", pbb2.Pt(), DRbb2, 1.0);
+	      mon.fillProfile("DR_vs_pt", "step1_gen_bb2", pbb2.Pt(), DRbb2, weight);
 	    }
 
 	  if(vec_bb1.size()>1 && vec_bb2.size()>1)
@@ -601,7 +692,7 @@ int main(int argc, char* argv[])
 	      TLorentzVector vec_A2 = vec_bb2[0] + vec_bb2[1];
        
 	      float DRAA = getDeltaR(vec_A1, vec_A2);
-	      mon.fillHisto("DR", "step1_gen_AA", DRAA, 1.0);
+	      mon.fillHisto("DR", "step1_gen_AA", DRAA, weight);
 	    }
 	}
 
@@ -611,64 +702,64 @@ int main(int argc, char* argv[])
       if(vec_genlep.size()>0 && vec_genqg.size()>2)
 	{
 	  // Fill the histograms of qj kinematics
-	  mon.fillHisto("pt", "step2_gen_qg1", vec_genqg[0].Pt(), 1.0);
-	  mon.fillHisto("eta", "step2_gen_qg1", vec_genqg[0].Eta(), 1.0);
-	  mon.fillHisto("phi", "step2_gen_qg1", vec_genqg[0].Phi(), 1.0);
+	  mon.fillHisto("pt", "step2_gen_qg1", vec_genqg[0].Pt(), weight);
+	  mon.fillHisto("eta", "step2_gen_qg1", vec_genqg[0].Eta(), weight);
+	  mon.fillHisto("phi", "step2_gen_qg1", vec_genqg[0].Phi(), weight);
 	      
-	  mon.fillHisto("pt", "step2_gen_qg2", vec_genqg[1].Pt(), 1.0);
-	  mon.fillHisto("eta", "step2_gen_qg2", vec_genqg[1].Eta(), 1.0);
-	  mon.fillHisto("phi", "step2_gen_qg2", vec_genqg[1].Phi(), 1.0);
+	  mon.fillHisto("pt", "step2_gen_qg2", vec_genqg[1].Pt(), weight);
+	  mon.fillHisto("eta", "step2_gen_qg2", vec_genqg[1].Eta(), weight);
+	  mon.fillHisto("phi", "step2_gen_qg2", vec_genqg[1].Phi(), weight);
 
-	  mon.fillHisto("pt", "step2_gen_qg3", vec_genqg[2].Pt(), 1.0);
-	  mon.fillHisto("eta", "step2_gen_qg3", vec_genqg[2].Eta(), 1.0);
-	  mon.fillHisto("phi", "step2_gen_qg3", vec_genqg[2].Phi(), 1.0);
+	  mon.fillHisto("pt", "step2_gen_qg3", vec_genqg[2].Pt(), weight);
+	  mon.fillHisto("eta", "step2_gen_qg3", vec_genqg[2].Eta(), weight);
+	  mon.fillHisto("phi", "step2_gen_qg3", vec_genqg[2].Phi(), weight);
 	    
 	  if(vec_genqg.size() > 3)
 	    {
-	      mon.fillHisto("pt", "step2_gen_qg4", vec_genqg[3].Pt(), 1.0);
-	      mon.fillHisto("eta", "step2_gen_qg4", vec_genqg[3].Eta(), 1.0);
-	      mon.fillHisto("phi", "step2_gen_qg4", vec_genqg[3].Phi(), 1.0);
+	      mon.fillHisto("pt", "step2_gen_qg4", vec_genqg[3].Pt(), weight);
+	      mon.fillHisto("eta", "step2_gen_qg4", vec_genqg[3].Eta(), weight);
+	      mon.fillHisto("phi", "step2_gen_qg4", vec_genqg[3].Phi(), weight);
 	    }
 
 	  // Fill the lepton kinematics histograms
-	  mon.fillHisto("pt", "gen_lepton", vec_genlep[0].Pt(), 1.0);
-	  mon.fillHisto("eta", "gen_lepton", vec_genlep[0].Eta(), 1.0);
-	  mon.fillHisto("phi", "gen_lepton", vec_genlep[0].Phi(), 1.0);
+	  mon.fillHisto("pt", "gen_lepton", vec_genlep[0].Pt(), weight);
+	  mon.fillHisto("eta", "gen_lepton", vec_genlep[0].Eta(), weight);
+	  mon.fillHisto("phi", "gen_lepton", vec_genlep[0].Phi(), weight);
 	  
 	  // Fill the histogram of HT q/g
 	  float HTqg = HTjets(vec_genqg);
-	  mon.fillHisto("HT", "gen", HTqg, 1.0);
+	  mon.fillHisto("HT", "gen", HTqg, weight);
 	  
 	  // Fill the histogram of MET pT
-	  mon.fillHisto("pt", "gen_MET", met_gen.Pt(), 1.0);
+	  mon.fillHisto("pt", "gen_MET", met_gen.Pt(), weight);
 
 	  // Fill the histogram of W transverse mass
 	  float MTW_gen = getMT(vec_genlep[0], met_gen);
-	  mon.fillHisto("MT", "gen_recoW", MTW_gen, 1.0);
+	  mon.fillHisto("MT", "gen_recoW", MTW_gen, weight);
 
 	  // Define the hadronic system
 	  TLorentzVector phad_gen = vec_genqg[0] + vec_genqg[1] + vec_genqg[2];
 	  if(vec_genqg.size()>3) phad_gen += vec_genqg[3];
 
 	  // Fill the kinematics histograms of hadronic system
-	  mon.fillHisto("pt", "gen_recoH", phad_gen.Pt(), 1.0);
-	  mon.fillHisto("eta", "gen_recoH", phad_gen.Eta(), 1.0);
-	  mon.fillHisto("phi", "gen_recoH", phad_gen.Phi(), 1.0);
-	  mon.fillHisto("M", "gen_recoH", phad_gen.M(), 1.0);
+	  mon.fillHisto("pt", "gen_recoH", phad_gen.Pt(), weight);
+	  mon.fillHisto("eta", "gen_recoH", phad_gen.Eta(), weight);
+	  mon.fillHisto("phi", "gen_recoH", phad_gen.Phi(), weight);
+	  mon.fillHisto("M", "gen_recoH", phad_gen.M(), weight);
 
 	  // Define the leptonic system
 	  TLorentzVector plep_gen = vec_genlep[0] + met_gen;
-	  mon.fillHisto("pt", "gen_recoW", plep_gen.Pt(), 1.0);
-	  mon.fillHisto("eta", "gen_recoW", plep_gen.Eta(), 1.0);
-	  mon.fillHisto("phi", "gen_recoW", plep_gen.Phi(), 1.0);
+	  mon.fillHisto("pt", "gen_recoW", plep_gen.Pt(), weight);
+	  mon.fillHisto("eta", "gen_recoW", plep_gen.Eta(), weight);
+	  mon.fillHisto("phi", "gen_recoW", plep_gen.Phi(), weight);
 
 	  // Fill Delta phi WH histogram
 	  float dphiWH_gen = fabs(plep_gen.DeltaPhi(phad_gen));
-	  mon.fillHisto("dphi", "gen_WH", dphiWH_gen, 1.0);
+	  mon.fillHisto("dphi", "gen_WH", dphiWH_gen, weight);
 
 	  // Fill Delta phi of MET and lepton
 	  float dphiMETlep_gen = fabs(met_gen.DeltaPhi(vec_genlep[0]));
-	  mon.fillHisto("dphi", "gen_met-lepton", dphiMETlep_gen, 1.0);
+	  mon.fillHisto("dphi", "gen_met-lepton", dphiMETlep_gen, weight);
 
 	  
 	} // END OF GENERATOR LEVEL ANALYSIS 
@@ -682,16 +773,25 @@ int main(int argc, char* argv[])
       //####################################################################//
 
       // Create new object vectors
-      std::vector<TLorentzVector> vec_en;                           // store the electron
-      std::vector<TLorentzVector> vec_mn;                           // store the muon
-      std::vector<TLorentzVector> vec_lepton;                       // store the lepton
-      std::vector<TLorentzVector> vec_jets;                         // store all the jets based on their b-tag
-      std::vector<TLorentzVector> vec_bjets;                        // store the b-tagged jets based on their pt
-      std::vector<TLorentzVector> vec_btag;                         // store the b-tagged jets based on their b-tag
-      std::vector<TLorentzVector> vec_untag;                        // store the untagged jets based on their b-tag
-      std::vector<std::pair<TLorentzVector, float>> vec_untagbtag;  // store the untagged jets with their b-tag index
-      std::vector<std::pair<TLorentzVector, float>> vec_jetsbtag;   // store the jets with its b-tag index
-      std::vector<std::pair<TLorentzVector, float>> vec_bjetsbtag;  // store the b tagged jets with their b-tag index
+      std::vector<TLorentzVector> vec_en;                                     // store the electron
+      std::vector<TLorentzVector> vec_mn;                                     // store the muon
+      std::vector<TLorentzVector> vec_lepton;                                 // store the leptons
+      std::vector<TLorentzVector> vec_jets;                                   // store all the jets based on their b-tag
+      std::vector<TLorentzVector> vec_fjets_raw;                              // store all the fat jets with pT>30 GeV and at least 2 subjets
+      std::vector<TLorentzVector> vec_fjets;                                  // store all the fat jets with pT>150 GeV
+      std::vector<TLorentzVector> vec_bjets;                                  // store the b-tagged jets based on their pt
+      std::vector<TLorentzVector> vec_btag;                                   // store the b-tagged jets based on their b-tag
+      std::vector<TLorentzVector> vec_untag;                                  // store the untagged jets based on their b-tag
+      std::vector<TLorentzVector> vec_jets_cc;                                // store the jets that dont overlap with fat jets
+      std::vector<TLorentzVector> vec_bjets_cc;                               // store the b-jets that dont overlap with fat jets
+      std::vector<std::pair<TLorentzVector, int>>   vec_lepton_id;            // store the lepton with its id index
+      std::vector<std::pair<TLorentzVector, float>> vec_untagbtag;            // store the untagged jets with their b-tag index
+      std::vector<std::pair<TLorentzVector, float>> vec_jetsbtag;             // store the jets with their b-tag index
+      std::vector<std::pair<TLorentzVector, float>> vec_bjetsbtag;            // store the b tagged jets with their b-tag index
+      std::vector<std::pair<TLorentzVector, float>> vec_jetsbtag_cc;          // store the jets with their b-tag index that dont overlap with fat jets
+      std::vector<std::pair<TLorentzVector, float>> vec_bjetsbtag_cc;         // store the b-jets with their b-tag index that dont overlap with fat jets
+      std::vector<std::pair<TLorentzVector, int>>   vec_fjets_index;          // store the fat jet with its index when pT>150 GeV
+      std::vector<std::pair<TLorentzVector, int>>   vec_fjets_index_raw;      // store the fat jet with its index when pT>30 GeV and at least 2 subjets
 
       
       // Define MET
@@ -701,8 +801,9 @@ int main(int argc, char* argv[])
       // Define the bb pair from the same mother
       TLorentzVector bb;
 
-
-      // LOOP OVER DETECTOR PARTICLES
+      // ============================ //
+      // LOOP OVER DETECTOR PARTICLES //
+      // ============================ //
 
       // Lepton configuration
       
@@ -713,13 +814,13 @@ int main(int argc, char* argv[])
 	  pmn.SetPxPyPzE(ev.mn_px[i], ev.mn_py[i], ev.mn_pz[i], ev.mn_en[i]);
 
 	  // Apply acceptance cuts
-	  if(pmn.Pt()<20 || abs(pmn.Eta())>2.4) continue;
+	  if(pmn.Pt()<20 || abs(pmn.Eta())>2.5) continue;
 
 	  // Apply ID and Isolation
 	  if(ev.mn_passId[i] && ev.mn_passIso[i])
 	    {
 	      vec_mn.push_back(pmn);
-	      vec_lepton.push_back(pmn);
+	      vec_lepton_id.push_back(std::make_pair(pmn, ev.mn_id[i]));
 	    }
 	}
       
@@ -736,25 +837,26 @@ int main(int argc, char* argv[])
 	  if(ev.en_passId[i] && ev.en_passIso[i])
 	    {
 	      vec_en.push_back(pen);
-	      vec_lepton.push_back(pen);
+	      vec_lepton_id.push_back(std::make_pair(pen, ev.en_id[i]));
 	    }
 	}
 
       // Sort the lepton vectors based on their pT
-      vec_mn     = sort_vec_pt(vec_mn);
-      vec_en     = sort_vec_pt(vec_en);
-      vec_lepton = sort_vec_pt(vec_lepton);
+      vec_mn = sort_vec_pt(vec_mn);
+      vec_en = sort_vec_pt(vec_en);
+      std::sort(vec_lepton_id.begin(), vec_lepton_id.end(), sortlep);
+     
 
-
-      // Fill the multiplicity histograms for lepton
-      mon.fillHisto("multi", "step0_lepton", vec_lepton.size(), weight);
-      mon.fillHisto("multi", "step0_en", vec_en.size(), weight);
-      mon.fillHisto("multi", "step0_mn", vec_mn.size(), weight);
-
-
-      // Jets and cross-cleaning
-      int nHF  = 0;
+      //-------------------------//
+      // Jets and cross-cleaning //
+      //-------------------------//
+      
+      int nHFb = 0;
       int nHFc = 0;
+
+      float SR1_btag1_WP = 0.0;
+      float SR1_btag2_WP = 0.0;
+      float SR1_btag3_WP = 0.0;
       
       for(int i=0; i<ev.jet; i++)
 	{
@@ -764,27 +866,27 @@ int main(int argc, char* argv[])
 	  pjet.SetPxPyPzE(ev.jet_px[i], ev.jet_py[i], ev.jet_pz[i], ev.jet_en[i]);
 
 	  // Apply acceptance cuts
-	  if(pjet.Pt()<20 || fabs(pjet.Eta())>2.4) continue;
+	  if(pjet.Pt()<20 || fabs(pjet.Eta())>2.5) continue;
 
 	  // Jets id 
-	  if (!ev.jet_PFTight[i]) continue;
+	  if(!ev.jet_PFTight[i]) continue;
 
 	  for(int mn_count=0; mn_count<vec_mn.size(); mn_count++)
 	    {
 	      float DRjet = getDeltaR(pjet, vec_mn[mn_count]);
 
 	      // Fill the histogram of DR(jet-muon) before cross cleaning
-	      mon.fillHisto("DR", "step0_jet-mn", DRjet, weight);
+	      mon.fillHisto("jet-mn_dR", "step0", DRjet, weight);
 
-	      if(vec_lepton.size()>1) mon.fillHisto("DR", "step1_jet-mn", DRjet, weight);
+	      if(vec_mn.size()>1) mon.fillHisto("jet-mn_dR", "step1", DRjet, weight);
 		
 	      if(DRjet<0.4) overlap = true;
 		
 	      else
 		{
-		  mon.fillHisto("DR", "step0_jet-mn_cc", DRjet, weight);
+		  mon.fillHisto("jet-mn_cc_dR", "step0", DRjet, weight);
 
-		  if(vec_lepton.size()>1) mon.fillHisto("DR", "step1_jet-mn_cc", DRjet, weight);
+		  if(vec_mn.size()>1) mon.fillHisto("jet-mn_cc_dR", "step1", DRjet, weight);
 		}
 	    }
       
@@ -794,97 +896,96 @@ int main(int argc, char* argv[])
 	      float DRjet = getDeltaR(pjet, vec_en[en_count]);
 
 	      // Fill the histogram of DR(jet-electron) before cross cleaning
-	      mon.fillHisto("DR", "step0_jet-en", DRjet, weight);
+	      mon.fillHisto("jet-en_dR", "step0", DRjet, weight);
 
-	      if(vec_lepton.size()>1) mon.fillHisto("DR", "step1_jet-en", DRjet, weight);
+	      if(vec_en.size()>1) mon.fillHisto("jet-en_dR", "step1", DRjet, weight);
 
 	      if(DRjet<0.4) overlap = true;
 	
 	      else
 		{
-		  mon.fillHisto("DR", "step0_jet-en_cc", DRjet, weight);
+		  mon.fillHisto("jet-en_cc_dR", "step0", DRjet, weight);
 
-		  if(vec_lepton.size()>1) mon.fillHisto("DR", "step1_jet-en_cc", DRjet, weight);
+		  if(vec_en.size()>1) mon.fillHisto("jet-en_cc_dR", "step1", DRjet, weight);
 		}
 	    }
 	  
 	  if(overlap) continue;
 	    
 	  vec_jetsbtag.push_back(std::make_pair(pjet,ev.jet_btag1[i]));
-	  // Loose working point 
-	  if(ev.jet_btag1[i]>0.0532)
+	  std::sort(vec_jetsbtag.begin() , vec_jetsbtag.end(),  sortPair);
+
+	  // b-tag discriminator for 3 most energetic b-jets before WP
+	  SR1_btag1_WP = vec_jetsbtag[0].second;
+	  SR1_btag2_WP = vec_jetsbtag[1].second;
+	  SR1_btag3_WP = vec_jetsbtag[2].second;
+
+	  // Keep the objects with DeepJetMediumWP
+	  if(ev.jet_btag1[i] >= mediumWP)
 	    { // Found the b-jets and store them in a vector with their corresponding b-tag index
 	      vec_bjetsbtag.push_back(std::make_pair(pjet, ev.jet_btag1[i]));
+	      std::sort(vec_bjetsbtag.begin(), vec_bjetsbtag.end(), sortPair);
 	    }
 
 	  else
 	    { // Store the untagged jets with their corresponding b-tag index
 	      vec_untagbtag.push_back(std::make_pair(pjet,ev.jet_btag1[i]));
+	      std::sort(vec_untagbtag.begin(), vec_untagbtag.end(), sortPair);
 	    }
-
+	  
 	  if(isMC_ttbar)
 	    {
 	      bool isMatched = false;
 
 	      for(int imc=0; imc<ev.nmcparticles; imc++)
-		{
-		  if(ev.mc_status[imc]==62) continue;     // 6*:particles produced by beam-remnant treatment/62:outgoing subprocess particle with primordial kT included
+	  	{
+	  	  if(fabs(ev.mc_id[imc])!=5) continue;
 		  
-		  if(fabs(ev.mc_id[imc])!=5) continue;
-		  
-		  TLorentzVector pgen;
-		  pgen.SetPxPyPzE(ev.mc_px[imc],ev.mc_py[imc],ev.mc_pz[imc],ev.mc_en[imc]);
+	  	  TLorentzVector pgen;
+	  	  pgen.SetPxPyPzE(ev.mc_px[imc],ev.mc_py[imc],ev.mc_pz[imc],ev.mc_en[imc]);
 
-		  float DR = getDeltaR(pjet, pgen);
-		  if(DR<0.4)
-		    {
-		      isMatched = true;
-		      break;
-		    }
-		}
+	  	  float DR = getDeltaR(pjet, pgen);
+	  	  if(DR<0.4)
+	  	    {
+	  	      isMatched = true;
+	  	      break;
+	  	    }
+	  	}
 
 	      if(abs(ev.jet_partonFlavour[i])==5)
-		{
-		  if(!isMatched) nHF++;
-		}
+	  	{
+	  	  if(!isMatched) nHFb++;
+	  	}
 	      else if(abs(ev.jet_partonFlavour[i])==4)
-		{
-		  nHFc++;
-		}	
+	  	{
+	  	  nHFc++;
+	  	}	
 	    }   
-	} // End of jet loop
-
-      // Split inclusive TTJets POWHEG sample into tt+bb, tt+cc, tt+light
+	} //End of jet loop
+      
+      //Split inclusive TTJets POWHEG sample into tt+bb, tt+cc, tt+light
       if(isMC_ttbar)
 	{	  
 	  nTot++;
 
 	  if(mctruthmode==5)
 	    {
-	      if(!(nHF>0)) {continue;}
-	      printf("tt+bb event detected\n");
+	      if(!(nHFb>0)) {continue;}
 	      nFilt5++;
 	    }
 	  
 	  if(mctruthmode==4)
 	    {
-	      if(!(nHFc>0 && nHF==0)) {continue;}
-	      printf("tt+cc event detected\n");
+	      if(!(nHFc>0 && nHFb==0)) {continue;}
 	      nFilt4++;
 	    }
 	  
 	  if(mctruthmode==1)
 	    {
-	      if(nHF>0 || (nHFc>0 && nHF == 0)) continue;
-	      printf("tt+light event detected\n");
+	      if(nHFb>0 || (nHFc>0 && nHFb == 0)) continue;
 	      nFilt1++;
 	    }
 	}
-
-      // Sort the jets based on their b-tag
-      std::sort(vec_jetsbtag.begin() , vec_jetsbtag.end(),  sortPair);
-      std::sort(vec_bjetsbtag.begin(), vec_bjetsbtag.end(), sortPair);
-      std::sort(vec_untagbtag.begin(), vec_untagbtag.end(), sortPair);
 
       for (const auto& pair : vec_jetsbtag)
 	{
@@ -900,31 +1001,323 @@ int main(int argc, char* argv[])
 	{
 	  vec_untag.push_back(pair.first);
 	}
+
+      //================//
+      // F A T  J E T S //
+      //================//
+
+      // Lepton-fat jet cross cleaning
+      for(int i=0; i<ev.fjet; i++)
+	{
+	  bool overlap = false;
+
+	  TLorentzVector pfjet;
+	  pfjet.SetPxPyPzE(ev.fjet_px[i], ev.fjet_py[i], ev.fjet_pz[i], ev.fjet_en[i]);
+
+	  if(ev.fjet_subjet_count[i]<2)continue;
+
+	  // Apply acceptance cuts
+	  if(pfjet.Pt()<30 || fabs(pfjet.Eta())>2.5) continue;
+	  
+	  for(int mn_count=0; mn_count<vec_mn.size(); mn_count++)
+	    {
+	      float DRjet = getDeltaR(pfjet, vec_mn[mn_count]);
+
+	      // Fill the histogram of DR(fjet-muon) before cross cleaning
+	      mon.fillHisto("DR", "step0_fjet-mn", DRjet, weight);
+
+	      if(vec_mn.size()>1) mon.fillHisto("DR", "step1_fjet-mn", DRjet, weight);
+		
+	      if(DRjet<0.8) overlap = true;
+		
+	      else
+		{
+		  mon.fillHisto("DR", "step0_fjet-mn_cc", DRjet, weight);
+
+		  if(vec_mn.size()>1) mon.fillHisto("DR", "step1_fjet-mn_cc", DRjet, weight);
+		}
+	    }
+
+	  for(int en_count=0; en_count<vec_en.size(); en_count++)
+	    {
+	      float DRjet = getDeltaR(pfjet, vec_en[en_count]);
+
+	      // Fill the histogram of DR(fjet-electron) before cross cleaning
+	      mon.fillHisto("DR", "step0_fjet-en", DRjet, weight);
+
+	      if(vec_en.size()>1) mon.fillHisto("DR", "step1_fjet-en", DRjet, weight);
+		
+	      if(DRjet<0.8) overlap = true;
+		
+	      else
+		{
+		  mon.fillHisto("DR", "step0_fjet-en_cc", DRjet, weight);
+
+		  if(vec_en.size()>1) mon.fillHisto("DR", "step1_fjet-en_cc", DRjet, weight);
+		}
+	    }
+
+	  if (!overlap)
+	    {
+	      vec_fjets_raw.push_back(pfjet);
+	      vec_fjets_index_raw.push_back(make_pair(pfjet, i));
+
+	      // pT cut for the fat jets
+	      if(pfjet.Pt() > 150)
+		{
+		  if( (ev.fjet_btag10[i]+ev.fjet_btag11[i]+ev.fjet_btag12[i]) / (ev.fjet_btag10[i]+ev.fjet_btag11[i]+ev.fjet_btag12[i]+ev.fjet_btag13[i]+ev.fjet_btag14[i]+ev.fjet_btag15[i]+ev.fjet_btag16[i]+ev.fjet_btag17[i]) > 0.5 )
+		    {  
+		      vec_fjets.push_back(pfjet);
+		      vec_fjets_index.push_back(make_pair(pfjet, i));
+		    }
+		}
+
+	    } //end overlap
+	} // end fjets loop
       
+
+      // Sort fat jets based on their pt
+      vec_fjets_raw = sort_vec_pt(vec_fjets_raw);
+      vec_fjets     = sort_vec_pt(vec_fjets);
+
+      // Jet - fat-jet cross cleaning
+      for (const auto& pair: vec_jetsbtag)
+	{ 
+	  if(getDeltaRmin(pair.first, vec_fjets) > 0.8)
+	    {
+	      vec_jetsbtag_cc.push_back(make_pair(pair.first, pair.second));
+	      std::sort(vec_jetsbtag_cc.begin() , vec_jetsbtag_cc.end(),  sortPair);
+	    }
+	}
+
+      // b-jet - fat-jet cross-cleaning
+      for (const auto& pair: vec_bjetsbtag)
+	{ 
+	  if(getDeltaRmin(pair.first, vec_fjets) > 0.8)
+	    {
+	      vec_bjetsbtag_cc.push_back(make_pair(pair.first, pair.second));
+	      std::sort(vec_bjetsbtag_cc.begin() , vec_bjetsbtag_cc.end(),  sortPair);
+	    }
+	}
+
+      for (const auto& pair : vec_jetsbtag_cc)
+	{
+	  vec_jets_cc.push_back(pair.first);
+	}
+
+      for (const auto& pair : vec_bjetsbtag_cc)
+	{
+	  vec_bjets_cc.push_back(pair.first);
+	}
+
+      /////////////////////////////////////////////////////
+      // E N D  O B J E C T S  C O N F I G U R A T I O N //
+      /////////////////////////////////////////////////////
+
+      // STEP 0  :  R A W  E V E N T S
+
+      // Fill the multiplicity histograms for lepton
+      mon.fillHisto("multi", "step0_en", vec_en.size(), weight);
+      mon.fillHisto("multi", "step0_mn", vec_mn.size(), weight);
+      mon.fillHisto("multi", "step0_lepton", vec_lepton_id.size(), weight);
+
       // Fill the multiplicity histograms of jets
       mon.fillHisto("jetmulti", "step0", vec_jets.size(), weight);
       mon.fillHisto("jetmulti", "step0_b", vec_btag.size(), weight);
       mon.fillHisto("jetmulti", "step0_untag", vec_untag.size(), weight);
+      mon.fillHisto("jetmulti", "step0_f", vec_fjets.size(), weight);
 
       // Scalar sum of jets
-      float HT = HTjets(vec_jets);
-      mon.fillHisto("HTWJets", "det", HT, weight); 
+      float HTWJet = HTjets(vec_jets);
+      mon.fillHisto("HTWJets", "det", HTWJet, weight);
 
+      
+      if(vec_fjets_raw.size()>0)
+	{
+	  mon.fillHisto("pt", "step0_AK8_1", vec_fjets_raw[0].Pt(), weight);
+	  mon.fillHisto("eta", "step0_AK8_1", vec_fjets_raw[0].Eta(), weight);
+	  mon.fillHisto("phi", "step0_AK8_1", vec_fjets_raw[0].Phi(), weight);
+
+	  mon.fillHisto("SDM", "step0_1", ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+	  mon.fillHisto("fjet_pt_vs_SDM", "step0_1", vec_fjets_raw[0].Pt(), ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+	  mon.fillProfile("fjetpt_vs_SDM", "step0_1", vec_fjets_raw[0].Pt(), ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+	  mon.fillHisto("fjet_eta_vs_SDM", "step0_1", vec_fjets_raw[0].Eta(), ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+	  mon.fillProfile("fjeteta_vs_SDM", "step0_1", vec_fjets_raw[0].Eta(), ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+	  mon.fillHisto("fjet_subjet_vs_SDM", "step0_1", ev.fjet_subjet_count[0], ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+	  mon.fillHisto("fjetsubjet_vs_SDM", "step0_1", ev.fjet_subjet_count[0], ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+      
+	  bool matched(false);
+	  bool matched1(false);
+	  bool matched2(false);
+
+	  // Discriminants
+	  float denominator = ev.fjet_btag10[vec_fjets_index_raw[0].second] + ev.fjet_btag11[vec_fjets_index_raw[0].second] + ev.fjet_btag12[vec_fjets_index_raw[0].second] + ev.fjet_btag13[vec_fjets_index_raw[0].second] + ev.fjet_btag14[vec_fjets_index_raw[0].second] + ev.fjet_btag15[vec_fjets_index_raw[0].second] + ev.fjet_btag16[vec_fjets_index_raw[0].second] + ev.fjet_btag17[vec_fjets_index_raw[0].second];
+     
+	  float xbbccqq1 = (ev.fjet_btag10[vec_fjets_index_raw[0].second] + ev.fjet_btag11[vec_fjets_index_raw[0].second] + ev.fjet_btag12[vec_fjets_index_raw[0].second]) / denominator;
+	  float xbb1     = ev.fjet_btag10[vec_fjets_index_raw[0].second] / (denominator - ev.fjet_btag11[vec_fjets_index_raw[0].second] - ev.fjet_btag12[vec_fjets_index_raw[0].second]);
+
+	  mon.fillHisto("fjet_XbbXccXqq_pt", "1", vec_fjets_raw[0].Pt(), xbbccqq1, weight);
+	  mon.fillProfile("XbbXccXqq_pt", "1", vec_fjets_raw[0].Pt(), xbbccqq1, weight);
+	  mon.fillHisto("fjet_Xbb_pt", "1", vec_fjets_raw[0].Pt(), xbb1, weight);
+	  mon.fillProfile("Xbb_pt", "1", vec_fjets_raw[0].Pt(), xbb1, weight);
+	  mon.fillHisto("discriminant", "xbbccqq1", xbbccqq1, weight);
+	  mon.fillHisto("discriminant", "xbb1", xbb1, weight);
+
+	  if(isSignal)
+	    {
+	      if(fjet_matched(vec_fjets_raw[0], vec_bb1)>0)
+		{
+		  mon.fillHisto("fjetpt_vs_bbpt", "step0_1_matched", vec_fjets_raw[0].Pt(), (vec_bb1[0]+vec_bb1[1]).Pt(), weight);
+		  matched1 = true;
+		} 
+	      else if(fjet_matched(vec_fjets_raw[0], vec_bb2)>0)
+		{
+		  mon.fillHisto("fjetpt_vs_bbpt", "step0_1_matched", vec_fjets_raw[0].Pt(), (vec_bb2[0]+vec_bb2[1]).Pt(), weight);
+		  matched2 = true;
+		}
+
+	      if(matched1||matched2) matched = true;
+	    }
+
+	  if(matched)
+	    {
+	      mon.fillHisto("pt", "step0_AK8_1_matched", vec_fjets_raw[0].Pt(), weight);
+	      mon.fillHisto("SDM", "step0_1_matched", ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+	      mon.fillHisto("fjet_pt_vs_SDM", "step0_1_matched", vec_fjets_raw[0].Pt(), ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+	      mon.fillProfile("fjetpt_vs_SDM", "step0_1_matched", vec_fjets_raw[0].Pt(), ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+	      mon.fillHisto("fjet_eta_vs_SDM", "step0_1_matched", vec_fjets_raw[0].Eta(), ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+	      mon.fillProfile("fjeteta_vs_SDM", "step0_1_matched", vec_fjets_raw[0].Eta(), ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+	    }
+	}
+
+      if(vec_fjets_raw.size()>1)
+	{
+	  mon.fillHisto("pt", "step0_AK8_2", vec_fjets_raw[1].Pt(), weight);
+	  mon.fillHisto("eta", "step0_AK8_2", vec_fjets_raw[1].Eta(), weight);
+	  mon.fillHisto("phi", "step0_AK8_2", vec_fjets_raw[1].Phi(), weight);
+
+	  mon.fillHisto("SDM", "step0_2", ev.fjet_softdropM[vec_fjets_index_raw[1].second], weight);
+	  mon.fillHisto("fjet_pt_vs_SDM", "2", vec_fjets_raw[1].Pt(), ev.fjet_softdropM[vec_fjets_index_raw[1].second], weight);
+	  mon.fillProfile("fjetpt_vs_SDM", "step0_2", vec_fjets_raw[1].Pt(), ev.fjet_softdropM[vec_fjets_index_raw[1].second], weight);
+	  mon.fillHisto("fjet_eta_vs_SDM", "step0_2", vec_fjets_raw[1].Eta(), ev.fjet_softdropM[vec_fjets_index_raw[1].second], weight);
+	  mon.fillProfile("fjeteta_vs_SDM", "step0_2", vec_fjets_raw[1].Eta(), ev.fjet_softdropM[vec_fjets_index_raw[1].second], weight);
+	  mon.fillHisto("fjet_subjet_vs_SDM", "step0_2", ev.fjet_subjet_count[1], ev.fjet_softdropM[vec_fjets_index_raw[1].second], weight);
+	  mon.fillHisto("fjetsubjet_vs_SDM", "step0_2", ev.fjet_subjet_count[1], ev.fjet_softdropM[vec_fjets_index_raw[1].second], weight);
+      
+      
+	  bool matched(false);
+	  bool matched1(false);
+	  bool matched2(false);
+
+	  // Discriminants
+	  float denominator = ev.fjet_btag10[vec_fjets_index_raw[1].second] + ev.fjet_btag11[vec_fjets_index_raw[1].second] + ev.fjet_btag12[vec_fjets_index_raw[1].second] + ev.fjet_btag13[vec_fjets_index_raw[1].second] + ev.fjet_btag14[vec_fjets_index_raw[1].second] + ev.fjet_btag15[vec_fjets_index_raw[1].second] + ev.fjet_btag16[vec_fjets_index_raw[1].second] + ev.fjet_btag17[vec_fjets_index_raw[1].second];
+     
+	  float xbbccqq2 = (ev.fjet_btag10[vec_fjets_index_raw[1].second] + ev.fjet_btag11[vec_fjets_index_raw[1].second] + ev.fjet_btag12[vec_fjets_index_raw[1].second]) / denominator;
+	  float xbb2     = ev.fjet_btag10[vec_fjets_index_raw[1].second] / (denominator - ev.fjet_btag11[vec_fjets_index_raw[1].second] - ev.fjet_btag12[vec_fjets_index_raw[1].second]);
+
+	  mon.fillHisto("fjet_XbbXccXqq_pt", "2", vec_fjets_raw[1].Pt(), xbbccqq2, weight);
+	  mon.fillProfile("XbbXccXqq_pt", "2", vec_fjets_raw[1].Pt(), xbbccqq2, weight);
+	  mon.fillHisto("fjet_Xbb_pt", "2", vec_fjets_raw[1].Pt(), xbb2, weight);
+	  mon.fillProfile("Xbb_pt", "2", vec_fjets_raw[1].Pt(), xbb2, weight);
+	  mon.fillHisto("discriminant", "xbbccqq2", xbbccqq2, weight);
+	  mon.fillHisto("discriminant", "xbb2", xbb2, weight);
+
+	  if(isSignal)
+	    {
+	      if(fjet_matched(vec_fjets_raw[1], vec_bb1)>0)
+		{
+		  mon.fillHisto("fjetpt_vs_bbpt", "step0_2_matched", vec_fjets_raw[1].Pt(), (vec_bb1[0]+vec_bb1[1]).Pt(), weight);
+		  matched1 = true;
+		} 
+	      else if(fjet_matched(vec_fjets_raw[1], vec_bb2)>0)
+		{
+		  mon.fillHisto("fjetpt_vs_bbpt", "step0_2_matched", vec_fjets_raw[1].Pt(), (vec_bb2[0]+vec_bb2[1]).Pt(), weight);
+		  matched2 = true;
+		}
+	      
+	      if(matched1||matched2) matched = true;
+	    }
+
+	  if(matched)
+	    {
+	      mon.fillHisto("pt", "step0_AK8_2_matched", vec_fjets_raw[1].Pt(), weight);
+	      mon.fillHisto("SDM", "step0_2_matched", ev.fjet_softdropM[vec_fjets_index_raw[1].second], weight);
+	      mon.fillHisto("fjet_pt_vs_SDM", "step0_2_matched", vec_fjets_raw[1].Pt(), ev.fjet_softdropM[vec_fjets_index_raw[1].second], weight);
+	      mon.fillProfile("fjetpt_vs_SDM", "step0_2_matched", vec_fjets_raw[1].Pt(), ev.fjet_softdropM[vec_fjets_index_raw[1].second], weight);
+	      mon.fillHisto("fjet_eta_vs_SDM", "step0_2_matched", vec_fjets_raw[1].Eta(), ev.fjet_softdropM[vec_fjets_index_raw[1].second], weight);
+	      mon.fillProfile("fjeteta_vs_SDM", "step0_2_matched", vec_fjets_raw[1].Eta(), ev.fjet_softdropM[vec_fjets_index_raw[1].second], weight);
+	    }
+	}
+
+      std::vector<TLorentzVector> vec_btag_pt;
+      for (const auto& bjet: vec_btag)
+	{
+	  vec_btag_pt.push_back(bjet);
+	}
+      vec_btag_pt = sort_vec_pt(vec_btag_pt);
+
+      if(vec_btag.size()>0)
+       {
+	 mon.fillHisto("pt", "AK4_1", vec_btag_pt[0].Pt(), weight);
+	 mon.fillHisto("eta", "AK4_1", vec_btag_pt[0].Eta(), weight);
+	 mon.fillHisto("phi", "AK4_1", vec_btag_pt[0].Phi(), weight);
+	 bool matched(false);
+	 bool matched1(false);bool matched2(false);
+	 
+	 if(isSignal)
+	   {
+	     if(fjet_matched(vec_btag_pt[0], vec_bb1)>0) matched1=true;
+	       
+	     else if(fjet_matched(vec_btag_pt[0], vec_bb2)>0) matched2=true;
+	      
+	     if(matched1 || matched2) matched=true;
+	   }
+	 
+	 if(matched) mon.fillHisto("pt", "step0_AK4_matched", vec_btag_pt[0].Pt(), weight);	 
+       }
+      
+      if(vec_btag.size()>1)
+	{
+	  mon.fillHisto("pt", "AK4_2", vec_btag_pt[1].Pt(), weight);
+	  mon.fillHisto("eta", "AK4_2", vec_btag_pt[1].Eta(), weight);
+	  mon.fillHisto("phi", "AK4_2", vec_btag_pt[1].Phi(), weight);
+	}
+      if(vec_btag.size()>2)
+	{
+	  mon.fillHisto("pt", "AK4_3", vec_btag_pt[2].Pt(), weight);
+	  mon.fillHisto("eta", "AK4_3", vec_btag_pt[2].Eta(), weight);
+	  mon.fillHisto("phi", "AK4_3", vec_btag_pt[2].Phi(), weight);
+	}
+       if(vec_btag.size()>3)
+       {
+	 mon.fillHisto("pt", "AK4_4", vec_btag_pt[3].Pt(), weight);
+	 mon.fillHisto("eta", "AK4_4", vec_btag_pt[3].Eta(), weight);
+	 mon.fillHisto("phi", "AK4_4", vec_btag_pt[3].Phi(), weight);
+       }
+      
        
       //##################################################//
       //########    EVENT SELECTION CRITERIA     ########//
       //#################################################//
-
-      //### STEP 1 ###//
       
-      // If there is one lepton
-      if(vec_lepton.size()<1) continue;
+      // Lepton pT cuts
+      if (!vec_lepton_id.empty())
+	{
+	  if((abs(vec_lepton_id[0].second) == 11 && vec_lepton_id[0].first.Pt() >= 35) || (abs(vec_lepton_id[0].second) == 13 && vec_lepton_id[0].first.Pt() >= 30))
+	    {
+	      for (std::vector<TLorentzVector>::size_type i=0; i<vec_lepton_id.size(); i++)
+		{
+		  vec_lepton.push_back(vec_lepton_id[i].first);
+		}
+	    }
+	}
 
-      // If the lepton is a muon, the offline pT cut must be > 30 GeV
-      if(vec_mn.size()>0 && vec_mn[0].Pt()<30) continue;
-
-      // If the lepton is an electron, the offline pT cut must be > 35 GeV
-      if(vec_en.size()>0 && vec_en[0].Pt()<35) continue;
+      //###############//
+      //### STEP 1 ###//
+      //##############//
+      
+      // If there is at least one lepton
+      if(vec_lepton.size() < 1) continue;
 
       n_event_lepton++;
 
@@ -941,7 +1334,7 @@ int main(int argc, char* argv[])
 	}
 
       // Fill the multiplicity histograms
-      mon.fillHisto("multi", "step1_lepton_", vec_lepton.size(), weight);
+      mon.fillHisto("multi", "step1_lepton", vec_lepton.size(), weight);
       mon.fillHisto("multi", "step1_en", vec_en.size(), weight);
       mon.fillHisto("multi", "step1_mn", vec_mn.size(), weight);
       
@@ -949,15 +1342,31 @@ int main(int argc, char* argv[])
       mon.fillHisto("jetmulti", "step1", vec_jets.size(), weight);
       mon.fillHisto("jetmulti", "step1_b", vec_btag.size(), weight);
       mon.fillHisto("jetmulti", "step1_untag", vec_untag.size(), weight);
-      
+      mon.fillHisto("jetmulti", "step1_cc_b", vec_bjets_cc.size(), weight);
+      mon.fillHisto("jetmulti", "step1_f", vec_fjets.size(), weight);
+      mon.fillHisto("jetmulti", "step1_cc", vec_jets_cc.size(), weight);
 
-      
+      // MET vs pt(bb)
+      if(vec_fjets_raw.size()>0)
+	{
+	  mon.fillHisto("pt_bb_vs_met","1", met.Pt(), vec_fjets_raw[0].Pt(), weight);
+	  mon.fillProfile("pt_fjet_vs_met_prof","1", met.Pt(), vec_fjets_raw[0].Pt(), weight);
+	}                                                                                                          
+      if(vec_fjets_raw.size()>1)
+	{
+	  mon.fillHisto("pt_bb_vs_met","2", met.Pt(), vec_fjets_raw[1].Pt(), weight);
+	  mon.fillProfile("pt_fjet_vs_met_prof", "2", met.Pt(), vec_fjets_raw[1].Pt(), weight);
+	}
+    
+      mon.fillHisto("pt", "step1_MET", met.Pt(), weight);
+
+      //###############//
       //### STEP 2 ###//
-     
-      // If there is at least three jets
-      if(vec_jets.size()<3) continue;
+      //##############//
+      
+      if(met.Pt() < 25 || getMT(vec_lepton[0], met) < 50) continue;
 
-      n_event_jet++;
+      n_event_metcut++;
 
       mon.fillHisto("eventflow", "histo", 2, 1);
       mon.fillHisto("eventflow", "histo_weighted", 2, weight);
@@ -970,265 +1379,446 @@ int main(int argc, char* argv[])
 	  if (isMC_Zh)   mon.fillHisto("eventflow","Zh", 2, weight);   
 	  if (isMC_VBFh) mon.fillHisto("eventflow", "VBFh", 2, weight);
 	}
-       
-            
+
+      
+      //###############//
       //### STEP 3 ###//
+      //##############//
+      // We define two regions, SR1 for the resolved regime and SR2 for the merged regime
+
+      bool isSR1(false);
+      bool isSR2(false);
+
+      if(vec_btag.size()>2) isSR1=true;
+      if(vec_fjets.size()>0 && vec_bjets_cc.size()>0) isSR2=true;
+
+      // Define the variables for mva
+      Float_t mvaBDTada_SR1(-10.0), mvaBDTgrad_SR1(-10.0), mvaBDTada_SR2(-10.0), mvaBDTgrad_SR2(-10.0);
+      Float_t SR1_Njets(0.0), SR2_Njets(0.0), SR1_HT(0.0), SR2_HT(0.0), SR1_H_pt(0.0), SR2_H_pt(0.0), SR1_W_pt(0.0), SR2_W_pt(0.0), SR1_lepton_pt(0.0), SR2_lepton_pt(0.0), SR1_bjet1_pt(0.0), SR2_bjet1_pt(0.0), SR2_fjet1_pt(0.0), SR1_MET(0.0), SR2_MET(0.0), SR1_H_M(0.0), SR2_H_M(0.0), SR1_MTW(0.0), SR2_MTW(0.0), SR1_dphiWH(0.0), SR2_dphiWH(0.0), SR1_detaWH(0.0), SR2_detaWH(0.0), SR1_dphiMetJetMin(0.0), SR2_dphiMetJetMin(0.0), SR1_dphiHMet(0.0), SR2_dphiHMet(0.0), SR1_DRbbav(0.0), SR2_DRjj(0.0), SR1_DMbbMin(0.0), SR1_mbbj(0.0), SR1_btag1(0.0), SR2_btag1(0.0), SR1_btag2(0.0), SR1_btag3(0.0), SR2_sdMass1(0.0), SR2_xbbccqq(0.0), SR2_xbb(0.0) ;
+
+
+      //########################################//
+      //########## SIGNAL REGION SR1 ###########//
+      //########################################//
       
-      // If there is at least three b-jets
-      if(vec_btag.size() < 3) continue;
-
-      // b tagged jets working points
-      // Tight WP: 0.7476, Medium WP: 0.3040, Loose WP: 0.0532
-      if( vec_bjetsbtag[0].second < 0.7476 || vec_bjetsbtag[1].second < 0.3040 || vec_bjetsbtag[2].second < 0.3040) continue;
-
-      for (const auto& pair : vec_bjetsbtag)
+      if(isSR1)
 	{
-	  vec_bjets.push_back(pair.first);
-	}
+	  if(vec_jets.size()<3) continue;
 
-      // Sort the b-jets based on pT in descending order
-      vec_bjets = sort_vec_pt(vec_bjets);
+	  n_event_jet++;
 
-      n_event_bjet++;
+	  mon.fillHisto("eventflow", "histo", 3, 1);
+	  mon.fillHisto("eventflow", "histo_weighted", 3, weight);
 
-      mon.fillHisto("eventflow", "histo", 3, 1);
-      mon.fillHisto("eventflow", "histo_weighted", 3, weight);
-
-      if (isSignal)
-	{
-	  mon.fillHisto("eventflow", "Signal", 3, weight);
-
-	  if (isMC_Wh)   mon.fillHisto("eventflow","Wh", 3, weight);  
-	  if (isMC_Zh)   mon.fillHisto("eventflow","Zh", 3, weight);   
-	  if (isMC_VBFh) mon.fillHisto("eventflow", "VBFh", 3, weight);
-	}
-
-      //### STEP 4 ###//
-      if(met.Pt() < 25 || getMT(vec_lepton[0], met) < 50) continue;
-
-      n_event_metcut++;
-
-      mon.fillHisto("eventflow", "histo", 4, 1);
-      mon.fillHisto("eventflow", "histo_weighted", 4, weight);
-
-      if (isSignal)
-	{
-	  mon.fillHisto("eventflow", "Signal", 4, weight);
-
-	  if (isMC_Wh)   mon.fillHisto("eventflow","Wh", 4, weight);  
-	  if (isMC_Zh)   mon.fillHisto("eventflow","Zh", 4, weight);   
-	  if (isMC_VBFh) mon.fillHisto("eventflow", "VBFh", 4, weight);
-	}
-
-      
-      // Missing transverse energy
-      float MET = met.Pt();
-
-      // W transverse mass
-      float MTW = getMT(vec_lepton[0], met);
-        
-      // Lepton kinematics
-      float lepton_pt = vec_lepton[0].Pt();
-      float lepton_eta = vec_lepton[0].Eta();
-      float lepton_phi = vec_lepton[0].Phi();
-     
-      // b-jet1 and b-jet2 kinematics
-      float bjet1_pt  = vec_bjets[0].Pt();
-      float bjet1_eta = vec_bjets[0].Eta();
-      float bjet1_phi = vec_bjets[0].Phi();
-      float bjet1_M   = vec_bjets[0].M();
-
-      float bjet2_pt  = vec_bjets[1].Pt();
-      float bjet2_eta = vec_bjets[1].Eta();
-      float bjet2_phi = vec_bjets[1].Phi();
-      float bjet2_M   = vec_bjets[1].M();
-
-      float bjet3_pt  = vec_bjets[2].Pt();
-      float bjet3_eta = vec_bjets[2].Eta();
-      float bjet3_phi = vec_bjets[2].Phi();
-      float bjet3_M   = vec_bjets[2].M();
-
-      float bjet4_pt  = vec_bjets[3].Pt();
-      float bjet4_eta = vec_bjets[3].Eta();
-      float bjet4_phi = vec_bjets[3].Phi();
-      float bjet4_M   = vec_bjets[3].M();
-     
-
-      // Define the leptonic system
-      TLorentzVector plepsys = vec_lepton[0] + met;
-      float W_pt = plepsys.Pt();
-
-      // Define the hadronic system
-      TLorentzVector phadb;
-
-      if(vec_btag.size() > 3) phadb = vec_btag[0] + vec_btag[1] + vec_btag[2] + vec_btag[3];
-	
-      else if(vec_btag.size() == 3 && vec_untag.size() > 0)  phadb = vec_btag[0] + vec_btag[1] + vec_btag[2] + vec_untag[0];
-
-      else phadb = vec_btag[0] + vec_btag[1] + vec_btag[2];
-
-      // Higgs kinematics
-      float H_M, H_pt, H_eta ;  
-      H_M  = phadb.M();
-      H_pt = phadb.Pt();
-      H_eta = phadb.Eta(); 
-         
-      // WH system variables
-      float dphiWH   = fabs(vec_lepton[0].DeltaPhi(phadb));
-      float detaWH   = fabs(plepsys.Eta()-phadb.Eta());
-      float DRWH     = getDeltaR(plepsys, phadb);
-      float WH_M     = (plepsys + phadb).M();
-      float dphiHMet = fabs(met.DeltaPhi(phadb));
-
-      // Delta phi of MET and lepton
-      float dphiMetLepton = fabs(met.DeltaPhi(vec_lepton[0]));
-     
-      // Minimum Delta phi of MET and jet
-      float dphiMetJetMin = getDeltaPhiMin(met, vec_jets);
-
-      // DeltaR bb average
-      float DRbbav = getAverageDeltaR(vec_btag);;
-
-      // Minimum DeltaMass of bb pairs
-      float DeltaMassbbMin;
-      if (vec_btag.size() > 3)
-	{
-	  DeltaMassbbMin = getDeltaMassMin(vec_btag, 4);
-	}
-	  
-      else if (vec_btag.size() == 3) 
-	{
-	  if (vec_untag.size() > 0) 
+	  if (isSignal)
 	    {
-	      vector<TLorentzVector> vec_b = vec_btag;
-	      vec_b.push_back(vec_untag[0]);
-	      DeltaMassbbMin = getDeltaMassMin(vec_b, 4);
-	    } 
-	  else 
-	    {
-	      DeltaMassbbMin = getDeltaMassMin(vec_btag, 3);
+	      mon.fillHisto("eventflow", "Signal", 3, weight);
+
+	      if (isMC_Wh)   mon.fillHisto("eventflow","Wh", 3, weight);  
+	      if (isMC_Zh)   mon.fillHisto("eventflow","Zh", 3, weight);   
+	      if (isMC_VBFh) mon.fillHisto("eventflow", "VBFh", 3, weight);
 	    }
-	}
-      
-      // Mass of bb pair with minimum DR and one jet
-      float mbbuntag;
-      if(vec_untag.size() > 0)
-	{
-	  mbbuntag = (getbbwithDRMin(vec_bjets) + vec_untag[0]).M();
-	  mon.fillHisto("M", "bbj", mbbuntag, weight);
-	}
-      else
-	{
-	  mbbuntag = getmbbb(vec_btag);
-	  mon.fillHisto("M", "bbb", mbbuntag, weight);
-	}
+
+	  // Fill the multiplicity histograms of jets
+	  mon.fillHisto("jetmulti", "step3", vec_jets.size(), weight);
+	  mon.fillHisto("jetmulti", "step3_b", vec_btag.size(), weight);
+	  mon.fillHisto("jetmulti", "step3_untag", vec_untag.size(), weight);
+	  mon.fillHisto("jetmulti", "step3_cc_b", vec_bjets_cc.size(), weight);
+	  mon.fillHisto("jetmulti", "step3_f", vec_fjets.size(), weight);
+	  mon.fillHisto("jetmulti", "step3_cc", vec_jets_cc.size(), weight);
 	  
-      // Multiplicity of jets
-      float Njets = vec_jets.size();
+	  // b tagged jets working points
+	  // Tight WP: 0.7476, Medium WP: 0.3040, Loose WP: 0.0532
+	  if(vec_bjetsbtag[0].second < tightWP) continue;
+     
+	  for (const auto& pair : vec_bjetsbtag)
+	    {
+	      vec_bjets.push_back(pair.first);
+	    }
+	  
+	  // Sort the b-jets based on pT in descending order
+	  vec_bjets = sort_vec_pt(vec_bjets);
 
-      // b-tag discriminator for 3 most energetic b-jets
-      float btag1 = vec_bjetsbtag[0].second;
-      float btag2 = vec_bjetsbtag[1].second;
-      float btag3 = vec_bjetsbtag[2].second;
+	  n_event_bjet++;
 
-      // Invariant mass of bb pair from the same mother
-      PairResult result = getPair(vec_btag);
-      float bb_M;
+	  mon.fillHisto("eventflow", "histo", 4, 1);
+	  mon.fillHisto("eventflow", "histo_weighted", 4, weight);
 
-      if(vec_btag.size() == 3) bb_M = result.pair1.M() ;
-      else bb_M = (result.pair1.M() + result.pair2.M())/2.0;
+	  if (isSignal)
+	    {
+	      mon.fillHisto("eventflow", "Signal", 4, weight);
 
+	      if (isMC_Wh)   mon.fillHisto("eventflow","Wh", 4, weight);  
+	      if (isMC_Zh)   mon.fillHisto("eventflow","Zh", 4, weight);   
+	      if (isMC_VBFh) mon.fillHisto("eventflow", "VBFh", 4, weight);
+	    }
 
-      // Count the events with exactly 3 jets and more than 3 jets
-      if(vec_jets.size() == 3)
-	{
-	  n_event_njet++ ;
-	  mon.fillHisto("Events", "jets", 0, weight); 
-	}
-      else if(vec_jets.size() > 3)
-	{
-	  n_event_njet++ ;
-	  mon.fillHisto("Events", "jets", 1, weight); 
-	}
+	  // Define the variables
+
+	  // b-jets kinematics
+	  SR1_bjet1_pt    = vec_bjets[0].Pt();
+	  float bjet1_eta = vec_bjets[0].Eta();
+	  float bjet1_phi = vec_bjets[0].Phi();
+
+	  float bjet2_pt  = vec_bjets[1].Pt();
+	  float bjet2_eta = vec_bjets[1].Eta();
+	  float bjet2_phi = vec_bjets[1].Phi();
+
+	  float bjet3_pt  = vec_bjets[2].Pt();
+	  float bjet3_eta = vec_bjets[2].Eta();
+	  float bjet3_phi = vec_bjets[2].Phi();
+
+	  float bjet4_pt  = vec_bjets[3].Pt();
+	  float bjet4_eta = vec_bjets[3].Eta();
+	  float bjet4_phi = vec_bjets[3].Phi();
+
+	  // Scalar sum of jets
+	  SR1_HT = HTjets(vec_jets);
+
+	  // Missing transverse energy
+	  SR1_MET = met.Pt();
+
+	  // W transverse mass
+	  SR1_MTW = getMT(vec_lepton[0], met);
+        
+	  // Lepton kinematics
+	  SR1_lepton_pt    = vec_lepton[0].Pt();
+	  float lepton_eta = vec_lepton[0].Eta();
+	  float lepton_phi = vec_lepton[0].Phi();
+     
+	  // Define the leptonic system
+	  TLorentzVector plepsys = vec_lepton[0] + met;
+	  SR1_W_pt = plepsys.Pt();
+
+	  // Define the hadronic system
+	  TLorentzVector phadb;
+
+	  if(vec_btag.size() > 3) phadb = vec_btag[0] + vec_btag[1] + vec_btag[2] + vec_btag[3];
 	
+	  else if(vec_btag.size() == 3 && vec_untag.size() > 0)  phadb = vec_btag[0] + vec_btag[1] + vec_btag[2] + vec_untag[0];
+
+	  else phadb = vec_btag[0] + vec_btag[1] + vec_btag[2];
+
+	  // Higgs kinematics
+	  SR1_H_M   = phadb.M();
+	  SR1_H_pt  = phadb.Pt();
+	  float H_eta = phadb.Eta(); 
+         
+	  // WH system variables
+	  SR1_dphiWH   = fabs(vec_lepton[0].DeltaPhi(phadb));
+	  SR1_detaWH   = fabs(plepsys.Eta()-phadb.Eta());
+	  SR1_dphiHMet = fabs(met.DeltaPhi(phadb));
+
+	  // Delta phi of MET and lepton
+	  float dphiMetLepton = fabs(met.DeltaPhi(vec_lepton[0]));
+     
+	  // Minimum Delta phi of MET and jet
+	  SR1_dphiMetJetMin = getDeltaPhiMin(met, vec_jets);
+
+	  // DeltaR bb average
+	  SR1_DRbbav = getAverageDeltaR(vec_btag);;
+
+	  // Minimum DeltaMass of bb pairs
+	  if (vec_btag.size() > 3)
+	    {
+	      SR1_DMbbMin = getDeltaMassMin(vec_btag, 4);
+	    }
+	  
+	  else if (vec_btag.size() == 3) 
+	    {
+	      if (vec_untag.size() > 0) 
+		{
+		  vector<TLorentzVector> vec_b = vec_btag;
+		  vec_b.push_back(vec_untag[0]);
+		  SR1_DMbbMin = getDeltaMassMin(vec_b, 4);
+		} 
+	      else 
+		{
+		  SR1_DMbbMin = getDeltaMassMin(vec_btag, 3);
+		}
+	    }
       
-      // Fill the histograms
-      mon.fillHisto("pt"      , "H"          , H_pt               , weight);
-      mon.fillHisto("pt"      , "W"          , W_pt               , weight);
-      mon.fillHisto("pt"      , "MET"        , MET                , weight);
-      mon.fillHisto("pt"      , "lepton"     , lepton_pt          , weight);
-      mon.fillHisto("pt"      , "bjet1"      , bjet1_pt           , weight);
-      mon.fillHisto("pt"      , "bjet2"      , bjet2_pt           , weight);
-      mon.fillHisto("pt"      , "bjet3"      , bjet3_pt           , weight);
-      mon.fillHisto("pt"      , "bjet4"      , bjet4_pt           , weight);
-      mon.fillHisto("pt"      , "lepton"     , lepton_pt          , weight);
-      mon.fillHisto("HT"      , "jets"       , HT                 , weight);
-      mon.fillHisto("eta"     , "H"          , H_eta              , weight);
-      mon.fillHisto("eta"     , "WH"         , detaWH             , weight);
-      mon.fillHisto("eta"     , "lepton"     , lepton_eta         , weight);
-      mon.fillHisto("eta"     , "bjet1"      , bjet1_eta          , weight);
-      mon.fillHisto("eta"     , "bjet2"      , bjet2_eta          , weight);
-      mon.fillHisto("eta"     , "bjet3"      , bjet3_eta          , weight);
-      mon.fillHisto("eta"     , "bjet4"      , bjet4_eta          , weight);
-      mon.fillHisto("MT"      , "W"          , MTW                , weight);
-      mon.fillHisto("M"       , "H"          , H_M                , weight);
-      mon.fillHisto("M"       , "WH"         , WH_M               , weight);
-      mon.fillHisto("M"       , "dMbbmin"    , DeltaMassbbMin     , weight);
-      mon.fillHisto("M"       , "bbuntag"    , mbbuntag           , weight);
-      mon.fillHisto("M"       , "bb"         , bb_M               , weight);
-      mon.fillHisto("dEta"    , "WH"         , detaWH             , weight);
-      mon.fillHisto("dphi"    , "WH"         , dphiWH             , weight);
-      mon.fillHisto("dphi"    , "MET-lepton" , dphiMetLepton      , weight);
-      mon.fillHisto("dphi"    , "METjet-min" , dphiMetJetMin      , weight);
-      mon.fillHisto("dphi"    , "H-MET"      , dphiHMet           , weight);
-      mon.fillHisto("DR"      , "WH"         , DRWH               , weight);
-      mon.fillHisto("DR"      , "bbaver"     , DRbbav             , weight);
-      mon.fillHisto("jetmulti", "step4"      , vec_jets.size()    , weight);
-      mon.fillHisto("jetmulti", "step4_b"    , vec_bjets.size()   , weight);
-      mon.fillHisto("jetmulti", "step4_untag", vec_untag.size()   , weight);
-      mon.fillHisto("btag"    , "jet1"       , btag1              , weight);
-      mon.fillHisto("btag"    , "jet2"       , btag2              , weight);
-      mon.fillHisto("btag"    , "jet3"       , btag3              , weight);
-      
-      
-      
+	  // Mass of bb pair with minimum DR and one jet
+	  if(vec_untag.size() > 0)
+	    {
+	      SR1_mbbj = (getbbwithDRMin(vec_bjets) + vec_untag[0]).M();
+	      mon.fillHisto("M", "bbj", SR1_mbbj, weight);
+	    }
+	  else
+	    {
+	      SR1_mbbj = getmbbb(vec_btag);
+	      mon.fillHisto("M", "bbb", SR1_mbbj, weight);
+	    }
+	  
+	  // Multiplicity of jets
+	  SR1_Njets = vec_jets.size();
+
+	  // b-tag discriminator for 3 most energetic b-jets
+	  SR1_btag1 = vec_bjetsbtag[0].second;
+	  SR1_btag2 = vec_bjetsbtag[1].second;
+	  SR1_btag3 = vec_bjetsbtag[2].second;
+
+	  // Invariant mass of bb pair from the same mother
+	  PairResult result = getPair(vec_btag);
+	  float bb_M;
+
+	  if(vec_btag.size() == 3) bb_M = result.pair1.M() ;
+	  else bb_M = (result.pair1.M() + result.pair2.M())/2.0;
 
 
-      
-      //######################################//
-      //########## SIGNAL REGIONS ###########//
-      //#####################################//
+	  // Fill the histograms
+	  //mon.fillHisto("pt"         , "SR1_H"          , SR1_H_pt          , weight);
+	  mon.fillHisto("H_pt"       , "SR1"            , SR1_H_pt          , weight);  // final
+	  //mon.fillHisto("pt"         , "SR1_W"          , SR1_W_pt          , weight);
+	  mon.fillHisto("W_pt"       , "SR1"            , SR1_W_pt          , weight);  // final
+	  //mon.fillHisto("pt"         , "SR1_MET"        , SR1_MET           , weight);
+	  mon.fillHisto("MET"        , "SR1"            , SR1_MET           , weight);  // final
+	  mon.fillHisto("l_pt"       , "SR1"            , SR1_lepton_pt     , weight);  // final
+	  //mon.fillHisto("pt"         , "SR1_lepton"     , SR1_lepton_pt     , weight);
+	  //mon.fillHisto("pt"         , "SR1_bjet1"      , SR1_bjet1_pt      , weight);
+	  mon.fillHisto("bjet1_pt"   , "SR1"            , SR1_bjet1_pt      , weight);  // final
+	  mon.fillHisto("pt"         , "SR1_bjet2"      , bjet2_pt          , weight);
+	  mon.fillHisto("pt"         , "SR1_bjet3"      , bjet3_pt          , weight);
+	  mon.fillHisto("pt"         , "SR1_bjet4"      , bjet4_pt          , weight);
+	  mon.fillHisto("HT"         , "SR1_jets"       , SR1_HT            , weight);
+	  mon.fillHisto("eta"        , "SR1_H"          , H_eta             , weight);
+	  //mon.fillHisto("deta"       , "SR1_WH"         , SR1_detaWH        , weight);
+	  mon.fillHisto("WH_deta"    , "SR1"            , SR1_detaWH        , weight);  // final
+	  mon.fillHisto("eta"        , "SR1_lepton"     , lepton_eta        , weight);
+	  mon.fillHisto("eta"        , "SR1_bjet1"      , bjet1_eta         , weight);
+	  mon.fillHisto("eta"        , "SR1_bjet2"      , bjet2_eta         , weight);
+	  mon.fillHisto("eta"        , "SR1_bjet3"      , bjet3_eta         , weight);
+	  mon.fillHisto("eta"        , "SR1_bjet4"      , bjet4_eta         , weight);
+	  //mon.fillHisto("MT"         , "SR1_W"          , SR1_MTW           , weight);
+	  mon.fillHisto("W_MT"       , "SR1"            , SR1_MTW           , weight);  // final
+	  //mon.fillHisto("M"          , "SR1_H"          , SR1_H_M           , weight);
+	  mon.fillHisto("H_M"        , "SR1"            , SR1_H_M           , weight);  // final
+	  //mon.fillHisto("M"          , "SR1_dMbbmin"    , SR1_DMbbMin       , weight);
+	  mon.fillHisto("minbb_dM"   , "SR1"            , SR1_DMbbMin       , weight);  // final
+	  //mon.fillHisto("M"          , "SR1_bbj"        , SR1_mbbj          , weight);
+	  mon.fillHisto("bbj_M"      , "SR1"            , SR1_mbbj          , weight);  // final
+	  mon.fillHisto("M"          , "SR1_bb"         , bb_M              , weight);
+	  //mon.fillHisto("dphi"       , "SR1_WH"         , SR1_dphiWH        , weight);
+	  mon.fillHisto("WH_dphi"    , "SR1"            , SR1_dphiWH        , weight);  // final
+	  mon.fillHisto("dphi"       , "SR1_MET-lepton" , dphiMetLepton     , weight);
+	  //mon.fillHisto("dphi"       , "SR1_METjet-min" , SR1_dphiMetJetMin , weight);
+	  mon.fillHisto("METjet_dphi", "SR1"            , SR1_dphiMetJetMin , weight);  // final
+	  //mon.fillHisto("DR"         , "SR1_bbaver"     , SR1_DRbbav        , weight);
+	  mon.fillHisto("avbb_dR"    , "SR1"            , SR1_DRbbav        , weight);  // final
+	  mon.fillHisto("jetmulti"   , "SR1_step3"      , vec_jets.size()   , weight);
+	  mon.fillHisto("jetmulti"   , "SR1_step3_b"    , vec_bjets.size()  , weight);
+	  mon.fillHisto("jetmulti"   , "SR1_step3_untag", vec_untag.size()  , weight);
+	  mon.fillHisto("btag1_bef"  , "SR1"            , SR1_btag1_WP      , weight);  // final
+	  mon.fillHisto("btag2_bef"  , "SR1"            , SR1_btag2_WP      , weight);  // final
+	  mon.fillHisto("btag3_bef"  , "SR1"            , SR1_btag3_WP      , weight);  // final
+	  mon.fillHisto("btag1"      , "SR1"            , SR1_btag1         , weight);  // final
+	  mon.fillHisto("btag2"      , "SR1"            , SR1_btag2         , weight);  // final
+	  mon.fillHisto("btag3"      , "SR1"            , SR1_btag3         , weight);  // final
 
-      bool isSR1=false;      
-      bool isSR2=false;     
+	  //#####################################//
+	  //############ TMVA Reader ############//
+	  //#####################################//
+	  
+	  mvaBDTada_SR1  = SR1adaReader.GenReMVAReaderSR1(SR1_Njets, SR1_HT, SR1_H_pt, SR1_W_pt, SR1_lepton_pt, SR1_bjet1_pt, SR1_MET, SR1_H_M, SR1_MTW, SR1_dphiWH, SR1_dphiMetJetMin, SR1_DRbbav, SR1_DMbbMin, SR1_mbbj, SR1_btag1, SR1_btag2, SR1_btag3, "SR1adaClass");
+	  mvaBDTgrad_SR1 = SR1gradReader.GenReMVAReaderSR1(SR1_Njets, SR1_HT, SR1_H_pt, SR1_W_pt, SR1_lepton_pt, SR1_bjet1_pt, SR1_MET, SR1_H_M, SR1_MTW, SR1_dphiWH, SR1_dphiMetJetMin, SR1_DRbbav, SR1_DMbbMin, SR1_mbbj, SR1_btag1, SR1_btag2, SR1_btag3, "SR1gradClass");
+	  mon.fillHisto("BDT", "SR1_ada", mvaBDTada_SR1, weight);
+	  mon.fillHisto("BDT", "SR1_grad", mvaBDTgrad_SR1, weight);
+	  
+	}
 
-      // for later .......
 
+      //########################################//
+      //########## SIGNAL REGION SR2 ###########//
+      //########################################//
+
+      if(isSR2)
+	{
+	  n_SR2++;
+
+	  // mon.fillHisto("eventflow", "histo", 5, 1);
+	  // mon.fillHisto("eventflow", "histo_weighted", 5, weight);
+
+	  // if (isSignal)
+	  //   {
+	  //     mon.fillHisto("eventflow", "Signal", 5, weight);
+
+	  //     if (isMC_Wh)   mon.fillHisto("eventflow","Wh", 5, weight);  
+	  //     if (isMC_Zh)   mon.fillHisto("eventflow","Zh", 5, weight);   
+	  //     if (isMC_VBFh) mon.fillHisto("eventflow", "VBFh", 5, weight);
+	  //   }
+
+	  mon.fillHisto("count", "step3_subjet", ev.fjet_subjet_count[vec_fjets_index[0].second], weight);
+
+	  if(vec_fjets_raw.size()>0)
+	    {
+	      mon.fillHisto("pt", "step3_AK8_1", vec_fjets_raw[0].Pt(), weight);
+	      mon.fillHisto("eta", "step3_AK8_1", vec_fjets_raw[0].Eta(), weight);
+	      mon.fillHisto("phi", "step3_AK8_1", vec_fjets_raw[0].Phi(), weight);
+
+	      mon.fillHisto("SDM", "step3_1", ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+	      mon.fillHisto("fjet_pt_vs_SDM", "step3_1", vec_fjets_raw[0].Pt(), ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+	      mon.fillProfile("fjetpt_vs_SDM", "step3_1", vec_fjets_raw[0].Pt(), ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+	      mon.fillHisto("fjet_eta_vs_SDM", "step3_1", vec_fjets_raw[0].Eta(), ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+	      mon.fillProfile("fje_eta_vs_SDM", "step3_1", vec_fjets_raw[0].Eta(), ev.fjet_softdropM[vec_fjets_index_raw[0].second], weight);
+	    }
+
+	  // Fill the multiplicity histograms of jets
+	  mon.fillHisto("jetmulti", "step3_cc_b", vec_bjets_cc.size(), weight);
+	  mon.fillHisto("jetmulti", "step3_f", vec_fjets.size(), weight);
+	  mon.fillHisto("jetmulti", "step3_cc", vec_jets_cc.size(), weight);
+
+	  // b-jets kinematics
+	  SR2_bjet1_pt    = vec_bjets_cc[0].Pt();
+	  float bjet1_eta = vec_bjets_cc[0].Eta();
+	  float bjet1_phi = vec_bjets_cc[0].Phi();
+
+	  float bjet2_pt  = vec_bjets_cc[1].Pt();
+	  float bjet2_eta = vec_bjets_cc[1].Eta();
+	  float bjet2_phi = vec_bjets_cc[1].Phi();
+
+	   // Multiplicity of jets
+	  SR2_Njets = vec_jets_cc.size();
+	  int Nsubjet = ev.fjet_subjet_count[vec_fjets_index[0].second];
+
+	  // Scalar sum of jets
+	  if(vec_jets_cc.size()>0) { for(int i=0; i<vec_jets_cc.size(); i++) SR2_HT += vec_jets_cc[i].Pt(); }
+	  if(vec_fjets.size()>0)   { for(int j=0; j<vec_fjets.size(); j++)   SR2_HT += vec_fjets[j].Pt(); }
+
+	  // Missing transverse energy
+	  SR2_MET = met.Pt();
+
+	  // W transverse mass
+	  SR2_MTW = getMT(vec_lepton[0], met);
+        
+	  // Lepton kinematics
+	  SR2_lepton_pt    = vec_lepton[0].Pt();
+	  float lepton_eta = vec_lepton[0].Eta();
+	  float lepton_phi = vec_lepton[0].Phi();
+     
+	  // Define the leptonic system
+	  TLorentzVector plepsys = vec_lepton[0] + met;
+	  SR2_W_pt = plepsys.Pt();
+
+	  // Delta phi of MET and lepton
+	  float dphiMetLepton = fabs(met.DeltaPhi(vec_lepton[0]));
+
+	  //## FAT jet Analysis ##//
+	  //----------------------//
+
+	  // Fat jet kinematics
+	  SR2_fjet1_pt    = vec_fjets[0].Pt();
+	  float fjet1_eta = vec_fjets[0].Eta();
+	  float fjet1_phi = vec_fjets[0].Phi();
+
+	  float fjet2_pt  = vec_fjets[1].Pt();
+	  float fjet2_eta = vec_fjets[1].Eta();
+	  float fjet2_phi = vec_fjets[1].Phi();
+
+	  // Soft drop mass
+	  SR2_sdMass1 = ev.fjet_softdropM[vec_fjets_index[0].second];
+	  
+	  // Discriminators
+	  SR2_btag1 = vec_bjetsbtag_cc[0].second;
+	  
+	  float denominator = ev.fjet_btag10[vec_fjets_index[0].second] + ev.fjet_btag11[vec_fjets_index[0].second] + ev.fjet_btag12[vec_fjets_index[0].second] + ev.fjet_btag13[vec_fjets_index[0].second] + ev.fjet_btag14[vec_fjets_index[0].second] + ev.fjet_btag15[vec_fjets_index[0].second] + ev.fjet_btag16[vec_fjets_index[0].second] + ev.fjet_btag17[vec_fjets_index[0].second];
+     
+	  SR2_xbbccqq = (ev.fjet_btag10[vec_fjets_index[0].second] + ev.fjet_btag11[vec_fjets_index[0].second] + ev.fjet_btag12[vec_fjets_index[0].second]) / denominator;
+	  SR2_xbb     = ev.fjet_btag10[vec_fjets_index[0].second] / (denominator - ev.fjet_btag11[vec_fjets_index[0].second] - ev.fjet_btag12[vec_fjets_index[0].second]);
+
+	  // DR b-jet - fat-jet
+	  SR2_DRjj = getDeltaR(vec_fjets[0], vec_bjets_cc[0]);
+	  
+	   // Minimum Delta phi of MET and jet
+	  SR2_dphiMetJetMin = std::min(fabs(getDeltaPhiMin(met, vec_fjets)), fabs(getDeltaPhiMin(met, vec_bjets_cc)));
+
+	  // Define the hadronic system
+	  TLorentzVector phad;
+
+	  if(vec_bjets_cc.size() == 1)
+	    {
+	      if(vec_jets_cc.size() == 1) phad = vec_fjets[0] + vec_bjets_cc[0];
+	
+	      else if(vec_jets_cc.size() > 1)  phad = vec_fjets[0] + vec_jets_cc[0] + vec_jets_cc[1];
+	    }
+
+	  else if(vec_bjets_cc.size() > 1) phad = vec_fjets[0] + vec_bjets_cc[0] + vec_bjets_cc[1];
+	      
+	  // Higgs kinematics
+	  SR2_H_M   = phad.M();
+	  SR2_H_pt  = phad.Pt();
+	  float H_eta = phad.Eta(); 
+
+	  // WH system variables
+	  if(fabs(vec_lepton[0].DeltaPhi(phad)) < TMath::Pi()) SR2_dphiWH = fabs(vec_lepton[0].DeltaPhi(phad));
+	  else  SR2_dphiWH   = 2*TMath::Pi() - fabs(vec_lepton[0].DeltaPhi(phad));
+	  SR2_detaWH   = fabs(plepsys.Eta()-phad.Eta());
+	  SR2_dphiHMet = fabs(met.DeltaPhi(phad));
+
+	  
+	  // Fill the histograms
+	  mon.fillHisto("pt"               , "SR2_H"          , SR2_H_pt                  , weight);
+	  mon.fillHisto("pt"               , "SR2_W"          , SR2_W_pt                  , weight);
+	  mon.fillHisto("pt"               , "SR2_MET"        , SR2_MET                   , weight);
+	  mon.fillHisto("pt"               , "SR2_lepton"     , SR2_lepton_pt             , weight);
+	  mon.fillHisto("pt"               , "SR2_bjet1"      , SR2_bjet1_pt              , weight);
+	  mon.fillHisto("pt"               , "SR2_bjet2"      , bjet2_pt                  , weight);
+	  mon.fillHisto("pt"               , "SR2_fjet1"      , SR2_fjet1_pt              , weight);
+	  mon.fillHisto("pt"               , "SR2_fjet2"      , fjet2_pt                  , weight);
+	  mon.fillHisto("HT"               , "SR2_jets"       , SR2_HT                    , weight);
+	  mon.fillHisto("eta"              , "SR2_H"          , H_eta                     , weight);
+	  mon.fillHisto("eta"              , "SR2_WH"         , SR2_detaWH                , weight);
+	  mon.fillHisto("eta"              , "SR2_lepton"     , lepton_eta                , weight);
+	  mon.fillHisto("eta"              , "SR2_bjet1"      , bjet1_eta                 , weight);
+	  mon.fillHisto("eta"              , "SR2_bjet2"      , bjet2_eta                 , weight);
+	  mon.fillHisto("eta"              , "SR2_fjet1"      , fjet1_eta                 , weight);
+	  mon.fillHisto("eta"              , "SR2_fjet2"      , fjet2_eta                 , weight);
+	  mon.fillHisto("MT"               , "SR2_W"          , SR2_MTW                   , weight);
+	  mon.fillHisto("M"                , "SR2_H"          , SR2_H_M                   , weight);
+	  mon.fillHisto("dEta"             , "SR2_WH"         , SR2_detaWH                , weight);
+	  mon.fillHisto("dphi"             , "SR2_WH"         , SR2_dphiWH                , weight);
+	  mon.fillHisto("dphi"             , "SR2_MET-lepton" , dphiMetLepton             , weight);
+	  mon.fillHisto("dphi"             , "SR2_METjet-min" , SR2_dphiMetJetMin         , weight);
+	  mon.fillHisto("dphi"             , "SR2_H-MET"      , SR2_dphiHMet              , weight);
+	  mon.fillHisto("DR"               , "SR2_jj"         , SR2_DRjj                  , weight);
+	  mon.fillHisto("jetmulti"         , "SR2_step3"      , vec_jets_cc.size()        , weight);
+	  mon.fillHisto("jetmulti"         , "SR2_step3_b"    , vec_bjets_cc.size()       , weight);
+	  mon.fillHisto("jetmulti"         , "SR2_step3_f"    , vec_fjets.size()          , weight);
+	  mon.fillHisto("btag"             , "SR2_jet1"       , SR2_btag1                 , weight);
+	  mon.fillHisto("fjet_XbbXccXqq_pt", "SR2_step3"      , SR2_fjet1_pt, SR2_xbbccqq , weight);
+	  mon.fillHisto("fjet_Xbb_pt"      , "SR2_step3"      , SR2_fjet1_pt, SR2_xbb     , weight);
+	  mon.fillHisto("discriminant"     , "SR2_xbbccqq1"   , SR2_xbbccqq               , weight);
+	  mon.fillHisto("discriminant"     , "SR2_xbb1"       , SR2_xbb                   , weight);
+	  mon.fillHisto("count"            , "SR2_subjet"     , Nsubjet                   , weight);
+	  mon.fillHisto("SDM"              , "SR2_step3"      , SR2_sdMass1               , weight);
+	  mon.fillHisto("fjet_pt_vs_SDM"   , "SR2_step3"      , SR2_fjet1_pt, SR2_sdMass1 , weight);
+	  mon.fillProfile("fjetpt_vs_SDM"  , "SR2_step3"      , SR2_fjet1_pt, SR2_sdMass1 , weight);
+
+	  //#####################################//
+	  //############ TMVA Reader ############//
+	  //#####################################//
+	  
+	  mvaBDTada_SR2  = SR2adaReader.GenReMVAReaderSR2(SR2_Njets, SR2_HT, SR2_H_pt, SR2_W_pt, SR2_lepton_pt, SR2_bjet1_pt, SR2_fjet1_pt, SR2_MET, SR2_H_M, SR2_MTW, SR2_dphiWH, SR2_dphiMetJetMin, SR2_DRjj, SR2_btag1, SR2_sdMass1, SR2_xbbccqq, SR2_xbb,  "SR2adaClass");
+	  mvaBDTgrad_SR2 = SR2gradReader.GenReMVAReaderSR2(SR2_Njets, SR2_HT, SR2_H_pt, SR2_W_pt, SR2_lepton_pt, SR2_bjet1_pt, SR2_fjet1_pt, SR2_MET, SR2_H_M, SR2_MTW, SR2_dphiWH, SR2_dphiMetJetMin, SR2_DRjj, SR2_btag1, SR2_sdMass1, SR2_xbbccqq, SR2_xbb, "SR2gradClass");
+	  mon.fillHisto("BDT", "SR2_ada", mvaBDTada_SR2, weight);
+	  mon.fillHisto("BDT", "SR2_grad", mvaBDTgrad_SR2, weight);
+	  
+	}
+
+	
 
       //#####################################//
       //############ MVA Handler ############//
       //#####################################//
-      
+   
       if(runMVA)
 	{
-	  myMVAHandler_.getEntry(Njets, HT, H_pt, W_pt, lepton_pt, bjet1_pt, MET, H_M, WH_M, bb_M, MTW, dphiWH, detaWH, dphiMetLepton, dphiMetJetMin, dphiHMet, DRbbav, DRWH, DeltaMassbbMin, mbbuntag, btag1, btag2, btag3, weight);
+	  float mvaweight = 1.0; 
+	  myMVAHandler_.getEntry(isSR1, isSR2, SR1_Njets, SR2_Njets, SR1_HT, SR2_HT, SR1_H_pt, SR2_H_pt, SR1_W_pt, SR2_W_pt, SR1_lepton_pt, SR2_lepton_pt, SR1_bjet1_pt, SR2_bjet1_pt, SR2_fjet1_pt, SR1_MET, SR2_MET, SR1_H_M, SR2_H_M, SR1_MTW, SR2_MTW, SR1_dphiWH, SR2_dphiWH, SR1_detaWH, SR2_detaWH, SR1_dphiMetJetMin, SR2_dphiMetJetMin, SR1_dphiHMet, SR2_dphiHMet, SR1_DRbbav, SR2_DRjj, SR1_DMbbMin, SR1_mbbj, SR1_btag1, SR2_btag1, SR1_btag2, SR1_btag3, SR2_sdMass1, SR2_xbbccqq, SR2_xbb, weight);
 	  myMVAHandler_.fillTree();
+	    
 	}  
-
-    
-      //#####################################//
-      //############ TMVA Reader ############//
-      //#####################################//
-      float mvaBDTada  = -10.0;
-      float mvaBTDgrad = -10.0;
-
-      mvaBDTada = SR1adaReader.GenReMVAReader(Njets, HT, H_pt, W_pt, lepton_pt, bjet1_pt, MET, H_M, MTW, dphiWH, detaWH, dphiMetJetMin, DRbbav, DeltaMassbbMin, mbbuntag, btag1, btag2, btag3, "SR1adaClass");
-      mvaBTDgrad = SR1gradReader.GenReMVAReader(Njets, HT, H_pt, W_pt, lepton_pt, bjet1_pt, MET, H_M, MTW, dphiWH, detaWH, dphiMetJetMin, DRbbav, DeltaMassbbMin, mbbuntag, btag1, btag2, btag3, "SR1gradClass");
-      mon.fillHisto("BDT", "SR1_ada", mvaBDTada, weight);
-      mon.fillHisto("BDT", "SR1_grad", mvaBTDgrad, weight);
       
-    
-   } // END OF EVENT LOOP
+    } // END OF EVENT LOOP
 
   // Write MVA files
   TString mvaout = TString ( runProcess.getParameter<std::string>("outdir") ) + "/mva_" + outFileUrl + ".root";
@@ -1241,16 +1831,20 @@ int main(int argc, char* argv[])
   outUrl += "/";
   outUrl += outFileUrl + ".root";
   printf("Results saved in %s\n", outUrl.Data());
-
+  
   if(isMC_ttbar)
     {
       float cFilt1=(float(nFilt1)/float(nTot));
       float cFilt4=(float(nFilt4)/float(nTot));
       float cFilt5=(float(nFilt5)/float(nTot));
 
-      //printf("From total = %i TTbar events ,  Found %.2f (filt1) , %.2f (filt4) , %.2f (filt5) \n\n", nTot, cFilt1, cFilt4, cFilt5);
+      mon.fillHisto("filter", "1", cFilt1, weight);
+      mon.fillHisto("filter", "4", cFilt4, weight);
+      mon.fillHisto("filter", "5", cFilt5, weight);
+
+      if(verbose) printf("From total = %i TTbar events ,  Found %.2f (filt1) , %.2f (filt4) , %.2f (filt5) \n\n", nTot, cFilt1, cFilt4, cFilt5);
     }
-      
+  
 
   // Save plots to file
   int nTrial = 0;
@@ -1292,6 +1886,27 @@ float getDeltaR(TLorentzVector vec_1, TLorentzVector vec_2)
   delta_eta = vec_1.Eta() - vec_2.Eta();
 
   return std::sqrt(pow(delta_phi, 2) + pow(delta_eta, 2));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Get DR minimum
+float getDeltaRmin(TLorentzVector vec_1, std::vector<TLorentzVector> vec_2)
+{
+  float dR[vec_2.size()];
+  float dRmin  = 0.0;
+  int minInd   = 0;
+
+  for(int i=0; i<vec_2.size(); i++)
+    {
+      dR[i] = getDeltaR(vec_1, vec_2[i]);
+
+      if(dR[i] < dR[minInd]) minInd = i;
+    }
+
+  dRmin = dR[minInd];
+
+  return dRmin;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1453,6 +2068,40 @@ TLorentzVector getbbwithDRMin(vector<TLorentzVector> vec)
   TLorentzVector pair = bjet1+bjet2;
 
   return pair;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+float fjet_matched(TLorentzVector vec_1, std::vector<TLorentzVector> vec_2)
+{
+  float qg_pt=-999.0;
+
+  std::vector<TLorentzVector> vec_min;
+  TLorentzVector vec_qgpt;
+  
+  bool ismatched(false);
+
+  for (int i=0; i<vec_2.size(); i++)
+    {
+      ismatched=false;
+      
+      float dR = getDeltaR(vec_1, vec_2[i]);
+      
+      if(dR<0.8)
+	{
+	  ismatched=true;
+	  vec_min.push_back(vec_2[i]);
+	}
+    }
+  
+  for (int i=0; i<vec_min.size(); i++)
+    {
+      vec_qgpt += vec_min[i];
+    }
+  
+  if(ismatched) qg_pt = vec_qgpt.Pt();
+  
+  return qg_pt;  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1620,7 +2269,7 @@ PairResult getPair(vector<TLorentzVector> vec)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Sorting
+// Sorting based on pT
 std::vector<TLorentzVector> sort_vec_pt(std::vector<TLorentzVector> vec)
 {
   std::sort(vec.begin(), vec.end(), [](const TLorentzVector& a, const TLorentzVector& b) {
@@ -1641,17 +2290,18 @@ bool sortPair(std::pair<TLorentzVector, float> vec_1, std::pair<TLorentzVector, 
 
 float getDeltaPhiMin(TLorentzVector vec_1, std::vector<TLorentzVector> vec_2)
 {
-    float dphiMin1 = fabs(vec_1.DeltaPhi(vec_2[0]));
-    float dphiMin2 = fabs(vec_1.DeltaPhi(vec_2[1]));
-    float dphiMin3 = fabs(vec_1.DeltaPhi(vec_2[2]));
-   
-    std::vector<float> dphivalues = {dphiMin1, dphiMin2, dphiMin3};
-    
-    auto minElem = std::min_element(dphivalues.begin(), dphivalues.end());
-    
-    return *minElem;
+  float dphiMin = std::numeric_limits<float>::max();
+  
+  for (const auto& vec : vec_2)
+    {
+      float dphi = fabs(vec_1.DeltaPhi(vec));
+      if (dphi < dphiMin)
+	{
+	  dphiMin = dphi;
+	}
+    }
+
+  return dphiMin;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
