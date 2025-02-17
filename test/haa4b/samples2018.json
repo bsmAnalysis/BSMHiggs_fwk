@@ -298,463 +298,6 @@
                         1.0
                     ],
                     "dset": [
-                        "/SUSY_VBFH_HToAATo4B_M-12_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_VBFh_amass12_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 100000,
-                    "xsec": 3.78
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_VBFH_HToAATo4B_M-15_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_VBFh_amass15_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 100000,
-                    "xsec": 3.78
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_VBFH_HToAATo4B_M-20_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_VBFh_amass20_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 100000,
-                    "xsec": 3.78
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_VBFH_HToAATo4B_M-25_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_VBFh_amass25_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 100000,
-                    "xsec": 3.78
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_VBFH_HToAATo4B_M-30_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_VBFh_amass30_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 100000,
-                    "xsec": 3.78
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_VBFH_HToAATo4B_M-35_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_VBFh_amass35_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 100000,
-                    "xsec": 3.78
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_VBFH_HToAATo4B_M-40_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_VBFh_amass40_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 100000,
-                    "xsec": 3.78
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_VBFH_HToAATo4B_M-45_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_VBFh_amass45_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 100000,
-                    "xsec": 3.78
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_VBFH_HToAATo4B_M-50_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_VBFh_amass50_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 100000,
-                    "xsec": 3.78
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_VBFH_HToAATo4B_M-55_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_VBFh_amass55_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 100000,
-                    "xsec": 3.78
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_VBFH_HToAATo4B_M-60_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_VBFh_amass60_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 100000,
-                    "xsec": 3.78
-                }
-            ],
-            "fill": 0,
-            "isdata": false,
-            "isinvisible": true,
-            "issignal": true,
-            "keys": [
-                "haa_prod_VBF",
-                "haa_signal_VBF",
-                "haa_mcbased"
-            ],
-            "lcolor": 1,
-            "lstyle": 3,
-            "lwidth": 3,
-            "resonance": 12,
-            "spimpose": true,
-            "tag": "VBFh to AA to 4B"
-        },
-	{
-	    "color": 101,
-            "data": [
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_WH_WToAll_HToAATo4B_M-12_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass12_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 1.37
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_WH_WToAll_HToAATo4B_M-15_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass15_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 1.37
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_WH_WToAll_HToAATo4B_M-20_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass20_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 1.37
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_WH_WToAll_HToAATo4B_M-25_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass25_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 1.37
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_WH_WToAll_HToAATo4B_M-30_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass30_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 1.37
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_WH_WToAll_HToAATo4B_M-35_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass35_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 1.37
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_WH_WToAll_HToAATo4B_M-40_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass40_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 1.37
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_WH_WToAll_HToAATo4B_M-45_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass45_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 1.37
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_WH_WToAll_HToAATo4B_M-50_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass50_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 1.37
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_WH_WToAll_HToAATo4B_M-55_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass55_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 1.37
-                },
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_WH_WToAll_HToAATo4B_M-60_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Wh_amass60_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 1.37
-                }	
-            ],
-            "fill": 0,
-            "isdata": false,
-            "isinvisible": true,
-            "issignal": true,
-            "keys": [
-                "haa_prod_WH",
-                "haa_signal",
-                "haa_mcbased"
-            ],
-            "lcolor": 1,
-            "lstyle": 3,
-            "lwidth": 3,
-            "resonance": 12,
-            "spimpose": true,
-            "tag": "Wh HToAATo4B WToAll"
-        },
-	{
-	    "color": 102,
-            "data": [
-
-		{
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_ZH_ZToAll_HToAATo4B_M-12_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass12_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 0.8839
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_ZH_ZToAll_HToAATo4B_M-15_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass15_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 0.8839
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_ZH_ZToAll_HToAATo4B_M-20_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass20_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 0.8839
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_ZH_ZToAll_HToAATo4B_M-25_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass25_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 0.8839
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_ZH_ZToAll_HToAATo4B_M-30_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass30_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 0.8839
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_ZH_ZToAll_HToAATo4B_M-35_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass35_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 0.8839
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_ZH_ZToAll_HToAATo4B_M-40_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass40_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 0.8839
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_ZH_ZToAll_HToAATo4B_M-45_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass45_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 0.8839
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_ZH_ZToAll_HToAATo4B_M-50_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass50_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 0.8839
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_ZH_ZToAll_HToAATo4B_M-55_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass55_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 0.8839
-                },
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
-                        "/SUSY_ZH_ZToAll_HToAATo4B_M-60_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
-                    ],
-                    "dtag": "MC13TeV_Zh_amass60_2018",
-                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
-                    "nevts": 50000,
-                    "xsec": 0.8839
-                }
-            ],
-            "fill": 0,
-            "isdata": false,
-            "isinvisible": false,
-            "issignal": true,
-            "keys": [
-                "haa_prod_ZH",
-                "haa_signal",
-                "haa_mcbased"
-            ],
-            "lcolor": 1,
-            "lstyle": 8,
-            "lwidth": 3,
-            "resonance": 60,
-            "spimpose": true,
-            "tag": "Zh HToAATo4B ZToAll"
-        },	
-	{
-            "color": 200,
-            "data": [
-                {
-                    "br": [
-                        1.0
-                    ],
-                    "dset": [
                         "/VBFHToBB_M-125_TuneCP5_13TeV-powheg-pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
                     ],
                     "dtag": "VBFHToBB_M-125_powheg_2018",
@@ -781,11 +324,10 @@
 		"haa_prod_GGFHtoBB",
                 "haa_mcbased"
             ],
-            "mctruthmode": 0,
-            "tag": "VBFHToBB, ggFHToBB"
+            "tag": "VBFH #rightarrow b #bar{b}, ggH #rightarrow b #bar{b}"
         },
 	{
-            "color": 300,
+            "color": 200,
             "data": [
                 {
                     "br": [
@@ -892,7 +434,7 @@
             "tag": "QCD (multijet)"
         },
 	{
-            "color": 400,
+            "color": 300,
             "data": [
                 {
                     "br": [
@@ -936,11 +478,10 @@
 		"haa_prod_TT",
                 "haa_mcbased"
             ],
-            "mctruthmode": 5,
-            "tag": "t#bar{t}"
+            "tag": "t #bar{t}"
         },
 	{
-            "color": 500,
+            "color": 400,
             "data": [
                 {
                     "br": [
@@ -996,11 +537,10 @@
                 "haa_prod_ZJetstoQQ",
                 "haa_mcbased"
             ],
-            "mctruthmode": 0,
-            "tag": "ZJetsToQQ"
+            "tag": "Z + Jets #rightarrow q #bar{q}"
         },
 	{
-            "color": 600,
+            "color": 500,
             "data": [
                 {
                     "br": [
@@ -1056,11 +596,10 @@
                 "haa_prod_WJetstoQQ",
                 "haa_mcbased"
             ],
-            "mctruthmode": 0,
-            "tag": "WJetsToQQ"
+            "tag": "W + Jets #rightarrow q #bar{q}"
         },
 	{
-            "color": 700,
+            "color": 600,
             "data": [
                 {
                     "br": [
@@ -1090,12 +629,13 @@
             "isdata": false,
             "keys": [
                 "haa_prod",
-                "haa_ztoll"
+                "haa_ztoll",
+		"haa_mcbased"
             ],
-            "tag": "Z#rightarrow ll"
+            "tag": "Z #rightarrow l #bar{l}"
         },
 	{
-            "color": 800,
+            "color": 700,
             "data": [
                 {
                     "br": [
@@ -1380,10 +920,10 @@
                 "haa_prod",
                 "haa_mcbased"
             ],
-            "tag": "W#rightarrow l#nu"
+            "tag": "W #rightarrow l #nu"
         },
 	{
-	    "color": 900,
+	    "color": 800,
             "data": [
                 {
                     "br": [
@@ -1476,10 +1016,10 @@
                 "haa_mcbased",
 		"haa_ztonunu"
             ],
-            "tag": "Z#rightarrow NuNu"
+            "tag": "Z #rightarrow #nu #nu"
         },
 	{
-            "color": 1000,
+            "color": 900,
             "data": [
                 {
                     "br": [
@@ -1659,7 +1199,7 @@
             "tag": "QCD (lepton enriched)"
         },
         {
-            "color": 1100,
+            "color": 1000,
             "data": [
                 {
                     "br": [
@@ -1992,7 +1532,1064 @@
                 "haa_prod",
                 "haa_mcbased"
             ],
-            "tag": "Other Bkgds"
-        }
+            "tag": "Other Backgrounds"
+        },
+	{
+            "color": 1100,
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_VBFH_HToAATo4B_M-12_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_VBFh_amass12_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 100000,
+                    "xsec": 3.78
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_VBF",
+                "haa_signal_VBF",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 12,
+            "spimpose": true,
+            "tag": "VBFH #rightarrow 4b,~m_{A}=12"
+        },
+	{
+            "color": 1101,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_VBFH_HToAATo4B_M-15_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_VBFh_amass15_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 100000,
+                    "xsec": 3.78
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_VBF",
+                "haa_signal_VBF",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 15,
+            "spimpose": true,
+            "tag": "VBFH #rightarrow 4b,~m_{A}=15"
+        },
+	{
+            "color": 1102,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_VBFH_HToAATo4B_M-20_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_VBFh_amass20_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 100000,
+                    "xsec": 3.78
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": false,
+            "issignal": true,
+            "keys": [
+                "haa_prod_VBF",
+                "haa_signal_VBF",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 20,
+            "spimpose": true,
+            "tag": "VBFH #rightarrow 4b,~m_{A}=20"
+        },
+	{
+            "color": 1103,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_VBFH_HToAATo4B_M-25_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_VBFh_amass25_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 100000,
+                    "xsec": 3.78
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_VBF",
+                "haa_signal_VBF",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 25,
+            "spimpose": true,
+            "tag": "VBFH #rightarrow 4b,~m_{A}=25"
+        },
+	{
+            "color": 1104,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_VBFH_HToAATo4B_M-30_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_VBFh_amass30_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 100000,
+                    "xsec": 3.78
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_VBF",
+                "haa_signal_VBF",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 30,
+            "spimpose": true,
+            "tag": "VBFH #rightarrow 4b,~m_{A}=30"
+        },
+	{
+            "color": 1105,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_VBFH_HToAATo4B_M-35_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_VBFh_amass35_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 100000,
+                    "xsec": 3.78
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_VBF",
+                "haa_signal_VBF",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 35,
+            "spimpose": true,
+            "tag": "VBFH #rightarrow 4b,~m_{A}=35"
+        },
+	{
+            "color": 1106,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_VBFH_HToAATo4B_M-40_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_VBFh_amass40_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 100000,
+                    "xsec": 3.78
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_VBF",
+                "haa_signal_VBF",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 40,
+            "spimpose": true,
+            "tag": "VBFH #rightarrow 4b,~m_{A}=40"
+        },
+	{
+            "color": 1107,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_VBFH_HToAATo4B_M-45_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_VBFh_amass45_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 100000,
+                    "xsec": 3.78
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_VBF",
+                "haa_signal_VBF",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 45,
+            "spimpose": true,
+            "tag": "VBFH #rightarrow 4b,~m_{A}=45"
+        },
+	{
+            "color": 1108,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_VBFH_HToAATo4B_M-50_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_VBFh_amass50_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 100000,
+                    "xsec": 3.78
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_VBF",
+                "haa_signal_VBF",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 50,
+            "spimpose": true,
+            "tag": "VBFH #rightarrow 4b,~m_{A}=50"
+        },
+	{
+            "color": 1109,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_VBFH_HToAATo4B_M-55_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_VBFh_amass55_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 100000,
+                    "xsec": 3.78
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_VBF",
+                "haa_signal_VBF",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 55,
+            "spimpose": true,
+            "tag": "VBFH #rightarrow 4b,~m_{A}=55"
+        },
+	{
+            "color": 1109,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_VBFH_HToAATo4B_M-60_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_VBFh_amass60_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 100000,
+                    "xsec": 3.78
+                }
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": false,
+            "issignal": true,
+            "keys": [
+                "haa_prod_VBF",
+                "haa_signal_VBF",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 60,
+            "spimpose": true,
+            "tag": "VBFH #rightarrow 4b,~m_{A}=60"
+        },
+	{
+	    "color": 1200,
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_WH_WToAll_HToAATo4B_M-12_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Wh_amass12_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 1.37
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_WH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 12,
+            "spimpose": true,
+            "tag": "Wh HToAATo4B WToAll,~m_{A}=12"
+        },
+	{
+	    "color": 1201,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_WH_WToAll_HToAATo4B_M-15_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Wh_amass15_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 1.37
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_WH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 5,
+            "spimpose": true,
+            "tag": "Wh HToAATo4B WToAll,~m_{A}=15"
+        },
+	{
+	    "color": 1202,
+            "data": [	
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_WH_WToAll_HToAATo4B_M-20_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Wh_amass20_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 1.37
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_WH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 20,
+            "spimpose": true,
+            "tag": "Wh HToAATo4B WToAll,~m_{A}=20"
+        },
+	{
+	    "color": 1203,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_WH_WToAll_HToAATo4B_M-25_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Wh_amass25_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 1.37
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_WH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 25,
+            "spimpose": true,
+            "tag": "Wh HToAATo4B WToAll,~m_{A}=25"
+        },
+	{
+	    "color": 1204,
+            "data": [	
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_WH_WToAll_HToAATo4B_M-30_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Wh_amass30_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 1.37
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_WH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 30,
+            "spimpose": true,
+            "tag": "Wh HToAATo4B WToAll,~m_{A}=30"
+        },
+	{
+	    "color": 1205,
+            "data": [	
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_WH_WToAll_HToAATo4B_M-35_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Wh_amass35_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 1.37
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_WH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 35,
+            "spimpose": true,
+            "tag": "Wh HToAATo4B WToAll,~m_{A}=35"
+        },
+	{
+	    "color": 1206,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_WH_WToAll_HToAATo4B_M-40_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Wh_amass40_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 1.37
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_WH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 40,
+            "spimpose": true,
+            "tag": "Wh HToAATo4B WToAll,~m_{A}=40"
+        },
+	{
+	    "color": 1207,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_WH_WToAll_HToAATo4B_M-45_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Wh_amass45_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 1.37
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_WH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 45,
+            "spimpose": true,
+            "tag": "Wh HToAATo4B WToAll,~m_{A}=45"
+        },
+	{
+	    "color": 1208,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_WH_WToAll_HToAATo4B_M-50_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Wh_amass50_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 1.37
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_WH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 50,
+            "spimpose": true,
+            "tag": "Wh HToAATo4B WToAll,~m_{A}=50"
+        },
+	{
+	    "color": 1209,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_WH_WToAll_HToAATo4B_M-55_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Wh_amass55_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 1.37
+                }
+		],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_WH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 55,
+            "spimpose": true,
+            "tag": "Wh HToAATo4B WToAll,~m_{A}=55"
+        },
+	{
+	    "color": 1210,
+            "data": [
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_WH_WToAll_HToAATo4B_M-60_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Wh_amass60_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 1.37
+                }	
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_WH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 3,
+            "lwidth": 3,
+            "resonance": 60,
+            "spimpose": true,
+            "tag": "Wh HToAATo4B WToAll,~m_{A}=60"
+        },
+	{
+	    "color": 1300,
+            "data": [
+
+		{
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_ZH_ZToAll_HToAATo4B_M-12_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Zh_amass12_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 0.8839
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_ZH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 8,
+            "lwidth": 3,
+            "resonance": 12,
+            "spimpose": true,
+            "tag": "Zh HToAATo4B ZToAll,~m_{A}=12"
+        },
+	{
+	    "color": 1301,
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_ZH_ZToAll_HToAATo4B_M-15_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Zh_amass15_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 0.8839
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_ZH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 8,
+            "lwidth": 3,
+            "resonance": 15,
+            "spimpose": true,
+            "tag": "Zh HToAATo4B ZToAll,~m_{A}=15"
+        },
+	{
+	    "color": 1302,
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_ZH_ZToAll_HToAATo4B_M-20_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Zh_amass20_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 0.8839
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_ZH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 8,
+            "lwidth": 3,
+            "resonance": 20,
+            "spimpose": true,
+            "tag": "Zh HToAATo4B ZToAll,~m_{A}=20"
+        },
+	{
+	    "color": 1303,
+            "data": [	
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_ZH_ZToAll_HToAATo4B_M-25_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Zh_amass25_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 0.8839
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_ZH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 8,
+            "lwidth": 3,
+            "resonance": 25,
+            "spimpose": true,
+            "tag": "Zh HToAATo4B ZToAll,~m_{A}=25"
+        },
+	{
+	    "color": 1304,
+            "data": [	
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_ZH_ZToAll_HToAATo4B_M-30_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Zh_amass30_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 0.8839
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_ZH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 8,
+            "lwidth": 3,
+            "resonance": 30,
+            "spimpose": true,
+            "tag": "Zh HToAATo4B ZToAll,~m_{A}=30"
+        },
+	{
+	    "color": 1305,
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_ZH_ZToAll_HToAATo4B_M-35_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Zh_amass35_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 0.8839
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_ZH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 8,
+            "lwidth": 3,
+            "resonance": 35,
+            "spimpose": true,
+            "tag": "Zh HToAATo4B ZToAll,~m_{A}=35"
+        },
+	{
+	    "color": 1306,
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_ZH_ZToAll_HToAATo4B_M-40_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Zh_amass40_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 0.8839
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_ZH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 8,
+            "lwidth": 3,
+            "resonance": 40,
+            "spimpose": true,
+            "tag": "Zh HToAATo4B ZToAll,~m_{A}=40"
+        },
+	{
+	    "color": 1307,
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_ZH_ZToAll_HToAATo4B_M-45_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Zh_amass45_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 0.8839
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_ZH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 8,
+            "lwidth": 3,
+            "resonance": 45,
+            "spimpose": true,
+            "tag": "Zh HToAATo4B ZToAll,~m_{A}=45"
+        },
+	{
+	    "color": 1308,
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_ZH_ZToAll_HToAATo4B_M-50_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Zh_amass50_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 0.8839
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_ZH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 8,
+            "lwidth": 3,
+            "resonance": 50,
+            "spimpose": true,
+            "tag": "Zh HToAATo4B ZToAll,~m_{A}=50"
+        },
+	{
+	    "color": 1309,
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_ZH_ZToAll_HToAATo4B_M-55_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Zh_amass55_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 0.8839
+                }
+	    ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_ZH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 8,
+            "lwidth": 3,
+            "resonance": 55,
+            "spimpose": true,
+            "tag": "Zh HToAATo4B ZToAll,~m_{A}=55"
+        },
+	{
+	    "color": 1310,
+            "data": [
+                {
+                    "br": [
+                        1.0
+                    ],
+                    "dset": [
+                        "/SUSY_ZH_ZToAll_HToAATo4B_M-60_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16_L1v1-v2/MINIAODSIM"
+                    ],
+                    "dtag": "MC13TeV_Zh_amass60_2018",
+                    "gtag": "106X_upgrade2018_realistic_v16_L1v1",
+                    "nevts": 50000,
+                    "xsec": 0.8839
+                }
+            ],
+            "fill": 0,
+            "isdata": false,
+            "isinvisible": true,
+            "issignal": true,
+            "keys": [
+                "haa_prod_ZH",
+                "haa_signal",
+                "haa_mcbased"
+            ],
+            "lcolor": 1,
+            "lstyle": 8,
+            "lwidth": 3,
+            "resonance": 60,
+            "spimpose": true,
+            "tag": "Zh HToAATo4B ZToAll,~m_{A}=60"
+        }	
     ]
 }

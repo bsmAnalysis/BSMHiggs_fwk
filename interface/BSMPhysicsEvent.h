@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <vector>
 #include "TH2F.h"
+#include "TH3F.h"
 
 #include "UserCode/bsmhiggs_fwk/interface/DataEvtSummaryHandler.h"
 #include "DataFormats/Math/interface/deltaR.h"
@@ -326,6 +327,7 @@ bool isDYToTauTau(int id1, int id2);
 
 float getSFfrom1DHist(double xval, TH1F* h_);
 float getSFfrom2DHist(double xval, double yval, TH2F* h_);
+float getSFfrom3DHist(double xval, double yval, double zval, TH3F* h_);
 
 float getNLOEWKZZWeight(double trailing_pt);
 float kfactor_qqZZ_qcd_dPhi(float GENdPhiZZ);

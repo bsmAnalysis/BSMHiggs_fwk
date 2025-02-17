@@ -3,7 +3,7 @@
 // Package:    bsmhiggs_fwk
 // Class:      mainNtuplizer
 // 
-/**\class mainNtuplizer mainNtuplizer.cc bwmhiggs_fwk/plugins/mainNtuplizer.cc
+/**\class mainNtuplizer mainNtuplizer.cc bsmhiggs_fwk/plugins/mainNtuplizer.cc
 
  Description: [one line class summary]
 
@@ -215,10 +215,14 @@ private:
   TH1F * h_sumWeights, * h_sumScaleWeights , * h_sumPdfWeights ,* h_sumAlphasWeights; 
   TH1F * h_metFilter;
 
+  /*
   TH2F *h2_BTaggingEff_Denom_b, *h2_BTaggingEff_Denom_c, *h2_BTaggingEff_Denom_udsg;
   TH2F *h2_LooseBTaggingEff_Num_b, *h2_LooseBTaggingEff_Num_c, *h2_LooseBTaggingEff_Num_udsg;
   TH2F *h2_MediumBTaggingEff_Num_b, *h2_MediumBTaggingEff_Num_c, *h2_MediumBTaggingEff_Num_udsg;
   TH2F *h2_TightBTaggingEff_Num_b, *h2_TightBTaggingEff_Num_c, *h2_TightBTaggingEff_Num_udsg;
+  */
+  
+  TH3F *h3_BTaggingEff_Denom, *h3_LooseBTaggingEff_Num, *h3_MediumBTaggingEff_Num, *h3_TightBTaggingEff_Num;
 
   bool isMC_ttbar;
   bool isDATA_VBFH;
@@ -242,13 +246,10 @@ private:
   float DeepJetLooseWP; float DeepJetMediumWP; float DeepJetTightWP;
 
   // BTagging efficiency Map bin configuration
-  const int     ptNBins = 400;
-  const double  ptMin = 0.;
-  const double  ptMax = 4000.;
-  const int     etaNBins = 60;
-  const double  etaMin = -3.;
-  const double  etaMax = 3.;
-
+  std::vector<double> ptBins;
+  std::vector<double> etaBins;
+  std::vector<double> flavourBins;
+  
   /*
     std::string bit_string_stat = "001";
     std::string bit_string_syst = "010";
@@ -375,9 +376,25 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
   h_sumScaleWeights =   fs->make< TH1F>("sumScaleWeights",";;sumScaleWeights;",9,-0.5,8.5);
   h_sumPdfWeights =     fs->make< TH1F>("sumPdfWeights",";;sumPdfWeights;",100,-0.5,99.5);
   h_sumAlphasWeights =  fs->make< TH1F>("sumAlphasWeights",";;sumAlphasWeights;",2,-0.5,1.5);
- 
+
+  // Define bins for efficiency hists eff(pt, eta, flavour)
+  //pt 
+  ptBins = {20, 30, 50, 70, 100, 140, 200, 300, 600, 1000};  
+  int ptNBins = ptBins.size() - 1;
+  //flavour
+  flavourBins = {0, 1, 2, 3};  
+  int flavourNBins = flavourBins.size() - 1;
+  //eta
+  const int     etaNBins = 60;
+  const double  etaMin = -3.;
+  const double  etaMax = 3.;
+  for (int i = 0; i <= etaNBins; i++) {
+    etaBins.push_back( etaMin + i * (etaMax - etaMin) / etaNBins );
+  }
+
   // BTag efficiency histograms definition
   if(isMC_){
+    /*
     h2_BTaggingEff_Denom_b =     fs->make< TH2F>("BTaggingEff_Denom_b", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
     h2_BTaggingEff_Denom_c =     fs->make< TH2F>("BTaggingEff_Denom_c", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
     h2_BTaggingEff_Denom_udsg =  fs->make< TH2F>("BTaggingEff_Denom_udsg", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
@@ -393,6 +410,13 @@ mainNtuplizer::mainNtuplizer(const edm::ParameterSet& iConfig):
     h2_TightBTaggingEff_Num_b =     fs->make< TH2F>("TightBTaggingEff_Num_b", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
     h2_TightBTaggingEff_Num_c =     fs->make< TH2F>("TightBTaggingEff_Num_c", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
     h2_TightBTaggingEff_Num_udsg =  fs->make< TH2F>("TightBTaggingEff_Num_udsg", ";p_{T} [GeV];#eta", ptNBins, ptMin, ptMax, etaNBins, etaMin, etaMax);
+    */
+    
+    //TH3F's
+    h3_BTaggingEff_Denom     =  fs->make< TH3F>("BTaggingEff_Denom", ";p_{T} [GeV];#eta;flavour", ptNBins, &ptBins[0], etaNBins,  &etaBins[0], flavourNBins, &flavourBins[0]);
+    h3_LooseBTaggingEff_Num  =  fs->make< TH3F>("LooseBTaggingEff_Num", ";p_{T} [GeV];#eta;flavour", ptNBins, &ptBins[0], etaNBins,  &etaBins[0], flavourNBins, &flavourBins[0]);
+    h3_MediumBTaggingEff_Num =  fs->make< TH3F>("MediumBTaggingEff_Num", ";p_{T} [GeV];#eta;flavour", ptNBins, &ptBins[0], etaNBins,  &etaBins[0], flavourNBins, &flavourBins[0]);
+    h3_TightBTaggingEff_Num  =  fs->make< TH3F>("TightBTaggingEff_Num", ";p_{T} [GeV];#eta;flavour", ptNBins, &ptBins[0], etaNBins,  &etaBins[0], flavourNBins, &flavourBins[0]);
   }
 
   h_metFilter = fs->make<TH1F>( "metFilter",";metEventflow",20,0,20);
@@ -790,35 +814,18 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
       // btag_dsc = j.bDiscriminator("pfDeepCSVJetTags:probb") + j.bDiscriminator("pfDeepCSVJetTags:probbb");
       // DeepJet
       btag_dsc = j.bDiscriminator("pfDeepFlavourJetTags:probb") + j.bDiscriminator("pfDeepFlavourJetTags:probbb") + j.bDiscriminator("pfDeepFlavourJetTags:problepb");
-
+      
+      //TH3F's
       int partonFlavor = j.partonFlavour();
-      if( fabs(partonFlavor)==5 ){
-        h2_BTaggingEff_Denom_b->Fill(j.pt(), j.eta());
-      //if( btag_dsc>DeepCSVLooseWP ) h2_LooseBTaggingEff_Num_b->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepJetLooseWP ) h2_LooseBTaggingEff_Num_b->Fill(j.pt(), j.eta());
-      //if( btag_dsc>DeepCSVMediumWP ) h2_MediumBTaggingEff_Num_b->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepJetMediumWP ) h2_MediumBTaggingEff_Num_b->Fill(j.pt(), j.eta());
-      //if( btag_dsc>DeepCSVTightWP ) h2_TightBTaggingEff_Num_b->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepJetTightWP ) h2_TightBTaggingEff_Num_b->Fill(j.pt(), j.eta()); 
-      }
-      else if( fabs(partonFlavor)==4 ){
-        h2_BTaggingEff_Denom_c->Fill(j.pt(), j.eta());
-      //if( btag_dsc>DeepCSVLooseWP ) h2_LooseBTaggingEff_Num_c->Fill(j.pt(), j.eta());
-      //if( btag_dsc>DeepCSVMediumWP ) h2_MediumBTaggingEff_Num_c->Fill(j.pt(), j.eta());
-      //if( btag_dsc>DeepCSVTightWP ) h2_TightBTaggingEff_Num_c->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepJetLooseWP ) h2_LooseBTaggingEff_Num_c->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepJetMediumWP ) h2_MediumBTaggingEff_Num_c->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepJetTightWP ) h2_TightBTaggingEff_Num_c->Fill(j.pt(), j.eta());
-      }
-      else{
-        h2_BTaggingEff_Denom_udsg->Fill(j.pt(), j.eta());
-      //if( btag_dsc>DeepCSVLooseWP ) h2_LooseBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
-      //if( btag_dsc>DeepCSVMediumWP ) h2_MediumBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
-      //if( btag_dsc>DeepCSVTightWP ) h2_TightBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepJetLooseWP ) h2_LooseBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepJetMediumWP ) h2_MediumBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
-        if( btag_dsc>DeepJetTightWP ) h2_TightBTaggingEff_Num_udsg->Fill(j.pt(), j.eta());
-      }
+      int partonFlavourcat;
+      if( fabs(partonFlavor)==5 ) partonFlavourcat = 0;
+      else if( fabs(partonFlavor)==4 ) partonFlavourcat = 1;
+      else  partonFlavourcat = 2;
+
+      h3_BTaggingEff_Denom->Fill(j.pt(), j.eta(), partonFlavourcat);
+      if( btag_dsc>DeepJetLooseWP ) h3_LooseBTaggingEff_Num->Fill(j.pt(), j.eta(), partonFlavourcat);
+      if( btag_dsc>DeepJetMediumWP ) h3_MediumBTaggingEff_Num->Fill(j.pt(), j.eta(), partonFlavourcat);
+      if( btag_dsc>DeepJetTightWP ) h3_TightBTaggingEff_Num->Fill(j.pt(), j.eta(), partonFlavourcat);
    }
   }
 
@@ -1345,7 +1352,7 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
       ev.jet_mass[ev.jet] = j.mass(); //correctedP4(0).M();
       //       ev.jet_area[ev.jet] = j.jetArea();
       //       ev.jet_pu[ev.jet] = j.pileup();
-      //       ev.jet_puId[ev.jet] = j.userFloat("pileupJetId:fullDiscriminant");
+      ev.jet_puId[ev.jet] = j.userFloat("pileupJetId:fullDiscriminant");
 
       if ( verbose_ ) {
 	printf("    %2d : pt=%6.1f, eta=%7.3f, phi=%7.3f : ID=%s%s, bCSV=%7.3f, PUID=%7.3f\n",
@@ -1368,7 +1375,11 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
       }
 	 
       if(patUtils::passPFJetID("Loose", j, (is2017 << 0) | (is2018 << 1)))  ijet2++;
-	 
+
+      ev.jet_partonFlavour[ev.jet] = 0;
+      
+      if (isMC_) ev.jet_partonFlavour[ev.jet] = j.partonFlavour();
+      
       /*
 	remove to reduce space
 	ev.jet_mother_id[ev.jet] = 0;
@@ -1378,7 +1389,6 @@ void mainNtuplizer::analyze(const edm::Event& event, const edm::EventSetup& iSet
 	ev.jet_parton_pz[ev.jet] = 0.; 
 	ev.jet_parton_en[ev.jet] = 0.; 
 
-	ev.jet_partonFlavour[ev.jet] = 0;
 	ev.jet_hadronFlavour[ev.jet] = 0;
 	ev.jet_genpt[ev.jet] = 0.;
 	
