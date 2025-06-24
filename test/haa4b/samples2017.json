@@ -338,7 +338,7 @@
             ],
             "marker": 20,
             "msize": 0.7,
-            "tag": "data (leptons)"
+            "tag": "data"
         },
 	{
 	    "color": 2,
@@ -533,7 +533,7 @@
                     ],
                     "dtag": "MC13TeV_ZZZ_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 178000,
+                    "nevts": 9702000,
                     "xsec": 0.01398
                 },
 		{
@@ -545,7 +545,7 @@
                     ],
                     "dtag": "MC13TeV_ZZZ_ext1_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 9524000,
+                    "nevts": 9702000,
                     "xsec": 0.01398
                 },
                 {
@@ -557,7 +557,7 @@
                     ],
                     "dtag": "MC13TeV_WZZ_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 298000,
+                    "nevts": 10196000,
                     "xsec": 0.05565
                 },
 		{
@@ -569,7 +569,7 @@
                     ],
                     "dtag": "MC13TeV_WZZ_ext1_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 9898000,
+                    "nevts": 10196000,
                     "xsec": 0.05565
                 },
                 {
@@ -581,7 +581,7 @@
                     ],
                     "dtag": "MC13TeV_WWZ_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 178000,
+                    "nevts": 1171840,
                     "xsec": 0.1651
                 },
 		{
@@ -593,7 +593,7 @@
                     ],
                     "dtag": "MC13TeV_WWZ_ext1_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 9938400,
+                    "nevts": 1171840,
                     "xsec": 0.1651
                 },
                 {
@@ -605,7 +605,7 @@
                     ],
                     "dtag": "MC13TeV_WWW_4F_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 171000,
+                    "nevts": 10025000,
                     "xsec": 0.2086
                 },
 		{
@@ -617,7 +617,7 @@
                     ],
                     "dtag": "MC13TeV_WWW_4F_ext1_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 9854000,
+                    "nevts": 10025000,
                     "xsec": 0.2086
                 },
                 {
@@ -653,7 +653,7 @@
                     ],
                     "dtag": "MC13TeV_SingleT_t_top_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 129903000,
+                    "nevts": 130334000,
                     "xsec": 44.2065
                 },
                 {
@@ -761,7 +761,7 @@
                     ],
                     "dtag": "MC13TeV_ZH_HToBB_ZToLL_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 4756715,
+                    "nevts": 4757708,
                     "xsec": 0.04865
                 }
             ],
@@ -818,7 +818,7 @@
                 "haa_mcbased"
             ],
             "mctruthmode": 1,
-            "tag": "t#bar{t}+light"
+            "tag": "t#bar{t} + light"
         },
 	{
             "color": 407,
@@ -866,7 +866,7 @@
                 "haa_mcbased"
             ],
             "mctruthmode": 4,
-            "tag": "t#bar{t}+c#bar{c}"
+            "tag": "t#bar{t} + c#bar{c}"
         },
 	{
             "color": 408,
@@ -914,7 +914,7 @@
                 "haa_mcbased"
             ],
             "mctruthmode": 5,
-            "tag": "t#bar{t}+b#bar{b}"
+            "tag": "t#bar{t} + b#bar{b}"
         },
 	{
             "color": 420,
@@ -1086,7 +1086,7 @@
                     ],
                     "dtag": "MC13TeV_DYJetsToLL_M50_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 103344974,
+                    "nevts": 203540954,
                     "xsec": "4895*1.18"
                 },
                 {
@@ -1098,10 +1098,10 @@
                     ],
                     "dtag": "MC13TeV_DYJetsToLL_M50_ext1_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 101893848,
+                    "nevts": 203540954,
                     "xsec": "4895*1.18"
                 }
-                 ],
+            ],
             "isdata": false,
             "keys": [
                 "haa_mcbased",
@@ -1290,7 +1290,7 @@
                     ],
                     "dtag": "MC13TeV_WJets_HT70to100_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 44736228,
+                    "nevts": 44752191,
                     "xsec": "1353*1.21"
                 },
                 {
@@ -1326,7 +1326,7 @@
                     ],
                     "dtag": "MC13TeV_WJets_HT400to600_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 5468473,
+                    "nevts": 6904016,
                     "xsec": "48.91*1.21"
                 },
 		{
@@ -1338,7 +1338,7 @@
                     ],
                     "dtag": "MC13TeV_WJets_HT400to600_ext1_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 1435543,
+                    "nevts": 6904016,
                     "xsec": "48.91*1.21"
                 },
                 {
@@ -1350,7 +1350,7 @@
                     ],
                     "dtag": "MC13TeV_WJets_HT600to800_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 5545298,
+                    "nevts": 10027075,
                     "xsec": "12.05*1.21"
                 },
 		{
@@ -1362,7 +1362,7 @@
                     ],
                     "dtag": "MC13TeV_WJets_HT600to800_ext1_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 4481777,
+                    "nevts": 10027075,
                     "xsec": "12.05*1.21"
                 },
                 {
@@ -1374,19 +1374,19 @@
                     ],
                     "dtag": "MC13TeV_WJets_HT800to1200_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 5088483,
+                    "nevts": 8436624,
                     "xsec": "5.501*1.21"
                 },
 		{
                     "br": [
-                         1.0
+                        1.0
                     ],
                     "dset": [
                         "/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIISummer20UL17MiniAODv2-106X_mc2017_realistic_v9_ext1-v2/MINIAODSIM"
                     ],
                     "dtag": "MC13TeV_WJets_HT800to1200_ext1_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 3348141,
+                    "nevts": 8436624,
                     "xsec": "5.501*1.21"
                 },
                 {
@@ -1433,7 +1433,7 @@
                     ],
                     "dtag": "MC13TeV_QCD_Pt80To120_EMEnr_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 9615795,
+                    "nevts": 9537350,
                     "xsec": "2800000*0.125"
                 },
                 {
@@ -1481,7 +1481,7 @@
                     ],
                     "dtag": "MC13TeV_QCD_Pt80to120_MuEnrPt5_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 45981017,
+                    "nevts": 45961625,
                     "xsec": "2758420*0.03844"
                 },
                 {
@@ -1505,7 +1505,7 @@
                     ],
                     "dtag": "MC13TeV_QCD_Pt170to300_MuEnrPt5_2017",
                     "gtag": "106X_mc2017_realistic_v10",
-                    "nevts": 73071987,
+                    "nevts": 71617899,
                     "xsec": "117989*0.07335"
                 },
                 {
@@ -1571,7 +1571,7 @@
             ],
             "isdata": false,
             "keys": [
-               "haa_prod_QCD_Pt",
+		"haa_prod_QCD_Pt",
                 "haa_mcbased"
             ],
             "tag": "QCD"
